@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESafety.Account.API", "ESaf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESafety.Platform.API", "ESafety.Platform.API\ESafety.Platform.API.csproj", "{EC79EA7D-211C-42DC-B9D5-7C43A332F090}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESafety.Unity", "ESafety.Unity\ESafety.Unity.csproj", "{FD6E7F38-6E75-4027-89DF-94FD3AB93A3D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{EC79EA7D-211C-42DC-B9D5-7C43A332F090}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC79EA7D-211C-42DC-B9D5-7C43A332F090}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC79EA7D-211C-42DC-B9D5-7C43A332F090}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD6E7F38-6E75-4027-89DF-94FD3AB93A3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD6E7F38-6E75-4027-89DF-94FD3AB93A3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD6E7F38-6E75-4027-89DF-94FD3AB93A3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD6E7F38-6E75-4027-89DF-94FD3AB93A3D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
