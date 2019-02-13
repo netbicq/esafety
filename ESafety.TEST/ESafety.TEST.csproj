@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ESafety.Account.IService\ESafety.Account.IService.csproj" />
+    <ProjectReference Include="..\ESafety.Account.Service\ESafety.Account.Service.csproj" />
+    <ProjectReference Include="..\ESafety.Core.Model\ESafety.Core.Model.csproj" />
+    <ProjectReference Include="..\ESafety.Core\ESafety.Core.csproj" />
+    <ProjectReference Include="..\ESafety.ORM\ESafety.ORM.csproj" />
+    <ProjectReference Include="..\ESafety.Platform.IService\ESafety.Platform.IService.csproj" />
+    <ProjectReference Include="..\ESafety.Platform.Service\ESafety.Platform.Service.csproj" />
+    <ProjectReference Include="..\ESafety.Unity\ESafety.Unity.csproj" />
+    <ProjectReference Include="..\ESafety.Web.Unity\ESafety.Web.Unity.csproj" />
+  </ItemGroup>
+
+</Project>

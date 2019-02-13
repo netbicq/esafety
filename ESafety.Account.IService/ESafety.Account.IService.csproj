@@ -42,5 +42,19 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ESafety.Core.Model\ESafety.Core.Model.csproj">
+      <Project>{56ae99ed-a596-4b0c-bf0f-c8fa10a0c4ae}</Project>
+      <Name>ESafety.Core.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Core\ESafety.Core.csproj">
+      <Project>{caab6290-f9ba-4e7d-b157-360ff452b0e3}</Project>
+      <Name>ESafety.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Platform.IService\ESafety.Platform.IService.csproj">
+      <Project>{62493032-f604-4d30-a8ad-6b02d4596ea0}</Project>
+      <Name>ESafety.Platform.IService</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

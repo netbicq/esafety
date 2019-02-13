@@ -277,6 +277,36 @@
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.3.1.min.map" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ESafety.Core.Model\ESafety.Core.Model.csproj">
+      <Project>{56ae99ed-a596-4b0c-bf0f-c8fa10a0c4ae}</Project>
+      <Name>ESafety.Core.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Core\ESafety.Core.csproj">
+      <Project>{caab6290-f9ba-4e7d-b157-360ff452b0e3}</Project>
+      <Name>ESafety.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.ORM\ESafety.ORM.csproj">
+      <Project>{102d8c09-3175-4080-ae0e-4aaebab2c241}</Project>
+      <Name>ESafety.ORM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Platform.IService\ESafety.Platform.IService.csproj">
+      <Project>{62493032-f604-4d30-a8ad-6b02d4596ea0}</Project>
+      <Name>ESafety.Platform.IService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Platform.Service\ESafety.Platform.Service.csproj">
+      <Project>{14b3ee81-da76-4ce4-9a1f-846a4bec7305}</Project>
+      <Name>ESafety.Platform.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Unity\ESafety.Unity.csproj">
+      <Project>{fd6e7f38-6e75-4027-89df-94fd3ab93a3d}</Project>
+      <Name>ESafety.Unity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Web.Unity\ESafety.Web.Unity.csproj">
+      <Project>{138da9a8-707a-4222-9466-9d9c25ab1fa8}</Project>
+      <Name>ESafety.Web.Unity</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

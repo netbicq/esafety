@@ -30,7 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -40,7 +47,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DB\ModelBase.cs" />
+    <Compile Include="DB\Platform\AccountInfo.cs" />
+    <Compile Include="DB\Platform\Auth_Key.cs" />
+    <Compile Include="DB\Platform\Auth_KeyDetail.cs" />
+    <Compile Include="DB\Platform\Auth_Role.cs" />
+    <Compile Include="DB\Platform\Auth_RoleAuthScope.cs" />
+    <Compile Include="DB\Platform\Auth_User.cs" />
+    <Compile Include="DB\Platform\Auth_UserProfile.cs" />
+    <Compile Include="DB\Platform\Auth_UserRole.cs" />
+    <Compile Include="DB\Platform\RPTAccountScope.cs" />
+    <Compile Include="DB\Platform\RPTChildrenColumn.cs" />
+    <Compile Include="DB\Platform\RPTChildrenTable.cs" />
+    <Compile Include="DB\Platform\RPTColumn.cs" />
+    <Compile Include="DB\Platform\RPTInfo.cs" />
+    <Compile Include="DB\Platform\RPTListParameterColumn.cs" />
+    <Compile Include="DB\Platform\RPTParameter.cs" />
+    <Compile Include="DB\Platform\Sys_Log.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DBMap\" />
+    <Folder Include="DB\Account\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
