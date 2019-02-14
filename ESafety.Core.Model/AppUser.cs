@@ -1,5 +1,4 @@
-﻿using ESafety.Core.Model.DB;
-using ESafety.Core.Model.DB.Platform;
+﻿using ESafety.Core.Model.DB; 
 using System;
 using System.Collections.Generic;
 using System.Linq;

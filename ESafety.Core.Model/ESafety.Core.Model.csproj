@@ -56,8 +56,17 @@
     <Compile Include="AccountOptions.cs" />
     <Compile Include="ActionResult.cs" />
     <Compile Include="AppUser.cs" />
+    <Compile Include="DB\Basic_Dict.cs" />
+    <Compile Include="DB\Basic_Employee.cs" />
+    <Compile Include="DB\Basic_Org.cs" />
+    <Compile Include="DB\Basic_UserDefined.cs" />
+    <Compile Include="DB\Basic_UserDefinedValue.cs" />
+    <Compile Include="DB\Flow_Points.cs" />
+    <Compile Include="DB\Flow_PointUsers.cs" />
+    <Compile Include="DB\Flow_Result.cs" />
+    <Compile Include="DB\Flow_Task.cs" />
     <Compile Include="DB\ModelBase.cs" />
-    <Compile Include="DB\Platform\AccountInfo.cs" />
+    <Compile Include="DB\AccountInfo.cs" />
     <Compile Include="DB\Auth_Key.cs" />
     <Compile Include="DB\Auth_KeyDetail.cs" />
     <Compile Include="DB\Auth_Role.cs" />
@@ -65,14 +74,14 @@
     <Compile Include="DB\Auth_User.cs" />
     <Compile Include="DB\Auth_UserProfile.cs" />
     <Compile Include="DB\Auth_UserRole.cs" />
-    <Compile Include="DB\Platform\RPTAccountScope.cs" />
-    <Compile Include="DB\Platform\RPTChildrenColumn.cs" />
-    <Compile Include="DB\Platform\RPTChildrenTable.cs" />
-    <Compile Include="DB\Platform\RPTColumn.cs" />
-    <Compile Include="DB\Platform\RPTInfo.cs" />
-    <Compile Include="DB\Platform\RPTListParameterColumn.cs" />
-    <Compile Include="DB\Platform\RPTParameter.cs" />
-    <Compile Include="DB\Platform\Sys_Log.cs" />
+    <Compile Include="DB\RPTAccountScope.cs" />
+    <Compile Include="DB\RPTChildrenColumn.cs" />
+    <Compile Include="DB\RPTChildrenTable.cs" />
+    <Compile Include="DB\RPTColumn.cs" />
+    <Compile Include="DB\RPTInfo.cs" />
+    <Compile Include="DB\RPTListParameterColumn.cs" />
+    <Compile Include="DB\RPTParameter.cs" />
+    <Compile Include="DB\Sys_Log.cs" />
     <Compile Include="OptionItemSet.cs" />
     <Compile Include="Pager.cs" />
     <Compile Include="PARA\AccountInfo.cs" />
@@ -86,6 +95,7 @@
     <Compile Include="View\User.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.Config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +110,7 @@
   <ItemGroup>
     <Folder Include="DBMap\" />
     <Folder Include="DB\Account\" />
+    <Folder Include="DB\Platform\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

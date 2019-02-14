@@ -15,7 +15,6 @@ namespace ESafety.Core.Model.DB
         /// 角色名称
         /// </summary>
         public string RoleName { get; set; }
-
-        public virtual ICollection<Auth_User> Users { get; set; }
+         
     }
 }

@@ -1,5 +1,4 @@
 ﻿using ESafety.Core.Model.DB;
-using ESafety.Core.Model.DB.Platform;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -35,7 +34,32 @@ namespace ESafety.ORM
 
         public virtual DbSet<AccountInfo>  AccountInfo { get; set; }
 
+        public virtual DbSet<Sys_Log> Sys_Log { get; set; }
 
+        public virtual DbSet<RPTAccountScope> RPTAccountScope { get; set; }
+
+        public virtual DbSet<RPTChildrenColumn> RPTChildrenColumn { get; set; }
+
+        public virtual DbSet<RPTChildrenTable> RPTChildrenTable { get; set; }
+
+        public virtual DbSet<RPTColumn > RPTColumn { get; set; }
+
+        public virtual DbSet<RPTInfo> RPTInfo { get; set; }
+
+        public virtual DbSet<RPTListParameterColumn> RPTListParameterColumn { get; set; }
+
+        public virtual DbSet<RPTParameter> RPTParameter { get; set; }
+
+
+        public virtual DbSet<Basic_Dict> Basic_Dict { get; set; }
+        public virtual DbSet<Basic_Employee> Basic_Employee { get; set; }
+        public virtual DbSet<Basic_Org> Basic_Org { get; set; }
+        public virtual DbSet<Basic_UserDefined> Basic_UserDefined { get; set; }
+        public virtual DbSet<Basic_UserDefinedValue> Basic_UserDefinedValue { get; set; }
+        public virtual DbSet<Flow_Points> Flow_Points { get; set; }
+        public virtual DbSet<Flow_PointUsers> Flow_PointUsers { get; set; }
+        public virtual DbSet<Flow_Result> Flow_Result { get; set; }
+        public virtual DbSet<Flow_Task> Flow_Task { get; set; }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

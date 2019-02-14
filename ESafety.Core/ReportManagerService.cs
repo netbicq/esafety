@@ -1,5 +1,5 @@
 ﻿using ESafety.Core.Model;
-using ESafety.Core.Model.DB.Platform;
+using ESafety.Core.Model.DB;
 using ESafety.Core.Model.ReportManager;
 using ESafety.ORM;
 using ESafety.Unity;

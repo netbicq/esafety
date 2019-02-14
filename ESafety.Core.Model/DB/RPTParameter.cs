@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ESafety.Core.Model.DB.Platform
+namespace ESafety.Core.Model.DB
 {
     /// <summary>
     /// 报表参数

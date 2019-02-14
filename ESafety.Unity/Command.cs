@@ -11,11 +11,55 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Dynamic;
+using System.ComponentModel;
 
 namespace ESafety.Unity
 {
+    /// <summary>
+    /// 独立方法类
+    /// </summary>
     public class Command
     {
+        /// <summary>
+        /// 获取枚举项集合
+        /// </summary>
+        /// <param name="enumType"></param>
+        /// <returns></returns>
+        public static IList<EnumItem> GetItems(Type enumType)
+        {
+            if (!enumType.IsEnum)
+                throw new InvalidOperationException();
+
+            IList<EnumItem> list = new List<EnumItem>();
+
+            // 获取Description特性 
+            Type typeDescription = typeof(DescriptionAttribute);
+            // 获取枚举字段
+            FieldInfo[] fields = enumType.GetFields();
+            foreach (FieldInfo field in fields)
+            {
+                if (!field.FieldType.IsEnum)
+                    continue;
+
+                // 获取枚举值
+                int value = (int)enumType.InvokeMember(field.Name, BindingFlags.GetField, null, null, null);
+
+                // 不包括空项
+                if (value > 0)
+                {
+                    string text = string.Empty;
+                    object[] array = field.GetCustomAttributes(typeDescription, false);
+
+                    if (array.Length > 0) text = ((DescriptionAttribute)array[0]).Description;
+                    else text = field.Name; //没有描述，直接取值
+
+                    //添加到列表
+                    list.Add(new EnumItem { Value = value, Caption = text });
+                }
+            }
+            return list;
+        }
+
         /// <summary>
         /// 导出excel
         /// </summary>

@@ -35,7 +35,6 @@ namespace ESafety.Core.Model.DB
         /// token过期时间
         /// </summary>
         public DateTime TokenValidTime { get; set; }
-
-        public virtual ICollection<Auth_Role> Roles { get; set; }
+         
     }
 }
