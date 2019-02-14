@@ -1,24 +1,96 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{70750297-1484-4505-BF13-620AF2415B73}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RootNamespace>ESafety.TEST</RootNamespace>
+    <AssemblyName>ESafety.TEST</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\ESafety.Account.IService\ESafety.Account.IService.csproj" />
-    <ProjectReference Include="..\ESafety.Account.Service\ESafety.Account.Service.csproj" />
-    <ProjectReference Include="..\ESafety.Core.Model\ESafety.Core.Model.csproj" />
-    <ProjectReference Include="..\ESafety.Core\ESafety.Core.csproj" />
-    <ProjectReference Include="..\ESafety.ORM\ESafety.ORM.csproj" />
-    <ProjectReference Include="..\ESafety.Platform.IService\ESafety.Platform.IService.csproj" />
-    <ProjectReference Include="..\ESafety.Platform.Service\ESafety.Platform.Service.csproj" />
-    <ProjectReference Include="..\ESafety.Unity\ESafety.Unity.csproj" />
-    <ProjectReference Include="..\ESafety.Web.Unity\ESafety.Web.Unity.csproj" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ESafety.Account.IService\ESafety.Account.IService.csproj">
+      <Project>{175c4777-fb21-46c1-844f-cdb9947769e3}</Project>
+      <Name>ESafety.Account.IService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Account.Service\ESafety.Account.Service.csproj">
+      <Project>{7f78afa0-cfe0-42cb-b7c7-f53ef47330b5}</Project>
+      <Name>ESafety.Account.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Core.Model\ESafety.Core.Model.csproj">
+      <Project>{56ae99ed-a596-4b0c-bf0f-c8fa10a0c4ae}</Project>
+      <Name>ESafety.Core.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Core\ESafety.Core.csproj">
+      <Project>{caab6290-f9ba-4e7d-b157-360ff452b0e3}</Project>
+      <Name>ESafety.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.ORM\ESafety.ORM.csproj">
+      <Project>{102d8c09-3175-4080-ae0e-4aaebab2c241}</Project>
+      <Name>ESafety.ORM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Platform.IService\ESafety.Platform.IService.csproj">
+      <Project>{62493032-f604-4d30-a8ad-6b02d4596ea0}</Project>
+      <Name>ESafety.Platform.IService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Platform.Service\ESafety.Platform.Service.csproj">
+      <Project>{14b3ee81-da76-4ce4-9a1f-846a4bec7305}</Project>
+      <Name>ESafety.Platform.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Unity\ESafety.Unity.csproj">
+      <Project>{fd6e7f38-6e75-4027-89df-94fd3ab93a3d}</Project>
+      <Name>ESafety.Unity</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

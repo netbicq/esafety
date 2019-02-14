@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\ESafety.Core.Model.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -39,6 +40,11 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,15 +53,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountOptions.cs" />
+    <Compile Include="ActionResult.cs" />
+    <Compile Include="AppUser.cs" />
     <Compile Include="DB\ModelBase.cs" />
     <Compile Include="DB\Platform\AccountInfo.cs" />
-    <Compile Include="DB\Platform\Auth_Key.cs" />
-    <Compile Include="DB\Platform\Auth_KeyDetail.cs" />
-    <Compile Include="DB\Platform\Auth_Role.cs" />
-    <Compile Include="DB\Platform\Auth_RoleAuthScope.cs" />
-    <Compile Include="DB\Platform\Auth_User.cs" />
-    <Compile Include="DB\Platform\Auth_UserProfile.cs" />
-    <Compile Include="DB\Platform\Auth_UserRole.cs" />
+    <Compile Include="DB\Auth_Key.cs" />
+    <Compile Include="DB\Auth_KeyDetail.cs" />
+    <Compile Include="DB\Auth_Role.cs" />
+    <Compile Include="DB\Auth_RoleAuthScope.cs" />
+    <Compile Include="DB\Auth_User.cs" />
+    <Compile Include="DB\Auth_UserProfile.cs" />
+    <Compile Include="DB\Auth_UserRole.cs" />
     <Compile Include="DB\Platform\RPTAccountScope.cs" />
     <Compile Include="DB\Platform\RPTChildrenColumn.cs" />
     <Compile Include="DB\Platform\RPTChildrenTable.cs" />
@@ -64,15 +73,33 @@
     <Compile Include="DB\Platform\RPTListParameterColumn.cs" />
     <Compile Include="DB\Platform\RPTParameter.cs" />
     <Compile Include="DB\Platform\Sys_Log.cs" />
+    <Compile Include="OptionItemSet.cs" />
+    <Compile Include="Pager.cs" />
+    <Compile Include="PARA\AccountInfo.cs" />
+    <Compile Include="PARA\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Report.cs" />
+    <Compile Include="ReportManager.cs" />
+    <Compile Include="View\AccountInfo.cs" />
+    <Compile Include="View\Log.cs" />
+    <Compile Include="View\Report.cs" />
+    <Compile Include="View\User.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ESafety.Unity\ESafety.Unity.csproj">
+      <Project>{fd6e7f38-6e75-4027-89df-94fd3ab93a3d}</Project>
+      <Name>ESafety.Unity</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DBMap\" />
     <Folder Include="DB\Account\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

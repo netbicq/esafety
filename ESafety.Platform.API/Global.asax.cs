@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ESafety.Core;
+using ESafety.ORM;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -18,6 +20,11 @@ namespace ESafety.Platform.API
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            AOP.reg();
+
+            var auth = new Auth_UserService(new ORM.Unitwork(new ESFdb())).GetAllAuth("");
+            Web.Unity.AuthKey.AuthKeys = auth.data.ToList();
         }
     }
 }
