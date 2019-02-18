@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ESafety.Core
 {
-    interface IOrgEmployee
+    public interface IOrgEmployee
     {
     }
 }

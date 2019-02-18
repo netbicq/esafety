@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ESafety.Core
 {
-    public interface IUserDefined
+    class DictService
     {
     }
 }
