@@ -57,7 +57,7 @@ namespace ESafety.Core
 
 
             var dbcolumn = new  RPTColumn();
-            dbcolumn = column.MAPTO<RPTColumn>();
+            dbcolumn = column.CopyTo<RPTColumn>(new RPTColumn());
             
             _rpscolumn.Add(dbcolumn);
             _work.Commit();
@@ -88,7 +88,7 @@ namespace ESafety.Core
             }
 
 
-            var dbparameter =parameter.MAPTO< RPTParameter>();
+            var dbparameter =parameter.CopyTo< RPTParameter>(new RPTParameter());
              
             dbparameter.TypeListSource = parameter.TypeListTypeSource;
             //如果不是下拉框就赋值为空
@@ -115,7 +115,7 @@ namespace ESafety.Core
             {
                 throw new Exception("报表名称：" + report.ReportName + "已经存在");
             }
-            var dbreport =report.MAPTO<RPTInfo>(); 
+            var dbreport =report.CopyTo<RPTInfo>(new RPTInfo()); 
             dbreport.State = 1;
             dbreport.CreateMan = AppUser.UserProfile.CNName;
             _rpsreport.Add(dbreport);
@@ -140,7 +140,7 @@ namespace ESafety.Core
             {
                 throw new Exception("报表已经存在标题：" + table.ChildeCaption);
             }
-            var dbtable =table.MAPTO<RPTChildrenTable>(); 
+            var dbtable =table.CopyTo<RPTChildrenTable>(new RPTChildrenTable()); 
 
             _rpstable.Add(dbtable);
 
@@ -171,7 +171,7 @@ namespace ESafety.Core
                 throw new Exception("子表已经存在列：" + tablecolumn.ColumnName);
             }
 
-            var dbtablecolum =tablecolumn.MAPTO<RPTChildrenColumn>();
+            var dbtablecolum =tablecolumn.CopyTo<RPTChildrenColumn>(new RPTChildrenColumn());
              
             _rpstablecolumn.Add(dbtablecolum);
 
@@ -318,7 +318,7 @@ namespace ESafety.Core
             {
                 throw new Exception("报表不存在");
             }
-            column = updater.MAPTO<RPTColumn>();
+            column = updater.CopyTo<RPTColumn>(column);
 
             _rpscolumn.Update(column);
 
@@ -342,7 +342,7 @@ namespace ESafety.Core
             {
                 throw new Exception("报表不存在");
             }
-            meter = updater.MAPTO<RPTParameter>(); 
+            meter = updater.CopyTo<RPTParameter>(meter); 
 
             meter.TypeListSource = updater.TypeListTypeSource;
             _rpsparameter.Update(meter);
@@ -366,7 +366,7 @@ namespace ESafety.Core
             {
                 throw new Exception("报表名称已经存在");
             }
-            var dbreport = updater.MAPTO< RPTInfo>();
+            var dbreport = updater.CopyTo< RPTInfo>(report);
             
             _rpsreport.Update(report);
 
@@ -397,7 +397,7 @@ namespace ESafety.Core
             {
                 throw new Exception("报表已经存在子表标题：" + updater.ChildeCaption);
             }
-            dbtable = updater.MAPTO<RPTChildrenTable>();
+            dbtable = updater.CopyTo<RPTChildrenTable>(dbtable);
              
             _rpstable.Update(dbtable);
 
@@ -427,7 +427,7 @@ namespace ESafety.Core
                 throw new Exception("子表列名：" + updater.ColumnName + "已经存在");
             }
 
-            tcolumn = updater.MAPTO<RPTChildrenColumn>();
+            tcolumn = updater.CopyTo<RPTChildrenColumn>(tcolumn);
              
             _rpstablecolumn.Update(tcolumn);
 

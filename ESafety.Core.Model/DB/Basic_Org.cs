@@ -9,10 +9,8 @@ namespace ESafety.Core.Model.DB
     /// <summary>
     /// 组织架构
     /// </summary>
-    public partial class Basic_Org
-    {
-        public Guid ID { get; set; }
-
+    public class Basic_Org : ModelBase
+    { 
         public Guid ParentID { get; set; }
         /// <summary>
         /// 级次

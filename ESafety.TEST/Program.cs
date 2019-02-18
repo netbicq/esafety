@@ -21,12 +21,24 @@ namespace ESafety.TEST
 
             ORM.IUnitwork work = new ORM.Unitwork(new ESFdb());
 
-            var db = work.Repository<Auth_Role>();
-
-            db.Add(new Auth_Role
+            var bll = new Core.AccountService(work);
+            var allu = new Core.Auth_UserService(work);
+             
+            allu.Update(new Core.Model.PARA.UserEdit
             {
-                ID = Guid.NewGuid(),
-                RoleName = "role1"
+
+                ID = Guid.Parse("3B2124B6-98AD-4B7B-B29F-E7DACB58EC18"),
+                OtherEdit =true , OtherView = true
+
+            });
+            bll.AddAccount(new Core.Model.PARA.AccountInfoNew
+            {
+                 AccountCode="tet", AccountName ="ttt", Memo ="", ShortName ="testtt"
+            });
+
+            bll.AddAccount(new Core.Model.PARA.AccountInfoNew
+            {
+                 AccountCode="tests", ShortName ="tests", Memo ="", AccountName ="tttta"
             });
 
            

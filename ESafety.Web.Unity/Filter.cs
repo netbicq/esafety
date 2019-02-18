@@ -1,5 +1,6 @@
 ﻿using ESafety.Core;
 using ESafety.Core.Model;
+using ESafety.Core.Model.DB.Platform;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,8 +45,7 @@ namespace ESafety.Web.Unity
                 || actionExecutedContext.ActionContext.ControllerContext.RouteData.Route.RouteTemplate == "api/device/getdevicedata/{deviceid}"
                 || actionExecutedContext.ActionContext.ControllerContext.RouteData.Route.RouteTemplate == "api/device/getindentity")
             {
-                // ObjectContent reobj = actionExecutedContext.Response.Content as ObjectContent;
-                // var objStr = Newtonsoft.Json.JsonConvert.SerializeObject(reobj.Value);
+ 
                 var objBytes = Encoding.GetEncoding("UTF-8").GetBytes(dmsgstr);
                 var reBytes = Encoding.Convert(Encoding.GetEncoding("UTF-8"), Encoding.GetEncoding("GB2312"), objBytes);
                 var reStr = Encoding.GetEncoding("GB2312").GetString(reBytes);
@@ -78,70 +78,70 @@ namespace ESafety.Web.Unity
     {
         protected override bool IsAuthorized(HttpActionContext actionContext)
         {
-            //QMESAPI api = (QMESAPI)actionContext.ControllerContext.Controller;
+            ESFAPI api = (ESFAPI)actionContext.ControllerContext.Controller;
 
-            //IEnumerable<string> Token;
-            //if (!(actionContext.Request.Headers.TryGetValues("token", out Token)))
-            //    throw new Exception("非法请求");
+            IEnumerable<string> Token;
+            if (!(actionContext.Request.Headers.TryGetValues("token", out Token)))
+                throw new Exception("非法请求");
 
-            //IEnumerable<string> AccountID;
-            //if (!(actionContext.Request.Headers.TryGetValues("accountid", out AccountID)))
-            //    throw new Exception("非法请求");
+            IEnumerable<string> AccountID;
+            if (!(actionContext.Request.Headers.TryGetValues("accountid", out AccountID)))
+                throw new Exception("非法请求");
 
-            //ORM.ServiceBase obj = api.BusinessService as ORM.ServiceBase;
-
-
-            //var acdb = obj.Unitwork.Repository<Platform.Model.DB.AccountInfo>();
-            //var account = acdb.GetModel(new Guid(AccountID.FirstOrDefault()));
-            //if (account == null)
-            //    throw new Exception("账套不存在");
-
-            //var userdb = new AppUserDB
-            //{
-
-            //    DBName = account.DBName,
-            //    DBPwd = account.DBPwd,
-            //    DBServer = account.DBServer,
-            //    DBUid = account.DBUid
-            //};
-
-            ////处理账套参数
-            //if (!string.IsNullOrEmpty(account.AccountOptions))
-            //{
-            //    api.ACOptions = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<OptionItemSet>>(account.AccountOptions);
-            //}
-
-            //obj.Unitwork.SetUserDB(userdb);
-
-            //var authuser = obj.Unitwork.Repository<Core.Model.DB.Auth_User>();
-            //var user = authuser.GetModel(q => q.Token == Token.FirstOrDefault());
-            //if (user == null)
-            //    throw new Exception("非法请求");
-
-            ////更新用户的有效期，检查token是否有效，如果失败则返回异常
-
-            //if ((DateTime.Now - user.TokenValidTime).TotalSeconds > 0)
-            //{
-            //    throw new Exception("登录超时");
-            //}
-            //user.TokenValidTime = DateTime.Now.AddMinutes(account.TokenValidTimes);
-            //authuser.Update(user);
-            //obj.Unitwork.Commit();
+            ORM.ServiceBase obj = api.BusinessService as ORM.ServiceBase;
 
 
-            //// user.Pwd = "";
-            //var dbuser = obj.Unitwork.Repository<Core.Model.DB.Auth_UserProfile>();
-            //var userpro = dbuser.GetModel(q => q.Login == user.Login);
-            //api.AppUser = new AppUser()
-            //{
-            //    UserInfo = user,
-            //    UserDB = userdb,
-            //    AccountCode = account.AccountCode,
-            //    UserProfile = userpro
-            //};
+            var acdb = obj.Unitwork.Repository<AccountInfo>();
+            var account = acdb.GetModel(new Guid(AccountID.FirstOrDefault()));
+            if (account == null)
+                throw new Exception("账套不存在");
+
+            var userdb = new AppUserDB
+            {
+
+                DBName = account.DBName,
+                DBPwd = account.DBPwd,
+                DBServer = account.DBServer,
+                DBUid = account.DBUid
+            };
+
+            //处理账套参数
+            if (!string.IsNullOrEmpty(account.AccountOptions))
+            {
+                api.ACOptions = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<OptionItemSet>>(account.AccountOptions);
+            }
+
+            obj.Unitwork.SetUserDB(userdb);
+
+            var authuser = obj.Unitwork.Repository<Core.Model.DB.Auth_User>();
+            var user = authuser.GetModel(q => q.Token == Token.FirstOrDefault());
+            if (user == null)
+                throw new Exception("非法请求");
+
+            //更新用户的有效期，检查token是否有效，如果失败则返回异常
+
+            if ((DateTime.Now - user.TokenValidTime).TotalSeconds > 0)
+            {
+                throw new Exception("登录超时");
+            }
+            user.TokenValidTime = DateTime.Now.AddMinutes(account.TokenValidTimes);
+            authuser.Update(user);
+            obj.Unitwork.Commit();
 
 
-            ////权限验证
+            // user.Pwd = "";
+            var dbuser = obj.Unitwork.Repository<Core.Model.DB.Auth_UserProfile>();
+            var userpro = dbuser.GetModel(q => q.Login == user.Login);
+            api.AppUser = new AppUser()
+            {
+                UserInfo = user,
+                UserDB = userdb,
+                AccountCode = account.AccountCode,
+                UserProfile = userpro
+            };
+
+
+            //权限验证
             //var auth = new Core.Bll.Auth_UserService(obj.Unitwork).GetAllAuth(user.Login);
             //var currentkey = actionContext.ControllerContext.RouteData.Route.RouteTemplate;
             //if (AuthKey.AuthKeys.Any(q => q.ActionFullName == currentkey))//如果需要权限控制则验证用户权限

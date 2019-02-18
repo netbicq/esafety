@@ -11,7 +11,7 @@ namespace ESafety.Core.Model.DB
     /// </summary>
     public class ModelBase
     {
-        private Guid _id = Guid.NewGuid();
+        private Guid _id =Guid.NewGuid();
         /// <summary>
         /// ID
         /// </summary>
@@ -20,9 +20,9 @@ namespace ESafety.Core.Model.DB
 
     public class ModelBaseEx:ModelBase
     {
-        private DateTime _createdate = DateTime.Now;
-        private string _crateman = string.Empty;
-        private int _state =0;
+        private DateTime _createdate=DateTime.Now;
+        private string _crateman=string.Empty;
+        private int _state=0;
         /// <summary>
         /// 创建时间
         /// </summary>

@@ -50,7 +50,12 @@ namespace ESafety.Unity
             /// 撤回
             /// </summary>
             [Description("撤回")]
-            BackR=3
+            BackR=3,
+            /// <summary>
+            /// 审批完成
+            /// </summary>
+            [Description("结束")]
+            Over =4
         }
 
         /// <summary>

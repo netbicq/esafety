@@ -1,5 +1,6 @@
 ﻿using ESafety.Core.Model;
 using ESafety.Core.Model.DB;
+using ESafety.Core.Model.DB.Platform;
 using ESafety.Unity;
 using System;
 using System.Collections.Generic;

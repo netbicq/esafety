@@ -9,10 +9,26 @@ namespace ESafety.Core.Model.DB
     /// <summary>
     /// 审批结果记录
     /// </summary>
-    public partial class Flow_Result
+    public class Flow_Result : ModelBase
     {
+         
+        /// <summary>
+        /// 业务单据ID
+        /// </summary>
+        public Guid BusinessID { get; set; }
+        /// <summary>
+        /// 节点名称
+        /// </summary>
+        public string PointName { get; set; }
+        /// <summary>
+        /// 业务类型
+        /// </summary>
+        public int BusinessType { get; set; }
+        /// <summary>
+        /// 发起人
+        /// </summary>
+        public string ApplyUser { get; set; }
 
-        public Guid ID { get; set; }
         /// <summary>
         /// 审批版本号
         /// </summary>

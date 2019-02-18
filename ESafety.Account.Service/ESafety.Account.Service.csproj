@@ -51,11 +51,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auth_UserService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ESafety.Account.IService\ESafety.Account.IService.csproj">
+      <Project>{175c4777-fb21-46c1-844f-cdb9947769e3}</Project>
+      <Name>ESafety.Account.IService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Core.Model\ESafety.Core.Model.csproj">
+      <Project>{56ae99ed-a596-4b0c-bf0f-c8fa10a0c4ae}</Project>
+      <Name>ESafety.Core.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Core\ESafety.Core.csproj">
+      <Project>{caab6290-f9ba-4e7d-b157-360ff452b0e3}</Project>
+      <Name>ESafety.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.ORM\ESafety.ORM.csproj">
+      <Project>{102d8c09-3175-4080-ae0e-4aaebab2c241}</Project>
+      <Name>ESafety.ORM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Unity\ESafety.Unity.csproj">
+      <Project>{fd6e7f38-6e75-4027-89df-94fd3ab93a3d}</Project>
+      <Name>ESafety.Unity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Web.Unity\ESafety.Web.Unity.csproj">
+      <Project>{138da9a8-707a-4222-9466-9d9c25ab1fa8}</Project>
+      <Name>ESafety.Web.Unity</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

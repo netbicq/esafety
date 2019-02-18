@@ -14,7 +14,7 @@ using ESafety.Core.Model.DB;
 
 namespace ESafety.ORM
 {
-    public class RepositoryEF<T> : IRepository<T> where T : class
+    public class RepositoryEF<T> : IRepository<T> where T : ModelBase
     {
         private string errmessage = string.Empty;
         private readonly DbContext  _dbcontext ;
@@ -34,13 +34,7 @@ namespace ESafety.ORM
         /// <returns></returns>
         public IEnumerable<T> Add(IEnumerable<T> entitys)
         {
-            List<T> re = new List<T>();
-            foreach(var t in entitys)
-            {
-               var rt = _dbSet.Add(t);
-                re.Add(rt);
-            }
-            return re;
+            return _dbSet.AddRange(entitys);  
         }
         /// <summary>
         /// 新建
@@ -68,7 +62,7 @@ namespace ESafety.ORM
         /// <returns></returns>
         public bool Any(Guid key)
         {
-            return _dbSet.Any();
+            return _dbSet.Any(q=>q.ID == key);
         }
         /// <summary>
         /// 删除条件内数据
@@ -115,7 +109,7 @@ namespace ESafety.ORM
         /// <returns></returns>
         public T GetModel(Guid key)
         {
-            return _dbSet.FirstOrDefault();
+            return _dbSet.FirstOrDefault(q=>q.ID == key);
         }
         /// <summary>
         /// 获条件内的实体
@@ -135,6 +129,7 @@ namespace ESafety.ORM
         {
             try
             {
+                 
                 var entry = _dbcontext.Entry(entity);
                 _dbSet.Attach(entity);
                 entry.State = EntityState.Modified;               

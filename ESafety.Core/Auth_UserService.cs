@@ -581,7 +581,7 @@ namespace ESafety.Core
             {
                 throw new Exception("用户Profile不存在");
             }
-            pro = para.MAPTO<Auth_UserProfile>();
+            pro = para.CopyTo<Auth_UserProfile>(pro);
             //para.Clone(pro);
 
             _rpsprofiel.Update(pro);
@@ -631,13 +631,14 @@ namespace ESafety.Core
         /// <returns></returns>
         public ActionResult<bool> Update(UserEdit para)
         {
+
             var user = _rpsuser.GetModel(q => q.ID == para.ID);
             if (user == null)
             {
                 throw new Exception("用户不存在");
             }
-            user = para.MAPTO<Auth_User>();
-            //para.Clone(user);
+            user = para.CopyTo<Auth_User>(user);             
+
             _rpsuser.Update(user);
             _work.Commit();
 

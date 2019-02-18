@@ -9,9 +9,8 @@ namespace ESafety.Core.Model.DB
     /// <summary>
     /// »À‘±
     /// </summary>
-    public partial class Basic_Employee
-    {
-        public Guid ID { get; set; }
+    public class Basic_Employee : ModelBase
+    { 
         /// <summary>
         /// –’√˚
         /// </summary>

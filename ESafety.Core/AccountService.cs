@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using ESafety.Core.Model;
 using ESafety.Core.Model.DB;
+using ESafety.Core.Model.DB.Platform;
 using ESafety.Core.Model.PARA;
 using ESafety.Core.Model.View;
 using ESafety.Unity;
@@ -38,7 +39,7 @@ namespace ESafety.Core
         {
            // var dbaccount = new AccountInfo();
 
-            var dbaccount = account.MAPTO<AccountInfo>();
+            var dbaccount = account.CopyTo<AccountInfo>(new AccountInfo());
              
             dbaccount.ValidDate = Convert.ToDateTime("2098-02-06");
             dbaccount.State = 1;
@@ -277,7 +278,7 @@ namespace ESafety.Core
                 {
                     throw new Exception("账套简称已经存在");
                 }
-                account = para.MAPTO<AccountInfo>();
+                account = para.CopyTo<AccountInfo>(account);
                  
 
                 accountrps.Update(account);
@@ -389,7 +390,7 @@ namespace ESafety.Core
             {
                 throw new Exception("数据名称已经存在");
             }
-            account = para.MAPTO<AccountInfo>();
+            account = para.CopyTo<AccountInfo>(account);
              
 
             accountrps.Update(account);
@@ -412,7 +413,7 @@ namespace ESafety.Core
                 throw new Exception("账套不存在");
             }
 
-            account = para.MAPTO<AccountInfo>();
+            account = para.CopyTo<AccountInfo>(account);
              
 
             accountrps.Update(account);

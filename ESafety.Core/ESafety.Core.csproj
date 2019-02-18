@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="AccountService.cs" />
     <Compile Include="Auth_UserService.cs" />
+    <Compile Include="FlowService.cs" />
     <Compile Include="IAccount.cs" />
     <Compile Include="IAuth_User.cs" />
     <Compile Include="IFlow.cs" />

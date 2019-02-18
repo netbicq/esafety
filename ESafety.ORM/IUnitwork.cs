@@ -17,7 +17,7 @@ namespace ESafety.ORM
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        IRepository<T> Repository<T>() where T :class;
+        IRepository<T> Repository<T>() where T :ModelBase;
         
 
         void SetUserDB(Core.Model.AppUserDB userdb);

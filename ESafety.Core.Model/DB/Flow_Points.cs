@@ -9,9 +9,8 @@ namespace ESafety.Core.Model.DB
     /// <summary>
     /// 审批节点
     /// </summary>
-    public partial class Flow_Points
-    {
-        public Guid ID { get; set; }
+    public class Flow_Points: ModelBase 
+    { 
         /// <summary>
         /// 业务单据类型
         /// </summary>

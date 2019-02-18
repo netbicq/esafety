@@ -1,4 +1,5 @@
 ﻿using ESafety.Core.Model.DB;
+using ESafety.Core.Model.DB.Platform;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -10,10 +11,7 @@ using System.Threading.Tasks;
 namespace ESafety.ORM
 {
     public class ESFdb:DbContext
-    {
-
-
-        
+    {        
         public ESFdb() : base("dbconn")
         {
         }

@@ -59,7 +59,7 @@ namespace ESafety.ORM
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public IRepository<T> Repository<T>() where T : class
+        public IRepository<T> Repository<T>() where T : ModelBase
         {
             if (repositorys == null)
             {

@@ -5,13 +5,17 @@ namespace ESafety.Core.Model.DB
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+    using ESafety.Unity;
 
     /// <summary>
     /// 审批任务
     /// </summary>
-    public partial class Flow_Task
+    public class Flow_Task : ModelBase
     {
-        public Guid ID { get; set; }
+        public Flow_Task()
+        {
+            _version =Command.GetTimestamp();
+        } 
         /// <summary>
         /// 业务ID
         /// </summary>
@@ -21,6 +25,10 @@ namespace ESafety.Core.Model.DB
         /// </summary>
         public int BusinessType { get; set; }
         /// <summary>
+        /// 节点ID
+        /// </summary>
+        public Guid PointID { get; set; }
+        /// <summary>
         /// 任务用户
         /// </summary>
         [Required]
@@ -29,10 +37,15 @@ namespace ESafety.Core.Model.DB
         /// <summary>
         /// 任务时间
         /// </summary>
-        public DateTime TaskDate { get; set; }
+        public DateTime TaskDate { get; set; } 
+        /// <summary>
+        /// 发起人
+        /// </summary>
+        public string ApplyUser { get; set; }
+        private long _version;
         /// <summary>
         /// 审批版本号
         /// </summary>
-        public long FlowVersion { get; set; }
+        public long FlowVersion { get { return _version; } set { _version = value; } }
     }
 }

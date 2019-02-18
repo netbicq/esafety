@@ -9,10 +9,9 @@ namespace ESafety.Core.Model.DB
     /// <summary>
     /// ´Êµä
     /// </summary>
-    public partial class Basic_Dict
+    public class Basic_Dict:ModelBase 
     {
-
-        public Guid ID { get; set; }
+         
         /// <summary>
         /// ¸¸¼¶ID
         /// </summary>

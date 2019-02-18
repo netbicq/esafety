@@ -9,9 +9,8 @@ namespace ESafety.Core.Model.DB
     /// <summary>
     /// 节点用户
     /// </summary>
-    public partial class Flow_PointUsers
-    {
-        public Guid ID { get; set; }
+    public class Flow_PointUsers : ModelBase
+    { 
         /// <summary>
         /// 节点ID
         /// </summary>

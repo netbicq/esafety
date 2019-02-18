@@ -413,7 +413,17 @@ namespace ESafety.Unity
             }
         }
 
-
+        /// <summary>
+        /// 获取指定时间的时间戳，未指定则为当前时间
+        /// </summary>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        public static long GetTimestamp(DateTime? d = null)
+        {
+            DateTime dt = d == null ? DateTime.Now :(DateTime) d;
+            TimeSpan ts= dt.ToUniversalTime() - new DateTime(1970, 1, 1);
+            return (long) ts.TotalMilliseconds;
+        }
 
         /// <summary>
         /// 随机数，纯数字

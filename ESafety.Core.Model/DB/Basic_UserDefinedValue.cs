@@ -9,9 +9,8 @@ namespace ESafety.Core.Model.DB
     /// <summary>
     /// 自定义业务数据
     /// </summary>
-    public partial class Basic_UserDefinedValue
-    {
-        public Guid ID { get; set; }
+    public class Basic_UserDefinedValue : ModelBase
+    { 
         /// <summary>
         /// 业务ID
         /// </summary>

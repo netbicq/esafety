@@ -66,7 +66,7 @@
     <Compile Include="DB\Flow_Result.cs" />
     <Compile Include="DB\Flow_Task.cs" />
     <Compile Include="DB\ModelBase.cs" />
-    <Compile Include="DB\AccountInfo.cs" />
+    <Compile Include="DB\Platform\AccountInfo.cs" />
     <Compile Include="DB\Auth_Key.cs" />
     <Compile Include="DB\Auth_KeyDetail.cs" />
     <Compile Include="DB\Auth_Role.cs" />
@@ -85,11 +85,13 @@
     <Compile Include="OptionItemSet.cs" />
     <Compile Include="Pager.cs" />
     <Compile Include="PARA\AccountInfo.cs" />
+    <Compile Include="PARA\Flow.cs" />
     <Compile Include="PARA\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Report.cs" />
     <Compile Include="ReportManager.cs" />
     <Compile Include="View\AccountInfo.cs" />
+    <Compile Include="View\Flow.cs" />
     <Compile Include="View\Log.cs" />
     <Compile Include="View\Report.cs" />
     <Compile Include="View\User.cs" />
@@ -110,7 +112,6 @@
   <ItemGroup>
     <Folder Include="DBMap\" />
     <Folder Include="DB\Account\" />
-    <Folder Include="DB\Platform\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

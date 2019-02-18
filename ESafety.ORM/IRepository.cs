@@ -10,7 +10,7 @@ using ESafety.Core.Model.DB;
 
 namespace ESafety.ORM
 {
-    public interface IRepository<T> where T:class
+    public interface IRepository<T> where T:ModelBase
     {
 
 
