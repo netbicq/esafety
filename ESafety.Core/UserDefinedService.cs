@@ -84,7 +84,7 @@ namespace ESafety.Core
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        public ActionResult<bool> SaveBuisnessValue(UserDefinedValue values)
+        public ActionResult<bool> SaveBuisnessValue(BusinessValue values)
         {
             throw new NotImplementedException();
         }

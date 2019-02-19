@@ -56,6 +56,6 @@ namespace ESafety.Core
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        ActionResult<bool> SaveBuisnessValue(UserDefinedValue values);
+        ActionResult<bool> SaveBuisnessValue(BusinessValue values);
     }
 }

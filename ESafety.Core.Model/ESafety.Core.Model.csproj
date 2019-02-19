@@ -85,6 +85,7 @@
     <Compile Include="OptionItemSet.cs" />
     <Compile Include="Pager.cs" />
     <Compile Include="PARA\AccountInfo.cs" />
+    <Compile Include="PARA\Dict.cs" />
     <Compile Include="PARA\Flow.cs" />
     <Compile Include="PARA\User.cs" />
     <Compile Include="PARA\UserDefined.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Report.cs" />
     <Compile Include="ReportManager.cs" />
     <Compile Include="View\AccountInfo.cs" />
+    <Compile Include="View\Dict.cs" />
     <Compile Include="View\Flow.cs" />
     <Compile Include="View\Log.cs" />
     <Compile Include="View\Report.cs" />
