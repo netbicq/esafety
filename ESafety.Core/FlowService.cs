@@ -485,9 +485,13 @@ namespace ESafety.Core
             try
             {
                 var pointuser = rpsPointUser.GetModel(id);
+                if(pointuser == null)
+                {
+                    throw new Exception("审批用户未找到");
 
+                }
                 var re = pointuser.MAPTO<Point_UsersView>();
-                var emp = rpsEmployee.GetModel(q => q.Login == pointuser.PointUser);
+                var emp = rpsEmployee.GetModel(q => q.Login == re.PointUser);
                 re.PointUserName = emp == null ? "" : emp.CNName;
 
                 return new ActionResult<Point_UsersView>(re);
