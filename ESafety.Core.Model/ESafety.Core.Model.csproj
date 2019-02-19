@@ -56,6 +56,17 @@
     <Compile Include="AccountOptions.cs" />
     <Compile Include="ActionResult.cs" />
     <Compile Include="AppUser.cs" />
+    <Compile Include="DB\Account\Basic_Danger.cs" />
+    <Compile Include="DB\Account\Basic_DangerRelation.cs" />
+    <Compile Include="DB\Account\Basic_DangerSafetyStandards.cs" />
+    <Compile Include="DB\Account\Basic_DangerSort.cs" />
+    <Compile Include="DB\Account\Basic_Facilities.cs" />
+    <Compile Include="DB\Account\Basic_FacilitiesSort.cs" />
+    <Compile Include="DB\Account\Basic_Opreation.cs" />
+    <Compile Include="DB\Account\Basic_OpreationFlow.cs" />
+    <Compile Include="DB\Account\Basic_Post.cs" />
+    <Compile Include="DB\Account\Basic_PostEmployees.cs" />
+    <Compile Include="DB\Account\Basic_SafetyStandard.cs" />
     <Compile Include="DB\Basic_Dict.cs" />
     <Compile Include="DB\Basic_Employee.cs" />
     <Compile Include="DB\Basic_Org.cs" />
@@ -87,6 +98,7 @@
     <Compile Include="PARA\AccountInfo.cs" />
     <Compile Include="PARA\Dict.cs" />
     <Compile Include="PARA\Flow.cs" />
+    <Compile Include="PARA\OrgEmployee.cs" />
     <Compile Include="PARA\User.cs" />
     <Compile Include="PARA\UserDefined.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -96,6 +108,7 @@
     <Compile Include="View\Dict.cs" />
     <Compile Include="View\Flow.cs" />
     <Compile Include="View\Log.cs" />
+    <Compile Include="View\OrgEmployee.cs" />
     <Compile Include="View\Report.cs" />
     <Compile Include="View\User.cs" />
     <Compile Include="View\UserDefined.cs" />
@@ -115,7 +128,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DBMap\" />
-    <Folder Include="DB\Account\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

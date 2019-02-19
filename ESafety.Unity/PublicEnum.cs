@@ -99,7 +99,13 @@ namespace ESafety.Unity
             /// 岗位
             /// </summary>
             [Description("岗位")]
-            Position = 2
+            Position = 2,
+            /// <summary>
+            /// 职员
+            /// </summary>
+            [Description("职员")]
+            Employee=3
+
         }
 
         /// <summary>

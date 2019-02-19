@@ -1,4 +1,5 @@
 ﻿using ESafety.Core.Model;
+using ESafety.Core.Model.DB;
 using ESafety.Core.Model.PARA;
 using ESafety.Core.Model.View;
 using ESafety.ORM;
@@ -21,12 +22,18 @@ namespace ESafety.Core
 
         private IRepository<Model.DB.Basic_UserDefined> _rpsdefined = null;
         private IRepository<Model.DB.Basic_Dict> _rpsdict;
-   
+        private IRepository<Basic_UserDefinedValue> _rpsdefinedvalue = null;
+
+
         public UserDefinedService(ORM.IUnitwork work)
         {
             _work = work;
             Unitwork = work;
             _rpsdefined = work.Repository<Model.DB.Basic_UserDefined>();
+            _rpsdict = work.Repository<Basic_Dict>();
+            _rpsdefinedvalue = work.Repository<Basic_UserDefinedValue>();
+
+
         }
         /// <summary>
         /// 新建自定义项
@@ -35,17 +42,26 @@ namespace ESafety.Core
         /// <returns></returns>
         public ActionResult<bool> AddUserDefined(UserDefinedNew entity)
         {
-            var userdefined = new Model.DB.Basic_UserDefined
-            { 
-                 Caption=entity.Caption,
-                 DefinedType=Convert.ToInt32(entity.DefinedType),
-                 DictID=entity.DictID,
-                 IsEmpty=entity.IsEmpty,
-                 IsMulti=entity.IsMulti,
-                 VisibleIndex=entity.VisibleIndex,
-                 DataType=Convert.ToInt32(entity.DataType)
-            };
-            _rpsdefined.Add(userdefined);
+            //var userdefined = new Model.DB.Basic_UserDefined
+            //{ 
+            //     Caption=entity.Caption,
+            //     DefinedType=Convert.ToInt32(entity.DefinedType),
+            //     DictID=entity.DictID,
+            //     IsEmpty=entity.IsEmpty,
+            //     IsMulti=entity.IsMulti,
+            //     VisibleIndex=entity.VisibleIndex,
+            //     DataType=Convert.ToInt32(entity.DataType)
+            //};
+            //必要的逻辑检查
+            var check = _rpsdefined.Any(q => q.DefinedType == (int)entity.DefinedType && q.Caption == entity.Caption);
+            if (check)
+            {
+                throw new Exception("已经存在相同的标题 ：" + entity.Caption);
+            }
+
+            var dbdefined = entity.MAPTO<Basic_UserDefined>();
+
+            _rpsdefined.Add(dbdefined);
             _work.Commit();
             return new ActionResult<bool>(true);
         }
@@ -56,18 +72,30 @@ namespace ESafety.Core
         /// <returns></returns>
         public ActionResult<bool> EditUserDefined(UserDefinedEdit entity)
         {
-            var userdefined = new Model.DB.Basic_UserDefined
+            var dbdefined = _rpsdefined.GetModel(q => q.ID == entity.ID);
+            if (dbdefined == null)
             {
-                ID = entity.ID,
-                Caption = entity.Caption,
-                DataType = Convert.ToInt32(entity.DataType),
-                DefinedType = Convert.ToInt32(entity.DefinedType),
-                DictID=entity.DictID,
-                IsEmpty=entity.IsEmpty,
-                IsMulti=entity.IsMulti,
-                VisibleIndex=entity.VisibleIndex
-            };
-            _rpsdefined.Update(userdefined);
+                throw new Exception("未找到自定义项");
+            }
+            var check = _rpsdefined.Any(q => q.ID != entity.ID && q.Caption == entity.Caption && q.DefinedType == (int)entity.DefinedType);
+            if (check)
+            {
+                throw new Exception("已经存在相同的标题：" + entity.Caption);
+            }
+            dbdefined = entity.CopyTo<Basic_UserDefined>(dbdefined);
+
+            //var userdefined = new Model.DB.Basic_UserDefined
+            //{
+            //    ID = entity.ID,
+            //    Caption = entity.Caption,
+            //    DataType = Convert.ToInt32(entity.DataType),
+            //    DefinedType = Convert.ToInt32(entity.DefinedType),
+            //    DictID=entity.DictID,
+            //    IsEmpty=entity.IsEmpty,
+            //    IsMulti=entity.IsMulti,
+            //    VisibleIndex=entity.VisibleIndex
+            //};
+            _rpsdefined.Update(dbdefined);
             _work.Commit();
             return new ActionResult<bool>(true);
         }
@@ -84,7 +112,7 @@ namespace ESafety.Core
                 var datatypenamelist = Command.GetItems(typeof(PublicEnum.EE_UserDefinedDataType));
                 var definedtypenamelist = Command.GetItems(typeof(PublicEnum.EE_UserDefinedType));
 
-                var re =userdefined.MAPTO<UserDefinedView>();
+                var re = userdefined.MAPTO<UserDefinedView>();
                 re.DataTypeName = Command.GetItems(typeof(PublicEnum.EE_UserDefinedDataType)).FirstOrDefault(q => q.Value == userdefined.DataType).Caption;
                 re.DefinedTypeName = Command.GetItems(typeof(PublicEnum.EE_UserDefinedType)).FirstOrDefault(q => q.Value == userdefined.DefinedType).Caption;
                 re.DictName = _rpsdict.GetModel(p => p.ID == userdefined.DictID).DictName;
@@ -123,7 +151,7 @@ namespace ESafety.Core
                              ID = p.ID,
                              DataTypeName = datatypenamelist.FirstOrDefault(q => q.Value == p.DataType).Caption,
                              DefinedTypeName = definedtypenamelist.FirstOrDefault(q => q.Value == p.DefinedType).Caption,
-                             DictName = _rpsdict.GetModel(q=>q.ID==p.DictID).DictName
+                             DictName = _rpsdict.GetModel(q => q.ID == p.DictID).DictName
                          };
 
                 return new ActionResult<IEnumerable<UserDefinedView>>(re);
@@ -157,7 +185,42 @@ namespace ESafety.Core
         /// <returns></returns>
         public ActionResult<IEnumerable<UserDefinedForm>> GetUserDefineItems(UserDefinedBusiness para)
         {
-            throw new NotImplementedException();
+            try
+            {
+                //自定义类型当前有效的自定义项
+                var defineds = _rpsdefined.Queryable(q => q.DefinedType == (int)para.DefinedType);
+
+                var businessid = para.BusinessID == null ? Guid.Empty : para.BusinessID;
+
+                var definedids = defineds.Select(s => s.ID);
+                //以最新的为准，已经删掉的自定义项值则忽略掉
+                var values = _rpsdefinedvalue.Queryable(q => definedids.Contains(q.DefinedID) && q.BusinessID == para.BusinessID).ToList();
+
+                var re = from d in defineds.ToList()
+                         let dict = _rpsdict.GetModel(q => q.ID == d.DictID)
+                         let dicts = _rpsdict.GetList(q => q.ParentID == dict.ID)
+                         select new UserDefinedForm
+                         {
+                             Caption = d.Caption,
+                             DataType = (PublicEnum.EE_UserDefinedDataType)d.DataType,
+                             DataTypeName = Command.GetItems(typeof(PublicEnum.EE_UserDefinedDataType)).FirstOrDefault(q => q.Value == d.DataType).Caption,
+                             DefinedType = (PublicEnum.EE_UserDefinedType)d.DefinedType,
+                             DefinedTypeName = Command.GetItems(typeof(PublicEnum.EE_UserDefinedType)).FirstOrDefault(q => q.Value == d.DefinedType).Caption,
+                             DictID = d.DictID,
+                             DictName = dict.DictName,
+                             ID = d.ID,
+                             IsEmpty = d.IsEmpty,
+                             IsMulti = d.IsMulti,
+                             VisibleIndex = d.VisibleIndex,
+                             DictSelection = dicts,
+                             ItemValue = values.FirstOrDefault(q => q.DefinedID == d.ID).DefinedValue
+                         };
+                return new ActionResult<IEnumerable<UserDefinedForm>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<UserDefinedForm>>(ex);
+            }
         }
 
         /// <summary>
@@ -167,7 +230,44 @@ namespace ESafety.Core
         /// <returns></returns>
         public ActionResult<bool> SaveBuisnessValue(BusinessValue values)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var dbvalues = _rpsdefinedvalue.Queryable(q => q.BusinessID == values.BusinessID);
+
+                List<Basic_UserDefinedValue> newvalues = new List<Basic_UserDefinedValue>();
+                foreach (var v in values.Values)
+                {
+                    var definedmodel = _rpsdefined.GetModel(v.DefinedID);
+                    if (definedmodel == null)
+                    {
+                        throw new Exception("未找到自定义项");
+                    }
+                    newvalues.Add(new Basic_UserDefinedValue
+                    {
+                        BusinessID = values.BusinessID,
+                        DefinedID = v.DefinedID,
+                        DefinedType = definedmodel.DataType,
+                        DefinedValue = v.DefinedValue,
+                        ID = Guid.NewGuid()
+                    });
+                }
+
+                foreach(var dv in dbvalues)
+                {
+                    _rpsdefinedvalue.Delete(dv);
+                }
+                foreach(var nv in newvalues)
+                {
+                    _rpsdefinedvalue.Add(nv);
+                }
+                //不提交，跟随业务数据一起提交
+
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
         }
     }
 }

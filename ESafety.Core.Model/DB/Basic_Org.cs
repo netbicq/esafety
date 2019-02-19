@@ -15,13 +15,7 @@ namespace ESafety.Core.Model.DB
         /// <summary>
         /// 级次
         /// </summary>
-        public int Level { get; set; }
-        /// <summary>
-        /// 代码
-        /// </summary>
-        [Required]
-        [StringLength(50)]
-        public string OrgCode { get; set; }
+        public int Level { get; set; } 
         /// <summary>
         /// 名称
         /// </summary>

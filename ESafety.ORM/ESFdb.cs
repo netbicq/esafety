@@ -1,4 +1,5 @@
 ﻿using ESafety.Core.Model.DB;
+using ESafety.Core.Model.DB.Account;
 using ESafety.Core.Model.DB.Platform;
 using System;
 using System.Collections.Generic;
@@ -58,6 +59,23 @@ namespace ESafety.ORM
         public virtual DbSet<Flow_PointUsers> Flow_PointUsers { get; set; }
         public virtual DbSet<Flow_Result> Flow_Result { get; set; }
         public virtual DbSet<Flow_Task> Flow_Task { get; set; }
+
+
+        #region "account"
+        public virtual DbSet<Basic_Danger> Basic_Danger { get; set; }
+        public virtual DbSet<Basic_DangerRelation> Basic_DangerRelation { get; set; }
+        public virtual DbSet<Basic_DangerSafetyStandards> Basic_DangerSafetyStandards { get; set; }
+        public virtual DbSet<Basic_DangerSort> Basic_DangerSort { get; set; }
+        public virtual DbSet<Basic_Facilities> Basic_Facilities { get; set; }
+        public virtual DbSet<Basic_FacilitiesSort> Basic_FacilitiesSort { get; set; }
+        public virtual DbSet<Basic_Opreation> Basic_Opreation { get; set; }
+        public virtual DbSet<Basic_OpreationFlow> Basic_OpreationFlow { get; set; }
+        public virtual DbSet<Basic_Post> Basic_Post { get; set; }
+        public virtual DbSet<Basic_PostEmployees> Basic_PostEmployees { get; set; }
+        public virtual DbSet<Basic_SafetyStandard> Basic_SafetyStandard { get; set; }
+
+        #endregion
+
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
