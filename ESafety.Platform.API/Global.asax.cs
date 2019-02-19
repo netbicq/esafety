@@ -8,6 +8,8 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using ESafety.Core.Model.DB; 
+
 
 namespace ESafety.Platform.API
 {
@@ -20,10 +22,10 @@ namespace ESafety.Platform.API
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-
+            
             AOP.reg();
 
-            var auth = new Auth_UserService(new ORM.Unitwork(new ESFdb())).GetAllAuth("");
+            var auth = new Auth_UserService(new Unitwork(new ESFdb())).GetAllAuth("");
             Web.Unity.AuthKey.AuthKeys = auth.data.ToList();
         }
     }
