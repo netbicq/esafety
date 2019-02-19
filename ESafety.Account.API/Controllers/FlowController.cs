@@ -180,11 +180,10 @@ namespace ESafety.Account.API.Controllers
         /// <param name="pointid"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("getpoints/{pointid:Guid}")]
+        [Route("getpointusers/{pointid:Guid}")]
         public ActionResult<IEnumerable<Point_UsersView>> GetPointUsers(Guid pointid)
         {
             return bll.GetPointUsers(pointid);
-
         }
 
     }

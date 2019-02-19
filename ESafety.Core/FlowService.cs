@@ -511,7 +511,7 @@ namespace ESafety.Core
             try
             {
                 var users = rpsPointUser.Queryable(q => q.PointID == pointid);
-                var re = from u in users
+                var re = from u in users.ToList()
                          let emp = rpsEmployee.GetModel(q => q.Login == u.PointUser)
                          select new Point_UsersView
                          {
