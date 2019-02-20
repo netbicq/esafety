@@ -22,6 +22,18 @@ namespace ESafety.Core
 
         ActionResult<bool> EditOrg(OrgEdit org);
 
+        ActionResult<bool> DeleteOrg(Guid id);
 
+        ActionResult<bool> AddEmployee(EmployeeNew employee);
+
+        ActionResult<bool> EditEmployee(EmployeeEdit employee);
+
+        ActionResult<bool> DeleteEmployee(Guid id);
+
+        ActionResult<IEnumerable<Model.View.EmployeeView>> GetEmployee(Guid orgid);
+
+        ActionResult<IEnumerable<Model.View.OrgView>> GetOrgChildren(Guid id);
+
+        ActionResult<IEnumerable<Model.View.OrgView>> GetOrgRoot();
     }
 }

@@ -41,5 +41,9 @@ namespace ESafety.Core.Model.DB
         /// </summary>
         [StringLength(1000)]
         public string HeadIMG { get; set; }
+        /// <summary>
+        /// ×éÖ¯ID
+        /// </summary>
+        public Guid OrgID { get; set; }
     }
 }

@@ -36,5 +36,41 @@ namespace ESafety.Core.Model.PARA
 
     }
 
+    public class EmployeeNew
+    {
+        /// <summary>
+        /// 姓名
+        /// </summary>
+        public string CNName { get; set; }
+        /// <summary>
+        /// 性别
+        /// </summary>
+        public string Gender { get; set; }
+        /// <summary>
+        /// Leader
+        /// </summary>
+        public bool IsLeader { get; set; }
+        /// <summary>
+        /// 接受平级
+        /// </summary>
+        public bool IsLevel { get; set; }
+        /// <summary>
+        /// 操作用户
+        /// </summary>
+        public string Login { get; set; }
+        /// <summary>
+        /// 头像IMG
+        /// </summary>
+        public string HeadIMG { get; set; }
+        //组织ID
+        public Guid OrdId { get; set; }
+    }
+
+
+    public class EmployeeEdit:EmployeeNew
+    {
+        public Guid ID { get; set; }
+    }
+
 
 }
