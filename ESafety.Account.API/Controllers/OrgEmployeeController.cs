@@ -31,7 +31,7 @@ namespace ESafety.Account.API.Controllers
             BusinessService = orgemp;
 
         }
-       
+
         /// <summary>
         /// 新建人员
         /// </summary>
@@ -80,30 +80,56 @@ namespace ESafety.Account.API.Controllers
             LogContent = "删除了组织，id:" + id.ToString();
             return bll.DeleteOrg(id);
         }
-         
+        /// <summary>
+        /// 修改人员信息
+        /// </summary>
+        /// <param name="employee"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("editemp")]
         public ActionResult<bool> EditEmployee(EmployeeEdit employee)
         {
-            throw new NotImplementedException();
+            LogContent="修改了人员信息，参数源:"+ JsonConvert.SerializeObject(employee);
+            return bll.EditEmployee(employee);
         }
-
+        /// <summary>
+        /// 修改组织
+        /// </summary>
+        /// <param name="org"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("editorg")]
         public ActionResult<bool> EditOrg(OrgEdit org)
         {
-            throw new NotImplementedException();
+            LogContent = "修改了组织，参数源:" + JsonConvert.SerializeObject(org);
+            return bll.EditOrg(org);
         }
 
         public ActionResult<EmployeeView> GetEmployeeModel(Guid id)
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// 根据组织ID，获取所有人员信息
+        /// </summary>
+        /// <param name="orgid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getemps/{id:Guid}")]
         public ActionResult<IEnumerable<EmployeeView>> GetEmployees(Guid orgid)
         {
-            throw new NotImplementedException();
+            return bll.GetEmployees(orgid);
         }
-
+        /// <summary>
+        /// 根据指定节点ID，获取组织的子节点
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getorg/{id:Guid}")]
         public ActionResult<IEnumerable<OrgView>> GetOrgChildren(Guid id)
         {
-            throw new NotImplementedException();
+            return bll.GetOrgChildren(id);
         }
     }
 }

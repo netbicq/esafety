@@ -158,7 +158,10 @@ namespace ESafety.Core
 
         public ActionResult<EmployeeView> GetEmployeeModel(Guid id)
         {
-            throw new NotImplementedException();
+
+            var employee = _rpsemployee.GetModel(id);
+            var re = employee.MAPTO<EmployeeView>();
+            return new ActionResult<EmployeeView>(re);
         }
 
         public ActionResult<IEnumerable<EmployeeView>> GetEmployees(Guid orgid)

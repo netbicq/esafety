@@ -39,7 +39,11 @@ namespace ESafety.Core.Model.View
         /// <summary>
         /// 头像IMG
         /// </summary>
-        public string HeadIMG { get; set; } 
+        public string HeadIMG { get; set; }
+        /// <summary>
+        /// 组织ID
+        /// </summary>
+        public Guid OrgID { get; set; }
     }
 
     public class OrgView
