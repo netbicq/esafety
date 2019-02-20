@@ -57,5 +57,10 @@ namespace ESafety.Core
         /// <param name="values"></param>
         /// <returns></returns>
         ActionResult<bool> SaveBuisnessValue(BusinessValue values);
+        /// <summary>
+        /// 获取自定义项的数据类型
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<IEnumerable<EnumItem>> GetUserdefinedDataType();
     }
 }

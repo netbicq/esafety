@@ -209,6 +209,7 @@
     <Compile Include="Controllers\FlowController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LogController.cs" />
+    <Compile Include="Controllers\OrgEmployeeController.cs" />
     <Compile Include="Controllers\UserDefinedController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -377,6 +378,10 @@
     <ProjectReference Include="..\ESafety.Account.IService\ESafety.Account.IService.csproj">
       <Project>{175c4777-fb21-46c1-844f-cdb9947769e3}</Project>
       <Name>ESafety.Account.IService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Account.Model\ESafety.Account.Model.csproj">
+      <Project>{812fb462-bb86-4d06-9d8f-c452e3c87308}</Project>
+      <Name>ESafety.Account.Model</Name>
     </ProjectReference>
     <ProjectReference Include="..\ESafety.Account.Service\ESafety.Account.Service.csproj">
       <Project>{7f78afa0-cfe0-42cb-b7c7-f53ef47330b5}</Project>

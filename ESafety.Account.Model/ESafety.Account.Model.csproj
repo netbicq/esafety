@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{175C4777-FB21-46C1-844F-CDB9947769E3}</ProjectGuid>
+    <ProjectGuid>{812FB462-BB86-4D06-9D8F-C452E3C87308}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ESafety.Account.IService</RootNamespace>
-    <AssemblyName>ESafety.Account.IService</AssemblyName>
+    <RootNamespace>ESafety.Account.Model</RootNamespace>
+    <AssemblyName>ESafety.Account.Model</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -20,7 +20,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\ESafety.Account.IService.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -41,7 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IDanger.cs" />
+    <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -53,9 +52,13 @@
       <Project>{caab6290-f9ba-4e7d-b157-360ff452b0e3}</Project>
       <Name>ESafety.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ESafety.Platform.IService\ESafety.Platform.IService.csproj">
-      <Project>{62493032-f604-4d30-a8ad-6b02d4596ea0}</Project>
-      <Name>ESafety.Platform.IService</Name>
+    <ProjectReference Include="..\ESafety.ORM\ESafety.ORM.csproj">
+      <Project>{102d8c09-3175-4080-ae0e-4aaebab2c241}</Project>
+      <Name>ESafety.ORM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Unity\ESafety.Unity.csproj">
+      <Project>{fd6e7f38-6e75-4027-89df-94fd3ab93a3d}</Project>
+      <Name>ESafety.Unity</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

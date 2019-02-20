@@ -1,5 +1,6 @@
 ﻿using ESafety.Core.Model;
 using ESafety.Core.Model.PARA;
+using ESafety.Core.Model.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,12 +29,14 @@ namespace ESafety.Core
 
         ActionResult<bool> EditEmployee(EmployeeEdit employee);
 
+
+        ActionResult<EmployeeView> GetEmployeeModel(Guid id);
+
         ActionResult<bool> DeleteEmployee(Guid id);
 
-        ActionResult<IEnumerable<Model.View.EmployeeView>> GetEmployee(Guid orgid);
+        ActionResult<IEnumerable<Model.View.EmployeeView>> GetEmployees(Guid orgid);
 
         ActionResult<IEnumerable<Model.View.OrgView>> GetOrgChildren(Guid id);
-
-        ActionResult<IEnumerable<Model.View.OrgView>> GetOrgRoot();
+         
     }
 }

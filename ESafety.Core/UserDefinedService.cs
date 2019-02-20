@@ -53,6 +53,17 @@ namespace ESafety.Core
             //     DataType=Convert.ToInt32(entity.DataType)
             //};
             //必要的逻辑检查
+
+            var datatypecheck = Command.GetItems(typeof(PublicEnum.EE_UserDefinedDataType)).Any(q => q.Value ==(int) entity.DataType);
+            if (!datatypecheck)
+            {
+                throw new Exception("数据类型有误");
+            }
+            var definedtype = Command.GetItems(typeof(PublicEnum.EE_UserDefinedType)).Any(q => q.Value == (int)entity.DefinedType);
+            if (!definedtype)
+            {
+                throw new Exception("自定义类型有误");
+            }
             var check = _rpsdefined.Any(q => q.DefinedType == (int)entity.DefinedType && q.Caption == entity.Caption);
             if (check)
             {
@@ -126,6 +137,23 @@ namespace ESafety.Core
 
         }
         /// <summary>
+        /// 获取自定义项支持的数据类型
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<EnumItem>> GetUserdefinedDataType()
+        {
+            try
+            {
+                var re = Command.GetItems(typeof(PublicEnum.EE_UserDefinedDataType));
+                return new ActionResult<IEnumerable<EnumItem>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<EnumItem>>(ex);
+            }
+        }
+
+        /// <summary>
         /// 根据自定义类型获取自定义基集合
         /// </summary>
         /// <param name="type"></param>
@@ -137,8 +165,9 @@ namespace ESafety.Core
                 var userdefineds = _rpsdefined.Queryable(p => p.DefinedType == (int)type);
                 var datatypenamelist = Command.GetItems(typeof(PublicEnum.EE_UserDefinedDataType));
                 var definedtypenamelist = Command.GetItems(typeof(PublicEnum.EE_UserDefinedType));
-
+                var test = userdefineds.ToList();
                 var re = from p in userdefineds.ToList()
+                         let dict =_rpsdict.GetModel(q=>q.ID == p.DictID)
                          select new UserDefinedView
                          {
                              Caption = p.Caption,
@@ -151,7 +180,7 @@ namespace ESafety.Core
                              ID = p.ID,
                              DataTypeName = datatypenamelist.FirstOrDefault(q => q.Value == p.DataType).Caption,
                              DefinedTypeName = definedtypenamelist.FirstOrDefault(q => q.Value == p.DefinedType).Caption,
-                             DictName = _rpsdict.GetModel(q => q.ID == p.DictID).DictName
+                             DictName =dict==null?"":dict.DictName
                          };
 
                 return new ActionResult<IEnumerable<UserDefinedView>>(re);

@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESafety.Platform.Service", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESafety.TEST", "ESafety.TEST\ESafety.TEST.csproj", "{70750297-1484-4505-BF13-620AF2415B73}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESafety.Account.Model", "ESafety.Account.Model\ESafety.Account.Model.csproj", "{812FB462-BB86-4D06-9D8F-C452E3C87308}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{70750297-1484-4505-BF13-620AF2415B73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70750297-1484-4505-BF13-620AF2415B73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70750297-1484-4505-BF13-620AF2415B73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{812FB462-BB86-4D06-9D8F-C452E3C87308}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{812FB462-BB86-4D06-9D8F-C452E3C87308}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{812FB462-BB86-4D06-9D8F-C452E3C87308}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{812FB462-BB86-4D06-9D8F-C452E3C87308}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

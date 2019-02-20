@@ -100,6 +100,18 @@ namespace ESafety.Account.API.Controllers
         {
             return bll.GetUserDefineItems(para);
         }
+
+        /// <summary>
+        /// 获取自定义项支持的数据类型
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getdatatypes")]
+        public ActionResult<IEnumerable<EnumItem>> GetDatatypes()
+        {
+
+            return bll.GetUserdefinedDataType();
+        }
          
     }
 }

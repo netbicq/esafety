@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Auth_UserService.cs" />
+    <Compile Include="Danger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -62,6 +63,10 @@
     <ProjectReference Include="..\ESafety.Account.IService\ESafety.Account.IService.csproj">
       <Project>{175c4777-fb21-46c1-844f-cdb9947769e3}</Project>
       <Name>ESafety.Account.IService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ESafety.Account.Model\ESafety.Account.Model.csproj">
+      <Project>{812fb462-bb86-4d06-9d8f-c452e3c87308}</Project>
+      <Name>ESafety.Account.Model</Name>
     </ProjectReference>
     <ProjectReference Include="..\ESafety.Core.Model\ESafety.Core.Model.csproj">
       <Project>{56ae99ed-a596-4b0c-bf0f-c8fa10a0c4ae}</Project>

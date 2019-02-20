@@ -22,12 +22,16 @@ namespace ESafety.Core
         private IRepository<Model.DB.Basic_Org> _rpsorg = null;
         private IRepository<Basic_Employee> _rpsemployee = null;
 
+        private IUserDefined usedefinedService = null;
+
         public OrgEmployeeService(IUnitwork work)
         {
             _work = work;
             Unitwork = work;
             _rpsorg = work.Repository<Basic_Org>();
             _rpsemployee = work.Repository<Basic_Employee>();
+            usedefinedService = new UserDefinedService(work);
+
         }
 
         /// <summary>
@@ -37,13 +41,14 @@ namespace ESafety.Core
         /// <returns></returns>
         public ActionResult<bool> AddEmployee(EmployeeNew employee)
         {
-            var check = _rpsemployee.Any(q => q.Login==employee.Login);
+            var check = _rpsemployee.Any(q => q.Login == employee.Login);
             if (check)
             {
                 throw new Exception("已经存在相同的用户 ：" + employee.Login);
             }
             var _employee = employee.MAPTO<Basic_Employee>();
             _rpsemployee.Add(_employee);
+           
             _work.Commit();
             return new ActionResult<bool>(true);
         }
@@ -55,12 +60,12 @@ namespace ESafety.Core
         /// <returns></returns>
         public ActionResult<bool> AddOrg(OrgNew org)
         {
-            var check = _rpsorg.Any(q => q.ParentID == org.PrentID && q.OrgName ==org.OrgName);
+            var check = _rpsorg.Any(q => q.ParentID == org.PrentID && q.OrgName == org.OrgName);
             if (check)
             {
                 throw new Exception("已经存在相同的组织名称 ：" + org.OrgName);
             }
-            var _org= org.MAPTO<Basic_Org>();
+            var _org = org.MAPTO<Basic_Org>();
             _rpsorg.Add(_org);
             _work.Commit();
             return new ActionResult<bool>(true);
@@ -73,6 +78,9 @@ namespace ESafety.Core
             {
                 throw new Exception("该人员不存在!");
             }
+
+            //作业务检查
+
             _rpsemployee.Delete(p => p.ID == id);
             _work.Commit();
             return new ActionResult<bool>(true);
@@ -94,7 +102,10 @@ namespace ESafety.Core
             {
                 throw new Exception("该组织存在子组织无法删除!");
             }
-            _rpsorg.Delete(p=>p.ID==id);
+
+            //检查人员是否存在
+
+            _rpsorg.Delete(p => p.ID == id);
             _work.Commit();
             return new ActionResult<bool>(true);
         }
@@ -111,7 +122,7 @@ namespace ESafety.Core
             {
                 throw new Exception("未找到该人员信息");
             }
-            var check = _rpsemployee.Any(p => p.ID != employee.ID&&p.Login==employee.Login);
+            var check = _rpsemployee.Any(p => p.ID != employee.ID && p.Login == employee.Login);
             if (check)
             {
                 throw new Exception("已经存在相同的用户：" + employee.Login);
@@ -134,7 +145,7 @@ namespace ESafety.Core
             {
                 throw new Exception("未找到组织");
             }
-            var check = _rpsorg.Any(p => p.OrgName == org.OrgName && p.ParentID == dborg.ParentID&&p.ID!=org.ID);
+            var check = _rpsorg.Any(p => p.OrgName == org.OrgName && p.ParentID == dborg.ParentID && p.ID != org.ID);
             if (check)
             {
                 throw new Exception("已经存在相同的组织名称：" + org.OrgName);
@@ -145,48 +156,38 @@ namespace ESafety.Core
             return new ActionResult<bool>(true);
         }
 
-       
-        public ActionResult<IEnumerable<EmployeeView>> GetEmployee(Guid orgid)
+        public ActionResult<EmployeeView> GetEmployeeModel(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ActionResult<IEnumerable<EmployeeView>> GetEmployees(Guid orgid)
         {
             var dbemployees = _rpsemployee.Queryable();
             var orgids = from ids in _rpsorg.GetList(p => p.ParentID == orgid)
                          select ids.ID;
             var re = from employee in dbemployees.ToList()
-                     where orgids.Contains(employee.OrgID)||employee.ID==orgid
+                     where orgids.Contains(employee.OrgID) || employee.ID == orgid
                      select new EmployeeView
                      {
-                         CNName=employee.CNName,
-                         Gender=employee.Gender,
-                         IsLeader=employee.IsLeader,
-                         IsLevel=employee.IsLevel,
-                         HeadIMG=employee.HeadIMG,
-                         Login=employee.Login
+                         CNName = employee.CNName,
+                         Gender = employee.Gender,
+                         IsLeader = employee.IsLeader,
+                         IsLevel = employee.IsLevel,
+                         HeadIMG = employee.HeadIMG,
+                         Login = employee.Login
                      };
             return new ActionResult<IEnumerable<EmployeeView>>(re);
         }
 
         public ActionResult<IEnumerable<OrgView>> GetOrgChildren(Guid id)
         {
-            var dborgs = _rpsorg.Queryable(p=>p.ParentID==id);
-            var re = from org in dborgs.ToList()
-                     select new OrgView
-                     {
-                         Level=org.Level,
-                         OrgName=org.OrgName,
-                         ParentID=org.ParentID,
-                         Principal=org.Principal,
-                         PrincipalTel=org.PrincipalTel
-                     };
-            return new ActionResult<IEnumerable<OrgView>>(re);
-        }
-
-        public ActionResult<IEnumerable<OrgView>> GetOrgRoot()
-        {
-            var dborgs = _rpsorg.Queryable(p => p.ParentID == null);
+            var dborgs = _rpsorg.Queryable(p => p.ParentID == id);
             var re = from org in dborgs.ToList()
                      select new OrgView
                      {
                          Level = org.Level,
+                         ID = org.ID,
                          OrgName = org.OrgName,
                          ParentID = org.ParentID,
                          Principal = org.Principal,
@@ -194,5 +195,6 @@ namespace ESafety.Core
                      };
             return new ActionResult<IEnumerable<OrgView>>(re);
         }
+ 
     }
 }
