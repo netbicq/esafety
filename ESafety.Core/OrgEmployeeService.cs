@@ -78,28 +78,17 @@ namespace ESafety.Core
         /// <returns></returns>
         public ActionResult<bool> AddOrg(OrgNew org)
         {
-            try
+            var check = _rpsorg.Any(q => q.ParentID == org.PrentID && q.OrgName == org.OrgName);
+            if (check)
             {
-                var check = _rpsorg.Any(q => q.ParentID == org.ParentID && q.OrgName == org.OrgName);
-                if (check)
-                {
-                    throw new Exception("已经存在相同的组织名称 ：" + org.OrgName);
-                }
-                var _org = org.MAPTO<Basic_Org>();
-                _rpsorg.Add(_org);
-                _work.Commit();
-                return new ActionResult<bool>(true);
+                throw new Exception("已经存在相同的组织名称 ：" + org.OrgName);
             }
-            catch (Exception ex)
-            {
-                return new ActionResult<bool>(ex);
-            }
+            var _org = org.MAPTO<Basic_Org>();
+            _rpsorg.Add(_org);
+            _work.Commit();
+            return new ActionResult<bool>(true);
         }
-        /// <summary>
-        /// 删除职员
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+
         public ActionResult<bool> DeleteEmployee(Guid id)
         {
             try

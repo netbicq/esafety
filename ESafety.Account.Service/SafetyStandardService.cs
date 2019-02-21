@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ESafety.Account.IService
+namespace ESafety.Account.Service
 {
-    public interface IDanger
+    class SafetyStandardService
     {
     }
 }

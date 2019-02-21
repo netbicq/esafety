@@ -52,8 +52,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Auth_UserService.cs" />
-    <Compile Include="Danger.cs" />
+    <Compile Include="DangerManageService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SafetyStandardService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
