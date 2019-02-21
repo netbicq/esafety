@@ -22,8 +22,7 @@ namespace ESafety.Account.API.Controllers
     {
 
         private IOrgEmployee bll = null;
-
-
+        
         public OrgEmployeeController(IOrgEmployee orgemp)
         {
 
@@ -57,7 +56,7 @@ namespace ESafety.Account.API.Controllers
             return bll.AddOrg(org);
         }
         /// <summary>
-        /// 
+        /// 删除人员
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -104,10 +103,16 @@ namespace ESafety.Account.API.Controllers
             LogContent = "修改了组织，参数源:" + JsonConvert.SerializeObject(org);
             return bll.EditOrg(org);
         }
-
-        public ActionResult<EmployeeView> GetEmployeeModel(Guid id)
+        /// <summary>
+        /// 获取职员模型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route("getempmodel/{id:Guid}")]
+        [HttpGet]
+        public ActionResult<EmployeeModelView> GetEmployeeModel(Guid id)
         {
-            throw new NotImplementedException();
+            return bll.GetEmployeeModel(id);
         }
         /// <summary>
         /// 根据组织ID，获取所有人员信息
@@ -115,7 +120,7 @@ namespace ESafety.Account.API.Controllers
         /// <param name="orgid"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("getemps/{id:Guid}")]
+        [Route("getemps/{orgid:Guid}")]
         public ActionResult<IEnumerable<EmployeeView>> GetEmployees(Guid orgid)
         {
             return bll.GetEmployees(orgid);

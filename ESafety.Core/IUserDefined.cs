@@ -52,15 +52,29 @@ namespace ESafety.Core
         /// <returns></returns>
         ActionResult<IEnumerable<UserDefinedForm>> GetUserDefineItems(UserDefinedBusiness para);
         /// <summary>
-        /// 保存业务数据
+        /// 保存业务数据，不提交
+        /// 与业务数据一起提交
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        ActionResult<bool> SaveBuisnessValue(BusinessValue values);
+        ActionResult<bool> SaveBuisnessValue(UserDefinedBusinessValue values);
         /// <summary>
         /// 获取自定义项的数据类型
         /// </summary>
         /// <returns></returns>
         ActionResult<IEnumerable<EnumItem>> GetUserdefinedDataType();
+        /// <summary>
+        /// 删除自定义项
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        ActionResult<bool> DelUserDefined(Guid id);
+        /// <summary>
+        /// 删除业务自定义项，不提交
+        /// 与业务数据一起提交
+        /// </summary>
+        /// <param name="buisnessid"></param>
+        /// <returns></returns>
+        ActionResult<bool> DeleteBusinessValue(Guid buisnessid);
     }
 }

@@ -81,7 +81,7 @@ namespace ESafety.Core.Model.PARA
     /// <summary>
     /// 业务数据
     /// </summary>
-    public class BusinessValue
+    public class UserDefinedBusinessValue
     {
         /// <summary>
         /// 业务数据id

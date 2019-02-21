@@ -29,6 +29,19 @@ namespace ESafety.Account.API.Controllers
             bll = uf;
             BusinessService = uf;
         }
+
+        /// <summary>
+        /// 删除批定id的自定义项
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("deluserdefined/{id:Guid}")]
+        public ActionResult<bool> DelDefined(Guid id)
+        {
+            LogContent = "删除自定义项，id" + id.ToString();
+            return bll.DelUserDefined(id);
+        }
         /// <summary>
         /// 新建用户自定义项
         /// </summary>

@@ -30,7 +30,7 @@ namespace ESafety.Core
         ActionResult<bool> EditEmployee(EmployeeEdit employee);
 
 
-        ActionResult<EmployeeView> GetEmployeeModel(Guid id);
+        ActionResult<EmployeeModelView> GetEmployeeModel(Guid id);
 
         ActionResult<bool> DeleteEmployee(Guid id);
 
