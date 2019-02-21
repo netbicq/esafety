@@ -11,13 +11,21 @@ namespace ESafety.Core.Model.PARA
     /// </summary>
     public class OrgNew
     {
-
+        /// <summary>
+        /// 上级ID
+        /// </summary>
         public Guid ParentID { get; set; }
-
+        /// <summary>
+        /// 名称
+        /// </summary>
         public string OrgName { get; set; }
-
+        /// <summary>
+        /// 负责人
+        /// </summary>
         public string Principal { get; set; }
-
+        /// <summary>
+        /// 负责人电话
+        /// </summary>
         public string PrincipalTel { get; set; }
     }
     /// <summary>
@@ -25,13 +33,22 @@ namespace ESafety.Core.Model.PARA
     /// </summary>
     public class OrgEdit
     {
+        /// <summary>
+        /// ID
+        /// </summary>
 
         public Guid ID { get; set; }
-
+        /// <summary>
+        /// 名称
+        /// </summary>
         public string OrgName { get; set; }
-
+        /// <summary>
+        /// 负责人
+        /// </summary>
         public string Principal { get; set; }
-
+        /// <summary>
+        /// 负责人电话
+        /// </summary>
         public string PrincipalTel { get; set; }
 
     }
@@ -63,12 +80,19 @@ namespace ESafety.Core.Model.PARA
         /// </summary>
         public string HeadIMG { get; set; }
         //组织ID
-        public Guid OrdId { get; set; }
+        public Guid OrgId { get; set; }
+        /// <summary>
+        /// 自定义类项
+        /// </summary>
+        public IEnumerable<UserDefinedValue> UserDefineds { get; set; }
     }
 
 
     public class EmployeeEdit:EmployeeNew
     {
+        /// <summary>
+        /// id
+        /// </summary>
         public Guid ID { get; set; }
     }
 

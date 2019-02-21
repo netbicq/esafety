@@ -158,6 +158,10 @@ namespace ESafety.Core
             {
                 throw new Exception("用户不存在");
             }
+            if(dbuser.Login == "admin")
+            {
+                throw new Exception("系统内置超级用户不允许删除");
+            }
 
             _rpsuser.Delete(dbuser);
             _rpsprofiel.Delete(q => q.Login

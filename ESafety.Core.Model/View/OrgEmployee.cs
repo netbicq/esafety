@@ -7,13 +7,7 @@ using System.Threading.Tasks;
 
 namespace ESafety.Core.Model.View
 {
-    public class OrgEmployee
-    {
-     
-
-        
-
-    }
+ 
     public class EmployeeView
     {
         /// <summary>
@@ -44,6 +38,15 @@ namespace ESafety.Core.Model.View
         /// 组织ID
         /// </summary>
         public Guid OrgID { get; set; }
+        
+    }
+
+    public class EmployeeModelView:EmployeeView
+    {
+        /// <summary>
+        /// 自定义项
+        /// </summary>
+        public IEnumerable<UserDefinedForm> UserDefineds { get; set; }
     }
 
     public class OrgView

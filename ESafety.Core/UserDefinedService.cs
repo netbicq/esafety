@@ -71,11 +71,61 @@ namespace ESafety.Core
             }
 
             var dbdefined = entity.MAPTO<Basic_UserDefined>();
-
+            
             _rpsdefined.Add(dbdefined);
             _work.Commit();
             return new ActionResult<bool>(true);
         }
+
+        /// <summary>
+        /// 删除自定义项的业务值
+        /// 不提交数据库，与业务删除一起提交
+        /// </summary>
+        /// <param name="buisnessid"></param>
+        /// <returns></returns>
+        public ActionResult<bool> DeleteBusinessValue(Guid buisnessid)
+        {
+            try
+            {
+
+                _rpsdefinedvalue.Delete(q => q.BusinessID == buisnessid);
+                //不提交数据库，与业务删除一起提交
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+
+        /// <summary>
+        /// 删除自定义项
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult<bool> DelUserDefined(Guid id)
+        {
+            try
+            {
+                var dbfined = _rpsdefined.GetModel(id);
+                if (dbfined == null)
+                {
+                    throw new Exception("未找到自定义项");
+                }
+
+                //同时删除自定项的值
+                _rpsdefined.Delete(dbfined);
+                _rpsdefinedvalue.Delete(q => q.DefinedID == id);
+
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+
         /// <summary>
         /// 修改自定义项
         /// </summary>
@@ -228,6 +278,7 @@ namespace ESafety.Core
                 var re = from d in defineds.ToList()
                          let dict = _rpsdict.GetModel(q => q.ID == d.DictID)
                          let dicts = _rpsdict.GetList(q => q.ParentID == dict.ID)
+                         let valuemodel =values.FirstOrDefault(q=>q.DefinedID == d.ID)
                          select new UserDefinedForm
                          {
                              Caption = d.Caption,
@@ -242,7 +293,7 @@ namespace ESafety.Core
                              IsMulti = d.IsMulti,
                              VisibleIndex = d.VisibleIndex,
                              DictSelection = dicts,
-                             ItemValue = values.FirstOrDefault(q => q.DefinedID == d.ID).DefinedValue
+                             ItemValue =valuemodel ==null?string.Empty:valuemodel.DefinedValue
                          };
                 return new ActionResult<IEnumerable<UserDefinedForm>>(re);
             }
@@ -257,7 +308,7 @@ namespace ESafety.Core
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        public ActionResult<bool> SaveBuisnessValue(BusinessValue values)
+        public ActionResult<bool> SaveBuisnessValue(UserDefinedBusinessValue values)
         {
             try
             {
