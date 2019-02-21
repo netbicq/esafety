@@ -176,7 +176,7 @@ namespace ESafety.Account.Service
         }
 
         /// <summary>
-        /// 更具指定Id获取风险项
+        /// 根据指定Id获取风险项
         /// </summary>
         /// <param name="dangerid"></param>
         /// <returns></returns>
