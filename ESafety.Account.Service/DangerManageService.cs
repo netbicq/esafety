@@ -20,6 +20,7 @@ namespace ESafety.Account.Service
         private IUnitwork _work = null;
         private IRepository<Core.Model.DB.Account.Basic_Danger> _rpsdanger = null;
         private IRepository<Basic_DangerSort> _rpsdangersort = null;
+        private IRepository<Basic_DangerSafetyStandards> _rpsdangersafetystandards = null;
 
         public DangerManageService(IUnitwork work)
         {
@@ -27,6 +28,7 @@ namespace ESafety.Account.Service
             Unitwork = work;
             _rpsdanger = work.Repository<Basic_Danger>();
             _rpsdangersort = work.Repository<Basic_DangerSort>();
+            _rpsdangersafetystandards = work.Repository<Basic_DangerSafetyStandards>();
         }
 
 
@@ -44,6 +46,29 @@ namespace ESafety.Account.Service
             }
             var _danger = danger.MAPTO<Basic_Danger>();
             _rpsdanger.Add(_danger);
+            _work.Commit();
+            return new ActionResult<bool>(true);
+        }
+
+        /// <summary>
+        /// 为风险点添加安全标准
+        /// </summary>
+        /// <param name="safetyStandards"></param>
+        /// <returns></returns>
+        public ActionResult<bool> AddDangerSafetyStandard(DangerSafetyStandards safetyStandards)
+        {
+            var check = _rpsdanger.Any(p=>p.ID==safetyStandards.DangerID);
+            if (check)
+            {
+                throw new Exception("未找到该风险点");
+            }
+            check = _rpsdangersafetystandards.Any(p=>p.DangerID==safetyStandards.DangerID&&p.SafetyStandardID==safetyStandards.SafetyStandardID);
+            if (check)
+            {
+                throw new Exception("已为该风险点添加了该风险项");
+            }
+            var _dangersafetystandards = safetyStandards.MAPTO<Basic_DangerSafetyStandards>();
+            _rpsdangersafetystandards.Add(_dangersafetystandards);
             _work.Commit();
             return new ActionResult<bool>(true);
         }
@@ -85,6 +110,23 @@ namespace ESafety.Account.Service
              
         }
         /// <summary>
+        /// 删除风险点与安全准则的联系
+        /// </summary>
+        /// <param name="safetyStandard"></param>
+        /// <returns></returns>
+        public ActionResult<bool> DelDangerSafetyStandard(DangerSafetyStandards safetyStandard)
+        {
+            var dbdangerafetystandards = _rpsdangersafetystandards.GetModel(p=>p.SafetyStandardID==safetyStandard.SafetyStandardID&&p.DangerID==safetyStandard.DangerID);
+            if (dbdangerafetystandards == null)
+            {
+                throw new Exception("未找到该风险点所需删除的安全标准ID");
+            }
+            _rpsdangersafetystandards.Delete(dbdangerafetystandards);
+            _work.Commit();
+            return new ActionResult<bool>(true);
+        }
+
+        /// <summary>
         ///删除风险类别
         /// </summary>
         /// <param name="id"></param>
@@ -100,6 +142,11 @@ namespace ESafety.Account.Service
             if (check)
             {
                 throw new Exception("该类别下存在子类别，无法删除");
+            }
+            check = _rpsdanger.Any(p => p.DangerSortID == dbdangersort.ID);
+            if (check)
+            {
+                throw new Exception("该类别下存在风险点,无法删除");
             }
             _rpsdangersort.Delete(dbdangersort);
             _work.Commit();
@@ -128,8 +175,6 @@ namespace ESafety.Account.Service
             return new ActionResult<bool>(true);
         }
 
-     
-
         /// <summary>
         /// 更具指定Id获取风险项
         /// </summary>
@@ -143,6 +188,7 @@ namespace ESafety.Account.Service
                 throw new Exception("未找到该风险信息");
             }
             var re = dbdanger.MAPTO<DangerView>();
+            re.DangerSortName = _rpsdangersort.GetModel(dbdanger.DangerSortID).SortName;
             return new ActionResult<DangerView>(re);
         }
         /// <summary>
@@ -162,7 +208,8 @@ namespace ESafety.Account.Service
                               Code = danger.Code,
                               DangerSortID = danger.DangerSortID,
                               Name = danger.Name,
-                              ID = danger.ID
+                              ID = danger.ID,
+                              DangerSortName = _rpsdangersort.GetModel(p=>p.ID==danger.DangerSortID||p.ID==dangersortid).SortName
                           };
             return new ActionResult<IEnumerable<DangerView>>(dangers);
         }

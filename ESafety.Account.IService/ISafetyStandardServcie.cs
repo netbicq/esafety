@@ -1,4 +1,6 @@
-﻿using ESafety.Core.Model;
+﻿using ESafety.Account.Model.PARA;
+using ESafety.Account.Model.View;
+using ESafety.Core.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +13,14 @@ namespace ESafety.Account.IService
     {
         ActionResult<bool> AddSafetyStandard(SafetyStandardNew safetystandard);
 
-        ActionResult<bool> EditSafetyStandard(Guid id);
+        ActionResult<bool> EditSafetyStandard(SafetyStandardEdit safetystandard);
 
         ActionResult<bool> DelSafetyStandard(Guid id);
 
         ActionResult<IEnumerable<SafetyStandardView>> GetSafetyStandards();
+
+        ActionResult<IEnumerable<SafetyStandardView>> GetSafetyStandards(Guid dangersortid);
+
+        ActionResult<SafetyStandardView> GetSafetyStandard(Guid id);
     }
 }

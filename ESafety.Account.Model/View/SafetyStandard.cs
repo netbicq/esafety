@@ -6,25 +6,10 @@ using System.Threading.Tasks;
 
 namespace ESafety.Account.Model.View
 {
-    class DangerManage
+    class SafetyStandard
     {
     }
-
-    public class DangerSortView
-    {
-        public  Guid ID { get; set; }
-        /// <summary>
-        /// 父级ID
-        /// </summary>
-        public Guid ParetID { get; set; }
-        public int Level { get; set; }
-        /// <summary>
-        /// 类别名称
-        /// </summary>
-        public string SortName { get; set; }
-    }
-
-    public class DangerView
+    public class SafetyStandardView
     {
         public Guid ID { get; set; }
         /// <summary>
@@ -42,6 +27,10 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 类别
         /// </summary>
-        public string DangerSortName { get; set; }
+        public string DangerSort { get; set; }
+        /// <summary>
+        /// 管控措施
+        /// </summary>
+        public string Controls { get; set; }
     }
 }

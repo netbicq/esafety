@@ -27,6 +27,8 @@ namespace ESafety.Account.IService
 
         ActionResult<DangerView> GetDanger(Guid dangerid);
 
+        ActionResult<bool> AddDangerSafetyStandard(DangerSafetyStandards safetyStandards);
 
+        ActionResult<bool> DelDangerSafetyStandard(DangerSafetyStandards safetyStandard);
     }
 }
