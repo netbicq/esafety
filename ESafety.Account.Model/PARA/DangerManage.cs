@@ -40,4 +40,18 @@ namespace ESafety.Account.Model.PARA
     {
         public Guid Id { get; set; }
     }
+
+    public class DangerSafetyStandards
+    {
+        /// <summary>
+        /// 风险点ID
+        /// </summary>
+        public Guid DangerID { get; set; }
+        /// <summary>
+        /// 安全标准ID
+        /// </summary>
+        public Guid SafetyStandardID { get; set; }
+    }
+
+
 }
