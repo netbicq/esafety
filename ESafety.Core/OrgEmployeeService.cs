@@ -60,7 +60,7 @@ namespace ESafety.Core
         /// <returns></returns>
         public ActionResult<bool> AddOrg(OrgNew org)
         {
-            var check = _rpsorg.Any(q => q.ParentID == org.PrentID && q.OrgName == org.OrgName);
+            var check = _rpsorg.Any(q => q.ParentID == org.ParentID && q.OrgName == org.OrgName);
             if (check)
             {
                 throw new Exception("已经存在相同的组织名称 ：" + org.OrgName);

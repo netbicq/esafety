@@ -12,7 +12,7 @@ namespace ESafety.Core.Model.PARA
     public class OrgNew
     {
 
-        public Guid PrentID { get; set; }
+        public Guid ParentID { get; set; }
 
         public string OrgName { get; set; }
 
