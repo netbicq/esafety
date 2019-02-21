@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ESafety.Account.IService
 {
-    public interface IDangerService
+    public interface IDangerManageService
     {
         ActionResult<bool> AddDangerSort(DangerSortNew dangersort);
 
@@ -26,6 +26,7 @@ namespace ESafety.Account.IService
         ActionResult<IEnumerable<DangerView>> GetDangers(Guid dangersortid);
 
         ActionResult<DangerView> GetDanger(Guid dangerid);
+
 
     }
 }

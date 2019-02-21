@@ -15,13 +15,13 @@ namespace ESafety.Account.Service
 {
 
 
-    public class DangerService : ServiceBase, IDangerService
+    public class DangerManageService : ServiceBase, IDangerManageService
     {
         private IUnitwork _work = null;
         private IRepository<Core.Model.DB.Account.Basic_Danger> _rpsdanger = null;
         private IRepository<Basic_DangerSort> _rpsdangersort = null;
 
-        public DangerService(IUnitwork work)
+        public DangerManageService(IUnitwork work)
         {
             _work = work;
             Unitwork = work;
@@ -40,7 +40,7 @@ namespace ESafety.Account.Service
             var check = _rpsdanger.Any(p=>p.DangerSortID==danger.DangerSortID&&p.Name==danger.Name&&p.Code==danger.Code);
             if (check)
             {
-                throw new Exception("改风险信息已存在！");
+                throw new Exception("该风险信息已存在！");
             }
             var _danger = danger.MAPTO<Basic_Danger>();
             _rpsdanger.Add(_danger);
@@ -66,6 +66,7 @@ namespace ESafety.Account.Service
             _work.Commit();
             return new ActionResult<bool>(true);
         }
+
         /// <summary>
         /// 删除风险信息
         /// </summary>
@@ -104,7 +105,7 @@ namespace ESafety.Account.Service
             _work.Commit();
             return new ActionResult<bool>(true);
         }
-
+ 
         /// <summary>
         /// 修改风险信息
         /// </summary>
@@ -126,6 +127,9 @@ namespace ESafety.Account.Service
             _rpsdanger.Update(_dbdanger);
             return new ActionResult<bool>(true);
         }
+
+     
+
         /// <summary>
         /// 更具指定Id获取风险项
         /// </summary>
@@ -181,5 +185,6 @@ namespace ESafety.Account.Service
                      };
             return new ActionResult<IEnumerable<DangerSortView>>(re);
         }
+
     }
 }

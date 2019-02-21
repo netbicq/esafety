@@ -4,26 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ESafety.Account.Model.View
+namespace ESafety.Account.Model.PARA
 {
-    class Danger
+    public class DangerManage
     {
+
     }
 
-    public class DangerSortView
+    public class DangerSortNew
     {
-        public  Guid ID { get; set; }
         public Guid ParetID { get; set; }
         public int Level { get; set; }
         /// <summary>
-        /// 类别名称
+        /// 节点名称
         /// </summary>
         public string SortName { get; set; }
     }
-
-    public class DangerView
+    public class DangerNew
     {
-        public Guid ID { get; set; }
         /// <summary>
         /// 编号
         /// </summary>
@@ -36,5 +34,10 @@ namespace ESafety.Account.Model.View
         /// 类别ID
         /// </summary>
         public Guid DangerSortID { get; set; }
+    }
+
+    public class DangerEdit:DangerNew
+    {
+        public Guid Id { get; set; }
     }
 }
