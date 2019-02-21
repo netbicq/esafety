@@ -40,8 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="PARA\Danger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\Danger.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ESafety.Core.Model\ESafety.Core.Model.csproj">
@@ -61,5 +62,6 @@
       <Name>ESafety.Unity</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
