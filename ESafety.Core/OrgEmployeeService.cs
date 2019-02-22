@@ -284,14 +284,14 @@ namespace ESafety.Core
                 var re = from em in emps
                          select new EmployeeView
                          {
-                             ID=employee.ID,
-                             CNName = employee.CNName,
-                             Gender = employee.Gender,
-                             IsLeader = employee.IsLeader,
-                             IsLevel = employee.IsLevel,
-                             HeadIMG = employee.HeadIMG,
-                             Login = employee.Login,
-                             OrgID=employee.OrgID
+                             ID=em.ID,
+                             CNName = em.CNName,
+                             Gender = em.Gender,
+                             IsLeader = em.IsLeader,
+                             IsLevel = em.IsLevel,
+                             HeadIMG = em.HeadIMG,
+                             Login = em.Login,
+                             OrgID= em.OrgID
                          };
                  
                 return new ActionResult<IEnumerable<EmployeeView>>(re);
