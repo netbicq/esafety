@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="IDangerManageService.cs" />
     <Compile Include="IFacilitiesManageServcie.cs" />
+    <Compile Include="IPostManageService.cs" />
     <Compile Include="ISafetyStandardServcie.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
