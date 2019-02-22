@@ -258,7 +258,7 @@ namespace ESafety.Core
             }
         }
 
-        public ActionResult<IEnumerable<EmployeeView>> GetEmployees(Guid orgid)
+        public ActionResult<Pager<EmployeeView>> GetEmployees(PagerQuery<EmployeeQuery> para)
         {
             try
             {
@@ -279,9 +279,9 @@ namespace ESafety.Core
                 //             Login = employee.Login
                 //         };
 
-                var emps = _rpsemployee.Queryable(q => q.OrgID == orgid);
+                var emps = _rpsemployee.Queryable(q => q.OrgID == para.Query.ID);
 
-                var re = from em in emps
+                var reemps = from em in emps
                          select new EmployeeView
                          {
                              ID=em.ID,
@@ -294,14 +294,16 @@ namespace ESafety.Core
                              OrgID= em.OrgID
                          };
                  
-                return new ActionResult<IEnumerable<EmployeeView>>(re);
+                var re = new Pager<EmployeeView>().GetCurrentPage(reemps, para.PageSize, para.PageIndex);
+                return new ActionResult<Pager<EmployeeView>>(re);
             }
             catch (Exception ex)
             {
-                return new ActionResult<IEnumerable<EmployeeView>>(ex);
+                return new ActionResult<Pager<EmployeeView>>(ex);
             }
           
         }
+
 
         public ActionResult<IEnumerable<OrgView>> GetOrgChildren(Guid id)
         {

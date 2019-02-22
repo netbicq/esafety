@@ -115,15 +115,15 @@ namespace ESafety.Account.API.Controllers
             return bll.GetEmployeeModel(id);
         }
         /// <summary>
-        /// 根据组织ID，获取所有人员信息
+        /// 根据组织ID，分页获取人员信息
         /// </summary>
         /// <param name="orgid"></param>
         /// <returns></returns>
-        [HttpGet]
-        [Route("getemps/{orgid:Guid}")]
-        public ActionResult<IEnumerable<EmployeeView>> GetEmployees(Guid orgid)
+        [HttpPost]
+        [Route("getemps")]
+        public ActionResult<Pager<EmployeeView>> GetEmployees(PagerQuery<EmployeeQuery> para)
         {
-            return bll.GetEmployees(orgid);
+            return bll.GetEmployees(para);
         }
         /// <summary>
         /// 根据指定节点ID，获取组织的子节点

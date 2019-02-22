@@ -96,5 +96,11 @@ namespace ESafety.Core.Model.PARA
         public Guid ID { get; set; }
     }
 
-
+    public class EmployeeQuery
+    {
+        /// <summary>
+        /// 组织ID
+        /// </summary>
+        public Guid ID { get; set; }
+    }
 }

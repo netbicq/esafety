@@ -9,7 +9,7 @@ namespace ESafety.Core.Model.DB.Account
     public partial class Basic_DangerSort : ModelBase
     { 
 
-        public Guid ParetID { get; set; }
+        public Guid ParentID { get; set; }
 
         public int Level { get; set; }
 

@@ -39,15 +39,24 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> AddDanger(DangerNew danger)
         {
-            var check = _rpsdanger.Any(p=>p.DangerSortID==danger.DangerSortID&&p.Name==danger.Name&&p.Code==danger.Code);
-            if (check)
+            try
             {
-                throw new Exception("该风险信息已存在！");
+                var check = _rpsdanger.Any(p => p.DangerSortID == danger.DangerSortID && p.Name == danger.Name && p.Code == danger.Code);
+                if (check)
+                {
+                    throw new Exception("该风险信息已存在！");
+                }
+                var _danger = danger.MAPTO<Basic_Danger>();
+                _rpsdanger.Add(_danger);
+                _work.Commit();
+                return new ActionResult<bool>(true);
             }
-            var _danger = danger.MAPTO<Basic_Danger>();
-            _rpsdanger.Add(_danger);
-            _work.Commit();
-            return new ActionResult<bool>(true);
+            catch (Exception ex)
+            {
+
+                return new ActionResult<bool>(ex);
+            }
+           
         }
 
         /// <summary>
@@ -57,20 +66,29 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> AddDangerSafetyStandard(DangerSafetyStandards safetyStandards)
         {
-            var check = _rpsdanger.Any(p=>p.ID==safetyStandards.DangerID);
-            if (check)
+            try
             {
-                throw new Exception("未找到该风险点");
+                var check = _rpsdanger.Any(p => p.ID == safetyStandards.DangerID);
+                if (check)
+                {
+                    throw new Exception("未找到该风险点");
+                }
+                check = _rpsdangersafetystandards.Any(p => p.DangerID == safetyStandards.DangerID && p.SafetyStandardID == safetyStandards.SafetyStandardID);
+                if (check)
+                {
+                    throw new Exception("已为该风险点添加了该风险项");
+                }
+                var _dangersafetystandards = safetyStandards.MAPTO<Basic_DangerSafetyStandards>();
+                _rpsdangersafetystandards.Add(_dangersafetystandards);
+                _work.Commit();
+                return new ActionResult<bool>(true);
             }
-            check = _rpsdangersafetystandards.Any(p=>p.DangerID==safetyStandards.DangerID&&p.SafetyStandardID==safetyStandards.SafetyStandardID);
-            if (check)
+            catch (Exception ex)
             {
-                throw new Exception("已为该风险点添加了该风险项");
+
+                return new ActionResult<bool>(ex);
             }
-            var _dangersafetystandards = safetyStandards.MAPTO<Basic_DangerSafetyStandards>();
-            _rpsdangersafetystandards.Add(_dangersafetystandards);
-            _work.Commit();
-            return new ActionResult<bool>(true);
+           
         }
 
         /// <summary>
@@ -80,16 +98,25 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> AddDangerSort(DangerSortNew dangersort)
         {
-            var check = _rpsdangersort.Any(p => p.ParetID == dangersort.ParetID && p.SortName == dangersort.SortName);
-            if (check)
+            try
             {
-                throw new Exception("当前节点下已存在该类别名称:"+dangersort.SortName);
-            }
+                var check = _rpsdangersort.Any(p => p.ParentID == dangersort.ParetID && p.SortName == dangersort.SortName);
+                if (check)
+                {
+                    throw new Exception("当前节点下已存在该类别名称:" + dangersort.SortName);
+                }
 
-            var _dangersort = dangersort.MAPTO<Basic_DangerSort>();
-            _rpsdangersort.Add(_dangersort);
-            _work.Commit();
-            return new ActionResult<bool>(true);
+                var _dangersort = dangersort.MAPTO<Basic_DangerSort>();
+                _rpsdangersort.Add(_dangersort);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+
+                return new ActionResult<bool>(ex);
+            }
+           
         }
 
         /// <summary>
@@ -99,15 +126,22 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> DelDanger(Guid id)
         {
-            var dbdanger = _rpsdanger.GetModel(id);
-            if (dbdanger == null)
+            try
             {
-                throw new Exception("未找到该风险信息");
+                var dbdanger = _rpsdanger.GetModel(id);
+                if (dbdanger == null)
+                {
+                    throw new Exception("未找到该风险信息");
+                }
+                _rpsdanger.Delete(dbdanger);
+                _work.Commit();
+                return new ActionResult<bool>(true);
             }
-            _rpsdanger.Delete(dbdanger);
-            _work.Commit();
-            return new ActionResult<bool>(true);
-             
+            catch (Exception ex)
+            {
+
+                return new ActionResult<bool>(ex);
+            }
         }
         /// <summary>
         /// 删除风险点与安全准则的联系
@@ -116,14 +150,23 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> DelDangerSafetyStandard(DangerSafetyStandards safetyStandard)
         {
-            var dbdangerafetystandards = _rpsdangersafetystandards.GetModel(p=>p.SafetyStandardID==safetyStandard.SafetyStandardID&&p.DangerID==safetyStandard.DangerID);
-            if (dbdangerafetystandards == null)
+            try
             {
-                throw new Exception("未找到该风险点所需删除的安全标准ID");
+                var dbdangerafetystandards = _rpsdangersafetystandards.GetModel(p => p.SafetyStandardID == safetyStandard.SafetyStandardID && p.DangerID == safetyStandard.DangerID);
+                if (dbdangerafetystandards == null)
+                {
+                    throw new Exception("未找到该风险点所需删除的安全标准ID");
+                }
+                _rpsdangersafetystandards.Delete(dbdangerafetystandards);
+                _work.Commit();
+                return new ActionResult<bool>(true);
             }
-            _rpsdangersafetystandards.Delete(dbdangerafetystandards);
-            _work.Commit();
-            return new ActionResult<bool>(true);
+            catch (Exception ex)
+            {
+
+                return new ActionResult<bool>(ex);
+            }
+           
         }
 
         /// <summary>
@@ -133,24 +176,33 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> DelDangerSort(Guid id)
         {
-            var dbdangersort = _rpsdangersort.GetModel(id);
-            if (dbdangersort == null)
+            try
             {
-                throw new Exception("未找到该风险类别");
+                var dbdangersort = _rpsdangersort.GetModel(id);
+                if (dbdangersort == null)
+                {
+                    throw new Exception("未找到该风险类别");
+                }
+                var check = _rpsdangersort.Any(p => p.ParentID == id);
+                if (check)
+                {
+                    throw new Exception("该类别下存在子类别，无法删除");
+                }
+                check = _rpsdanger.Any(p => p.DangerSortID == dbdangersort.ID);
+                if (check)
+                {
+                    throw new Exception("该类别下存在风险点,无法删除");
+                }
+                _rpsdangersort.Delete(dbdangersort);
+                _work.Commit();
+                return new ActionResult<bool>(true);
             }
-            var check = _rpsdangersort.Any(p=>p.ParetID==id);
-            if (check)
+            catch (Exception ex)
             {
-                throw new Exception("该类别下存在子类别，无法删除");
+
+                return new ActionResult<bool>(ex);
             }
-            check = _rpsdanger.Any(p => p.DangerSortID == dbdangersort.ID);
-            if (check)
-            {
-                throw new Exception("该类别下存在风险点,无法删除");
-            }
-            _rpsdangersort.Delete(dbdangersort);
-            _work.Commit();
-            return new ActionResult<bool>(true);
+          
         }
  
         /// <summary>
@@ -160,19 +212,28 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> EditDanger(DangerEdit danger)
         {
-            var dbdanger = _rpsdanger.GetModel(danger.ID);
-            if (dbdanger == null)
+            try
             {
-                throw new Exception("未找到所需修改项");
+                var dbdanger = _rpsdanger.GetModel(danger.ID);
+                if (dbdanger == null)
+                {
+                    throw new Exception("未找到所需修改项");
+                }
+                var check = _rpsdanger.Any(p => p.ID != danger.ID && p.DangerSortID == danger.DangerSortID && p.Name == danger.Name && p.Code == danger.Code);
+                if (check)
+                {
+                    throw new Exception("当前类别下已存在该风险信息");
+                }
+                var _dbdanger = danger.CopyTo<Basic_Danger>(dbdanger);
+                _rpsdanger.Update(_dbdanger);
+                return new ActionResult<bool>(true);
             }
-            var check = _rpsdanger.Any(p => p.ID != danger.ID && p.DangerSortID == danger.DangerSortID && p.Name == danger.Name && p.Code == danger.Code);
-            if (check)
+            catch (Exception ex)
             {
-                throw new Exception("当前类别下已存在该风险信息");
+
+                return new ActionResult<bool>(ex);
             }
-            var _dbdanger = danger.CopyTo<Basic_Danger>(dbdanger);
-            _rpsdanger.Update(_dbdanger);
-            return new ActionResult<bool>(true);
+           
         }
 
         /// <summary>
@@ -182,14 +243,23 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<DangerView> GetDanger(Guid dangerid)
         {
-            var dbdanger = _rpsdanger.GetModel(dangerid);
-            if (dbdanger == null)
+            try
             {
-                throw new Exception("未找到该风险信息");
+                var dbdanger = _rpsdanger.GetModel(dangerid);
+                if (dbdanger == null)
+                {
+                    throw new Exception("未找到该风险信息");
+                }
+                var re = dbdanger.MAPTO<DangerView>();
+                re.DangerSortName = _rpsdangersort.GetModel(dbdanger.DangerSortID).SortName;
+                return new ActionResult<DangerView>(re);
             }
-            var re = dbdanger.MAPTO<DangerView>();
-            re.DangerSortName = _rpsdangersort.GetModel(dbdanger.DangerSortID).SortName;
-            return new ActionResult<DangerView>(re);
+            catch (Exception ex)
+            {
+
+                return new ActionResult<DangerView>(ex);
+            }
+           
         }
         /// <summary>
         /// 根据风险类别获取风险信息
@@ -198,20 +268,26 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<IEnumerable<DangerView>> GetDangers(Guid dangersortid)
         {
-            var dbdangers = _rpsdanger.Queryable();
-            var dangersortids = from dangersort in _rpsdangersort.GetList(p => p.ParetID == dangersortid)
-                                select dangersort.ID;
-            var dangers = from danger in dbdangers.ToList()
-                          where dangersortids.Contains(danger.DangerSortID) || danger.ID == dangersortid
-                          select new DangerView
-                          {
-                              Code = danger.Code,
-                              DangerSortID = danger.DangerSortID,
-                              Name = danger.Name,
-                              ID = danger.ID,
-                              DangerSortName = _rpsdangersort.GetModel(p=>p.ID==danger.DangerSortID||p.ID==dangersortid).SortName
-                          };
-            return new ActionResult<IEnumerable<DangerView>>(dangers);
+            try
+            {
+                var dbdangers = _rpsdanger.Queryable(p => p.DangerSortID == dangersortid);
+                var dangers = from danger in dbdangers.ToList()
+                              select new DangerView
+                              {
+                                  Code = danger.Code,
+                                  DangerSortID = danger.DangerSortID,
+                                  Name = danger.Name,
+                                  ID = danger.ID,
+                                  DangerSortName = _rpsdangersort.GetModel(p => p.ID == danger.DangerSortID || p.ID == dangersortid).SortName
+                              };
+                return new ActionResult<IEnumerable<DangerView>>(dangers);
+            }
+            catch (Exception ex)
+            {
+
+                return new ActionResult<IEnumerable<DangerView>>(ex);
+            }
+           
         }
 
         /// <summary>
@@ -221,16 +297,24 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<IEnumerable<DangerSortView>> GetDangerSorts(Guid id)
         {
-            var dbdangersorts = _rpsdangersort.Queryable(p=>p.ParetID==id);
-            var re = from s in dbdangersorts.ToList()
-                     select new DangerSortView
-                     {
-                         ID=s.ID,
-                         ParetID=s.ParetID,
-                         Level=s.Level,
-                         SortName=s.SortName
-                     };
-            return new ActionResult<IEnumerable<DangerSortView>>(re);
+            try
+            {
+                var dbdangersorts = _rpsdangersort.Queryable(p => p.ParentID == id);
+                var re = from s in dbdangersorts.ToList()
+                         select new DangerSortView
+                         {
+                             ID = s.ID,
+                             ParentID = s.ParentID,
+                             Level = s.Level,
+                             SortName = s.SortName
+                         };
+                return new ActionResult<IEnumerable<DangerSortView>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<DangerSortView>>(ex);
+            }
+           
         }
 
     }

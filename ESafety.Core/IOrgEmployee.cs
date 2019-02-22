@@ -34,7 +34,7 @@ namespace ESafety.Core
 
         ActionResult<bool> DeleteEmployee(Guid id);
 
-        ActionResult<IEnumerable<Model.View.EmployeeView>> GetEmployees(Guid orgid);
+        ActionResult<Pager<Model.View.EmployeeView>> GetEmployees(PagerQuery<EmployeeQuery> para);
 
         ActionResult<IEnumerable<Model.View.OrgView>> GetOrgChildren(Guid id);
          
