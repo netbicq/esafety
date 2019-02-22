@@ -11,7 +11,7 @@ namespace ESafety.Core.Model.View
     public class EmployeeView
     {
         /// <summary>
-        /// 雇员ID
+        /// 人员ID
         /// </summary>
         public Guid ID { get; set; }
         /// <summary>

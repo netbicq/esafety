@@ -38,7 +38,7 @@ namespace ESafety.Account.Model.PARA
 
     public class DangerEdit:DangerNew
     {
-        public Guid Id { get; set; }
+        public Guid ID { get; set; }
     }
 
     public class DangerSafetyStandards

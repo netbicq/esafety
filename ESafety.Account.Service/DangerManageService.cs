@@ -160,12 +160,12 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> EditDanger(DangerEdit danger)
         {
-            var dbdanger = _rpsdanger.GetModel(danger.Id);
+            var dbdanger = _rpsdanger.GetModel(danger.ID);
             if (dbdanger == null)
             {
                 throw new Exception("未找到所需修改项");
             }
-            var check = _rpsdanger.Any(p => p.ID != danger.Id && p.DangerSortID == danger.DangerSortID && p.Name == danger.Name && p.Code == danger.Code);
+            var check = _rpsdanger.Any(p => p.ID != danger.ID && p.DangerSortID == danger.DangerSortID && p.Name == danger.Name && p.Code == danger.Code);
             if (check)
             {
                 throw new Exception("当前类别下已存在该风险信息");
