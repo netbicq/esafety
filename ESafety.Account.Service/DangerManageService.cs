@@ -198,19 +198,33 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<IEnumerable<DangerView>> GetDangers(Guid dangersortid)
         {
-            var dbdangers = _rpsdanger.Queryable();
-            var dangersortids = from dangersort in _rpsdangersort.GetList(p => p.ParetID == dangersortid)
-                                select dangersort.ID;
-            var dangers = from danger in dbdangers.ToList()
-                          where dangersortids.Contains(danger.DangerSortID) || danger.ID == dangersortid
+            //var dbdangers = _rpsdanger.Queryable();
+            //var dangersortids = from dangersort in _rpsdangersort.GetList(p => p.ParetID == dangersortid)
+            //                    select dangersort.ID;
+            //var dangers = from danger in dbdangers.ToList()
+            //              where dangersortids.Contains(danger.DangerSortID) || danger.ID == dangersortid
+            //              select new DangerView
+            //              {
+            //                  Code = danger.Code,
+            //                  DangerSortID = danger.DangerSortID,
+            //                  Name = danger.Name,
+            //                  ID = danger.ID,
+            //                  DangerSortName = _rpsdangersort.GetModel(p=>p.ID==danger.DangerSortID||p.ID==dangersortid).SortName
+            //              };
+
+            var sorts = _rpsdangersort.Queryable(q => q.ID == dangersortid);
+
+            var dangers = from dg in _rpsdanger.Queryable(q => q.DangerSortID == dangersortid)
+                          let sort = sorts.FirstOrDefault()
                           select new DangerView
                           {
-                              Code = danger.Code,
-                              DangerSortID = danger.DangerSortID,
-                              Name = danger.Name,
-                              ID = danger.ID,
-                              DangerSortName = _rpsdangersort.GetModel(p=>p.ID==danger.DangerSortID||p.ID==dangersortid).SortName
+                              Code = dg.Code,
+                              DangerSortID = dg.DangerSortID,
+                              ID = dg.ID,
+                              Name = dg.Name,
+                              DangerSortName = sort == null ? "" : sort.SortName
                           };
+
             return new ActionResult<IEnumerable<DangerView>>(dangers);
         }
 
