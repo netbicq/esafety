@@ -34,23 +34,4 @@ namespace ESafety.Account.Model.View
         public string PrincipalTel { get; set; }
     }
 
-    public class PostEmployeeView
-    {
-        /// <summary>
-        /// 岗位ID
-        /// </summary>
-        public Guid PostID { get; set; }
-        /// <summary>
-        /// 人员ID
-        /// </summary>
-        public Guid EmployeeID { get; set; }
-        /// <summary>
-        /// 岗位名称
-        /// </summary>
-        public string PostName { get; set; }
-        /// <summary>
-        /// 人员名称
-        /// </summary>
-        public string EmployeeName { get; set; }
-    }
 }

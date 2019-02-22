@@ -100,7 +100,7 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var check = _rpsdangersort.Any(p => p.ParentID == dangersort.ParetID && p.SortName == dangersort.SortName);
+                var check = _rpsdangersort.Any(p => p.ParetID == dangersort.ParetID && p.SortName == dangersort.SortName);
                 if (check)
                 {
                     throw new Exception("当前节点下已存在该类别名称:" + dangersort.SortName);
@@ -183,7 +183,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到该风险类别");
                 }
-                var check = _rpsdangersort.Any(p => p.ParentID == id);
+                var check = _rpsdangersort.Any(p => p.ParetID == id);
                 if (check)
                 {
                     throw new Exception("该类别下存在子类别，无法删除");
@@ -299,12 +299,12 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbdangersorts = _rpsdangersort.Queryable(p => p.ParentID == id);
+                var dbdangersorts = _rpsdangersort.Queryable(p => p.ParetID == id);
                 var re = from s in dbdangersorts.ToList()
                          select new DangerSortView
                          {
                              ID = s.ID,
-                             ParentID = s.ParentID,
+                             ParetID = s.ParetID,
                              Level = s.Level,
                              SortName = s.SortName
                          };
