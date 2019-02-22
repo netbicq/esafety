@@ -40,9 +40,13 @@ namespace ESafety.Core
         /// <param name="employee"></param>
         /// <returns></returns>
         public ActionResult<bool> AddEmployee(EmployeeNew employee)
-        {
+        { 
             try
             {
+                if(employee == null)
+                {
+                    throw new Exception("参数有误");
+                }
                 var check = _rpsemployee.Any(q => q.Login == employee.Login);
                 if (check)
                 {
@@ -258,20 +262,37 @@ namespace ESafety.Core
         {
             try
             {
-                var dbemployees = _rpsemployee.Queryable();
-                var orgids = from ids in _rpsorg.GetList(p => p.ParentID == orgid)
-                             select ids.ID;
-                var re = from employee in dbemployees.ToList()
-                         where orgids.Contains(employee.OrgID) || employee.ID == orgid
+                //var dbemployees = _rpsemployee.Queryable();
+                //var orgids = from ids in _rpsorg.GetList(p => p.ParentID == orgid)
+                //             select ids.ID;
+
+
+                //var re = from employee in dbemployees.ToList()
+                //         where orgids.Contains(employee.OrgID) || employee.ID == orgid
+                //         select new EmployeeView
+                //         {
+                //             CNName = employee.CNName,
+                //             Gender = employee.Gender,
+                //             IsLeader = employee.IsLeader,
+                //             IsLevel = employee.IsLevel,
+                //             HeadIMG = employee.HeadIMG,
+                //             Login = employee.Login
+                //         };
+
+                var emps = _rpsemployee.Queryable(q => q.OrgID == orgid);
+
+                var re = from em in emps
                          select new EmployeeView
                          {
-                             CNName = employee.CNName,
-                             Gender = employee.Gender,
-                             IsLeader = employee.IsLeader,
-                             IsLevel = employee.IsLevel,
-                             HeadIMG = employee.HeadIMG,
-                             Login = employee.Login
+                             CNName = em.CNName,
+                             Gender = em.Gender,
+                             HeadIMG = em.HeadIMG,
+                             IsLeader = em.IsLeader,
+                             IsLevel = em.IsLevel,
+                             Login = em.Login,
+                             OrgID = em.OrgID
                          };
+                 
                 return new ActionResult<IEnumerable<EmployeeView>>(re);
             }
             catch (Exception ex)
