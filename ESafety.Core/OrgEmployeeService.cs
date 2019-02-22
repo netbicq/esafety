@@ -265,12 +265,14 @@ namespace ESafety.Core
                          where orgids.Contains(employee.OrgID) || employee.ID == orgid
                          select new EmployeeView
                          {
+                             ID=employee.ID,
                              CNName = employee.CNName,
                              Gender = employee.Gender,
                              IsLeader = employee.IsLeader,
                              IsLevel = employee.IsLevel,
                              HeadIMG = employee.HeadIMG,
-                             Login = employee.Login
+                             Login = employee.Login,
+                             OrgID=employee.OrgID
                          };
                 return new ActionResult<IEnumerable<EmployeeView>>(re);
             }

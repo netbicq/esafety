@@ -11,6 +11,10 @@ namespace ESafety.Core.Model.View
     public class EmployeeView
     {
         /// <summary>
+        /// 雇员ID
+        /// </summary>
+        public Guid ID { get; set; }
+        /// <summary>
         /// 姓名
         /// </summary>
         public string CNName { get; set; }
