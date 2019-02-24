@@ -154,10 +154,30 @@ namespace ESafety.Account.Service
                 return new ActionResult<PostView>(ex);
             }
         }
-
-        public ActionResult<Pager<PostView>> GetPosts(PagerQuery<string> para)
+        /// <summary>
+        /// 获取岗位页
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        public ActionResult<Pager<PostView>> GetPostsPage(PagerQuery<PostQuery> para)
         {
-            throw new NotImplementedException();
+            
+            var posts = _rpspost.Queryable(q => q.Name.Contains(para.Query.Name)||q.Code.Contains(para.Query.Code) || string.IsNullOrEmpty(para.Query.Name)||string.IsNullOrEmpty(para.Query.Code));
+
+            var repost = from ac in posts
+                        orderby ac.Code descending
+                        select new PostView
+                        {
+                            Code=ac.Code,
+                            ID=ac.ID,
+                            Name=ac.Name,
+                            Principal=ac.Principal,
+                            PrincipalTel=ac.PrincipalTel
+                        };
+
+            var re = new Pager<PostView>().GetCurrentPage(repost, para.PageSize, para.PageIndex);
+
+            return new ActionResult<Pager<PostView>>(re);
         }
     }
 }

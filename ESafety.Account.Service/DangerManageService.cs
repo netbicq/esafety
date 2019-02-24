@@ -287,7 +287,6 @@ namespace ESafety.Account.Service
 
                 return new ActionResult<IEnumerable<DangerView>>(ex);
             }
-           
         }
 
         /// <summary>

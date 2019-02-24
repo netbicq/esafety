@@ -206,6 +206,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\DangerManageController.cs" />
+    <Compile Include="Controllers\DangerRelationController.cs" />
     <Compile Include="Controllers\DictController.cs" />
     <Compile Include="Controllers\FlowController.cs" />
     <Compile Include="Controllers\HomeController.cs" />

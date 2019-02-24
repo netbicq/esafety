@@ -50,4 +50,17 @@ namespace ESafety.Account.Model.PARA
         public Guid EmployeeID { get; set; }
     }
 
+    public class PostQuery
+    {
+        /// <summary>
+        ///编号
+        /// </summary>
+        public string Code { get; set; }
+        /// <summary>
+        /// 岗位名称
+        /// </summary>
+        public string Name { get; set; }
+    }
+
+
 }

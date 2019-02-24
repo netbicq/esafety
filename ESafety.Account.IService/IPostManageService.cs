@@ -19,6 +19,6 @@ namespace ESafety.Account.IService
 
         ActionResult<PostView> GetPost(Guid id);
 
-        ActionResult<Pager<PostView>> GetPosts(PagerQuery<string> para);
+        ActionResult<Pager<PostView>> GetPostsPage(PagerQuery<PostQuery> para);
     }
 }

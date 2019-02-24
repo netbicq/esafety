@@ -63,6 +63,10 @@
       <Project>{175c4777-fb21-46c1-844f-cdb9947769e3}</Project>
       <Name>ESafety.Account.IService</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ESafety.Account.Model\ESafety.Account.Model.csproj">
+      <Project>{812FB462-BB86-4D06-9D8F-C452E3C87308}</Project>
+      <Name>ESafety.Account.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ESafety.Account.Service\ESafety.Account.Service.csproj">
       <Project>{7f78afa0-cfe0-42cb-b7c7-f53ef47330b5}</Project>
       <Name>ESafety.Account.Service</Name>
