@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESafety.Core.Model.PARA;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,6 +47,11 @@ namespace ESafety.Account.Model.PARA
         /// 负责人电话
         /// </summary>
         public string PrincipalTel { get; set; }
+
+        /// <summary>
+        /// 自定义类项
+        /// </summary>
+        public IEnumerable<UserDefinedValue> UserDefineds { get; set; }
     }
 
     public class FacilityEdit:FacilityNew

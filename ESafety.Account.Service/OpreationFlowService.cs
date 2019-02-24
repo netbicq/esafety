@@ -195,11 +195,30 @@ namespace ESafety.Account.Service
                 return new ActionResult<bool>(ex);
             }
         }
-      
+      /// <summary>
+      /// 分页获取操作模型
+      /// </summary>
+      /// <param name="para"></param>
+      /// <returns></returns>
         public ActionResult<Pager<OpreationView>> GetOpreationPage(PagerQuery<OpreationQuery> para)
         {
-            throw new NotImplementedException();
-        
+            var opreations = _rpsopreation.Queryable(q => q.Name.Contains(para.Query.Name) || q.Code.Contains(para.Query.Code) || string.IsNullOrEmpty(para.Query.Name) || string.IsNullOrEmpty(para.Query.Code));
+
+            var reops = from ac in opreations
+                         orderby ac.Code descending
+                         select new OpreationView
+                         {
+                             Code = ac.Code,
+                             ID = ac.ID,
+                             Name = ac.Name,
+                             IsBackReturn=ac.IsBackReturn,
+                             Memo=ac.Memo
+                         };
+
+            var re = new Pager<OpreationView>().GetCurrentPage(reops, para.PageSize, para.PageIndex);
+
+            return new ActionResult<Pager<OpreationView>>(re);
+
         }
         /// <summary>
         /// 获取操作节点列表
@@ -255,6 +274,24 @@ namespace ESafety.Account.Service
             {
 
                 throw;
+            }
+        }
+        /// <summary>
+        /// 获取操作列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<OpreationView>> GetOpreations()
+        {
+            
+            try
+            {
+                var dbopreation = _rpsopreation.GetList();
+                var re = dbopreation.MAPTO<OpreationView>();
+                return new ActionResult<IEnumerable<OpreationView>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<OpreationView>>(ex);
             }
         }
     }

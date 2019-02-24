@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ESafety.Account.IService
 {
-    public interface IFacilitiesManageServcie
+    public interface IFacilitiesManageService
     {
         ActionResult<bool> AddFacilitiesSort(FacilitiesSortNew facilitiesSort);
 

@@ -54,7 +54,7 @@ namespace ESafety.Account.Service
         /// <summary>
         /// 删除风险配置
         /// </summary>
-        /// <param name="ID"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         public ActionResult<bool> DelDangerRelation(Guid id)
         {

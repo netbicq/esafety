@@ -208,10 +208,13 @@
     <Compile Include="Controllers\DangerManageController.cs" />
     <Compile Include="Controllers\DangerRelationController.cs" />
     <Compile Include="Controllers\DictController.cs" />
+    <Compile Include="Controllers\FacilitiesManageController.cs" />
     <Compile Include="Controllers\FlowController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LogController.cs" />
+    <Compile Include="Controllers\OpreationFlowController.cs" />
     <Compile Include="Controllers\OrgEmployeeController.cs" />
+    <Compile Include="Controllers\PostManageController.cs" />
     <Compile Include="Controllers\SafetyStandardController.cs" />
     <Compile Include="Controllers\UserDefinedController.cs" />
     <Compile Include="Global.asax.cs">

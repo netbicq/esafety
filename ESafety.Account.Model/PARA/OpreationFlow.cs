@@ -41,7 +41,14 @@ namespace ESafety.Account.Model.PARA
     }
     public class OpreationQuery
     {
-
+        /// <summary>
+        /// 编号
+        /// </summary>
+        public string Code { get; set; }
+        /// <summary>
+        /// 操作名称
+        /// </summary>
+        public string Name { get; set; }
     }
     public class OpreationFlowNew
     {
