@@ -68,6 +68,14 @@ namespace ESafety.Account.Model.PARA
         /// 设备设施类别ID
         /// </summary>
         public Guid ID { get; set; }
+        /// <summary>
+        /// 编号
+        /// </summary>
+        public string Code { get; set; }
+        /// <summary>
+        /// 设备名称
+        /// </summary>
+        public string Name { get; set; }
     }
 
 }
