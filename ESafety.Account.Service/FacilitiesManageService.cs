@@ -104,7 +104,7 @@ namespace ESafety.Account.Service
             try
             {
                 var check = _rpsfacilitiessort.Any(p => p.ID == id);
-                if (check)
+                if (!check)
                 {
                     throw new Exception("未找到该类别");
                 }
@@ -197,19 +197,19 @@ namespace ESafety.Account.Service
             try
             {
                
-                var dbfacilities = _rpsfacilities.Queryable(p=>p.SortID==para.Query.ID&& (p.Name.Contains(para.Query.Name) || p.Code.Contains(para.Query.Code) || string.IsNullOrEmpty(para.Query.Name) || string.IsNullOrEmpty(para.Query.Code)));
+                var dbfacilities = _rpsfacilities.Queryable(p=>p.SortID==para.Query.ID/*&& (p.Name.Contains(para.Query.Name) || p.Code.Contains(para.Query.Code) || string.IsNullOrEmpty(para.Query.Name) || string.IsNullOrEmpty(para.Query.Code))*/);
                 var sortname = _rpsfacilitiessort.GetModel(p => p.ID == para.Query.ID).SortName;
                 var refclty = from f in dbfacilities
-                         select new FacilityView
-                         {
-                             ID = f.ID,
-                             Code = f.Code,
-                             Name = f.Name,
-                             Principal = f.Principal,
-                             PrincipalTel = f.PrincipalTel,
-                             SortID = f.SortID,
-                             SortName = sortname
-                         };
+                              select new FacilityView
+                              {
+                                  ID = f.ID,
+                                  Code = f.Code,
+                                  Name = f.Name,
+                                  Principal = f.Principal,
+                                  PrincipalTel = f.PrincipalTel,
+                                  SortID = f.SortID,
+                                  SortName = sortname
+                              };
                 var re = new Pager<FacilityView>().GetCurrentPage(refclty, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<FacilityView>>(re);
             }
