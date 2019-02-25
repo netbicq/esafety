@@ -58,7 +58,7 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="para"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpPost]
         [Route("getdrpage")]
         public ActionResult<Pager<DangerRelationView>> GetDangerRelations(PagerQuery<DangerRelationQuery> para)
         {
