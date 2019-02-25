@@ -76,7 +76,7 @@ namespace ESafety.Account.API.Controllers
             return bll.GetSafetyStandard(id);
         }
         /// <summary>
-        /// 获取所有安全标准
+        /// 获取所有安全标准模型
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -86,15 +86,15 @@ namespace ESafety.Account.API.Controllers
             return bll.GetSafetyStandards();
         }
         /// <summary>
-        /// 根据风险点类别ID获取所有安全标准
+        /// 根据风险点ID获取所有安全标准
         /// </summary>
-        /// <param name="dangersortid"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("getsftysds/{id:Guid}")]
-        public ActionResult<IEnumerable<SafetyStandardView>> GetSafetyStandards(Guid dangersortid)
+        public ActionResult<IEnumerable<SafetyStandardView>> GetSafetyStandards(Guid id)
         {
-            return bll.GetSafetyStandards(dangersortid);
+            return bll.GetSafetyStandards(id);
         }
     }
 }

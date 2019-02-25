@@ -18,12 +18,14 @@ namespace ESafety.Account.Service
         private IUnitwork _work = null;
         private IRepository<Basic_SafetyStandard> _rpssafetystandard = null;
         private IRepository<Basic_DangerSort> _rpsdangersort = null;
+        private IRepository<Basic_DangerSafetyStandards> _rpsdssd = null;
         public SafetyStandardService(IUnitwork work)
         {
             _work = work;
             Unitwork = work;
             _rpssafetystandard = work.Repository<Basic_SafetyStandard>();
             _rpsdangersort= work.Repository<Basic_DangerSort>();
+            _rpsdssd = work.Repository<Basic_DangerSafetyStandards>();
         }
         /// <summary>
         /// 添加安全标准
@@ -163,23 +165,25 @@ namespace ESafety.Account.Service
         /// <summary>
         /// 根据风险类别ID获取所有安全准则
         /// </summary>
-        /// <param name="dangersortid"></param>
+        /// <param name="dangerid"></param>
         /// <returns></returns>
-        public ActionResult<IEnumerable<SafetyStandardView>> GetSafetyStandards(Guid dangersortid)
+        public ActionResult<IEnumerable<SafetyStandardView>> GetSafetyStandards(Guid dangerid)
         {
             try
             {
-                var SafetyStandards = _rpssafetystandard.Queryable(p => p.DangerSortID == dangersortid);
-                var DangerSortName = _rpsdangersort.GetModel(dangersortid).SortName;
-                var re = from s in SafetyStandards.ToList()
+                
+                var SafetyStandardIds = _rpsdssd.Queryable(p => p.DangerID == dangerid);
+      
+                var re = from s in SafetyStandardIds.ToList()
+                         let o = _rpssafetystandard.GetModel(s.SafetyStandardID)
                          select new SafetyStandardView
                          {
-                             ID = s.ID,
-                             Code = s.Code,
-                             Controls = s.Controls,
-                             DangerSort = DangerSortName,
-                             DangerSortID = s.DangerSortID,
-                             Name = s.Name
+                             ID = o.ID,
+                             Code = o.Code,
+                             Controls = o.Controls,
+                             DangerSort = _rpsdangersort.GetModel(o.DangerSortID).SortName,
+                             DangerSortID = o.DangerSortID,
+                             Name = o.Name
                          };
                 return new ActionResult<IEnumerable<SafetyStandardView>>(re);
             }

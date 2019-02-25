@@ -69,7 +69,7 @@ namespace ESafety.Account.Service
             try
             {
                 var check = _rpsdanger.Any(p => p.ID == safetyStandards.DangerID);
-                if (check)
+                if (!check)
                 {
                     throw new Exception("未找到该风险点");
                 }

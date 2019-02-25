@@ -22,7 +22,7 @@ namespace ESafety.ORM
 
         public RepositoryEF(DbContext db)
         {
-
+            
             this._dbcontext = db;
             this._dbSet = this._dbcontext.Set<T>();
         }

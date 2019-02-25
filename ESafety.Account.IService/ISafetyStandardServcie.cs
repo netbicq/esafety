@@ -19,7 +19,7 @@ namespace ESafety.Account.IService
 
         ActionResult<IEnumerable<SafetyStandardView>> GetSafetyStandards();
 
-        ActionResult<IEnumerable<SafetyStandardView>> GetSafetyStandards(Guid dangersortid);
+        ActionResult<IEnumerable<SafetyStandardView>> GetSafetyStandards(Guid dangerid);
 
         ActionResult<SafetyStandardView> GetSafetyStandard(Guid id);
     }
