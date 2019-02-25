@@ -93,7 +93,7 @@ namespace ESafety.Account.API.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("getopreation")]
+        [Route("getopreation/{id:Guid}")]
         public ActionResult<OpreationView> GetOpreation(Guid id)
         {
             return bll.GetOpreation(id);
