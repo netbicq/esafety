@@ -36,6 +36,8 @@ namespace ESafety.Core
 
         ActionResult<Pager<Model.View.EmployeeView>> GetEmployees(PagerQuery<EmployeeQuery> para);
 
+        ActionResult<IEnumerable<EmployeeView>> GetEmployeelist(Guid orgid);
+
         ActionResult<IEnumerable<Model.View.OrgView>> GetOrgChildren(Guid id);
          
     }

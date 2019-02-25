@@ -229,6 +229,29 @@ namespace ESafety.Core
            
         }
         /// <summary>
+        /// 根据组织ID，返回人员列表
+        /// </summary>
+        /// <param name="orgid"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<EmployeeView>> GetEmployeelist(Guid orgid)
+        {
+            var emps = _rpsemployee.Queryable(q => q.OrgID == orgid||Guid.Empty==orgid);
+            var reemps = from em in emps
+                         select new EmployeeView
+                         {
+                             ID = em.ID,
+                             CNName = em.CNName,
+                             Gender = em.Gender,
+                             IsLeader = em.IsLeader,
+                             IsLevel = em.IsLevel,
+                             HeadIMG = em.HeadIMG,
+                             Login = em.Login,
+                             OrgID = em.OrgID
+                         };
+            return new ActionResult<IEnumerable<EmployeeView>>(reemps);
+        }
+
+        /// <summary>
         /// 获取职员模型
         /// </summary>
         /// <param name="id"></param>

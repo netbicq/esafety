@@ -104,6 +104,18 @@ namespace ESafety.Account.API.Controllers
             return bll.EditOrg(org);
         }
         /// <summary>
+        /// 根据组织ID获取人员模型列表
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getemplist/{id:Guid}")]
+        public ActionResult<IEnumerable<EmployeeView>> GetEmployeelist(Guid id)
+        {
+            return bll.GetEmployeelist(id);
+        }
+
+        /// <summary>
         /// 获取职员模型
         /// </summary>
         /// <param name="id"></param>
