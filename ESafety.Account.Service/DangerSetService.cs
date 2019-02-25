@@ -83,19 +83,18 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbdangerrelation = _rpsdangerrelation.Queryable();
-                var dbdanger = _rpsdanger.Queryable();
-                var redr = from s in dbdanger
-                           where (from c in dbdangerrelation where c.SubjectID == para.Query.SubjectID select c.DangerID).Contains(s.ID)
+                var dbdangerrelation = _rpsdangerrelation.Queryable(p=>p.SubjectID==para.Query.SubjectID);
+                var redr = from s in dbdangerrelation.ToList()
+                           let o = _rpsdanger.GetModel(p=>p.ID==s.DangerID)
                            select new DangerRelationView
                            {
-                               Code = s.Code,
-                               ID = _rpsdangerrelation.GetModel(p => p.SubjectID == para.Query.SubjectID).ID,
-                               DangerID = s.ID,
-                               DangerSortID = s.DangerSortID,
+                               Code = o.Code,
+                               ID = s.ID,
+                               DangerID = s.DangerID,
+                               DangerSortID = o.DangerSortID,
                                SubjectID = para.Query.SubjectID,
-                               DangerSortName = _rpsdangersort.GetModel(p => p.ID == s.DangerSortID).SortName,
-                               Name = s.Name
+                               DangerSortName = _rpsdangersort.GetModel(p => p.ID == o.DangerSortID).SortName,
+                               Name = o.Name
                            };
                 var re = new Pager<DangerRelationView>().GetCurrentPage(redr, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<DangerRelationView>>(re);

@@ -273,7 +273,7 @@ namespace ESafety.Account.Service
             catch (Exception ex)
             {
 
-                throw;
+                return new ActionResult<OpreationView>(ex);
             }
         }
         /// <summary>
