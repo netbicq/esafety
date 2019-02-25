@@ -25,6 +25,8 @@ namespace ESafety.Account.IService
 
         ActionResult<IEnumerable<DangerView>> GetDangers(Guid dangersortid);
 
+        ActionResult<IEnumerable<DangerView>> GetDangerslist();
+
         ActionResult<DangerView> GetDanger(Guid dangerid);
 
         ActionResult<bool> AddDangerSafetyStandard(DangerSafetyStandards safetyStandards);
