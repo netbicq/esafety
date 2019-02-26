@@ -100,6 +100,7 @@ namespace ESafety.Core
                 {
                     throw new Exception("词典未找到");
                 }
+
                 rpsDict.Delete(dbdict);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -128,6 +129,11 @@ namespace ESafety.Core
                 {
                     throw new Exception("词典类型存在有词典数据，请先删除词典数据");
                 }
+                if (dbtype.IsSYS)
+                {
+                    throw new Exception("系统内置词典不允许删除");
+                }
+
                 rpsDict.Delete(dbtype);
                 _work.Commit();
 
