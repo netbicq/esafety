@@ -288,6 +288,33 @@ namespace ESafety.Account.Service
                 return new ActionResult<IEnumerable<DangerView>>(ex);
             }
         }
+        /// <summary>
+        /// 获取风险点集合
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<DangerView>> GetDangerslist()
+        {
+            try
+            {
+                var dbdangers = _rpsdanger.Queryable();
+                var dangers = from danger in dbdangers.ToList()
+                              let o = _rpsdangersort.GetModel(danger.DangerSortID)
+                              select new DangerView
+                              {
+                                  Code = danger.Code,
+                                  DangerSortID = danger.DangerSortID,
+                                  Name = danger.Name,
+                                  ID = danger.ID,
+                                  DangerSortName = o==null?"":o.SortName
+                              };
+                return new ActionResult<IEnumerable<DangerView>>(dangers);
+            }
+            catch (Exception ex)
+            {
+
+                return new ActionResult<IEnumerable<DangerView>>(ex);
+            }
+        }
 
         /// <summary>
         /// 获取风险类别树节点

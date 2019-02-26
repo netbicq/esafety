@@ -137,6 +137,17 @@ namespace ESafety.Account.API.Controllers
             return bll.GetDangers(dangersortid);
         }
         /// <summary>
+        /// 获取风险点list集合
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getdangerlist")]
+        public ActionResult<IEnumerable<DangerView>> GetDangerslist()
+        {
+            return bll.GetDangerslist();
+        }
+
+        /// <summary>
         /// 根据ID获取风险点类别树节点
         /// </summary>
         /// <param name="id"></param>
