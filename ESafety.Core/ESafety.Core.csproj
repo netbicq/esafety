@@ -47,6 +47,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -56,10 +57,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountService.cs" />
+    <Compile Include="AttachFileService.cs" />
     <Compile Include="Auth_UserService.cs" />
     <Compile Include="DictService.cs" />
     <Compile Include="FlowService.cs" />
     <Compile Include="IAccount.cs" />
+    <Compile Include="IAttachFile.cs" />
     <Compile Include="IAuth_User.cs" />
     <Compile Include="IDict.cs" />
     <Compile Include="IFlow.cs" />
