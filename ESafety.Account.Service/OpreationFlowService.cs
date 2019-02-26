@@ -234,8 +234,8 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到该操作信息");
                 }
-                var dbof = _rpsof.Queryable(p=>p.OpreationID==id);
-                var re = from s in dbof
+                var dbof =_rpsof.Queryable(p=>p.OpreationID==id);
+                var re = from s in dbof.ToList()
                          select new OpreationFlowView
                          {
                              ID = s.ID,
