@@ -79,10 +79,8 @@ namespace ESafety.Account.Service
         /// </summary>
         /// <param name="postEmployee"></param>
         /// <returns></returns>
-        public ActionResult<bool> AddPosteEmployee(PostEmployeeNew postEmployee)
+        public ActionResult<bool> AddPostEmployee(PostEmployeeNew postEmployee)
         {
-
-
             try
             {
                 var check = _rpspostemp.Any(p => p.PostID == postEmployee.PostID && p.EmployeeID == postEmployee.EmployeeID);

@@ -22,6 +22,8 @@ namespace ESafety.Account.IService
         ActionResult<IEnumerable<PostView>> GetPosts();
         ActionResult<Pager<PostView>> GetPostsPage(PagerQuery<PostQuery> para);
 
+        ActionResult<bool> AddPostEmployee(PostEmployeeNew  postEmployee);
+
         ActionResult<Pager<PostEmployeesView>> GetEmployeesByPostID(PagerQuery<PostEmployeeQuery> para);
 
         ActionResult<bool> DelPostEmployee(Guid id);

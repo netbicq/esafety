@@ -38,6 +38,20 @@ namespace ESafety.Account.API.Controllers
             LogContent = "新建岗位模型，参数源：" + JsonConvert.SerializeObject(post);
             return bll.AddPost(post);
         }
+
+        /// <summary>
+        /// 新建岗位与人员的关系
+        /// </summary>
+        /// <param name="postEmployee"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("addpostemp")]
+        public ActionResult<bool> AddPostEmployee(PostEmployeeNew postEmployee)
+        {
+            LogContent = "新建岗位与人员的关系模型,参数源:" + JsonConvert.SerializeObject(postEmployee);
+            return bll.AddPostEmployee(postEmployee);
+        }
+
         /// <summary>
         /// 删除岗位模型
         /// </summary>
