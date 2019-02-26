@@ -35,4 +35,49 @@ namespace ESafety.Account.Model.View
         public string PrincipalTel { get; set; }
     }
 
+    public class PostEmployeesView
+    {
+        /// <summary>
+        /// 人员和岗位的关系ID
+        /// </summary>
+        public Guid ID { get; set; }
+        /// <summary>
+        /// 人员ID
+        /// </summary>
+        public Guid EmployeeID { get; set; }
+        /// <summary>
+        /// 姓名
+        /// </summary>
+        public string CNName { get; set; }
+        /// <summary>
+        /// 性别
+        /// </summary>
+        public string Gender { get; set; }
+        /// <summary>
+        /// Leader
+        /// </summary>
+        public bool IsLeader { get; set; }
+        /// <summary>
+        /// 接受平级
+        /// </summary>
+        public bool IsLevel { get; set; }
+        /// <summary>
+        /// 操作用户
+        /// </summary>
+        public string Login { get; set; }
+        /// <summary>
+        /// 头像IMG
+        /// </summary>
+        public string HeadIMG { get; set; }
+        /// <summary>
+        /// 组织ID
+        /// </summary>
+        public Guid OrgID { get; set; }
+        /// <summary>
+        /// 组织名称
+        /// </summary>
+        public string OrgName { get; set; }
+    }
+
+
 }

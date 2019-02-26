@@ -5,6 +5,7 @@ using ESafety.Core;
 using ESafety.Core.Model;
 using ESafety.Core.Model.DB.Account;
 using ESafety.Core.Model.PARA;
+using ESafety.Core.Model.View;
 using ESafety.ORM;
 using ESafety.Unity;
 using System;
@@ -20,6 +21,8 @@ namespace ESafety.Account.Service
         private IUnitwork _work = null;
         private IRepository<Basic_Post> _rpspost = null;
         private IRepository<Basic_PostEmployees> _rpspostemp=null;
+        private IRepository<Core.Model.DB.Basic_Employee> _rpsemp = null;
+        private IRepository<Core.Model.DB.Basic_Org> _rpsorg = null;
         private IUserDefined usedefinedService = null;
 
         public PostManageService(IUnitwork work,IUserDefined udf)
@@ -28,6 +31,8 @@ namespace ESafety.Account.Service
             Unitwork = work;
             _rpspost = work.Repository<Basic_Post>();
             _rpspostemp = work.Repository<Basic_PostEmployees>();
+            _rpsemp = work.Repository<Core.Model.DB.Basic_Employee>();
+            _rpsorg = work.Repository<Core.Model.DB.Basic_Org>();
             usedefinedService = udf;
         }
         /// <summary>
@@ -127,6 +132,30 @@ namespace ESafety.Account.Service
             }
         }
         /// <summary>
+        /// 删除岗位与人员的关系
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult<bool> DelPostEmployee(Guid id)
+        {
+            try
+            {
+                var check = _rpspostemp.Any(id);
+                if (!check)
+                {
+                    throw new Exception("该岗位未找到该人员");
+                }
+                _rpspostemp.Delete(p=>p.ID==id);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+
+        /// <summary>
         /// 修改岗位
         /// </summary>
         /// <param name="post"></param>
@@ -157,8 +186,6 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception(defined.msg);
                 }
-
-
                 _rpspost.Update(_dbpost);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -169,6 +196,37 @@ namespace ESafety.Account.Service
                 return new ActionResult<bool>(ex);
             }
         }
+        /// <summary>
+        /// 根据岗位获取所有人员信息
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        public ActionResult<Pager<PostEmployeesView>> GetEmployeesByPostID(PagerQuery<PostEmployeeQuery> para)
+        {
+            var posts = _rpspostemp.Queryable(p=>p.PostID==para.Query.PostID);
+
+            var repostemp = from ac in posts.ToList()
+                            let o = _rpsemp.GetModel(ac.EmployeeID)
+                            select new PostEmployeesView
+                            {
+                                ID=ac.ID,
+                                CNName = o.CNName,
+                                Gender = o.Gender,
+                                HeadIMG = o.HeadIMG,
+                                IsLeader = o.IsLeader,
+                                IsLevel = o.IsLevel,
+                                Login = o.Login,
+                                OrgID = o.OrgID,
+                                EmployeeID = o.ID,
+                                OrgName = _rpsorg.GetModel(o.OrgID).OrgName
+                            };
+            var re = new Pager<PostEmployeesView>().GetCurrentPage(repostemp, para.PageSize, para.PageIndex);
+
+            return new ActionResult<Pager<PostEmployeesView>>(re);
+        }
+
+     
+
         /// <summary>
         /// 获取岗位信息
         /// </summary>

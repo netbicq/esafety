@@ -228,6 +228,7 @@ namespace ESafety.Core
             }
            
         }
+ 
         /// <summary>
         /// 根据组织ID，返回人员列表
         /// </summary>

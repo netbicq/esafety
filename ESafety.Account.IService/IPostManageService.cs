@@ -1,6 +1,7 @@
 ﻿using ESafety.Account.Model.PARA;
 using ESafety.Account.Model.View;
 using ESafety.Core.Model;
+using ESafety.Core.Model.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,5 +21,9 @@ namespace ESafety.Account.IService
         ActionResult<PostView> GetPost(Guid id);
         ActionResult<IEnumerable<PostView>> GetPosts();
         ActionResult<Pager<PostView>> GetPostsPage(PagerQuery<PostQuery> para);
+
+        ActionResult<Pager<PostEmployeesView>> GetEmployeesByPostID(PagerQuery<PostEmployeeQuery> para);
+
+        ActionResult<bool> DelPostEmployee(Guid id);
     }
 }

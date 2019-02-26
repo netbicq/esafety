@@ -38,6 +38,7 @@ namespace ESafety.Core
 
         ActionResult<IEnumerable<EmployeeView>> GetEmployeelist(Guid orgid);
 
+
         ActionResult<IEnumerable<Model.View.OrgView>> GetOrgChildren(Guid id);
          
     }

@@ -51,6 +51,19 @@ namespace ESafety.Account.API.Controllers
             return bll.DelPost(id);
         }
         /// <summary>
+        /// 根据ID，删除岗位与人员的关系模型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("delpostemp/{id:Guid}")]
+        public ActionResult<bool> DelPostEmployee(Guid id)
+        {
+            LogContent = "删除了岗位与人员的关系模型,ID为:" + JsonConvert.SerializeObject(id);
+            return bll.DelPostEmployee(id);
+        }
+
+        /// <summary>
         /// 修改岗位模型
         /// </summary>
         /// <param name="post"></param>
@@ -63,6 +76,18 @@ namespace ESafety.Account.API.Controllers
             return bll.EditPost(post);
 
         }
+        /// <summary>
+        /// 根据岗位ID，分页获取人员信息
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("getempbypostid")]
+        public ActionResult<Pager<PostEmployeesView>> GetEmployeesByPostID(PagerQuery<PostEmployeeQuery> para)
+        {
+            return bll.GetEmployeesByPostID(para);
+        }
+
         /// <summary>
         /// 根据岗位ID，获取岗位模型
         /// </summary>

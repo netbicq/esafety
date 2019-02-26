@@ -67,5 +67,12 @@ namespace ESafety.Account.Model.PARA
         public string Name { get; set; }
     }
 
+    public class PostEmployeeQuery
+    {
+        /// <summary>
+        /// 岗位ID
+        /// </summary>
+        public Guid PostID { get; set; }
+    }
 
 }
