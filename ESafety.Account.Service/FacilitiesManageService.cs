@@ -197,7 +197,7 @@ namespace ESafety.Account.Service
             try
             {
                
-                var dbfacilities = _rpsfacilities.Queryable(p => p.SortID == para.Query.ID && (p.Name.Contains(para.Query.Name) || p.Code.Contains(para.Query.Code) || string.IsNullOrEmpty(para.Query.Name) || string.IsNullOrEmpty(para.Query.Code)));
+                var dbfacilities = _rpsfacilities.Queryable(p => p.SortID == para.Query.ID && (p.Name.Contains(para.KeyWord) || p.Code.Contains(para.KeyWord) || string.IsNullOrEmpty(para.KeyWord)));
                 var sortname = _rpsfacilitiessort.GetModel(p => p.ID == para.Query.ID).SortName;
                 var refclty = from f in dbfacilities
                               select new FacilityView
