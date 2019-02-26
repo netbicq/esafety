@@ -96,10 +96,10 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到所需修改安全标准");
                 }
-                var check = _rpssafetystandard.Any(p => p.DangerSortID == safetystandard.DangerSortID && p.Code == safetystandard.Code);
+                var check =_rpsdssd.Any(p=>p.SafetyStandardID==safetystandard.ID);
                 if (check)
                 {
-                    throw new Exception("该风险点下已存在该编号的风险安全标准");
+                    throw new Exception("该安全标准已配置在风险点下,无法修改!");
                 }
                 var _dbsafetystandard = safetystandard.CopyTo<Basic_SafetyStandard>(dbsafetystandard);
                 _rpssafetystandard.Update(dbsafetystandard);

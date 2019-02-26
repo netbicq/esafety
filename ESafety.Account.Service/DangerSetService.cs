@@ -61,7 +61,7 @@ namespace ESafety.Account.Service
             try
             {
                 var check = _rpsdangerrelation.Any(p => p.ID==id);
-                if (check)
+                if (!check)
                 {
                     throw new Exception("未找到该风险点配置");
                 }
