@@ -66,6 +66,11 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到该安全标准");
                 }
+                var check = _rpsdssd.Any(p=>p.SafetyStandardID==id);
+                if (check)
+                {
+                    throw new Exception("该安全点已经配置在风险点下，无法删除！");
+                }
                 _rpssafetystandard.Delete(dbsafetystandard);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -89,7 +94,7 @@ namespace ESafety.Account.Service
                 var dbsafetystandard = _rpssafetystandard.GetModel(safetystandard.ID);
                 if (dbsafetystandard == null)
                 {
-                    throw new Exception("未找到所需安全标准");
+                    throw new Exception("未找到所需修改安全标准");
                 }
                 var check = _rpssafetystandard.Any(p => p.DangerSortID == safetystandard.DangerSortID && p.Code == safetystandard.Code);
                 if (check)
@@ -171,9 +176,7 @@ namespace ESafety.Account.Service
         {
             try
             {
-                
                 var SafetyStandardIds = _rpsdssd.Queryable(p => p.DangerID == dangerid);
-      
                 var re = from s in SafetyStandardIds.ToList()
                          let o = _rpssafetystandard.GetModel(s.SafetyStandardID)
                          select new SafetyStandardView

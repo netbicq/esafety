@@ -21,6 +21,7 @@ namespace ESafety.Account.Service
         private IRepository<Core.Model.DB.Account.Basic_Danger> _rpsdanger = null;
         private IRepository<Basic_DangerSort> _rpsdangersort = null;
         private IRepository<Basic_DangerSafetyStandards> _rpsdangersafetystandards = null;
+        private IReadOnlyCollection<Basic_DangerRelation> _rpsdr = null;
 
         public DangerManageService(IUnitwork work)
         {
@@ -132,6 +133,16 @@ namespace ESafety.Account.Service
                 if (dbdanger == null)
                 {
                     throw new Exception("未找到该风险信息");
+                }
+                var check = _rpsdangersafetystandards.Any(p => p.DangerID == id);
+                if (check)
+                {
+                    throw new Exception("该风险点已配置安全标准，无法删除！");
+                }
+                check = _rpsdr.Any(p=>p.DangerID==id);
+                if (check)
+                {
+                    throw new Exception("已存在风险点配置，无法删除！");
                 }
                 _rpsdanger.Delete(dbdanger);
                 _work.Commit();
