@@ -57,7 +57,61 @@ namespace ESafety.Unity
             [Description("结束")]
             Over =4
         }
+        /// <summary>
+        /// 巡检任务
+        /// </summary>
+        public enum EE_InspectTaskType
+        {
+            /// <summary>
+            /// 同期任务
+            /// </summary>
+            [Description("周期任务")]
+            Cycle=1,
+            /// <summary>
+            /// 临时任务
+            /// </summary>
+            [Description("临时任务")]
+            Temp=2
+        }
 
+
+        /// <summary>
+        /// 执行频率类型
+        /// </summary>
+        public enum EE_CycleDateType
+        {
+            /// <summary>
+            /// 年
+            /// </summary>
+            [Description("年")]
+            Year=1,
+            /// <summary>
+            /// 月
+            /// </summary>
+            [Description("月")]
+            Month =2,
+            /// <summary>
+            /// 周
+            /// </summary>
+            [Description("周")]
+            Week =3,
+            /// <summary>
+            /// 日
+            /// </summary>
+            [Description("日")]
+            Day =4,
+            /// <summary>
+            /// 小时
+            /// </summary>
+            [Description("时")]
+            Houre=5,
+            /// <summary>
+            /// 分钟
+            /// </summary>
+            [Description("分")]
+            Minute=6
+
+        }
         /// <summary>
         /// 审批节点类型
         /// </summary>
@@ -85,6 +139,29 @@ namespace ESafety.Unity
             [Description("作业申请")]
             Apply=1
         }
+        /// <summary>
+        /// 检查主体类型
+        /// </summary>
+        public enum EE_SubjectType
+        {
+            /// <summary>
+            /// 设备设施
+            /// </summary>
+            [Description("设备设施")]
+            Device=1,
+            /// <summary>
+            /// 岗位
+            /// </summary>
+            [Description("岗位")]
+            Post=2,
+            /// <summary>
+            /// 作业
+            /// </summary>
+            [Description("作业")]
+            Opreate=3
+        }
+
+        
         /// <summary>
         /// 自定义类型
         /// </summary>
@@ -240,6 +317,7 @@ namespace ESafety.Unity
             [Description("账套")]
             Range = 2
         }
+         
         /// <summary>
         /// 账套态态
         /// </summary>
