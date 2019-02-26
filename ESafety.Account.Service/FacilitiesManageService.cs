@@ -138,7 +138,7 @@ namespace ESafety.Account.Service
             try
             {
                 var check = _rpsfacilities.Any(p => p.ID == id);
-                if (check)
+                if (!check)
                 {
                     throw new Exception("该设备设施不存在");
                 }
@@ -197,7 +197,7 @@ namespace ESafety.Account.Service
             try
             {
                
-                var dbfacilities = _rpsfacilities.Queryable(p=>p.SortID==para.Query.ID/*&& (p.Name.Contains(para.Query.Name) || p.Code.Contains(para.Query.Code) || string.IsNullOrEmpty(para.Query.Name) || string.IsNullOrEmpty(para.Query.Code))*/);
+                var dbfacilities = _rpsfacilities.Queryable(p => p.SortID == para.Query.ID && (p.Name.Contains(para.Query.Name) || p.Code.Contains(para.Query.Code) || string.IsNullOrEmpty(para.Query.Name) || string.IsNullOrEmpty(para.Query.Code)));
                 var sortname = _rpsfacilitiessort.GetModel(p => p.ID == para.Query.ID).SortName;
                 var refclty = from f in dbfacilities
                               select new FacilityView
