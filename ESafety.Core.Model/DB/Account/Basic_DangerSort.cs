@@ -8,11 +8,16 @@ namespace ESafety.Core.Model.DB.Account
 
     public partial class Basic_DangerSort : ModelBase
     { 
-
+        /// <summary>
+        /// 父级ID
+        /// </summary>
         public Guid ParetID { get; set; }
 
         public int Level { get; set; }
 
+        /// <summary>
+        /// 类别名称
+        /// </summary>
         [Required]
         [StringLength(100)]
         public string SortName { get; set; }

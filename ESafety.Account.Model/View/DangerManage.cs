@@ -12,6 +12,9 @@ namespace ESafety.Account.Model.View
 
     public class DangerSortView
     {
+        /// <summary>
+        ///类别ID
+        /// </summary>
         public  Guid ID { get; set; }
         /// <summary>
         /// 父级ID
@@ -26,6 +29,9 @@ namespace ESafety.Account.Model.View
 
     public class DangerView
     {
+        /// <summary>
+        /// 风险点ID
+        /// </summary>
         public Guid ID { get; set; }
         /// <summary>
         /// 编号
@@ -40,7 +46,7 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public Guid DangerSortID { get; set; }
         /// <summary>
-        /// 类别
+        /// 类别名称
         /// </summary>
         public string DangerSortName { get; set; }
     }
