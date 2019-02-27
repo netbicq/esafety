@@ -209,6 +209,7 @@
     <Compile Include="Controllers\DangerManageController.cs" />
     <Compile Include="Controllers\DangerRelationController.cs" />
     <Compile Include="Controllers\DictController.cs" />
+    <Compile Include="Controllers\Doc_CrewController.cs" />
     <Compile Include="Controllers\EnumItemController.cs" />
     <Compile Include="Controllers\FacilitiesManageController.cs" />
     <Compile Include="Controllers\FlowController.cs" />
