@@ -204,10 +204,12 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\AttachFileController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\DangerManageController.cs" />
     <Compile Include="Controllers\DangerRelationController.cs" />
     <Compile Include="Controllers\DictController.cs" />
+    <Compile Include="Controllers\EnumItemController.cs" />
     <Compile Include="Controllers\FacilitiesManageController.cs" />
     <Compile Include="Controllers\FlowController.cs" />
     <Compile Include="Controllers\HomeController.cs" />

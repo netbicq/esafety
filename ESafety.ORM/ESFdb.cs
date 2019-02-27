@@ -74,6 +74,22 @@ namespace ESafety.ORM
         public virtual DbSet<Basic_PostEmployees> Basic_PostEmployees { get; set; }
         public virtual DbSet<Basic_SafetyStandard> Basic_SafetyStandard { get; set; }
 
+        public virtual DbSet<Bll_AttachFile> AttachFile { get; set; }
+
+
+
+        public virtual DbSet<Basic_Vedio> Basic_Vedio { get; set; }
+        public virtual DbSet<Basic_VedioSubject> Basic_VedioSubject { get; set; }
+        public virtual DbSet<Bll_InspectTask> Bll_InspectTask { get; set; }
+        public virtual DbSet<Bll_InspectTaskSubject> Bll_InspectTaskSubject { get; set; }
+        public virtual DbSet<Bll_OpreateionBillFlow> Bll_OpreateionBillFlow { get; set; }
+        public virtual DbSet<Bll_OpreationBill> Bll_OpreationBill { get; set; }
+        public virtual DbSet<Bll_TaskBill> Bll_TaskBill { get; set; }
+        public virtual DbSet<Bll_TaskBillSubjects> Bll_TaskBillSubjects { get; set; }
+        public virtual DbSet<Bll_TroubleControl> Bll_TroubleControl { get; set; }
+        public virtual DbSet<Bll_TroubleControlDetails> Bll_TroubleControlDetails { get; set; }
+        public virtual DbSet<Bll_TroubleControlFlows> Bll_TroubleControlFlows { get; set; }
+
         #endregion
 
 

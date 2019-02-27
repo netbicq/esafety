@@ -73,7 +73,74 @@ namespace ESafety.Unity
             [Description("临时任务")]
             Temp=2
         }
-
+        /// <summary>
+        /// 巡检结果类型
+        /// </summary>
+        public enum EE_TaskResultType
+        {
+            /// <summary>
+            /// 正常
+            /// </summary>
+            [Description("正常")]
+            normal=1,
+            /// <summary>
+            /// 异常
+            /// </summary>
+            [Description("异常")]
+            abnormal =2,
+            /// <summary>
+            /// 处理中
+            /// </summary>
+            [Description("处理中")]
+            pend=3,
+            /// <summary>
+            /// 处理后正常
+            /// </summary>
+            [Description("处理后正常")]
+            donormal=4
+        }
+        /// <summary>
+        /// 管控状态
+        /// </summary>
+        public enum EE_TroubleState
+        {
+            /// <summary>
+            /// 管控中
+            /// </summary>
+            [Description("管控中")]
+            pending=1,
+            /// <summary>
+            /// 申请验收
+            /// </summary>
+            [Description("申请验收")]
+            apply=2,
+            /// <summary>
+            /// 已验收
+            /// </summary>
+            [Description("已验收")]
+            over=3,
+            /// <summary>
+            /// 已归档
+            /// </summary>
+            [Description("已归档")]
+            history=4
+        }
+        /// <summary>
+        /// 评测方法
+        /// </summary>
+        public enum EE_EvaluateMethod
+        {
+            /// <summary>
+            /// 手动评测
+            /// </summary>
+            [Description("手动评测")]
+            Hand=1,
+            /// <summary>
+            /// LECD
+            /// </summary>
+            [Description("LECD法")]
+            LECD=2
+        }
 
         /// <summary>
         /// 执行频率类型
@@ -129,7 +196,7 @@ namespace ESafety.Unity
             Multi=2
         }
         /// <summary>
-        /// 业务单类型
+        /// 审批业务单类型
         /// </summary>
         public enum EE_BusinessType
         {
@@ -137,7 +204,27 @@ namespace ESafety.Unity
             /// 作业申请
             /// </summary>
             [Description("作业申请")]
-            Apply=1
+            Apply=1,
+            /// <summary>
+            /// 巡检任务
+            /// </summary>
+            [Description("巡检任务")]
+            InspectTask=2,
+            /// <summary>
+            /// 任务单据
+            /// </summary>
+            [Description("任务单据")]
+            TaskBill=3,
+            /// <summary>
+            /// 隐患管控
+            /// </summary>
+            [Description("隐患管控")]
+            TroubleControl=4,
+            /// <summary>
+            /// 临时任务
+            /// </summary>
+            [Description("临时任务")]
+            TempTask=5
         }
         /// <summary>
         /// 检查主体类型

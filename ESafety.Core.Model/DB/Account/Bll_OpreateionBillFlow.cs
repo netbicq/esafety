@@ -1,4 +1,4 @@
-namespace ESafety.Core.Model.DB
+namespace ESafety.Core.Model.DB.Account
 {
     using System;
     using System.Collections.Generic;
@@ -7,37 +7,34 @@ namespace ESafety.Core.Model.DB
     using System.Data.Entity.Spatial;
 
     /// <summary>
-    /// 词典
+    /// 作业单节点日志
     /// </summary>
-    public class Basic_Dict:ModelBase 
-    {
-         
+    public partial class Bll_OpreateionBillFlow : ModelBase
+    { 
         /// <summary>
-        /// 父级ID
+        /// 作业单id
         /// </summary>
-        public Guid ParentID { get; set; }
+        public Guid BillID { get; set; }
         /// <summary>
-        /// 是否系统
+        /// 作业节点id
         /// </summary>
-        public bool IsSYS { get; set; }
+        public Guid OpreationFlowID { get; set; }
         /// <summary>
-        /// 词典名称
+        /// 节点结果
         /// </summary>
-        [Required]
-        [StringLength(200)]
-        public string DictName { get; set; }
+        public int FlowResult { get; set; }
         /// <summary>
-        /// 最小值
+        /// 节点执行人
         /// </summary>
-        public int MinValue { get; set; }
+        public Guid FlowEmployeeID { get; set; }
         /// <summary>
-        /// 最大值
+        /// 节点执行时间
         /// </summary>
-        public int MaxValue { get; set; }
+        public DateTime FlowTime { get; set; }
         /// <summary>
-        /// 备注
+        /// 节点执行备注
         /// </summary>
         [StringLength(500)]
-        public string Memo { get; set; }
+        public string FlowMemo { get; set; }
     }
 }
