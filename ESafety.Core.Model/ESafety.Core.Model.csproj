@@ -79,7 +79,12 @@
     <Compile Include="DB\Account\Bll_TroubleControlDetails.cs" />
     <Compile Include="DB\Account\Bll_TroubleControlFlows.cs" />
     <Compile Include="DB\Account\Doc_Crew.cs" />
-    <Compile Include="DB\Account\TypeConfig.cs" />
+    <Compile Include="DB\Account\Doc_EmePlan.cs" />
+    <Compile Include="DB\Account\Doc_Meeting.cs" />
+    <Compile Include="DB\Account\Doc_MeetPeople.cs" />
+    <Compile Include="DB\Account\Doc_Qualification.cs" />
+    <Compile Include="DB\Account\Doc_Train.cs" />
+    <Compile Include="DB\Account\Doc_TrainPeople.cs" />
     <Compile Include="DB\Basic_Dict.cs" />
     <Compile Include="DB\Basic_Employee.cs" />
     <Compile Include="DB\Basic_Org.cs" />

@@ -19,14 +19,17 @@
 using ESafety.Core.Model;
 using ESafety.Account.IService;
 using ESafety.ORM;
+using ESafety.Core.Model.DB.Account;
+
 namespace ESafety.Account.Service
 {
 	public  class  Doc_EmePlanService:ServiceBase,IDoc_EmePlanService
 	{
 		private IUnitwork _work = null;
-
+        private IRepository<Doc_EmePlan> idocEme = null;
 		public Doc_EmePlanService(IUnitwork work){
 			_work = work;
+            idocEme = _work.Repository<Doc_EmePlan>();
 		}
 	}
 }

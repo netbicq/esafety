@@ -16,12 +16,18 @@
 //			 重新生成代码，这些更改将会丢失。
 //----------------------------------------------------------------*/
 
-    
+
+using ESafety.Account.Model.PARA;
+using ESafety.Account.Model.View;
+using ESafety.Core.Model;
+
 namespace ESafety.Account.IService
 {
 	public interface IDoc_QualificationService
 	{
-	}
+        ActionResult<Pager<DocQualView>> GetQualData(DocQualPara request);
+
+    }
 }
 
 

@@ -5,7 +5,7 @@
 // 文件名： Doc_Crew
 // 文件功能描述： 
 // author：DengYinFeng
-// 时间：02/27/2019 13:19:31
+// 时间：02/27/2019 20:49:50
 // 创建标识： 
 // 
 // 修改标识： 
@@ -16,53 +16,54 @@
 //----------------------------------------------------------------*/
 
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
-
+using System.ComponentModel.DataAnnotations;
 namespace ESafety.Core.Model.DB.Account
 {
-    /// <summary>
-    /// 数据表实体类：Doc_Crew 
-    /// </summary>
-    [NotMapped]
-    public class Doc_Crew: ModelBase
+	/// <summary>
+	/// 数据表实体类：Doc_Crew 
+	/// </summary>
+	[Serializable()]
+	public class Doc_Crew: ModelBase
 	{    
+		[KeyAttribute]
 	    	     
+	    /// <summary>
+	    /// Guid:
+	    /// </summary>        				 
+	    public Guid Id {get;set;}   
 	    	     
 	    /// <summary>
 	    /// Int32:
-	    /// </summary>                       
+	    /// </summary>        				 
 	    public Int32 IsDeal {get;set;}   
 	    	     
 	    /// <summary>
 	    /// DateTime:
-	    /// </summary>                       
+	    /// </summary>        				 
 	    public DateTime CreateTime {get;set;}   
 	    	     
 	    /// <summary>
 	    /// String:
-	    /// </summary>                       
+	    /// </summary>        				 
 	    public String CName {get;set;}   
 	    	     
 	    /// <summary>
 	    /// String:
-	    /// </summary>                       
+	    /// </summary>        				 
 	    public String CFontSize {get;set;}   
 	    	     
 	    /// <summary>
 	    /// String:
-	    /// </summary>                       
+	    /// </summary>        				 
 	    public String CContent {get;set;}   
 	    	     
 	    /// <summary>
 	    /// Guid:
-	    /// </summary>                       
+	    /// </summary>        				 
 	    public Guid CType {get;set;}   
 	       
 	}
 	
-	public class Doc_CrewExtension :Doc_Crew {
-	
-	}
 }
 
 

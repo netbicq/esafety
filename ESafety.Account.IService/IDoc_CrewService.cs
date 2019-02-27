@@ -15,6 +15,7 @@
 //			 重新生成代码，这些更改将会丢失。
 //----------------------------------------------------------------*/
 
+using ESafety.Account.Model.PARA;
 using ESafety.Account.Model.View;
 using ESafety.Core.Model;
 using ESafety.Core.Model.DB.Account;
@@ -25,10 +26,11 @@ namespace ESafety.Account.IService
 {
 	public interface IDoc_CrewService
 	{
-        List<TypeConfig> GetMenus();
+        ActionResult<Pager<DocCrewView>> GetRegimeData(DocCrewPara para);
 
-        Pager<DocCrewDTO> GetPageCrew(PagerQuery<Doc_Crew> page, Guid id);
+        ActionResult<bool> DeleteDocCrewById(Guid guid);
 
+        ActionResult<bool> AddOrUpdateDocCrew(Doc_Crew doc_);
     }
 	
 }

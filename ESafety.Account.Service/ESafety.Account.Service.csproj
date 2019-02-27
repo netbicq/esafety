@@ -55,6 +55,12 @@
     <Compile Include="DangerManageService.cs" />
     <Compile Include="DangerSetService.cs" />
     <Compile Include="Doc_CrewService.cs" />
+    <Compile Include="Doc_EmePlanService.cs" />
+    <Compile Include="Doc_MeetingService.cs" />
+    <Compile Include="Doc_MeetPeopleService.cs" />
+    <Compile Include="Doc_QualificationService.cs" />
+    <Compile Include="Doc_TrainPeopleService.cs" />
+    <Compile Include="Doc_TrainService.cs" />
     <Compile Include="FacilitiesManageService.cs" />
     <Compile Include="OpreationFlowService.cs" />
     <Compile Include="PostManageService.cs" />

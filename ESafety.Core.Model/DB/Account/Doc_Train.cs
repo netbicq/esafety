@@ -5,7 +5,7 @@
 // 文件名： Doc_Train
 // 文件功能描述： 
 // author：DengYinFeng
-// 时间：02/27/2019 20:49:51
+// 时间：02/27/2019 23:33:07
 // 创建标识： 
 // 
 // 修改标识： 
@@ -66,6 +66,11 @@ namespace ESafety.Core.Model.DB.Account
 	    /// String:
 	    /// </summary>        				 
 	    public String TContent {get;set;}   
+	    	     
+	    /// <summary>
+	    /// String:
+	    /// </summary>        				 
+	    public String Trainer {get;set;}   
 	       
 	}
 	
