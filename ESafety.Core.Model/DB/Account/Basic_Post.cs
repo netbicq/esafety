@@ -8,17 +8,26 @@ namespace ESafety.Core.Model.DB.Account
 
     public partial class Basic_Post : ModelBase
     { 
+        /// <summary>
+        /// 编号
+        /// </summary>
         [Required]
         [StringLength(50)]
         public string Code { get; set; }
-
+        /// <summary>
+        /// 岗位名称
+        /// </summary>
         [Required]
         [StringLength(100)]
         public string Name { get; set; }
-
+        /// <summary>
+        /// 负责人
+        /// </summary>
         [StringLength(50)]
         public string Principal { get; set; }
-
+        /// <summary>
+        /// 负责人电话
+        /// </summary>
         [StringLength(100)]
         public string PrincipalTel { get; set; }
     }
