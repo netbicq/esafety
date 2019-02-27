@@ -59,6 +59,7 @@ namespace ESafety.ORM
         public virtual DbSet<Flow_PointUsers> Flow_PointUsers { get; set; }
         public virtual DbSet<Flow_Result> Flow_Result { get; set; }
         public virtual DbSet<Flow_Task> Flow_Task { get; set; }
+        public virtual DbSet<TypeConfig> TypeConfig { get; set; }
 
 
         #region "account"

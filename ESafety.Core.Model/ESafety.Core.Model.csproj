@@ -78,6 +78,8 @@
     <Compile Include="DB\Account\Bll_TroubleControl.cs" />
     <Compile Include="DB\Account\Bll_TroubleControlDetails.cs" />
     <Compile Include="DB\Account\Bll_TroubleControlFlows.cs" />
+    <Compile Include="DB\Account\Doc_Crew.cs" />
+    <Compile Include="DB\Account\TypeConfig.cs" />
     <Compile Include="DB\Basic_Dict.cs" />
     <Compile Include="DB\Basic_Employee.cs" />
     <Compile Include="DB\Basic_Org.cs" />

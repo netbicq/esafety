@@ -42,8 +42,8 @@ namespace ESafety.TEST
             //     AccountCode="tests", ShortName ="tests", Memo ="", AccountName ="tttta"
             //});
 
-            var allu = new Account.Service.PostManageService(work);
-            var s=allu.GetPostsPage(new Core.Model.PagerQuery<PostQuery> {  PageSize=1,PageIndex=1,Query=new PostQuery { Code="1",Name=""} });
+            //var allu = new Account.Service.PostManageService(work);
+            //var s=allu.GetPostsPage(new Core.Model.PagerQuery<PostQuery> {  PageSize=1,PageIndex=1,Query=new PostQuery { Code="1",Name=""} });
 
 
             work.Commit();
