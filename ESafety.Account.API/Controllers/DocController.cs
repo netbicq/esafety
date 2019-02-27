@@ -10,13 +10,6 @@ namespace ESafety.Account.API.Controllers
 {
     public class DocController : ESFAPI
     {
-        private IAuth_User bll = null;
-        public AuthController(IAuth_User user)
-        {
-
-            bll = user;
-            BusinessService = bll as Account.Service.Auth_UserService;
-
-        }
+       
     }
 }
