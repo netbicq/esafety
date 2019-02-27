@@ -86,11 +86,17 @@ namespace ESafety.Core
         /// <returns></returns>
         ActionResult<long> InitTask(InitTask task,bool iscommit);
         /// <summary>
+        /// 检查业务是否需要审批流程
+        /// </summary>
+        /// <param name="businesstype"></param>
+        /// <returns></returns>
+        ActionResult<bool> CheckBusinessFlow(PublicEnum.EE_BusinessType businesstype);
+        /// <summary>
         /// 审批任务审批
         /// </summary>
         /// <param name="approve"></param>
         /// <returns></returns>
-        ActionResult<bool> Approve(Approve approve);
+        ActionResult<PublicEnum.EE_FlowApproveResult> Approve(Approve approve);
         /// <summary>
         /// 审批撤回
         /// </summary>

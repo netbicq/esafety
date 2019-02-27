@@ -115,10 +115,12 @@ namespace ESafety.Core
         /// </summary>
         /// <param name="approve"></param>
         /// <returns></returns>
-        public ActionResult<bool> Approve(Approve approve)
+        public ActionResult<PublicEnum.EE_FlowApproveResult> Approve(Approve approve)
         {
             try
             {
+                PublicEnum.EE_FlowApproveResult approveResult;
+
                 var task = rpsTask.GetModel(approve.TaskID);
                 if (task == null)
                 {
@@ -174,6 +176,7 @@ namespace ESafety.Core
                             TaskUser = nexuser.PointUser
                         };
                         rpsTask.Add(nexttask);
+                        approveResult = PublicEnum.EE_FlowApproveResult.normal;
                     }
                     else //当前节点没有下一位用户，则找下一节点
                     {
@@ -203,12 +206,19 @@ namespace ESafety.Core
                             };
 
                             rpsTask.Add(nexttask);
+                            approveResult = PublicEnum.EE_FlowApproveResult.normal;
                         }
                         else//不存在一下节点
                         {
                             result.FlowResult = (int)PublicEnum.EE_FlowResult.Over; //审批结束了
+                            approveResult = PublicEnum.EE_FlowApproveResult.over; //返回审批结束的审批结果
                         }
                     }
+
+                }
+                else
+                {
+                    approveResult = PublicEnum.EE_FlowApproveResult.deny;
 
                 }
 
@@ -219,13 +229,31 @@ namespace ESafety.Core
 
                 _work.Commit();
 
-                return new ActionResult<bool>(true);
+                return new ActionResult<PublicEnum.EE_FlowApproveResult>(approveResult);
+            }
+            catch (Exception ex)
+            {                
+                return new ActionResult<PublicEnum.EE_FlowApproveResult>(ex);
+            }
+        }
+        /// <summary>
+        /// 检查业务是否需要审批流程
+        /// </summary>
+        /// <param name="businesstype"></param>
+        /// <returns></returns>
+        public ActionResult<bool> CheckBusinessFlow(PublicEnum.EE_BusinessType businesstype)
+        {
+            try
+            {
+                var check = rpsPoint.Any(q => q.BusinessType == (int)businesstype);
+                return new ActionResult<bool>(check);
             }
             catch (Exception ex)
             {
                 return new ActionResult<bool>(ex);
             }
         }
+
         /// <summary>
         /// 删除审批节点
         /// </summary>

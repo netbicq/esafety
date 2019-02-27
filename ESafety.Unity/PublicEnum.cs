@@ -40,22 +40,48 @@ namespace ESafety.Unity
             /// 通过
             /// </summary>
             [Description("通过")]
-            Pass=1,
+            Pass = 1,
             /// <summary>
             /// 拒绝
             /// </summary>
             [Description("拒绝")]
-            Deny=2,
+            Deny = 2,
             /// <summary>
             /// 撤回
             /// </summary>
             [Description("撤回")]
-            BackR=3,
+            BackR = 3,
             /// <summary>
             /// 审批完成
             /// </summary>
             [Description("结束")]
-            Over =4
+            Over = 4
+        }
+        /// <summary>
+        /// 审批流程审批返回结果
+        /// </summary>
+        public enum EE_FlowApproveResult
+        {
+            /// <summary>
+            /// 审批正常
+            /// </summary>
+            [Description("审批正常")]
+            normal=1,
+            /// <summary>
+            /// 审批异常
+            /// </summary>
+            [Description("审批异常")]
+            abnormal=2,
+            /// <summary>
+            /// 审批结束
+            /// </summary>
+            [Description("审批结束")]
+            over=3,
+            /// <summary>
+            /// 审批拒绝
+            /// </summary>
+            [Description("审批拒绝")]
+            deny=4
         }
         /// <summary>
         /// 巡检任务
@@ -66,12 +92,12 @@ namespace ESafety.Unity
             /// 同期任务
             /// </summary>
             [Description("周期任务")]
-            Cycle=1,
+            Cycle = 1,
             /// <summary>
             /// 临时任务
             /// </summary>
             [Description("临时任务")]
-            Temp=2
+            Temp = 2
         }
         /// <summary>
         /// 巡检结果类型
@@ -82,22 +108,22 @@ namespace ESafety.Unity
             /// 正常
             /// </summary>
             [Description("正常")]
-            normal=1,
+            normal = 1,
             /// <summary>
             /// 异常
             /// </summary>
             [Description("异常")]
-            abnormal =2,
+            abnormal = 2,
             /// <summary>
             /// 处理中
             /// </summary>
             [Description("处理中")]
-            pend=3,
+            pend = 3,
             /// <summary>
             /// 处理后正常
             /// </summary>
             [Description("处理后正常")]
-            donormal=4
+            donormal = 4
         }
         /// <summary>
         /// 管控状态
@@ -108,22 +134,22 @@ namespace ESafety.Unity
             /// 管控中
             /// </summary>
             [Description("管控中")]
-            pending=1,
+            pending = 1,
             /// <summary>
             /// 申请验收
             /// </summary>
             [Description("申请验收")]
-            apply=2,
+            apply = 2,
             /// <summary>
             /// 已验收
             /// </summary>
             [Description("已验收")]
-            over=3,
+            over = 3,
             /// <summary>
             /// 已归档
             /// </summary>
             [Description("已归档")]
-            history=4
+            history = 4
         }
         /// <summary>
         /// 评测方法
@@ -134,12 +160,12 @@ namespace ESafety.Unity
             /// 手动评测
             /// </summary>
             [Description("手动评测")]
-            Hand=1,
+            Hand = 1,
             /// <summary>
             /// LECD
             /// </summary>
             [Description("LECD法")]
-            LECD=2
+            LECD = 2
         }
 
         /// <summary>
@@ -151,32 +177,32 @@ namespace ESafety.Unity
             /// 年
             /// </summary>
             [Description("年")]
-            Year=1,
+            Year = 1,
             /// <summary>
             /// 月
             /// </summary>
             [Description("月")]
-            Month =2,
+            Month = 2,
             /// <summary>
             /// 周
             /// </summary>
             [Description("周")]
-            Week =3,
+            Week = 3,
             /// <summary>
             /// 日
             /// </summary>
             [Description("日")]
-            Day =4,
+            Day = 4,
             /// <summary>
             /// 小时
             /// </summary>
             [Description("时")]
-            Houre=5,
+            Houre = 5,
             /// <summary>
             /// 分钟
             /// </summary>
             [Description("分")]
-            Minute=6
+            Minute = 6
 
         }
         /// <summary>
@@ -188,12 +214,12 @@ namespace ESafety.Unity
             /// 普通
             /// </summary>
             [Description("普通")]
-            Generic=1,
+            Generic = 1,
             /// <summary>
             /// 多人会审
             /// </summary>
             [Description("会审")]
-            Multi=2
+            Multi = 2
         }
         /// <summary>
         /// 审批业务单类型
@@ -204,27 +230,27 @@ namespace ESafety.Unity
             /// 作业申请
             /// </summary>
             [Description("作业申请")]
-            Apply=1,
+            Apply = 1,
             /// <summary>
             /// 巡检任务
             /// </summary>
             [Description("巡检任务")]
-            InspectTask=2,
+            InspectTask = 2,
             /// <summary>
             /// 任务单据
             /// </summary>
             [Description("任务单据")]
-            TaskBill=3,
+            TaskBill = 3,
             /// <summary>
             /// 隐患管控
             /// </summary>
             [Description("隐患管控")]
-            TroubleControl=4,
+            TroubleControl = 4,
             /// <summary>
             /// 临时任务
             /// </summary>
             [Description("临时任务")]
-            TempTask=5
+            TempTask = 5
         }
         /// <summary>
         /// 检查主体类型
@@ -235,20 +261,20 @@ namespace ESafety.Unity
             /// 设备设施
             /// </summary>
             [Description("设备设施")]
-            Device=1,
+            Device = 1,
             /// <summary>
             /// 岗位
             /// </summary>
             [Description("岗位")]
-            Post=2,
+            Post = 2,
             /// <summary>
             /// 作业
             /// </summary>
             [Description("作业")]
-            Opreate=3
+            Opreate = 3
         }
 
-        
+
         /// <summary>
         /// 自定义类型
         /// </summary>
@@ -268,7 +294,7 @@ namespace ESafety.Unity
             /// 职员
             /// </summary>
             [Description("职员")]
-            Employee=3
+            Employee = 3
 
         }
 
@@ -396,7 +422,7 @@ namespace ESafety.Unity
             /// <summary>
             /// 所有账套适用
             /// </summary>
-           [Description("全局")]
+            [Description("全局")]
             Global = 1,
             /// <summary>
             /// 范围内账套适用
@@ -404,7 +430,7 @@ namespace ESafety.Unity
             [Description("账套")]
             Range = 2
         }
-         
+
         /// <summary>
         /// 账套态态
         /// </summary>
@@ -441,6 +467,58 @@ namespace ESafety.Unity
             /// </summary>
             [Description("已审核")]
             Applyed = 3
+        }
+        /// <summary>
+        /// 审批业务单据状态
+        /// </summary>
+        public enum BillFlowState
+        {
+            /// <summary>
+            /// 待审批
+            /// </summary>
+            [Description("正常")]
+            normal = 1,
+            /// <summary>
+            /// 审批拒绝
+            /// </summary>
+            [Description("审批拒绝")]
+            deny = 2,
+            /// <summary>
+            /// 审批撤消
+            /// </summary>
+            [Description("撤消审批")]
+            recalled = 3,
+            /// <summary>
+            /// 审批中
+            /// </summary>
+            [Description("审批中")]
+            pending = 4,
+            /// <summary>
+            /// 审批通过
+            /// </summary>
+            [Description("审批通过")]
+            approved = 5,
+            /// <summary>
+            /// 已审核
+            /// </summary>
+            [Description("已审核")]
+            audited = 6,
+            /// <summary>
+            /// 作废
+            /// </summary>
+            [Description("已作废")]
+            cancel = 7,
+            /// <summary>
+            /// 申请中
+            /// </summary>
+            [Description("申请中")]
+            appling = 8,
+            /// <summary>
+            /// 已验收
+            /// </summary>
+            [Description("已验收")]
+            check = 9
+
         }
         /// <summary>
         /// 选项类型
@@ -489,7 +567,7 @@ namespace ESafety.Unity
             Int = 8
         }
 
-      
+
 
     }
 }
