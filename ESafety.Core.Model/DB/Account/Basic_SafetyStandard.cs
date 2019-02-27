@@ -8,16 +8,25 @@ namespace ESafety.Core.Model.DB.Account
 
     public partial class Basic_SafetyStandard : ModelBase
     { 
+        /// <summary>
+        /// 编号
+        /// </summary>
         [Required]
         [StringLength(50)]
         public string Code { get; set; }
-
+        /// <summary>
+        /// 安全标准名称
+        /// </summary>
         [Required]
         [StringLength(100)]
         public string Name { get; set; }
-
+        /// <summary>
+        /// 风险点类别ID
+        /// </summary>
         public Guid DangerSortID { get; set; }
-
+        /// <summary>
+        /// 管控措施
+        /// </summary>
         public string Controls { get; set; }
     }
 }

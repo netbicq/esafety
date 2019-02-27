@@ -12,6 +12,9 @@ namespace ESafety.Account.Model.View
 
     public class DangerRelationView
     {
+       /// <summary>
+       /// 风险点与主题关系的ID
+       /// </summary>
         public Guid ID { get; set; }
         /// <summary>
         /// 主题ID

@@ -8,8 +8,13 @@ namespace ESafety.Core.Model.DB.Account
 
     public partial class Basic_PostEmployees : ModelBase
     { 
+        /// <summary>
+        /// ∏⁄ŒªID
+        /// </summary>
         public Guid PostID { get; set; }
-
+        /// <summary>
+        /// »À‘±ID
+        /// </summary>
         public Guid EmployeeID { get; set; }
     }
 }
