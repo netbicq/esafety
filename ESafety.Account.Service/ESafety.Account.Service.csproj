@@ -56,10 +56,7 @@
     <Compile Include="DangerSetService.cs" />
     <Compile Include="Occ_FileManagerService.cs" />
     <Compile Include="Doc_EmePlanService.cs" />
-    <Compile Include="Doc_MeetingService.cs" />
     <Compile Include="Doc_MeetPeopleService.cs" />
-    <Compile Include="Doc_TrainPeopleService.cs" />
-    <Compile Include="Doc_TrainService.cs" />
     <Compile Include="FacilitiesManageService.cs" />
     <Compile Include="Occ_FileHealthService.cs" />
     <Compile Include="Occ_MedicalService.cs" />
