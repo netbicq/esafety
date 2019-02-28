@@ -65,10 +65,10 @@ namespace ESafety.Account.Service
         /// </summary>
         private IAttachFile attach =null;
 
-        public Occ_FileManagerService(IUnitwork work){
+        public Occ_FileManagerService(IUnitwork work, IAttachFile _attach)
+        {
 			_work = work;
-            attach = new AttachFileService(_work);
-
+            attach = _attach;
             _doccrew = _work.Repository<Doc_Crew>();
             _rpsDict = _work.Repository<Basic_Dict>();
             docTrain = _work.Repository<Doc_Train>();
