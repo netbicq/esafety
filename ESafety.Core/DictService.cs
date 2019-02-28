@@ -172,6 +172,24 @@ namespace ESafety.Core
             }
         }
         /// <summary>
+        /// 获取风险等级词典
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_Dict>> GetDangerLevel()
+        {
+            try
+            {
+                var re = getdictsbyParentID(OptionConst.DangerLevel);
+
+                return new ActionResult<IEnumerable<Basic_Dict>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
+            }
+        }
+
+        /// <summary>
         /// 根据id获取词典模型
         /// </summary>
         /// <param name="id"></param>
@@ -237,6 +255,140 @@ namespace ESafety.Core
             catch (Exception ex)
             {
                 return new ActionResult<IEnumerable< DictTypeView>>(ex);
+            }
+        }
+
+        private IEnumerable<Basic_Dict> getdictsbyParentID(Guid parentid)
+        {
+            var re = rpsDict.Queryable(q => q.ParentID == parentid);
+            return re;
+        }
+        /// <summary>
+        /// 获取资质词典
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_Dict>> GetDocLicense()
+        {
+            try
+            {
+                var re = getdictsbyParentID(OptionConst.DocLicense);
+                return new ActionResult<IEnumerable<Basic_Dict>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取制度词典
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_Dict>> GetDocRegime()
+        {
+            try
+            {
+                var re = getdictsbyParentID(OptionConst.DocRegime);
+                return new ActionResult<IEnumerable<Basic_Dict>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取应急预案词典
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_Dict>> GetDocSlution()
+        {
+            try
+            {
+                var re = getdictsbyParentID(OptionConst.DocSlution);
+                return new ActionResult<IEnumerable<Basic_Dict>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取事故后果词典
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_SGJG()
+        {
+            try
+            {
+                var re = getdictsbyParentID(OptionConst.Eval_SGJG);
+                return new ActionResult<IEnumerable<Basic_Dict>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取事故可能性词典
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_SGKLX()
+        {
+            try
+            {
+                var re = getdictsbyParentID(OptionConst.Eval_SGKLX);
+                return new ActionResult<IEnumerable<Basic_Dict>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取事故类型词典
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_SGLX()
+        {
+            try
+            {
+                var re = getdictsbyParentID(OptionConst.Eval_SGLX);
+                return new ActionResult<IEnumerable<Basic_Dict>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取危害因素词典
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_WHYS()
+        {
+            try
+            {
+                var re = getdictsbyParentID(OptionConst.Eval_WHYS );
+                return new ActionResult<IEnumerable<Basic_Dict>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取影响范围词典
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_YXFW()
+        {
+            try
+            {
+                var re = getdictsbyParentID(OptionConst.Eval_YXFW);
+                return new ActionResult<IEnumerable<Basic_Dict>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
             }
         }
     }

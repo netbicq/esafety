@@ -101,6 +101,17 @@ namespace ESafety.Account.API.Controllers
             return bll.EditDict(dict);
         }
         /// <summary>
+        ///获取风险等级词典
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getdangerdict")]
+        public ActionResult<IEnumerable<Basic_Dict>> GetDangerLevel()
+        {
+            return bll.GetDangerLevel();
+        }
+
+        /// <summary>
         /// 获取指定id的词典模型
         /// </summary>
         /// <param name="id"></param>
@@ -132,6 +143,89 @@ namespace ESafety.Account.API.Controllers
         public ActionResult<IEnumerable<DictTypeView>> GetDictTypes()
         {
             return bll.GetDictTypes();
+        }
+
+        /// <summary>
+        /// 获取资质词典
+        /// </summary>
+        /// <returns></returns>
+        [Route("getdoclicense")]
+        [HttpGet]
+        public ActionResult<IEnumerable<Basic_Dict>> GetDocLicense()
+        {
+            return bll.GetDocLicense();
+        }
+
+        /// <summary>
+        /// 获取制度类型词典
+        /// </summary>
+        /// <returns></returns>
+        [Route("getdocregime")]
+        [HttpGet]
+        public ActionResult<IEnumerable<Basic_Dict>> GetDocRegime()
+        {
+            return bll.GetDocRegime();
+        }
+        /// <summary>
+        /// 获取应急预案词典
+        /// </summary>
+        /// <returns></returns>
+        [Route("getdocslution")]
+        [HttpGet]
+        public ActionResult<IEnumerable<Basic_Dict>> GetDocSlution()
+        {
+            return bll.GetDocSlution();
+        }
+        /// <summary>
+        /// 获取事故后果词典
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getevealsyhg")]
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_SGJG()
+        {
+            return bll.GetEval_SGJG();
+        }
+        /// <summary>
+        /// 获取事故可能性词典
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getevalsgklx")]
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_SGKLX()
+        {
+            return bll.GetEval_SGKLX();
+        }
+
+        /// <summary>
+        ///获取事故类型词典
+        /// </summary>
+        /// <returns></returns>
+        [Route("getevealsglx")]
+        [HttpGet]
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_SGLX()
+        {
+            return bll.GetEval_SGLX();
+        }
+        /// <summary>
+        /// 危害因素
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getevealwhys")]
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_WHYS()
+        {
+            return bll.GetEval_WHYS();
+        }
+        /// <summary>
+        /// 获取影响范围词典
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getevealyxfw")]
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_YXFW()
+        {
+            return bll.GetEval_YXFW();
         }
     }
 }

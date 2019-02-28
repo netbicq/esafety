@@ -65,5 +65,43 @@ namespace ESafety.Core
         /// <returns></returns>
         ActionResult<bool> DelDictType(Guid id);
 
+        /// <summary>
+        /// 制度类型
+        /// </summary>
+        ActionResult<IEnumerable<Basic_Dict>> GetDocRegime();
+        /// <summary>
+        /// 预案类型
+        /// </summary>
+        ActionResult<IEnumerable<Basic_Dict>> GetDocSlution();
+
+        /// <summary>
+        /// 资质类型
+        /// </summary>
+        ActionResult<IEnumerable<Basic_Dict>> GetDocLicense();
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        ActionResult<IEnumerable<Basic_Dict>> GetDangerLevel();
+        /// <summary>
+        /// 危害因素
+        /// </summary>
+        ActionResult<IEnumerable<Basic_Dict>> GetEval_WHYS();
+        /// <summary>
+        /// 事故类型
+        /// </summary>
+        ActionResult<IEnumerable<Basic_Dict>> GetEval_SGLX();
+        /// <summary>
+        /// 事故后果
+        /// </summary>
+        ActionResult<IEnumerable<Basic_Dict>> GetEval_SGJG();
+        /// <summary>
+        /// 影响范围
+        /// </summary>
+        ActionResult<IEnumerable<Basic_Dict>> GetEval_YXFW();
+        /// <summary>
+        /// 事故可能性
+        /// </summary>
+        ActionResult<IEnumerable<Basic_Dict>> GetEval_SGKLX();
+
     }
 }

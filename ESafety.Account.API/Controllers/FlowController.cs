@@ -61,9 +61,10 @@ namespace ESafety.Account.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("approve")]
-        public ActionResult<bool> Approve(Approve approve)
+        public ActionResult<PublicEnum.EE_FlowApproveResult> Approve(Approve approve)
         {
             LogContent = "审批了业务单据，参数源：" + JsonConvert.SerializeObject(approve);
+            
             return bll.Approve(approve);
         }
         /// <summary>
