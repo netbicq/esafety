@@ -44,9 +44,12 @@
     <Compile Include="PARA\DangerManage.cs" />
     <Compile Include="PARA\DangerSet.cs" />
     <Compile Include="PARA\DocCrewPara.cs" />
+    <Compile Include="PARA\DocMeetPara.cs" />
     <Compile Include="PARA\DocQualPara.cs" />
     <Compile Include="PARA\DocTranPara.cs" />
     <Compile Include="PARA\FacilitiesManage.cs" />
+    <Compile Include="PARA\OccFileHealthPara.cs" />
+    <Compile Include="PARA\OccMedicalPara.cs" />
     <Compile Include="PARA\OpreationFlow.cs" />
     <Compile Include="PARA\PostManage.cs" />
     <Compile Include="PARA\SafetyStandard.cs" />
@@ -54,10 +57,13 @@
     <Compile Include="View\DangerManage.cs" />
     <Compile Include="View\DangerSet.cs" />
     <Compile Include="View\DocCrewView.cs" />
+    <Compile Include="View\DocMeetView.cs" />
     <Compile Include="View\DocQualView.cs" />
     <Compile Include="View\DocTranPeopleView.cs" />
     <Compile Include="View\DocTranView.cs" />
     <Compile Include="View\FacilitiesManage.cs" />
+    <Compile Include="View\OccFileHealthView.cs" />
+    <Compile Include="View\OccMedicalView.cs" />
     <Compile Include="View\OpreationFlow.cs" />
     <Compile Include="View\PostManage.cs" />
     <Compile Include="View\SafetyStandard.cs" />
