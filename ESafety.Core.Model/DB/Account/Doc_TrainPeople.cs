@@ -2,10 +2,10 @@
 /*---------------------------------------------------------------- 
 // 版权所有。  
 // 
-// 文件名： Doc_Crew
+// 文件名： Doc_TrainPeople
 // 文件功能描述： 
 // author：DengYinFeng
-// 时间：02/27/2019 20:49:50
+// 时间：02/27/2019 20:49:51
 // 创建标识： 
 // 
 // 修改标识： 
@@ -20,10 +20,10 @@ using System.ComponentModel.DataAnnotations;
 namespace ESafety.Core.Model.DB.Account
 {
 	/// <summary>
-	/// 数据表实体类：Doc_Crew 
+	/// 数据表实体类：Doc_TrainPeople 
 	/// </summary>
 	[Serializable()]
-	public class Doc_Crew: ModelBase
+	public class Doc_TrainPeople: ModelBase
 	{    
 		[KeyAttribute]
 	    	     
@@ -43,24 +43,14 @@ namespace ESafety.Core.Model.DB.Account
 	    public DateTime CreateTime {get;set;}   
 	    	     
 	    /// <summary>
-	    /// String:
+	    /// Guid:
 	    /// </summary>        				 
-	    public String CName {get;set;}   
-	    	     
-	    /// <summary>
-	    /// String:
-	    /// </summary>        				 
-	    public String CFontSize {get;set;}   
-	    	     
-	    /// <summary>
-	    /// String:
-	    /// </summary>        				 
-	    public String CContent {get;set;}   
+	    public Guid TPId {get;set;}   
 	    	     
 	    /// <summary>
 	    /// Guid:
 	    /// </summary>        				 
-	    public Guid CType {get;set;}   
+	    public Guid TTid {get;set;}   
 	       
 	}
 	

@@ -1,11 +1,12 @@
 
+
 /*---------------------------------------------------------------- 
 // 版权所有。  
 // 
-// 文件名： IDoc_CrewService
+// 文件名： Doc_EmePlanService
 // 文件功能描述： 
 // author：DengYinFeng
-// 时间：02/27/2019 10:23:54
+// 时间：02/27/2019 21:22:10
 // 创建标识： 
 // 
 // 修改标识： 
@@ -15,25 +16,24 @@
 //			 重新生成代码，这些更改将会丢失。
 //----------------------------------------------------------------*/
 
-using ESafety.Account.Model.PARA;
-using ESafety.Account.Model.View;
 using ESafety.Core.Model;
+using ESafety.Account.IService;
+using ESafety.ORM;
 using ESafety.Core.Model.DB.Account;
-using System;
-using System.Collections.Generic;
 
-namespace ESafety.Account.IService
+namespace ESafety.Account.Service
 {
-	public interface IDoc_CrewService
+	public  class  Doc_EmePlanService:ServiceBase,IDoc_EmePlanService
 	{
-        ActionResult<Pager<DocCrewView>> GetRegimeData(DocCrewPara para);
-
-        ActionResult<bool> DeleteDocCrewById(Guid guid);
-
-        ActionResult<bool> AddOrUpdateDocCrew(Doc_Crew doc_);
-    }
-	
+		private IUnitwork _work = null;
+        private IRepository<Doc_EmePlan> idocEme = null;
+		public Doc_EmePlanService(IUnitwork work){
+			_work = work;
+            idocEme = _work.Repository<Doc_EmePlan>();
+		}
+	}
 }
+
 
 
     

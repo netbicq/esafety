@@ -2,7 +2,7 @@
 /*---------------------------------------------------------------- 
 // 版权所有。  
 // 
-// 文件名： Doc_Crew
+// 文件名： Doc_Qualification
 // 文件功能描述： 
 // author：DengYinFeng
 // 时间：02/27/2019 20:49:50
@@ -20,10 +20,10 @@ using System.ComponentModel.DataAnnotations;
 namespace ESafety.Core.Model.DB.Account
 {
 	/// <summary>
-	/// 数据表实体类：Doc_Crew 
+	/// 数据表实体类：Doc_Qualification 
 	/// </summary>
 	[Serializable()]
-	public class Doc_Crew: ModelBase
+	public class Doc_Qualification: ModelBase
 	{    
 		[KeyAttribute]
 	    	     
@@ -45,22 +45,47 @@ namespace ESafety.Core.Model.DB.Account
 	    /// <summary>
 	    /// String:
 	    /// </summary>        				 
-	    public String CName {get;set;}   
+	    public String QName {get;set;}   
+	    	     
+	    /// <summary>
+	    /// DateTime:
+	    /// </summary>        				 
+	    public DateTime QEndTime {get;set;}   
+	    	     
+	    /// <summary>
+	    /// DateTime:
+	    /// </summary>        				 
+	    public DateTime QAudit {get;set;}   
 	    	     
 	    /// <summary>
 	    /// String:
 	    /// </summary>        				 
-	    public String CFontSize {get;set;}   
-	    	     
-	    /// <summary>
-	    /// String:
-	    /// </summary>        				 
-	    public String CContent {get;set;}   
+	    public String QInstitutions {get;set;}   
 	    	     
 	    /// <summary>
 	    /// Guid:
 	    /// </summary>        				 
-	    public Guid CType {get;set;}   
+	    public Guid QInsId {get;set;}   
+	    	     
+	    /// <summary>
+	    /// String:
+	    /// </summary>        				 
+	    public String QPeople {get;set;}   
+	    	     
+	    /// <summary>
+	    /// Guid:
+	    /// </summary>        				 
+	    public Guid QPeopleId {get;set;}   
+	    	     
+	    /// <summary>
+	    /// String:
+	    /// </summary>        				 
+	    public String QUrl {get;set;}   
+	    	     
+	    /// <summary>
+	    /// Guid:
+	    /// </summary>        				 
+	    public Guid QTypeId {get;set;}   
 	       
 	}
 	

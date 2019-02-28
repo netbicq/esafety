@@ -6,12 +6,13 @@
 using System.Web.Http;
 using ESafety.Web.Unity;
 using ESafety.Account.IService;
-using System.Web.Mvc;
 using ESafety.Core.Model;
 using System.Collections.Generic;
 using ESafety.Core.Model.DB.Account;
 using System;
 using System.Data.SqlClient;
+using ESafety.Account.Model.View;
+using ESafety.Account.Model.PARA;
 
 namespace ESafety.Account.API.Controllers
 {
@@ -25,25 +26,58 @@ namespace ESafety.Account.API.Controllers
             BusinessService = user;
         }
 
+        [HttpGet,Route("GetRegimeData")]
         /// <summary>
-        /// 获取菜单(小)
+        /// 获取制度数据
         /// </summary>
+        /// <param name="para"></param>
         /// <returns></returns>
-        [System.Web.Http.Route("start"), System.Web.Http.HttpGet]
-        public ActionResult<object> start()
+        public ActionResult<Pager<DocCrewView>> GetRegimeData(DocCrewPara para)
         {
             try
             {
-                return new ActionResult<object>()
-                {
-                    data = bll.GetMenus()
-                };
+                return bll.GetRegimeData(para);
             }
-            catch(SqlException ex)
+            catch(Exception ex)
             {
-                return new ActionResult<object>(ex.Message);
+                return new ActionResult<Pager<DocCrewView>>(ex);
             }
-            
+        }
+
+        [HttpPost,Route("DeleteDocCrewById")]
+        /// <summary>
+        /// 删除一条制度数据
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        public ActionResult<bool> DeleteDocCrewById(Guid guid)
+        {
+            try
+            {
+                return bll.DeleteDocCrewById(guid);
+            }
+            catch(Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+
+        [HttpPost,Route("AddOrUpdateDocCrew")]
+        /// <summary>
+        /// 添加或修改制度数据
+        /// </summary>
+        /// <param name="doc_"></param>
+        /// <returns></returns>
+        public ActionResult<bool> AddOrUpdateDocCrew(Doc_Crew doc_)
+        {
+            try
+            {
+                return bll.AddOrUpdateDocCrew(doc_);
+            }
+            catch(Exception ex)
+            {
+                return new ActionResult<bool>(true);
+            } 
         }
     }
 }

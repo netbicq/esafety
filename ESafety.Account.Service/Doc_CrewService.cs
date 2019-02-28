@@ -20,6 +20,7 @@ using ESafety.Account.IService;
 using ESafety.Account.Model.PARA;
 using ESafety.Account.Model.View;
 using ESafety.Core.Model;
+using ESafety.Core.Model.DB;
 using ESafety.Core.Model.DB.Account;
 using ESafety.ORM;
 using System;
@@ -31,45 +32,83 @@ namespace ESafety.Account.Service
 	public  class  Doc_CrewService:ServiceBase,IDoc_CrewService
 	{
 		private IUnitwork _work = null;
-        private IRepository<TypeConfig> _rpsdanger = null;
+        /// <summary>
+        /// 制度
+        /// </summary>
         private IRepository<Doc_Crew> _doccrew = null;
+        /// <summary>
+        /// 词典
+        /// </summary>
+        private IRepository<Basic_Dict> _rpsDict = null;
         public Doc_CrewService(IUnitwork work){
 			_work = work;
-            Unitwork = work;
-            _rpsdanger = work.Repository<TypeConfig>();
             _doccrew = work.Repository<Doc_Crew>();
-
+            _rpsDict = work.Repository<Basic_Dict>();
         }
 
         /// <summary>
-        /// 初始化
+        /// 获取制度数据
         /// </summary>
         /// <param name="para"></param>
         /// <returns></returns>
-        public List<TypeConfig> GetMenus()
-
-
+        public ActionResult<Pager<DocCrewView>> GetRegimeData(DocCrewPara para)
         {
-                var menus = _rpsdanger.GetList().ToList();
-                return menus;
+            Basic_Dict dict = _rpsDict.GetModel(para.Id);
+            List<Doc_Crew> crew_Data = _doccrew.GetList(r => r.CType == dict.ID)
+                .ToList();
+            if (!string.IsNullOrWhiteSpace(para.Keyword))
+                crew_Data = crew_Data.Where(r => r.CName.Contains(para.Keyword)).ToList();
+            var crew_Data_Dto = from Item in crew_Data
+                                              select new DocCrewView()
+                                              {
+                                                  Id = Item.Id,
+                                                  CName = Item.CName,
+                                                  CContent = Item.CContent,
+                                                  CFontSize = Item.CFontSize,
+                                                  CreateTime = Item.CreateTime,
+                                                  CType = Item.CType,
+                                                  CType_Name = dict.DictName
+                                              };
+            return new ActionResult<Pager<DocCrewView>>(new Pager<DocCrewView>()
+                .GetCurrentPage(crew_Data_Dto,para.PageSize,para.PageIndex));
         }
 
-        public Pager<DocCrewDTO> GetPageCrew(PagerQuery<Doc_Crew> page,Guid id)
+        /// <summary>
+        /// 删除制度数据
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        public ActionResult<bool> DeleteDocCrewById(Guid guid)
         {
-                var data = from Item in _doccrew.GetList(r => r.CType == id).OrderBy(r => r.ID)
-                           let Obj = _rpsdanger.GetModel(r => r.ID == Item.CType)
-                           select new DocCrewDTO()
-                           {
-                               Id = Item.ID,
-                               CContent = Item.CContent,
-                               CFontSize = Item.CFontSize,
-                               CName = Item.CName,
-                               CreateTime = Item.CreateTime,
-                               TId = Obj.ID,
-                               TName = Obj.TName
-                           }; 
-                return new Pager<DocCrewDTO>().GetCurrentPage(data, page.PageSize, page.PageIndex);
+            _doccrew.Delete(r => r.ID == guid);
+            return new ActionResult<bool>(true);
+        }
+
+        /// <summary>
+        /// 添加或修改制度数据
+        /// </summary>
+        /// <param name="doc_"></param>
+        /// <returns></returns>
+        public ActionResult<bool> AddOrUpdateDocCrew(Doc_Crew doc_)
+        {
+            Doc_Crew isDoc = _doccrew.GetModel(doc_.ID);
+            if (doc_.CType == null)
+                throw new Exception("制度Id不能为空");
+            if (isDoc != null)
+            {
+                isDoc.CName = doc_.CName;
+                isDoc.CType = doc_.CType;
+                //isDoc.CreateTime = doc_.CreateTime
+                isDoc.CContent = doc_.CContent;
+                _doccrew.Update(isDoc);
+                return new ActionResult<bool>(true);
             }
+            doc_.CreateTime = DateTime.Now;
+            _doccrew.Add(doc_);
+            return new ActionResult<bool>(true);
+        }
+
+
     }
 }
 
