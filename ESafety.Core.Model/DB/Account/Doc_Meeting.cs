@@ -25,12 +25,6 @@ namespace ESafety.Core.Model.DB.Account
 	[Serializable()]
 	public class Doc_Meeting: ModelBase
 	{    
-		[KeyAttribute]
-	    	     
-	    /// <summary>
-	    /// Guid:
-	    /// </summary>        				 
-	    public Guid Id {get;set;}   
 	    	     
 	    /// <summary>
 	    /// Int32:
@@ -52,10 +46,6 @@ namespace ESafety.Core.Model.DB.Account
 	    /// </summary>        				 
 	    public DateTime MTime {get;set;}   
 	    	     
-	    /// <summary>
-	    /// String:
-	    /// </summary>        				 
-	    public String MUrl {get;set;}   
 
 
         public String MContent { get; set; }

@@ -25,12 +25,6 @@ namespace ESafety.Core.Model.DB.Account
 	[Serializable()]
 	public class Doc_EmePlan: ModelBase
 	{    
-		[KeyAttribute]
-	    	     
-	    /// <summary>
-	    /// Guid:
-	    /// </summary>        				 
-	    public Guid Id {get;set;}   
 	    	     
 	    /// <summary>
 	    /// Int32:
@@ -45,17 +39,17 @@ namespace ESafety.Core.Model.DB.Account
 	    /// <summary>
 	    /// String:
 	    /// </summary>        				 
-	    public String EName {get;set;}   
-	    	     
-	    /// <summary>
-	    /// Guid:
-	    /// </summary>        				 
-	    public Guid ETypeId {get;set;}   
-	    	     
-	    /// <summary>
-	    /// Guid:
-	    /// </summary>        				 
-	    public Guid ETypeId1 {get;set;}   
+	    public String EName {get;set;}
+
+        /// <summary>
+        /// Guid:类别id[制度]
+        /// </summary>        				 
+        public Guid ETypeId {get;set;}
+
+        /// <summary>
+        /// Guid:所在选项卡id【类别id】
+        /// </summary>        				 
+        public Guid ETypeId1 {get;set;}   
 	    	     
 	    /// <summary>
 	    /// DateTime:
@@ -63,14 +57,9 @@ namespace ESafety.Core.Model.DB.Account
 	    public DateTime EReleaseTime {get;set;}   
 	    	     
 	    /// <summary>
-	    /// Guid:
+	    /// Guid:风险等级
 	    /// </summary>        				 
 	    public Guid ELvId {get;set;}   
-	    	     
-	    /// <summary>
-	    /// String:
-	    /// </summary>        				 
-	    public String EUrl {get;set;}   
 	    	     
 	    /// <summary>
 	    /// String:

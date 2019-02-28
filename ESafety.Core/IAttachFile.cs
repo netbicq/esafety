@@ -36,5 +36,12 @@ namespace ESafety.Core
         /// <param name="buisnessid"></param>
         /// <returns></returns>
         ActionResult<IEnumerable<Bll_AttachFile>> GetFiles(Guid buisnessid);
+
+        /// <summary>
+        /// 根据业务id 删除文件
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        ActionResult<bool> DelFileByBusinessId(Guid guid);
     }
 }

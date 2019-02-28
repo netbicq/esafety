@@ -14,14 +14,44 @@ namespace ESafety.Account.Model.PARA
 
         public List<Doc_MeetPeople> meet_data { get; set; }
 
-        public List<Bll_AttachFile> meet_file { get; set; }
+    }
 
-        public Guid Id { get; set; }
+    public class DocMeetPara1
+    {
 
-        public string Keyword { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public Guid ID { get; set; }
 
-        public int PageIndex { get; set; }
+        /// <summary>
+        /// String:
+        /// </summary>        				 
+        public String MTheme { get; set; }
 
-        public int PageSize { get; set; }
+        /// <summary>
+        /// DateTime:
+        /// </summary>        				 
+        public DateTime MTime { get; set; }
+
+
+
+        public String MContent { get; set; }
+    }
+
+    public class DocMeetPara2
+    {
+        /// <summary>
+        /// 人员id
+        /// </summary>
+        public Guid MPId { get; set; }
+        /// <summary>
+        /// 0.参与人员 1.主持人员
+        /// </summary>
+        public int MState { get; set; }
+        /// <summary>
+        /// 会议id
+        /// </summary>
+        public Guid MMId { get; set; }
     }
 }

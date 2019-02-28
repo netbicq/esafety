@@ -25,12 +25,6 @@ namespace ESafety.Core.Model.DB.Account
 	[Serializable()]
 	public class Doc_Train: ModelBase
 	{    
-		[KeyAttribute]
-	    	     
-	    /// <summary>
-	    /// Guid:
-	    /// </summary>        				 
-	    public Guid Id {get;set;}   
 	    	     
 	    /// <summary>
 	    /// Int32:
@@ -60,17 +54,12 @@ namespace ESafety.Core.Model.DB.Account
 	    /// <summary>
 	    /// String:
 	    /// </summary>        				 
-	    public String TUrl {get;set;}   
-	    	     
-	    /// <summary>
-	    /// String:
-	    /// </summary>        				 
 	    public String TContent {get;set;}   
 	    	     
 	    /// <summary>
 	    /// String:
 	    /// </summary>        				 
-	    public String Trainer {get;set;}   
+	    public Guid TrainerId {get;set;}   
 	       
 	}
 	

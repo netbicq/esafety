@@ -10,18 +10,44 @@ namespace ESafety.Account.Model.PARA
 {
     public class DocTranPara
     {
-        public PagerQuery<DocTranPara> Request { get; set; }
+        /// <summary>
+        /// 培训人员Id 逗号分隔
+        /// </summary>
+        public string AIds { get; set; }
 
-        public Guid Id { get; set; }
+        /// <summary>
+        /// Int32:
+        /// </summary>        				 
+        public Int32 IsDeal { get; set; }
 
-        public string Keyword { get; set; }
+        /// <summary>
+        /// DateTime:
+        /// </summary>        				 
+        public DateTime CreateTime { get; set; }
 
-        public int PageIndex { get; set; }
+        /// <summary>
+        /// String:
+        /// </summary>        				 
+        public String TTheme { get; set; }
 
-        public int PageSize { get; set; }
+        /// <summary>
+        /// Int32:
+        /// </summary>        				 
+        public Int32 TTime { get; set; }
 
-        public Doc_Train tb { get; set; }
+        /// <summary>
+        /// DateTime:
+        /// </summary>        				 
+        public DateTime TEndTime { get; set; }
 
-        public List<Doc_TrainPeople> dtDB { get; set; }
+        /// <summary>
+        /// String:
+        /// </summary>        				 
+        public String TContent { get; set; }
+
+        /// <summary>
+        /// String:培训人id
+        /// </summary>        				 
+        public Guid TrainerId { get; set; }
     }
 }
