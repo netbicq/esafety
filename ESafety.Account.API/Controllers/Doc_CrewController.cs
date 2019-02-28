@@ -13,6 +13,7 @@ using System;
 using System.Data.SqlClient;
 using ESafety.Account.Model.View;
 using ESafety.Account.Model.PARA;
+using Newtonsoft.Json;
 
 namespace ESafety.Account.API.Controllers
 {
@@ -32,7 +33,7 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="para"></param>
         /// <returns></returns>
-        public ActionResult<Pager<DocCrewView>> GetRegimeData(DocCrewPara para)
+        public ActionResult<Pager<DocCrewView>> GetRegimeData([FromUri]DocCrewPara para)
         {
             try
             {
@@ -48,9 +49,9 @@ namespace ESafety.Account.API.Controllers
         /// <summary>
         /// 删除一条制度数据
         /// </summary>
-        /// <param name="guid"></param>
+        /// <param name="guid">主键</param>
         /// <returns></returns>
-        public ActionResult<bool> DeleteDocCrewById(Guid guid)
+        public ActionResult<bool> DeleteDocCrewById([FromUri]Guid guid)
         {
             try
             {
@@ -68,11 +69,12 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="doc_"></param>
         /// <returns></returns>
-        public ActionResult<bool> AddOrUpdateDocCrew(Doc_Crew doc_)
+        public ActionResult<bool> AddOrUpdateDocCrew([FromBody]Doc_CrewPara doc_)
         {
+            Doc_Crew crew = JsonConvert.DeserializeObject<Doc_Crew>(JsonConvert.SerializeObject(doc_));
             try
             {
-                return bll.AddOrUpdateDocCrew(doc_);
+                return bll.AddOrUpdateDocCrew(crew);
             }
             catch(Exception ex)
             {

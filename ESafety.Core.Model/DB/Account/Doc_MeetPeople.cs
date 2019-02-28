@@ -53,9 +53,9 @@ namespace ESafety.Core.Model.DB.Account
 	    public Guid MPId {get;set;}   
 	    	     
 	    /// <summary>
-	    /// Guid:
+	    /// int:
 	    /// </summary>        				 
-	    public Guid MState {get;set;}   
+	    public int MState {get;set;}   
 	       
 	}
 	

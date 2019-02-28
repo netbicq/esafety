@@ -54,6 +54,8 @@ namespace ESafety.Account.Service
         public ActionResult<Pager<DocCrewView>> GetRegimeData(DocCrewPara para)
         {
             Basic_Dict dict = _rpsDict.GetModel(para.Id);
+            if (dict == null)
+                throw new Exception("当前节点未定义");
             List<Doc_Crew> crew_Data = _doccrew.GetList(r => r.CType == dict.ID)
                 .ToList();
             if (!string.IsNullOrWhiteSpace(para.Keyword))
@@ -61,7 +63,7 @@ namespace ESafety.Account.Service
             var crew_Data_Dto = from Item in crew_Data
                                               select new DocCrewView()
                                               {
-                                                  Id = Item.Id,
+                                                  Id = Item.ID,
                                                   CName = Item.CName,
                                                   CContent = Item.CContent,
                                                   CFontSize = Item.CFontSize,
@@ -80,7 +82,9 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> DeleteDocCrewById(Guid guid)
         {
-            _doccrew.Delete(r => r.ID == guid);
+            int state = _doccrew.Delete(r => r.ID == guid);
+            if (state == 0)
+                throw new Exception("数据未定义");
             return new ActionResult<bool>(true);
         }
 
@@ -100,11 +104,20 @@ namespace ESafety.Account.Service
                 isDoc.CType = doc_.CType;
                 //isDoc.CreateTime = doc_.CreateTime
                 isDoc.CContent = doc_.CContent;
-                _doccrew.Update(isDoc);
+                int state =  _doccrew.Update(r=>r.ID == doc_.ID,(V)=>new Doc_Crew {
+                    CType = V.CType,
+                    CFontSize = V.CFontSize,
+                    CName = V.CName,
+                    CContent = V.CContent,                    
+                });
+                _work.Commit();
                 return new ActionResult<bool>(true);
             }
+            if (_doccrew.GetModel(r => r.CName == doc_.CName) != null)
+                throw new Exception("当前记录已存在");
             doc_.CreateTime = DateTime.Now;
             _doccrew.Add(doc_);
+            _work.Commit();
             return new ActionResult<bool>(true);
         }
 

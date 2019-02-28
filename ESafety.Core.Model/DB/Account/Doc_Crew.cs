@@ -25,17 +25,11 @@ namespace ESafety.Core.Model.DB.Account
 	[Serializable()]
 	public class Doc_Crew: ModelBase
 	{    
-		[KeyAttribute]
-	    	     
-	    /// <summary>
-	    /// Guid:
-	    /// </summary>        				 
-	    public Guid Id {get;set;}   
 	    	     
 	    /// <summary>
 	    /// Int32:
 	    /// </summary>        				 
-	    public Int32 IsDeal {get;set;}   
+	    public Int32 IsDeal { get { return 1; } }   
 	    	     
 	    /// <summary>
 	    /// DateTime:
@@ -64,6 +58,40 @@ namespace ESafety.Core.Model.DB.Account
 	       
 	}
 	
+    public class Doc_CrewPara
+    {
+
+        public Guid ID { get; set; }
+        /// <summary>
+        /// Int32:
+        /// </summary>        				 
+        public Int32 IsDeal { get { return 1; } }
+
+        /// <summary>
+        /// DateTime:
+        /// </summary>        				 
+        public DateTime CreateTime { get; set; }
+
+        /// <summary>
+        /// String:名称
+        /// </summary>        				 
+        public String CName { get; set; }
+
+        /// <summary>
+        /// String:字号
+        /// </summary>        				 
+        public String CFontSize { get; set; }
+
+        /// <summary>
+        /// String:内容
+        /// </summary>        				 
+        public String CContent { get; set; }
+
+        /// <summary>
+        /// Guid:类别id
+        /// </summary>        				 
+        public Guid CType { get; set; }
+    }
 }
 
 
