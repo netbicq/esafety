@@ -521,6 +521,22 @@ namespace ESafety.Unity
 
         }
         /// <summary>
+        /// 任务状态
+        /// </summary>
+        public enum TaskState
+        {
+            /// <summary>
+            /// 正常状态
+            /// </summary>
+            [Description("正常")]
+            normal =1,
+            /// <summary>
+            /// 停止状态
+            /// </summary>
+            [Description("停止")]
+            cancel=2
+        }
+        /// <summary>
         /// 选项类型
         /// </summary>
         public enum AccountOptionItemType

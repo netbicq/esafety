@@ -339,6 +339,8 @@ namespace ESafety.Core
                 }
                 dbpoint = point.CopyTo<Flow_Points>(dbpoint);
 
+
+               
                 rpsPoint.Update(dbpoint);
                 _work.Commit();
 
@@ -559,6 +561,7 @@ namespace ESafety.Core
         }
         /// <summary>
         /// 发起任务，是否提交取决于参数
+        /// 如果返回 -1则表示未设置审批流程
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>

@@ -48,6 +48,7 @@
     <Compile Include="PARA\DocQualPara.cs" />
     <Compile Include="PARA\DocTranPara.cs" />
     <Compile Include="PARA\FacilitiesManage.cs" />
+    <Compile Include="PARA\InspectTask.cs" />
     <Compile Include="PARA\OccFileHealthPara.cs" />
     <Compile Include="PARA\OccMedicalPara.cs" />
     <Compile Include="PARA\OpreationFlow.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="View\DocTranPeopleView.cs" />
     <Compile Include="View\DocTranView.cs" />
     <Compile Include="View\FacilitiesManage.cs" />
+    <Compile Include="View\InspectTask.cs" />
     <Compile Include="View\OccFileHealthView.cs" />
     <Compile Include="View\OccMedicalView.cs" />
     <Compile Include="View\OpreationFlow.cs" />
