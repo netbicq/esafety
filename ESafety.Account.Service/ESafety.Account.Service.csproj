@@ -58,6 +58,7 @@
     <Compile Include="Doc_EmePlanService.cs" />
     <Compile Include="Doc_MeetPeopleService.cs" />
     <Compile Include="FacilitiesManageService.cs" />
+    <Compile Include="InspectTaskService.cs" />
     <Compile Include="Occ_FileHealthService.cs" />
     <Compile Include="Occ_MedicalService.cs" />
     <Compile Include="OpreationFlowService.cs" />

@@ -478,8 +478,18 @@ namespace ESafety.Unity
             }
             return sb;
         }
-
-
+        /// <summary>
+        /// 创建编号
+        /// </summary>
+        /// <returns></returns>
+        public static string CreateCode()
+        {
+            Random rdom = new Random();
+            int rnum = rdom.Next();
+            var rdstr = CreateRandStrCode(5, rnum);
+            var tmsp = GetTimestamp();
+            return rdstr.ToUpper() +"_"+ tmsp.ToString();
+        }
 
         /// <summary>
         /// 行转列，单行GrouP

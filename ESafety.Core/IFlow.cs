@@ -81,6 +81,7 @@ namespace ESafety.Core
         ActionResult<IEnumerable<Point_UsersView>> GetPointUsers(Guid pointid);
         /// <summary>
         /// 业务单据发起审批，返回审批版本号
+        /// 如果返回 -1则表示未设置审批流程
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>

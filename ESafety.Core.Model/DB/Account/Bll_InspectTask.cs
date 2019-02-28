@@ -61,6 +61,6 @@ namespace ESafety.Core.Model.DB.Account
         /// ÈÎÎñÃèÊö 
         /// </summary>
         [StringLength(4000)]
-        public string TaskDescription { get; set; }
+        public string TaskDescription { get; set; } 
     }
 }

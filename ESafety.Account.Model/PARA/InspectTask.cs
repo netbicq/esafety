@@ -13,6 +13,10 @@ namespace ESafety.Account.Model.PARA
     /// </summary>
     public class InspectTaskNew
     {
+        public InspectTaskNew()
+        {
+            TaskSubjects = new List<InspectTaskSubjectNew>();
+        }
         /// <summary>
         /// 任务名称
         /// </summary>
@@ -79,5 +83,41 @@ namespace ESafety.Account.Model.PARA
         /// 主体ID
         /// </summary>
         public Guid SubjectID { get; set; }
+    }
+    /// <summary>
+    /// 改变任务状态
+    /// </summary>
+    public class InspectTaskChangeState
+    {
+        /// <summary>
+        /// ID
+        /// </summary>
+        public Guid ID { get; set; }
+        /// <summary>
+        /// 状态
+        /// </summary>
+        public PublicEnum.BillFlowState State { get; set; }
+    }
+    /// <summary>
+    /// 查询参数
+    /// </summary>
+    public class InspectTaskQuery
+    {
+        /// <summary>
+        /// 状态
+        /// </summary>
+        public int State { get; set; }
+        /// <summary>
+        /// 岗位id
+        /// </summary>
+        public Guid PostID { get; set; }
+        /// <summary>
+        /// 风险点
+        /// </summary>
+        public Guid DangerID { get; set; }
+        /// <summary>
+        /// 关键字，只支持任务名 和描述检索
+        /// </summary>
+        public string Key { get; set; }
     }
 }

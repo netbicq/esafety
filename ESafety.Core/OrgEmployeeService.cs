@@ -31,7 +31,6 @@ namespace ESafety.Core
             _rpsorg = work.Repository<Basic_Org>();
             _rpsemployee = work.Repository<Basic_Employee>();
             usedefinedService = udf;
-
         }
 
         /// <summary>
