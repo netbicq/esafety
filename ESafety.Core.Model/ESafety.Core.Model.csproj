@@ -85,6 +85,8 @@
     <Compile Include="DB\Account\Doc_Qualification.cs" />
     <Compile Include="DB\Account\Doc_Train.cs" />
     <Compile Include="DB\Account\Doc_TrainPeople.cs" />
+    <Compile Include="DB\Account\Occ_FileHealth.cs" />
+    <Compile Include="DB\Account\Occ_Medical.cs" />
     <Compile Include="DB\Basic_Dict.cs" />
     <Compile Include="DB\Basic_Employee.cs" />
     <Compile Include="DB\Basic_Org.cs" />

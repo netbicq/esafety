@@ -62,6 +62,8 @@
     <Compile Include="Doc_TrainPeopleService.cs" />
     <Compile Include="Doc_TrainService.cs" />
     <Compile Include="FacilitiesManageService.cs" />
+    <Compile Include="Occ_FileHealthService.cs" />
+    <Compile Include="Occ_MedicalService.cs" />
     <Compile Include="OpreationFlowService.cs" />
     <Compile Include="PostManageService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
