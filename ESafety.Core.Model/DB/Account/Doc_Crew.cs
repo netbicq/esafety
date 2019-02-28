@@ -37,12 +37,12 @@ namespace ESafety.Core.Model.DB.Account
 	    public DateTime CreateTime {get;set;}   
 	    	     
 	    /// <summary>
-	    /// String:
+	    /// String:名称
 	    /// </summary>        				 
 	    public String CName {get;set;}   
 	    	     
 	    /// <summary>
-	    /// String:
+	    /// String:字号
 	    /// </summary>        				 
 	    public String CFontSize {get;set;}   
 	    	     
@@ -52,7 +52,7 @@ namespace ESafety.Core.Model.DB.Account
 	    public String CContent {get;set;}   
 	    	     
 	    /// <summary>
-	    /// Guid:
+	    /// Guid:类别Id[词典制度id]
 	    /// </summary>        				 
 	    public Guid CType {get;set;}   
 	       

@@ -43,7 +43,7 @@
   <ItemGroup>
     <Compile Include="IDangerManageService.cs" />
     <Compile Include="IDangerSetService.cs" />
-    <Compile Include="IDoc_CrewService.cs" />
+    <Compile Include="IOcc_FileManagerService.cs" />
     <Compile Include="IDoc_EmePlanService.cs" />
     <Compile Include="IDoc_MeetingService.cs" />
     <Compile Include="IDoc_MeetPeopleService.cs" />

@@ -15,19 +15,25 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public Guid Id { get; set; }
 
-        /// <summary>
-        /// 模糊查询
-        /// </summary>
-        public string Keyword { get; set; }
+    }
 
+    public class AmendCrew
+    {
         /// <summary>
-        /// 当前页
+        /// 主键
         /// </summary>
-        public int PageIndex { get; set; }
-        
+        public Guid ID { get; set; }
         /// <summary>
-        /// 每页数量
+        /// 名称
         /// </summary>
-        public int PageSize { get; set; }
+        public string CName { get; set; }
+        /// <summary>
+        /// 字号
+        /// </summary>
+        public string CFontSize { get; set; }
+        /// <summary>
+        /// 制度Id[从词典获取]
+        /// </summary>
+        public Guid CType { get; set; }
     }
 }

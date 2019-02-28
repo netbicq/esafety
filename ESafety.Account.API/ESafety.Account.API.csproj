@@ -209,15 +209,14 @@
     <Compile Include="Controllers\DangerManageController.cs" />
     <Compile Include="Controllers\DangerRelationController.cs" />
     <Compile Include="Controllers\DictController.cs" />
-    <Compile Include="Controllers\Doc_CrewController.cs" />
     <Compile Include="Controllers\Doc_EmePlanController.cs" />
     <Compile Include="Controllers\Doc_MeetingController.cs" />
     <Compile Include="Controllers\Doc_MeetPeopleController.cs" />
-    <Compile Include="Controllers\Doc_QualificationController.cs" />
     <Compile Include="Controllers\Doc_TrainController.cs" />
     <Compile Include="Controllers\Doc_TrainPeopleController.cs" />
     <Compile Include="Controllers\EnumItemController.cs" />
     <Compile Include="Controllers\FacilitiesManageController.cs" />
+    <Compile Include="Controllers\Occ_FileManagerController.cs" />
     <Compile Include="Controllers\FlowController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LogController.cs" />
