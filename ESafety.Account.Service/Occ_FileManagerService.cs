@@ -191,7 +191,7 @@ namespace ESafety.Account.Service
             int state = _docQual.Delete(r => r.ID == guid);
             if (state == 0)
                 throw new Exception("当前数据不存在");
-            attach.GetFiles(guid).data.ToList().ForEach(r=>attach.DelFile(r.ID));
+            attach.GetFiles(guid).data.ToList().ForEach(r=>attach.DelFile(r.ID)); 
             _work.Commit();
             return new ActionResult<bool>(true);
         }

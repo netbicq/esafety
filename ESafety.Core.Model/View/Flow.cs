@@ -113,16 +113,20 @@ namespace ESafety.Core.Model.View
         /// </summary>
         public long FlowVersion { get; set; }
         /// <summary>
-        /// 业务模型
+        /// 业务编号
         /// </summary>
-        public dynamic BusinessObj { get; set; }
+        public string BusinessCode { get; set; }
+        /// <summary>
+        /// 业务日期
+        /// </summary>
+        public DateTime BusinessDate { get; set; }
 
 
     }
     /// <summary>
     /// 审批结果
     /// </summary>
-    public class Flow_Result
+    public class Flow_ResultView
     {
         /// <summary>
         /// id
@@ -176,8 +180,80 @@ namespace ESafety.Core.Model.View
         /// 业务单据类型
         /// </summary>
         public string BusinessTypeName { get; set; }
+        /// <summary>
+        /// 业务编号
+        /// </summary>
+        public string BusinessCode { get; set; }
+        /// <summary>
+        /// 业务日期
+        /// </summary>
+        public DateTime BusinessDate { get; set; }
 
-
+    }
+    /// <summary>
+    /// 审批日志
+    /// </summary>
+    public class FlowLogView
+    {
+        /// <summary>
+        /// 审批版本
+        /// </summary>
+        public long FlowVersion { get; set; }
+        /// <summary>
+        /// 审批日志
+        /// </summary>
+        public IEnumerable<FlowLogPoint> Logs { get; set; }
+    }
+    /// <summary>
+    /// 审批日志
+    /// </summary>
+    public class FlowLogPoint
+    {
+        /// <summary>
+        /// 节点名称
+        /// </summary>
+        public string PointName { get; set; }     
+        /// <summary>
+        /// 审批人
+        /// </summary>
+        public IEnumerable<FlowUser> Users { get; set; }
+        
+    }
+    /// <summary>
+    /// 流程
+    /// </summary>
+    public class FlowUser
+    {
+        /// <summary>
+        /// 审批人
+        /// </summary>
+        public string TaskUser { get; set; }
+        /// <summary>
+        /// 审批结果，如果为空则表示未审批
+        /// </summary>
+        public FlowLogResult ResultInfo { get; set; }
+    }
+    /// <summary>
+    /// 审批日志
+    /// </summary>
+    public class FlowLogResult
+    {
+        /// <summary>
+        /// 审批日期
+        /// </summary>
+        public DateTime FlowDate { get; set; }
+        /// <summary>
+        /// 审批人
+        /// </summary>
+        public string FlowUser { get; set; }
+        /// <summary>
+        /// 审批结果
+        /// </summary>
+        public PublicEnum.EE_FlowResult FlowResult { get; set; }
+        /// <summary>
+        /// 审批备注
+        /// </summary>
+        public string FlowMemo { get; set; }
     }
 
 }

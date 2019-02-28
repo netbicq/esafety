@@ -216,6 +216,7 @@
     <Compile Include="Controllers\Doc_TrainPeopleController.cs" />
     <Compile Include="Controllers\EnumItemController.cs" />
     <Compile Include="Controllers\FacilitiesManageController.cs" />
+    <Compile Include="Controllers\InspectTaskController.cs" />
     <Compile Include="Controllers\Occ_FileManagerController.cs" />
     <Compile Include="Controllers\FlowController.cs" />
     <Compile Include="Controllers\HomeController.cs" />

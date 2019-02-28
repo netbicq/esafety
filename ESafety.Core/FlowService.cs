@@ -232,7 +232,7 @@ namespace ESafety.Core
                 return new ActionResult<PublicEnum.EE_FlowApproveResult>(approveResult);
             }
             catch (Exception ex)
-            {                
+            {
                 return new ActionResult<PublicEnum.EE_FlowApproveResult>(ex);
             }
         }
@@ -340,7 +340,7 @@ namespace ESafety.Core
                 dbpoint = point.CopyTo<Flow_Points>(dbpoint);
 
 
-               
+
                 rpsPoint.Update(dbpoint);
                 _work.Commit();
 
@@ -452,6 +452,203 @@ namespace ESafety.Core
             }
         }
         /// <summary>
+        /// 获取审批日志
+        /// </summary>
+        /// <param name="businessid"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<FlowLogView>> GetFlowLog(Guid businessid)
+        {
+            try
+            {
+                //审批日志
+                var logs = rpsResult.Queryable(q => q.BusinessID == businessid).ToList();
+                //检查是否有日志
+                var task = rpsTask.Queryable(q => q.BusinessID == businessid).ToList();
+
+                var check = logs.Any() || task.Any();
+
+                if (!check)
+                {
+                    throw new Exception("没有任何审批日志");
+                }
+                var btype = logs.Any() ? logs[0].BusinessType : task.Any() ? task[0].BusinessType : 0;
+                if (btype == 0)
+                {
+                    throw new Exception("数据有误");
+                }
+                //审批节点
+                var points = rpsPoint.Queryable(q => q.BusinessType == btype).OrderBy(o => o.PointIndex).ToList();
+                var pointsids = points.Select(s => s.ID);
+                //审批用户
+                var pointuser = rpsPointUser.Queryable(q => pointsids.Contains(q.PointID));
+                //职员
+                var empids = logs.Select(s => s.FlowUser);
+                var emps = _work.Repository<Basic_Employee>().Queryable(q => empids.Contains(q.Login)).ToList();
+
+                var re = from lg in logs
+                         group lg by lg.FlowVersion into g
+                         select new FlowLogView
+                         {
+                             FlowVersion = g.Key,
+                             Logs = from p in points
+                                    select new FlowLogPoint
+                                    {
+                                        PointName = p.PointName,
+                                        Users = from u in pointuser.Where(q => q.PointID == p.ID).OrderBy(o => o.UserIndex)
+                                                let emp = emps.FirstOrDefault(q => q.Login == u.PointUser)
+                                                let loginfo = g.FirstOrDefault(q => q.FlowVersion == g.Key && q.FlowUser == u.PointUser)
+                                                select new FlowUser
+                                                {
+                                                    TaskUser = emp == null ? "" : emp.CNName,
+                                                    ResultInfo = loginfo == null ? default(FlowLogResult) : new FlowLogResult
+                                                    {
+                                                        FlowUser = loginfo.FlowUser,
+                                                        FlowDate = loginfo.FlowDate,
+                                                        FlowMemo = loginfo.FlowMemo,
+                                                        FlowResult = (PublicEnum.EE_FlowResult)loginfo.FlowResult
+                                                    }
+                                                }
+                                    }
+                         };
+
+
+                return new ActionResult<IEnumerable<FlowLogView>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<FlowLogView>>(ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取我的审批
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        public ActionResult<Pager<Flow_ResultView>> GetMyResult(PagerQuery<string> para)
+        {
+            try
+            {
+                var flowresult = rpsResult.Queryable(q => q.FlowUser == AppUser.UserInfo.Login).OrderBy(o => o.FlowDate);
+                var slogins = flowresult.Select(s => s.ApplyUser);
+                var flogins = flowresult.Select(s => s.FlowUser);
+                var emps = _work.Repository<Basic_Employee>().Queryable(q => slogins.Contains(q.Login) || flogins.Contains(q.Login)).ToList();
+
+                var re = from r in flowresult.ToList()
+                         let semp = emps.FirstOrDefault(q => q.Login == r.ApplyUser)
+                         let femp = emps.FirstOrDefault(q => q.Login == r.FlowUser)
+                         select new Flow_ResultView
+                         {
+                             ApplyUser = r.ApplyUser,
+                             FlowUser = r.FlowUser,
+                             ApplyUserName = semp.CNName,
+                             BusinessCode = r.BusinessCode,
+                             BusinessDate = r.BusinessDate,
+                             BusinessID = r.BusinessID,
+                             BusinessType = (PublicEnum.EE_BusinessType)r.BusinessType,
+                             BusinessTypeName = Command.GetItems(typeof(PublicEnum.EE_BusinessType)).FirstOrDefault(q => q.Value == r.BusinessType).Caption,
+                             FlowDate = r.FlowDate,
+                             FlowResult = (PublicEnum.EE_FlowResult)r.FlowResult,
+                             FlowResultName = Command.GetItems(typeof(PublicEnum.EE_FlowResult)).FirstOrDefault(q => q.Value == r.FlowResult).Caption,
+                             FlowUserName = femp.CNName,
+                             FlowVersion = r.FlowVersion,
+                             ID = r.ID,
+                             PointName = r.PointName
+                         };
+                var rel = new Pager<Flow_ResultView>().GetCurrentPage(re, para.PageSize, para.PageIndex);
+                return new ActionResult<Pager<Flow_ResultView>>(rel);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<Pager<Flow_ResultView>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取我发起的审批
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        public ActionResult<Pager<Flow_ResultView>> GetMyStart(PagerQuery<string> para)
+        {
+            try
+            {
+                var flowresult = rpsResult.Queryable(q => q.ApplyUser == AppUser.UserInfo.Login).OrderBy(o => o.FlowDate);
+                var slogins = flowresult.Select(s => s.ApplyUser);
+                var flogins = flowresult.Select(s => s.FlowUser);
+                var emps = _work.Repository<Basic_Employee>().Queryable(q => slogins.Contains(q.Login) || flogins.Contains(q.Login)).ToList();
+
+                var re = from r in flowresult.ToList()
+                         let semp = emps.FirstOrDefault(q => q.Login == r.ApplyUser)
+                         let femp = emps.FirstOrDefault(q => q.Login == r.FlowUser)
+                         select new Flow_ResultView
+                         {
+                             ApplyUser = r.ApplyUser,
+                             FlowUser = r.FlowUser,
+                             ApplyUserName = semp.CNName,
+                             BusinessCode = r.BusinessCode,
+                             BusinessDate = r.BusinessDate,
+                             BusinessID = r.BusinessID,
+                             BusinessType = (PublicEnum.EE_BusinessType)r.BusinessType,
+                             BusinessTypeName = Command.GetItems(typeof(PublicEnum.EE_BusinessType)).FirstOrDefault(q => q.Value == r.BusinessType).Caption,
+                             FlowDate = r.FlowDate,
+                             FlowResult = (PublicEnum.EE_FlowResult)r.FlowResult,
+                             FlowResultName = Command.GetItems(typeof(PublicEnum.EE_FlowResult)).FirstOrDefault(q => q.Value == r.FlowResult).Caption,
+                             FlowUserName = femp.CNName,
+                             FlowVersion = r.FlowVersion,
+                             ID = r.ID,
+                             PointName = r.PointName
+                         };
+                var rel = new Pager<Flow_ResultView>().GetCurrentPage(re, para.PageSize, para.PageIndex);
+                return new ActionResult<Pager<Flow_ResultView>>(rel);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<Pager<Flow_ResultView>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取待审批
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        public ActionResult<Pager<Flow_TaskView>> GetMyTask(PagerQuery<string> para)
+        {
+            try
+            {
+                var flowtask = rpsTask.Queryable(q => q.TaskUser == AppUser.UserInfo.Login).ToList();
+                var slogins = flowtask.Select(s => s.ApplyUser);
+                var flogins = flowtask.Select(s => s.TaskUser);
+                var emps = _work.Repository<Basic_Employee>().Queryable(q => slogins.Contains(q.Login) || flogins.Contains(q.Login)).ToList();
+
+                var retmp = from t in flowtask
+                            let semp = emps.FirstOrDefault(q => q.Login == t.ApplyUser)
+                            let femp = emps.FirstOrDefault(q => q.Login == t.TaskUser)
+                            select new Flow_TaskView
+                            {
+                                TaskUser = t.TaskUser,
+                                ApplyUser = t.ApplyUser,
+                                ApplyUserName = semp == null ? "" : semp.CNName,
+                                BusinessCode = t.BusinessCode,
+                                BusinessDate = t.BusinessDate,
+                                BusinessID = t.BusinessID,
+                                BusinessType = (PublicEnum.EE_BusinessType)t.BusinessType,
+                                BusinessTypeName = Command.GetItems(typeof(PublicEnum.EE_BusinessType)).FirstOrDefault(q => q.Value == t.BusinessType).Caption,
+                                FlowVersion = t.FlowVersion,
+                                ID = t.ID,
+                                TaskDate = t.TaskDate
+                            };
+
+                var re = new Pager<Flow_TaskView>().GetCurrentPage(retmp, para.PageSize, para.PageIndex);
+                return new ActionResult<Pager<Flow_TaskView>>(re);
+
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<Pager<Flow_TaskView>>(ex);
+            }
+        }
+
+        /// <summary>
         /// 获取审批节点模型
         /// </summary>
         /// <param name="id"></param>
@@ -515,7 +712,7 @@ namespace ESafety.Core
             try
             {
                 var pointuser = rpsPointUser.GetModel(id);
-                if(pointuser == null)
+                if (pointuser == null)
                 {
                     throw new Exception("审批用户未找到");
 
@@ -565,14 +762,18 @@ namespace ESafety.Core
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>
-        public ActionResult<long> InitTask(InitTask task, bool iscommit)
+        public ActionResult<Flow_Task> InitTask(InitTask task)
         {
             try
             {
                 var point = rpsPoint.Queryable(q => q.BusinessType == (int)task.BusinessType).OrderBy(o => o.PointIndex).FirstOrDefault();
                 if (point == null)
                 {
-                    return new ActionResult<long>((long)-1);
+                    var result = new ActionResult<Flow_Task>();
+                    result.data = null;
+                    result.state = 200;
+                    result.msg = "";
+                    return result;
                 }
                 else
                 {
@@ -598,18 +799,13 @@ namespace ESafety.Core
                         default:
                             break;
                     }
-                    rpsTask.Add(ptask);
-                    if (iscommit)
-                    {
-                        _work.Commit();
-                    }
-                    return new ActionResult<long>(ptask.FlowVersion);
+                    return new ActionResult<Flow_Task>(ptask);
                 }
             }
             catch (Exception ex)
             {
 
-                return new ActionResult<long>(ex);
+                return new ActionResult<Flow_Task>(ex);
             }
         }
     }

@@ -52,5 +52,13 @@ namespace ESafety.Core.Model.DB
         /// </summary>
         [StringLength(500)]
         public string FlowMemo { get; set; }
+        /// <summary>
+        /// 业务编号
+        /// </summary>
+        public string BusinessCode { get; set; }
+        /// <summary>
+        /// 业务日期
+        /// </summary>
+        public DateTime BusinessDate { get; set; }
     }
 }

@@ -113,4 +113,18 @@ namespace ESafety.Core.Model.PARA
         /// </summary>
         public long FlowVersion { get; set; }
     }
+    /// <summary>
+    /// 业务审批参数
+    /// </summary>
+    public class BusinessAprovePara
+    {
+        /// <summary>
+        /// 业务类型
+        /// </summary>
+        public PublicEnum.EE_BusinessType BusinessType { get; set; }
+        /// <summary>
+        /// 业务id
+        /// </summary>
+        public Guid BusinessID { get; set; }
+    }
 }

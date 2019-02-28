@@ -1,4 +1,5 @@
 ﻿using ESafety.Core.Model;
+using ESafety.Core.Model.DB;
 using ESafety.Core.Model.PARA;
 using ESafety.Core.Model.View;
 using ESafety.Unity;
@@ -85,7 +86,7 @@ namespace ESafety.Core
         /// </summary>
         /// <param name="task"></param>
         /// <returns></returns>
-        ActionResult<long> InitTask(InitTask task,bool iscommit);
+        ActionResult<Flow_Task> InitTask(InitTask task);
         /// <summary>
         /// 检查业务是否需要审批流程
         /// </summary>
@@ -101,8 +102,32 @@ namespace ESafety.Core
         /// <summary>
         /// 审批撤回
         /// </summary>
-        /// <param name="taskid"></param>
+        /// <param name="recall"></param>
         /// <returns></returns>
         ActionResult<bool> FlowRecall(FlowRecall recall);
+
+        /// <summary>
+        /// 获取我的待审批
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<Pager<Flow_TaskView>> GetMyTask(PagerQuery<string> para);
+        /// <summary>
+        /// 获取我发起的审批
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        ActionResult<Pager<Flow_ResultView>> GetMyStart(PagerQuery<string> para);
+        /// <summary>
+        /// 获取我审批过的单据
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        ActionResult<Pager<Flow_ResultView>> GetMyResult(PagerQuery<string> para);
+        /// <summary>
+        /// 获取审批日志
+        /// </summary>
+        /// <param name="businessid"></param>
+        /// <returns></returns>
+        ActionResult<IEnumerable<FlowLogView>> GetFlowLog(Guid businessid);
     }
 }

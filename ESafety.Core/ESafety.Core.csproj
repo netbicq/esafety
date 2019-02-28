@@ -60,12 +60,14 @@
     <Compile Include="AttachFileService.cs" />
     <Compile Include="Auth_UserService.cs" />
     <Compile Include="DictService.cs" />
+    <Compile Include="FlowBusinessService.cs" />
     <Compile Include="FlowService.cs" />
     <Compile Include="IAccount.cs" />
     <Compile Include="IAttachFile.cs" />
     <Compile Include="IAuth_User.cs" />
     <Compile Include="IDict.cs" />
     <Compile Include="IFlow.cs" />
+    <Compile Include="IFlowBusiness.cs" />
     <Compile Include="ILog.cs" />
     <Compile Include="IOrgEmployee.cs" />
     <Compile Include="IReport.cs" />

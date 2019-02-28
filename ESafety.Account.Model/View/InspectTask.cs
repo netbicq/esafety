@@ -117,4 +117,15 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string SubjectName { get; set; }
     }
+    /// <summary>
+    /// 巡查任务模型
+    /// </summary>
+    public class InspectTaskModelView:InspectTaskView
+    {
+        /// <summary>
+        /// 明细主体
+        /// </summary>
+        public IEnumerable<InspectTaskSubjectView> Subjects { get; set; }
+
+    }
 }

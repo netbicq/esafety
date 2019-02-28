@@ -58,6 +58,58 @@ namespace ESafety.Unity
             Over = 4
         }
         /// <summary>
+        /// 审批业务单据状态
+        /// </summary>
+        public enum BillFlowState
+        {
+            /// <summary>
+            /// 待审批
+            /// </summary>
+            [Description("正常")]
+            normal = 1,
+            /// <summary>
+            /// 审批拒绝
+            /// </summary>
+            [Description("审批拒绝")]
+            deny = 2,
+            /// <summary>
+            /// 审批撤消
+            /// </summary>
+            [Description("撤消审批")]
+            recalled = 3,
+            /// <summary>
+            /// 审批中
+            /// </summary>
+            [Description("审批中")]
+            pending = 4,
+            /// <summary>
+            /// 审批通过
+            /// </summary>
+            [Description("审批通过")]
+            approved = 5,
+            /// <summary>
+            /// 已审核
+            /// </summary>
+            [Description("已审核")]
+            audited = 6,
+            /// <summary>
+            /// 作废
+            /// </summary>
+            [Description("已作废")]
+            cancel = 7,
+            /// <summary>
+            /// 申请中
+            /// </summary>
+            [Description("申请中")]
+            appling = 8,
+            /// <summary>
+            /// 已验收
+            /// </summary>
+            [Description("已验收")]
+            check = 9
+
+        }
+        /// <summary>
         /// 审批流程审批返回结果
         /// </summary>
         public enum EE_FlowApproveResult
@@ -83,6 +135,7 @@ namespace ESafety.Unity
             [Description("审批拒绝")]
             deny=4
         }
+       
         /// <summary>
         /// 巡检任务
         /// </summary>
@@ -468,58 +521,7 @@ namespace ESafety.Unity
             [Description("已审核")]
             Applyed = 3
         }
-        /// <summary>
-        /// 审批业务单据状态
-        /// </summary>
-        public enum BillFlowState
-        {
-            /// <summary>
-            /// 待审批
-            /// </summary>
-            [Description("正常")]
-            normal = 1,
-            /// <summary>
-            /// 审批拒绝
-            /// </summary>
-            [Description("审批拒绝")]
-            deny = 2,
-            /// <summary>
-            /// 审批撤消
-            /// </summary>
-            [Description("撤消审批")]
-            recalled = 3,
-            /// <summary>
-            /// 审批中
-            /// </summary>
-            [Description("审批中")]
-            pending = 4,
-            /// <summary>
-            /// 审批通过
-            /// </summary>
-            [Description("审批通过")]
-            approved = 5,
-            /// <summary>
-            /// 已审核
-            /// </summary>
-            [Description("已审核")]
-            audited = 6,
-            /// <summary>
-            /// 作废
-            /// </summary>
-            [Description("已作废")]
-            cancel = 7,
-            /// <summary>
-            /// 申请中
-            /// </summary>
-            [Description("申请中")]
-            appling = 8,
-            /// <summary>
-            /// 已验收
-            /// </summary>
-            [Description("已验收")]
-            check = 9
-
-        }
+       
         /// <summary>
         /// 任务状态
         /// </summary>

@@ -47,5 +47,13 @@ namespace ESafety.Core.Model.DB
         /// 审批版本号
         /// </summary>
         public long FlowVersion { get { return _version; } set { _version = value; } }
+        /// <summary>
+        /// 业务编号
+        /// </summary>
+        public string BusinessCode { get; set; }
+        /// <summary>
+        /// 业务日期
+        /// </summary>
+        public DateTime BusinessDate { get; set; }
     }
 }

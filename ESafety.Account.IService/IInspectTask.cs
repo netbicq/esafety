@@ -27,12 +27,7 @@ namespace ESafety.Account.IService
         /// <param name="id"></param>
         /// <returns></returns>
         ActionResult<bool> DelTask(Guid id);
-        /// <summary>
-        /// 发起审批
-        /// </summary>
-        /// <param name="taskid"></param>
-        /// <returns></returns>
-        ActionResult<bool> StartFlow(Guid taskid);
+
         /// <summary>
         /// 修改任务
         /// </summary>
@@ -58,5 +53,23 @@ namespace ESafety.Account.IService
         /// <param name="taskid"></param>
         /// <returns></returns>
         ActionResult<IEnumerable<InspectTaskSubjectView>> GetTaskSubjects(Guid taskid);
+        /// <summary>
+        /// 审核业务单据
+        /// </summary>
+        /// <param name="businessid"></param>
+        /// <returns></returns>
+        ActionResult<bool> Approve(Guid businessid);
+        /// <summary>
+        /// 发起业务单据审批
+        /// </summary>
+        /// <param name="businessid"></param>
+        /// <returns></returns>
+        ActionResult<bool> StartFlow(Guid businessid);
+        /// <summary>
+        /// 获取指定ID的模型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        ActionResult<InspectTaskModelView> GetModel(Guid id);
     }
 }

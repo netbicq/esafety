@@ -67,6 +67,7 @@ namespace ESafety.Account.API.Controllers
             
             return bll.Approve(approve);
         }
+         
         /// <summary>
         /// 删除指定ID的审批节点
         /// </summary>
@@ -139,6 +140,51 @@ namespace ESafety.Account.API.Controllers
         {
             return bll.GetBusinessTypes();
         }
+        /// <summary>
+        /// 获取审批日志
+        /// </summary>
+        /// <param name="businessid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getlogs/{businessid:Guid}")]
+        public ActionResult<IEnumerable<FlowLogView>> GetFlowLog(Guid businessid)
+        {
+            return bll.GetFlowLog(businessid);
+        }
+        /// <summary>
+        /// 获取我的审批
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("myresult")]
+        public ActionResult<Pager<Flow_ResultView>> GetMyResult(PagerQuery<string> para)
+        {
+            return bll.GetMyResult(para);
+        }
+
+        /// <summary>
+        /// 获取我的申请
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("mystart")]
+        public ActionResult<Pager<Flow_ResultView>> GetMyStart(PagerQuery<string> para)
+        {
+            return bll.GetMyStart(para);
+        }
+        /// <summary>
+        /// 获取待审批
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("mytask")]
+        public ActionResult<Pager<Flow_TaskView>> GetMyTask(PagerQuery<string> para)
+        {
+            return bll.GetMyTask(para);
+        }
 
         /// <summary>
         /// 获取指定id的审批节点模型
@@ -186,6 +232,6 @@ namespace ESafety.Account.API.Controllers
         {
             return bll.GetPointUsers(pointid);
         }
-
+         
     }
 }
