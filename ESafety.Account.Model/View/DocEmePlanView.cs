@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ESafety.Account.Model.View
 {
-    public class DocTranView
+    public class DocEmePlanView
     {
-
-        public Guid ID { get; set; }
-
         /// <summary>
         /// Int32:
         /// </summary>        				 
@@ -25,31 +21,42 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// String:
         /// </summary>        				 
-        public String TTheme { get; set; }
+        public String EName { get; set; }
 
         /// <summary>
-        /// Int32:
+        /// Guid:
         /// </summary>        				 
-        public Int32 TTime { get; set; }
+        public Guid ETypeId { get; set; }
+
+        /// <summary>
+        /// 类别名
+        /// </summary>
+        public String ETypeName { get; set; }
+
+        /// <summary>
+        /// Guid:
+        /// </summary>        				 
+        public Guid ETypeId1 { get; set; }
 
         /// <summary>
         /// DateTime:
         /// </summary>        				 
-        public DateTime TEndTime { get; set; }
+        public DateTime EReleaseTime { get; set; }
 
         /// <summary>
-        /// String:
+        /// Guid:
         /// </summary>        				 
-        public String TContent { get; set; }
+        public Guid ELvId { get; set; }
 
         /// <summary>
-        /// String:
-        /// </summary>        				 
-        public Guid TrainerId { get; set; }
-
-        /// <summary>
-        /// 主持人姓名
+        /// 等级名
         /// </summary>
-        public string Trainer { get; set; }
+        public String EveName { get; set; }
+
+        /// <summary>
+        /// String:
+        /// </summary>        				 
+        public String EContent { get; set; }
+
     }
 }

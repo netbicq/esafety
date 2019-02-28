@@ -66,6 +66,43 @@ namespace ESafety.Core
         }
 
         /// <summary>
+        /// 根据业务id 删除文件
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        public ActionResult<bool> DelFileByBusinessId(Guid guid)
+        {
+            try
+            {
+                var file = rpsFile.GetList(r => r.BusinessID == guid);
+                if (file.Count() == 0)
+                {
+                    throw new Exception("文件不存在");
+                }
+                rpsFile.Delete(q => q.BusinessID == guid);
+                file.Where(r => {
+                    var filepath = HttpContext.Current.Server.MapPath(r.FileUrl);
+                    if (File.Exists(filepath))
+                    {
+                        File.Delete(filepath);
+                    }
+                    return true;
+                });
+                _work.Commit();
+                return new ActionResult<bool>(true);
+
+            }
+            catch(Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+            
+        }
+
+
+
+
+        /// <summary>
         /// 根据业务id获取电子文件集合
         /// </summary>
         /// <param name="buisnessid"></param>

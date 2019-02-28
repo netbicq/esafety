@@ -25,9 +25,13 @@ using ESafety.Account.Model.PARA;
 using System.Linq;
 using ESafety.Core.Model.DB;
 using System;
+using ESafety.Core;
 
 namespace ESafety.Account.Service
 {
+    /// <summary>
+    /// 职业健康
+    /// </summary>
 	public  class  Occ_FileHealthService:ServiceBase,IOcc_FileHealthService
 	{
 		private IUnitwork _work = null;
@@ -36,13 +40,17 @@ namespace ESafety.Account.Service
         private IRepository<Occ_FileHealth> _iocchealth = null;
         private IRepository<Basic_Employee> _iemp = null;
         private IRepository<Basic_Org> _rpsorg = null;
-
-        public Occ_FileHealthService(IUnitwork work){
+        /// <summary>
+        /// 电子文档service
+        /// </summary>
+        private IAttachFile attach = null;
+        public Occ_FileHealthService(IUnitwork work,AttachFileService a){
 			_work = work;
             _iocchealth = _work.Repository<Occ_FileHealth>();
             _iemp = _work.Repository<Basic_Employee>();
             _rpsorg = _work.Repository<Basic_Org>();
             _rpsFile = _work.Repository<Bll_AttachFile>();
+            attach = a;
         }
 
 
@@ -51,9 +59,9 @@ namespace ESafety.Account.Service
         /// </summary>
         /// <param name="occFile"></param>
         /// <returns></returns>
-        public ActionResult<Pager<OccFileHealthView>> GetHealthData(OccFileHealthPara occFile)
+        public ActionResult<Pager<OccFileHealthView>> GetHealthData(PagerQuery<OccFileHealthPara> occFile)
         {
-            var baseHealth = _iocchealth.GetList().ToList();
+            var baseHealth = _iocchealth.GetList();
             var resultData = (from Item in baseHealth
                              let Ry = _iemp.GetModel(r => r.ID == Item.FEmpId)
                              let Zz = _rpsorg.GetModel(r => r.ID == Ry.OrgID)
@@ -71,15 +79,15 @@ namespace ESafety.Account.Service
                                  ZzId = Zz.ID,
                                  ZzName = Zz.OrgName,
                                  Sex = Ry.Gender
-                             }).ToList();
+                             });
 
-            if (occFile.ZzId != Guid.Empty)
-                resultData.Where(r => r.ZzId == occFile.ZzId).ToList();
-            if (!string.IsNullOrWhiteSpace(occFile.Keyword))
-                resultData.Where(r => r.FEmpName.Contains(occFile.Keyword)).ToList();
-
-            return new ActionResult<Pager<OccFileHealthView>>(new Pager<OccFileHealthView>()
-                .GetCurrentPage(resultData, occFile.PageSize, occFile.PageIndex));
+            if (occFile.Query.ZzId != Guid.Empty)
+                resultData.Where(r => r.ZzId == occFile.Query.ZzId);
+            if (!string.IsNullOrWhiteSpace(occFile.KeyWord))
+                resultData.Where(r => r.FEmpName.Contains(occFile.KeyWord));
+            var page = new Pager<OccFileHealthView>()
+                .GetCurrentPage(resultData, occFile.PageSize, occFile.PageIndex);
+            return new ActionResult<Pager<OccFileHealthView>>(page);
         }
 
         /// <summary>
@@ -91,43 +99,12 @@ namespace ESafety.Account.Service
         {
             if (_iocchealth.Delete(r => r.Id == guid) == 0)
                 throw new Exception("当前数据不存在");
-            _rpsFile.Delete(r => r.BusinessID == guid);
+            attach.DelFileByBusinessId(guid);
             _work.Commit();
             return new ActionResult<bool>(true);
         }
 
 
-        /// <summary>
-        /// 添加或修改健康档案
-        /// </summary>
-        /// <param name="occFile"></param>
-        /// <returns></returns>
-        public ActionResult<bool> AddOrUpdateEmp(OccFileHealthPara occFile)
-        {
-            if(_iocchealth.GetModel(r=>r.Id == occFile.Id) != null)
-            {
-                _iocchealth.Update(r => r.Id == occFile.Id, (V) => new Occ_FileHealth()
-                {
-                    FEmpId = V.FEmpId,
-                    FTypeName = V.FTypeName,
-                    FDisease = V.FDisease,
-                    FBornTime = V.FBornTime,
-                    FContent = V.FContent,
-                    FGenetic = V.FGenetic,
-                    FSurgery = V.FSurgery,
-                });
-                _rpsFile.Delete(r => r.BusinessID == occFile.tb.Id);
-                _rpsFile.Add(occFile.files);
-            }
-            else
-            {
-                occFile.tb.CreateTime = DateTime.Now;
-                _iocchealth.Add(occFile.tb);
-                _rpsFile.Add(occFile.files);
-            }
-            _work.Commit();
-            return new ActionResult<bool>();
-        }
 	}
 }
 
