@@ -67,13 +67,20 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> InceaseHealth(AOccFileHealthPara aOcc)
         {
-            Occ_FileHealth occ_File = _iocchealth.GetModel(r=>r.FEmpId == aOcc.FEmpId);
-            if (occ_File != null)
-                throw new Exception("已存在当前人员的健康档案");
-            Occ_FileHealth Dto = aOcc.MAPTO<Occ_FileHealth>();
-            _iocchealth.Add(Dto);
-            _work.Commit();
-            return new ActionResult<bool>(true);
+            try
+            {
+                Occ_FileHealth occ_File = _iocchealth.GetModel(r => r.FEmpId == aOcc.FEmpId);
+                if (occ_File != null)
+                    throw new Exception("已存在当前人员的健康档案");
+                Occ_FileHealth Dto = aOcc.MAPTO<Occ_FileHealth>();
+                _iocchealth.Add(Dto);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
         }
 
         /// <summary>
@@ -83,13 +90,20 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> AmendHealth(AOccFileHealthPara aOcc)
         {
-            Occ_FileHealth occ_File = _iocchealth.GetModel(r => r.ID == aOcc.ID);
-            if (occ_File == null)
-                throw new Exception("未找到当前档案");
-            Occ_FileHealth Dto = aOcc.CopyTo(occ_File);
-            _iocchealth.Update(Dto);
-            _work.Commit();
-            return new ActionResult<bool>(true);
+            try
+            {
+                Occ_FileHealth occ_File = _iocchealth.GetModel(r => r.ID == aOcc.ID);
+                if (occ_File == null)
+                    throw new Exception("未找到当前档案");
+                Occ_FileHealth Dto = aOcc.CopyTo(occ_File);
+                _iocchealth.Update(Dto);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
         }
 
 
@@ -101,33 +115,40 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<Pager<OccFileHealthView>> GetHealthData(PagerQuery<OccFileHealthPara> occFile)
         {
-            var baseHealth = _iocchealth.GetList();
-            var resultData = (from Item in baseHealth
-                             let Ry = _iemp.GetModel(r => r.ID == Item.FEmpId)
-                             let Zz = _rpsorg.GetModel(r => r.ID == Ry.OrgID)
-                             select new OccFileHealthView()
-                             {
-                                 Id = Item.ID,
-                                 FBornTime = Item.FBornTime,
-                                 FContent = Item.FContent,
-                                 FDisease = Item.FDisease,
-                                 FEmpId = Ry.ID,
-                                 FEmpName = Ry.CNName,
-                                 FGenetic = Item.FGenetic,
-                                 FSurgery = Item.FSurgery,
-                                 FTypeName = Item.FTypeName,
-                                 ZzId = Zz.ID,
-                                 ZzName = Zz.OrgName,
-                                 Sex = Ry.Gender
-                             });
+            try
+            {
+                var baseHealth = _iocchealth.GetList();
+                var resultData = (from Item in baseHealth
+                                  let Ry = _iemp.GetModel(r => r.ID == Item.FEmpId)
+                                  let Zz = _rpsorg.GetModel(r => r.ID == Ry.OrgID)
+                                  select new OccFileHealthView()
+                                  {
+                                      Id = Item.ID,
+                                      FBornTime = Item.FBornTime,
+                                      FContent = Item.FContent,
+                                      FDisease = Item.FDisease,
+                                      FEmpId = Ry.ID,
+                                      FEmpName = Ry.CNName,
+                                      FGenetic = Item.FGenetic,
+                                      FSurgery = Item.FSurgery,
+                                      FTypeName = Item.FTypeName,
+                                      ZzId = Zz.ID,
+                                      ZzName = Zz.OrgName,
+                                      Sex = Ry.Gender
+                                  });
 
-            if (occFile.Query.ZzId != Guid.Empty)
-                resultData.Where(r => r.ZzId == occFile.Query.ZzId);
-            if (!string.IsNullOrWhiteSpace(occFile.KeyWord))
-                resultData.Where(r => r.FEmpName.Contains(occFile.KeyWord));
-            var page = new Pager<OccFileHealthView>()
-                .GetCurrentPage(resultData, occFile.PageSize, occFile.PageIndex);
-            return new ActionResult<Pager<OccFileHealthView>>(page);
+                if (occFile.Query.ZzId != Guid.Empty)
+                    resultData.Where(r => r.ZzId == occFile.Query.ZzId);
+                if (!string.IsNullOrWhiteSpace(occFile.KeyWord))
+                    resultData.Where(r => r.FEmpName.Contains(occFile.KeyWord));
+                var page = new Pager<OccFileHealthView>()
+                    .GetCurrentPage(resultData, occFile.PageSize, occFile.PageIndex);
+                return new ActionResult<Pager<OccFileHealthView>>(page);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<Pager<OccFileHealthView>>(ex);
+            }
         }
 
         /// <summary>
@@ -137,11 +158,18 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> DeleteFileHealthById(Guid guid)
         {
-            if (_iocchealth.Delete(r => r.ID == guid) == 0)
-                throw new Exception("当前数据不存在");
-            attach.DelFileByBusinessId(guid);
-            _work.Commit();
-            return new ActionResult<bool>(true);
+            try
+            {
+                if (_iocchealth.Delete(r => r.ID == guid) == 0)
+                    throw new Exception("当前数据不存在");
+                attach.DelFileByBusinessId(guid);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
         }
 
 
@@ -153,31 +181,38 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<Pager<OccMedicalView>> GetMedicalData(PagerQuery<OccMedicalPara> occFile)
         {
-            var baseHealth = _ioccMedical.GetList();
-            var resultData = from Item in baseHealth
-                              let Ry = _iemp.GetModel(r => r.ID == Item.MEmpId)
-                              let Zz = _rpsorg.GetModel(r => r.ID == Ry.OrgID)
-                              select new OccMedicalView()
-                              {
-                                  Id = Item.ID,
-                                  MEmpId = Ry.ID,
-                                  MEmpName = Ry.CNName,
-                                  ZzId = Zz.ID,
-                                  ZzName = Zz.OrgName,
-                                  MAge = Item.MAge,
-                                  MContent = Item.MContent,
-                                  Sex = Ry.Gender,
-                                  MTime = Item.MTime,
+            try
+            {
+                var baseHealth = _ioccMedical.GetList();
+                var resultData = from Item in baseHealth
+                                 let Ry = _iemp.GetModel(r => r.ID == Item.MEmpId)
+                                 let Zz = _rpsorg.GetModel(r => r.ID == Ry.OrgID)
+                                 select new OccMedicalView()
+                                 {
+                                     Id = Item.ID,
+                                     MEmpId = Ry.ID,
+                                     MEmpName = Ry.CNName,
+                                     ZzId = Zz.ID,
+                                     ZzName = Zz.OrgName,
+                                     MAge = Item.MAge,
+                                     MContent = Item.MContent,
+                                     Sex = Ry.Gender,
+                                     MTime = Item.MTime,
 
-                              };
+                                 };
 
-            if (occFile.Query.ZzId != Guid.Empty)
-                resultData.Where(r => r.ZzId == occFile.Query.ZzId);
-            if (!string.IsNullOrWhiteSpace(occFile.KeyWord))
-                resultData.Where(r => r.MEmpName.Contains(occFile.KeyWord));
-            var page = new Pager<OccMedicalView>()
-                .GetCurrentPage(resultData, occFile.PageSize, occFile.PageIndex);
-            return new ActionResult<Pager<OccMedicalView>>(page);
+                if (occFile.Query.ZzId != Guid.Empty)
+                    resultData.Where(r => r.ZzId == occFile.Query.ZzId);
+                if (!string.IsNullOrWhiteSpace(occFile.KeyWord))
+                    resultData.Where(r => r.MEmpName.Contains(occFile.KeyWord));
+                var page = new Pager<OccMedicalView>()
+                    .GetCurrentPage(resultData, occFile.PageSize, occFile.PageIndex);
+                return new ActionResult<Pager<OccMedicalView>>(page);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<Pager<OccMedicalView>>(ex);
+            }
         }
 
 
@@ -189,11 +224,18 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> DeleteMedicalById(Guid ID)
         {
-            if (_ioccMedical.Delete(r => r.ID == ID) == 0)
-                throw new Exception("当前数据不存在");
-            attach.DelFileByBusinessId(ID);
-            _work.Commit();
-            return new ActionResult<bool>(true);
+            try
+            {
+                if (_ioccMedical.Delete(r => r.ID == ID) == 0)
+                    throw new Exception("当前数据不存在");
+                attach.DelFileByBusinessId(ID);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
         }
 
         /// <summary>
@@ -203,12 +245,19 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> IncreaseMedical(Occ_Medical occMedical)
         {
-            Occ_Medical occ = _ioccMedical.GetModel(r=>r.MEmpId == occMedical.MEmpId);
-            if (occ != null)
-                throw new Exception("已存在当前人员的体检报告");
-            _ioccMedical.Add(occMedical);
-            _work.Commit();
-            return new ActionResult<bool>(true);
+            try
+            {
+                Occ_Medical occ = _ioccMedical.GetModel(r => r.MEmpId == occMedical.MEmpId);
+                if (occ != null)
+                    throw new Exception("已存在当前人员的体检报告");
+                _ioccMedical.Add(occMedical);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
         }
 
         /// <summary>
@@ -218,12 +267,19 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> AmendMedical(AOccMedicalPara occMedical)
         {
-            Occ_Medical occ = _ioccMedical.GetModel(occMedical.ID);
-            if (occ == null)
-                throw new Exception("体检报告不存在");
-            _ioccMedical.Update(occMedical.CopyTo(occ));
-            _work.Commit();
-            return new ActionResult<bool>(true);
+            try
+            {
+                Occ_Medical occ = _ioccMedical.GetModel(occMedical.ID);
+                if (occ == null)
+                    throw new Exception("体检报告不存在");
+                _ioccMedical.Update(occMedical.CopyTo(occ));
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
         }
 
     }

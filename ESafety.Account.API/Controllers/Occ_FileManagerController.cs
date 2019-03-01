@@ -33,7 +33,7 @@ namespace ESafety.Account.API.Controllers
         }
 
         /// <summary>
-        /// 根据制度id获取风险公示数据
+        /// 1.根据制度id获取风险公示数据
         /// </summary>
         /// <param name="para"></param>
         /// <returns></returns>
@@ -44,7 +44,7 @@ namespace ESafety.Account.API.Controllers
         }
 
         /// <summary>
-        /// 删除一条制度数据
+        /// 4.删除一条制度数据
         /// </summary>
         /// <param name="ID">主键</param>
         /// <returns></returns>
@@ -56,7 +56,7 @@ namespace ESafety.Account.API.Controllers
         }
 
         /// <summary>
-        /// 新增制度数据
+        /// 3.新增制度数据
         /// </summary>
         /// <param name="doc_"></param>
         /// <returns></returns>
@@ -68,7 +68,7 @@ namespace ESafety.Account.API.Controllers
         }
 
         /// <summary>
-        /// 修改制度数据
+        /// 2.修改制度数据
         /// </summary>
         /// <param name="amend"></param>
         /// <returns></returns>
@@ -80,7 +80,7 @@ namespace ESafety.Account.API.Controllers
         }
 
         /// <summary>
-        /// 获取资质数据[分页]
+        /// 5.获取资质数据[分页]
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
