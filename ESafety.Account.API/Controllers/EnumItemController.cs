@@ -1,4 +1,5 @@
-﻿using ESafety.Core.Model;
+﻿using ESafety.Core;
+using ESafety.Core.Model;
 using ESafety.ORM;
 using ESafety.Unity;
 using ESafety.Web.Unity;
@@ -17,10 +18,12 @@ namespace ESafety.Account.API.Controllers
     [RoutePrefix("api/enum")]
     public class EnumItemController : ESFAPI
     {
+        private IDict bll = null;
 
-        public EnumItemController()
+        public EnumItemController(IDict dict)
         {
-            BusinessService = new ServiceBase();
+            bll = dict;
+            BusinessService = dict;
         }
         /// <summary>
         /// 执行频率日期类型

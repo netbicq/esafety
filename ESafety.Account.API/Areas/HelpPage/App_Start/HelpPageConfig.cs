@@ -38,14 +38,15 @@ namespace ESafety.Account.API.Areas.HelpPage
 
             config.SetDocumentationProvider(new ModelDescriptions.MultiXmlDocumentationProvider(
               HttpContext.Current.Server.MapPath("~/bin/ESafety.Account.Service.XML"),
+              HttpContext.Current.Server.MapPath("~/bin/ESafety.Account.Model.XML"),
               HttpContext.Current.Server.MapPath("~/bin/ESafety.Account.IService.XML"),
               HttpContext.Current.Server.MapPath("~/bin/ESafety.Platform.IService.XML"),
-              HttpContext.Current.Server.MapPath("~/bin/ESafety.Platform.Service.XML"),
+              HttpContext.Current.Server.MapPath("~/bin/ESafety.Platform.Service.XML"), 
               HttpContext.Current.Server.MapPath("~/bin/ESafety.Account.API.XML"),
               HttpContext.Current.Server.MapPath("~/bin/ESafety.Core.XML"),
               HttpContext.Current.Server.MapPath("~/bin/ESafety.Core.Model.XML"),
               HttpContext.Current.Server.MapPath("~/bin/ESafety.ORM.XML"),
-              HttpContext.Current.Server.MapPath("~/bin/ESafety.Unity.XML"),
+              HttpContext.Current.Server.MapPath("~/bin/ESafety.Unity.XML"), 
               HttpContext.Current.Server.MapPath("~/bin/ESafety.Web.Unity.XML")
               ));
 
