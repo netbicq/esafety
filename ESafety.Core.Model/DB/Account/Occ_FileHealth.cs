@@ -25,13 +25,7 @@ namespace ESafety.Core.Model.DB.Account
 	[Serializable()]
 	public class Occ_FileHealth: ModelBase
 	{    
-		[KeyAttribute]
-	    	     
-	    /// <summary>
-	    /// Guid:
-	    /// </summary>        				 
-	    public Guid Id {get;set;}   
-	    	     
+		
 	    /// <summary>
 	    /// Int32:
 	    /// </summary>        				 

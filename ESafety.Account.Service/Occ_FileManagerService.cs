@@ -100,7 +100,7 @@ namespace ESafety.Account.Service
 
         #region "风险公示" && “资质管理”
         /// <summary>
-        /// 获取制度数据
+        /// 根据制度id获取风险公示数据
         /// </summary>
         /// <param name="para"></param>
         /// <returns></returns>
@@ -129,7 +129,7 @@ namespace ESafety.Account.Service
         }
 
         /// <summary>
-        /// 删除制度数据
+        /// 根据id删除风险公示数据
         /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
@@ -141,8 +141,8 @@ namespace ESafety.Account.Service
             return new ActionResult<bool>(true);
         }
 
-        /// <summa  ry>
-        /// 新增制度数据
+        /// <summary>
+        /// 新增风险公示数据
         /// </summary>
         /// <param name="doc_"></param>
         /// <returns></returns>
@@ -157,7 +157,7 @@ namespace ESafety.Account.Service
         }
 
         /// <summary>
-        /// 修改制度数据
+        /// 修改风险公示数据
         /// </summary>
         /// <param name="amend"></param>
         /// <returns></returns>
@@ -188,7 +188,7 @@ namespace ESafety.Account.Service
                             let Obj = rpsaccount.GetModel(Item.QPeopleId)
                             select new DocQualView()
                             {
-                                Id = Item.Id,
+                                Id = Item.ID,
                                 QEndTime = Item.QEndTime,
                                 QAudit = Item.QAudit,
                                 QInstitutions = Item.QInstitutions,
