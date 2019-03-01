@@ -46,9 +46,10 @@ namespace ESafety.Account.Service
         /// 电子文档service
         /// </summary>
         private IAttachFile attach = null;
-        public Occ_FileHealthService(IUnitwork work,AttachFileService a, IOrgEmployee b)
+        public Occ_FileHealthService(IUnitwork work,IAttachFile a, IOrgEmployee b)
         {
 			_work = work;
+            Unitwork = work;
             _iocchealth = _work.Repository<Occ_FileHealth>();
             _iemp = b;
             _rpsorg = _work.Repository<Basic_Org>();

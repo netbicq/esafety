@@ -90,6 +90,7 @@ namespace ESafety.Account.Service
         {
 			_work = work;
             attach = _attach;
+            Unitwork = work;
             _doccrew = _work.Repository<Doc_Crew>();
             _rpsDict = dict;
             docTrain = _work.Repository<Doc_Train>();
