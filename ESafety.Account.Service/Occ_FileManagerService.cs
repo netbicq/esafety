@@ -737,7 +737,7 @@ namespace ESafety.Account.Service
             }
             catch (Exception ex)
             {
-                return new ActionResult<IEnumerable<Basic_Employee>(ex);
+                return new ActionResult<IEnumerable<Basic_Employee>>(ex);
             }
         }
 
