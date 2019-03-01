@@ -25,13 +25,6 @@ namespace ESafety.Core.Model.DB.Account
 	[Serializable()]
 	public class Occ_Medical: ModelBase
 	{    
-		[KeyAttribute]
-	    	     
-	    /// <summary>
-	    /// Guid:
-	    /// </summary>        				 
-	    public Guid Id {get;set;}   
-	    	     
 	    /// <summary>
 	    /// Int32:
 	    /// </summary>        				 
@@ -40,27 +33,27 @@ namespace ESafety.Core.Model.DB.Account
 	    /// <summary>
 	    /// DateTime:
 	    /// </summary>        				 
-	    public DateTime CreateTime {get;set;}   
-	    	     
-	    /// <summary>
-	    /// Guid:
-	    /// </summary>        				 
-	    public Guid MEmpId {get;set;}   
-	    	     
-	    /// <summary>
-	    /// Int32:
-	    /// </summary>        				 
-	    public Int32 MAge {get;set;}   
-	    	     
-	    /// <summary>
-	    /// DateTime:
-	    /// </summary>        				 
-	    public DateTime MTime {get;set;}   
-	    	     
-	    /// <summary>
-	    /// String:
-	    /// </summary>        				 
-	    public String MContent {get;set;}   
+	    public DateTime CreateTime {get;set;}
+
+        /// <summary>
+        /// Guid:人员id
+        /// </summary>        				 
+        public Guid MEmpId {get;set;}
+
+        /// <summary>
+        /// Int32:年龄
+        /// </summary>        				 
+        public Int32 MAge {get;set;}
+
+        /// <summary>
+        /// DateTime:体检日期
+        /// </summary>        				 
+        public DateTime MTime {get;set;}
+
+        /// <summary>
+        /// String:内容
+        /// </summary>        				 
+        public String MContent {get;set;}   
 	       
 	}
 	

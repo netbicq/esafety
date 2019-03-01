@@ -62,15 +62,6 @@ namespace ESafety.Core.Model.DB.Account
     {
 
         public Guid ID { get; set; }
-        /// <summary>
-        /// Int32:
-        /// </summary>        				 
-        public Int32 IsDeal { get { return 1; } }
-
-        /// <summary>
-        /// DateTime:
-        /// </summary>        				 
-        public DateTime CreateTime { get; set; }
 
         /// <summary>
         /// String:名称

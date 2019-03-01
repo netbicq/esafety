@@ -25,12 +25,6 @@ namespace ESafety.Core.Model.DB.Account
 	[Serializable()]
 	public class Doc_Qualification: ModelBase
 	{    
-		[KeyAttribute]
-	    	     
-	    /// <summary>
-	    /// Guid:
-	    /// </summary>        				 
-	    public Guid Id {get;set;}   
 	    	     
 	    /// <summary>
 	    /// Int32:
@@ -40,52 +34,48 @@ namespace ESafety.Core.Model.DB.Account
 	    /// <summary>
 	    /// DateTime:
 	    /// </summary>        				 
-	    public DateTime CreateTime {get;set;}   
-	    	     
-	    /// <summary>
-	    /// String:
-	    /// </summary>        				 
-	    public String QName {get;set;}   
-	    	     
-	    /// <summary>
-	    /// DateTime:
-	    /// </summary>        				 
-	    public DateTime QEndTime {get;set;}   
-	    	     
-	    /// <summary>
-	    /// DateTime:
-	    /// </summary>        				 
-	    public DateTime QAudit {get;set;}   
-	    	     
-	    /// <summary>
-	    /// String:
-	    /// </summary>        				 
-	    public String QInstitutions {get;set;}   
-	    	     
-	    /// <summary>
-	    /// Guid:
-	    /// </summary>        				 
-	    public Guid QInsId {get;set;}   
-	    	     
-	    /// <summary>
-	    /// String:
-	    /// </summary>        				 
-	    public String QPeople {get;set;}   
-	    	     
-	    /// <summary>
-	    /// Guid:
-	    /// </summary>        				 
-	    public Guid QPeopleId {get;set;}   
-	    	     
-	    /// <summary>
-	    /// String:
-	    /// </summary>        				 
-	    public String QUrl {get;set;}   
-	    	     
-	    /// <summary>
-	    /// Guid:
-	    /// </summary>        				 
-	    public Guid QTypeId {get;set;}   
+	    public DateTime CreateTime {get;set;}
+
+        /// <summary>
+        /// String:资质名称
+        /// </summary>        				 
+        public String QName {get;set;}
+
+        /// <summary>
+        /// DateTime:有效期【结束时间】
+        /// </summary>        				 
+        public DateTime QEndTime {get;set;}
+
+        /// <summary>
+        /// DateTime:审核日期
+        /// </summary>        				 
+        public DateTime QAudit {get;set;}
+
+        /// <summary>
+        /// String:
+        /// </summary>        				 
+        public String QInstitutions {get;set;}
+
+        /// <summary>
+        /// Guid:机构id
+        /// </summary>        				 
+        public Guid QInsId {get;set;}
+
+        /// <summary>
+        /// String:
+        /// </summary>        				 
+        public String QPeople {get;set;}
+
+        /// <summary>
+        /// Guid:持有人id
+        /// </summary>        				 
+        public Guid QPeopleId {get;set;}
+
+
+        /// <summary>
+        /// Guid:类别Id
+        /// </summary>        				 
+        public Guid QTypeId {get;set;}   
 	       
 	}
 	

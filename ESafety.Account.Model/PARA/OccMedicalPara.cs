@@ -10,19 +10,34 @@ namespace ESafety.Account.Model.PARA
 {
     public class OccMedicalPara
     {
-
-        public Guid Id { get; set; }
-
-        public string Keyword { get; set; }
-
-        public int PageIndex { get; set; }
-
-        public int PageSize { get; set; }
-
         public Guid ZzId { get; set; }
 
         public Occ_Medical tb { get; set; }
 
-        public List<Bll_AttachFile> files { get; set; }
+    }
+
+    public class AOccMedicalPara
+    {
+
+        public Guid ID { get; set; }
+        /// <summary>
+        /// Guid:
+        /// </summary>        				 
+        public Guid MEmpId { get; set; }
+
+        /// <summary>
+        /// Int32:
+        /// </summary>        				 
+        public Int32 MAge { get; set; }
+
+        /// <summary>
+        /// DateTime:
+        /// </summary>        				 
+        public DateTime MTime { get; set; }
+
+        /// <summary>
+        /// String:
+        /// </summary>        				 
+        public String MContent { get; set; }
     }
 }

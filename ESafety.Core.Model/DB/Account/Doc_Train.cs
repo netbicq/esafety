@@ -34,32 +34,32 @@ namespace ESafety.Core.Model.DB.Account
 	    /// <summary>
 	    /// DateTime:
 	    /// </summary>        				 
-	    public DateTime CreateTime {get;set;}   
-	    	     
-	    /// <summary>
-	    /// String:
-	    /// </summary>        				 
-	    public String TTheme {get;set;}   
-	    	     
-	    /// <summary>
-	    /// Int32:
-	    /// </summary>        				 
-	    public Int32 TTime {get;set;}   
-	    	     
-	    /// <summary>
-	    /// DateTime:
-	    /// </summary>        				 
-	    public DateTime TEndTime {get;set;}   
-	    	     
-	    /// <summary>
-	    /// String:
-	    /// </summary>        				 
-	    public String TContent {get;set;}   
-	    	     
-	    /// <summary>
-	    /// String:
-	    /// </summary>        				 
-	    public Guid TrainerId {get;set;}   
+	    public DateTime CreateTime {get;set;}
+
+        /// <summary>
+        /// String:培训主题
+        /// </summary>        				 
+        public String TTheme {get;set;}
+
+        /// <summary>
+        /// Int32:培训时长 单位：h
+        /// </summary>        				 
+        public Int32 TTime {get;set;}
+
+        /// <summary>
+        /// DateTime:培训日期
+        /// </summary>        				 
+        public DateTime TEndTime {get;set;}
+
+        /// <summary>
+        /// String:内容
+        /// </summary>        				 
+        public String TContent {get;set;}
+
+        /// <summary>
+        /// String:培训人Id
+        /// </summary>        				 
+        public Guid TrainerId {get;set;}   
 	       
 	}
 	
