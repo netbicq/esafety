@@ -24,6 +24,7 @@ using ESafety.Core.Model;
 using ESafety.Core.Model.DB;
 using ESafety.Core.Model.DB.Account;
 using ESafety.Core.Model.DB.Platform;
+using ESafety.Core.Model.View;
 using ESafety.ORM;
 using ESafety.Unity;
 using System;
@@ -68,7 +69,7 @@ namespace ESafety.Account.Service
         /// <summary>
         /// 用户
         /// </summary>
-        private IRepository<Basic_Employee> rpsaccount = null;
+        private IOrgEmployee rpsaccount = null;
 
         /// <summary>
         /// 应急预案
@@ -85,7 +86,7 @@ namespace ESafety.Account.Service
         /// </summary>
         private IRepository<Doc_MeetPeople> _imeetPeople = null;
 
-        public Occ_FileManagerService(IUnitwork work, IAttachFile _attach,IDict dict)
+        public Occ_FileManagerService(IUnitwork work, IAttachFile _attach,IDict dict, IOrgEmployee i)
         {
 			_work = work;
             attach = _attach;
@@ -94,7 +95,7 @@ namespace ESafety.Account.Service
             docTrain = _work.Repository<Doc_Train>();
             _idocTrain = _work.Repository<Doc_TrainPeople>();
             _docQual = _work.Repository<Doc_Qualification>();
-            rpsaccount = _work.Repository<Basic_Employee>();
+            rpsaccount = i;
             _rpseme = _work.Repository<Doc_EmePlan>();
         }
 
@@ -216,18 +217,18 @@ namespace ESafety.Account.Service
                     doc_s = doc_s.Where(r => r.QName.Contains(request.KeyWord));
                 }
                 var doc_s_Dto = from Item in doc_s
-                                let Obj = rpsaccount.GetModel(Item.QPeopleId)
+                                let Obj = rpsaccount.GetEmployeeModel(Item.QPeopleId)
                                 select new DocQualView()
                                 {
                                     Id = Item.ID,
                                     QEndTime = Item.QEndTime,
                                     QAudit = Item.QAudit,
                                     QInstitutions = Item.QInstitutions,
-                                    QPeople = Obj.CNName,
+                                    QPeople = Obj.data.CNName,
                                     QTypeId = Item.QTypeId,
                                     QName = Item.QName,
                                     CreateTime = Item.CreateTime,
-                                    QPeopleId = Obj.ID,
+                                    QPeopleId = Obj.data.ID,
                                 };
                 var data = new Pager<DocQualView>()
                     .GetCurrentPage(doc_s_Dto, request.PageSize, request.PageIndex);
@@ -328,7 +329,7 @@ namespace ESafety.Account.Service
                                 ID = Item.ID,
                                 TContent = Item.TContent,
                                 TEndTime = Item.TEndTime,
-                                Trainer = rpsaccount.GetModel(Peo.TPId).CNName,
+                                Trainer = rpsaccount.GetEmployeeModel(Peo.TPId).data.CNName,
                                 TrainerId = Peo.TPId,
                                 TTheme = Item.TTheme,
                                 TTime = Item.TTime,
@@ -348,18 +349,19 @@ namespace ESafety.Account.Service
         /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
-        public ActionResult<IEnumerable<Basic_Employee>> GetEmpData(Guid guid)
+        public ActionResult<IEnumerable<EmployeeModelView>> GetEmpData(Guid guid)
         {
             try
             {
                 var _trains = _idocTrain.GetList(r => r.TTid == guid);
                 var data = from Item in _trains
-                           select rpsaccount.GetModel(Item.TPId);
-                return new ActionResult<IEnumerable<Basic_Employee>>(data);
+                            let Obj = rpsaccount.GetEmployeeModel(Item.TPId).data
+                            select Obj;
+                return new ActionResult<IEnumerable<EmployeeModelView>>(data);
             }
             catch (Exception ex)
             {
-                return new ActionResult<IEnumerable<Basic_Employee>>(ex);
+                return new ActionResult<IEnumerable<EmployeeModelView>>(ex);
             }
         }
 
@@ -622,7 +624,7 @@ namespace ESafety.Account.Service
                                Id = Item.ID,
                                CreateTime = Item.CreateTime,
                                HostId = Obj1 == null ? Guid.Empty : Obj1.MPId,
-                               HostName = Obj1 == null ? "" : rpsaccount.GetModel(r => r.ID == Obj1.MPId).CNName,
+                               HostName = Obj1 == null ? "" : rpsaccount.GetEmployeeModel(Obj1.MPId).data.CNName,
                                MContent = Item.MContent,
                                MTheme = Item.MTheme,
                                MTime = Item.MTime,
@@ -679,8 +681,8 @@ namespace ESafety.Account.Service
         {
             try
             {
-                Basic_Employee emp = rpsaccount.GetModel(r => r.ID == d2.MPId && d2.MState == 1);
-                if (emp != null)
+                EmployeeModelView emp = rpsaccount.GetEmployeeModel(d2.MPId).data;
+                if (emp != null && d2.MState==1)
                 {
                     var ip = _imeetPeople.GetModel(emp.ID);
                     ip.MPId = d2.MPId;
@@ -727,17 +729,17 @@ namespace ESafety.Account.Service
         /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
-        public ActionResult<IEnumerable<Basic_Employee>> GetEmpAll(Guid guid)
+        public ActionResult<IEnumerable<EmployeeModelView>> GetEmpAll(Guid guid)
         {
             try
             {
                 var data = from item in _imeetPeople.GetList(r => r.MMId == guid)
-                           select rpsaccount.GetModel(r => r.ID == item.MPId);
-                return new ActionResult<IEnumerable<Basic_Employee>>(data);
+                           select rpsaccount.GetEmployeeModel(item.MPId).data;
+                return new ActionResult<IEnumerable<EmployeeModelView>>(data);
             }
             catch (Exception ex)
             {
-                return new ActionResult<IEnumerable<Basic_Employee>>(ex);
+                return new ActionResult<IEnumerable<EmployeeModelView>>(ex);
             }
         }
 

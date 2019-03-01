@@ -5,6 +5,7 @@ using ESafety.Account.Model.View;
 using ESafety.Core.Model;
 using ESafety.Core.Model.DB;
 using ESafety.Core.Model.DB.Account;
+using ESafety.Core.Model.View;
 using System;
 using System.Collections.Generic;
 
@@ -86,7 +87,7 @@ namespace ESafety.Account.IService
         /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
-        ActionResult<IEnumerable<Basic_Employee>> GetEmpData(Guid guid);
+        ActionResult<IEnumerable<EmployeeModelView>> GetEmpData(Guid guid);
 
         /// <summary>
         /// 添加培训
@@ -184,7 +185,7 @@ namespace ESafety.Account.IService
         /// </summary>
         /// <param name="guid"></param>
         /// <returns></returns>
-        ActionResult<IEnumerable<Basic_Employee>> GetEmpAll(Guid guid);
+        ActionResult<IEnumerable<EmployeeModelView>> GetEmpAll(Guid guid);
 
         /// <summary>
         /// 添加会议

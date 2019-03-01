@@ -39,17 +39,18 @@ namespace ESafety.Account.Service
 
         private IRepository<Bll_AttachFile> _rpsFile = null;
         private IRepository<Occ_FileHealth> _iocchealth = null;
-        private IRepository<Basic_Employee> _iemp = null;
+        private IOrgEmployee _iemp = null;
         private IRepository<Occ_Medical> _ioccMedical = null;
         private IRepository<Basic_Org> _rpsorg = null;
         /// <summary>
         /// 电子文档service
         /// </summary>
         private IAttachFile attach = null;
-        public Occ_FileHealthService(IUnitwork work,AttachFileService a){
+        public Occ_FileHealthService(IUnitwork work,AttachFileService a, IOrgEmployee b)
+        {
 			_work = work;
             _iocchealth = _work.Repository<Occ_FileHealth>();
-            _iemp = _work.Repository<Basic_Employee>();
+            _iemp = b;
             _rpsorg = _work.Repository<Basic_Org>();
             _rpsFile = _work.Repository<Bll_AttachFile>();
             _ioccMedical = _work.Repository<Occ_Medical>();
@@ -119,22 +120,22 @@ namespace ESafety.Account.Service
             {
                 var baseHealth = _iocchealth.GetList();
                 var resultData = (from Item in baseHealth
-                                  let Ry = _iemp.GetModel(r => r.ID == Item.FEmpId)
-                                  let Zz = _rpsorg.GetModel(r => r.ID == Ry.OrgID)
+                                  let Ry = _iemp.GetEmployeeModel(Item.FEmpId)
+                                  let Zz = _rpsorg.GetModel(r => r.ID == Ry.data.OrgID)
                                   select new OccFileHealthView()
                                   {
                                       Id = Item.ID,
                                       FBornTime = Item.FBornTime,
                                       FContent = Item.FContent,
                                       FDisease = Item.FDisease,
-                                      FEmpId = Ry.ID,
-                                      FEmpName = Ry.CNName,
+                                      FEmpId = Ry.data.ID,
+                                      FEmpName = Ry.data.CNName,
                                       FGenetic = Item.FGenetic,
                                       FSurgery = Item.FSurgery,
                                       FTypeName = Item.FTypeName,
                                       ZzId = Zz.ID,
                                       ZzName = Zz.OrgName,
-                                      Sex = Ry.Gender
+                                      Sex = Ry.data.Gender
                                   });
 
                 if (occFile.Query.ZzId != Guid.Empty)
@@ -185,18 +186,18 @@ namespace ESafety.Account.Service
             {
                 var baseHealth = _ioccMedical.GetList();
                 var resultData = from Item in baseHealth
-                                 let Ry = _iemp.GetModel(r => r.ID == Item.MEmpId)
-                                 let Zz = _rpsorg.GetModel(r => r.ID == Ry.OrgID)
+                                 let Ry = _iemp.GetEmployeeModel(Item.MEmpId)
+                                 let Zz = _rpsorg.GetModel(r => r.ID == Ry.data.OrgID)
                                  select new OccMedicalView()
                                  {
                                      Id = Item.ID,
-                                     MEmpId = Ry.ID,
-                                     MEmpName = Ry.CNName,
+                                     MEmpId = Ry.data.ID,
+                                     MEmpName = Ry.data.CNName,
                                      ZzId = Zz.ID,
                                      ZzName = Zz.OrgName,
                                      MAge = Item.MAge,
                                      MContent = Item.MContent,
-                                     Sex = Ry.Gender,
+                                     Sex = Ry.data.Gender,
                                      MTime = Item.MTime,
 
                                  };

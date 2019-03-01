@@ -4,6 +4,7 @@ using ESafety.Account.Model.View;
 using ESafety.Core.Model;
 using ESafety.Core.Model.DB;
 using ESafety.Core.Model.DB.Account;
+using ESafety.Core.Model.View;
 using ESafety.Web.Unity;
 using Newtonsoft.Json;
 using System;
@@ -143,7 +144,7 @@ namespace ESafety.Account.API.Controllers
         /// <param name="ID"></param>
         /// <returns></returns>
         [HttpGet,Route("GetEmpData/{ID:Guid}")]
-        public ActionResult<IEnumerable<Basic_Employee>> GetEmpData(Guid ID)
+        public ActionResult<IEnumerable<EmployeeModelView>> GetEmpData(Guid ID)
         {
             return bll.GetEmpData(ID);
         }
@@ -295,7 +296,7 @@ namespace ESafety.Account.API.Controllers
         /// <param name="ID"></param>
         /// <returns></returns>
         [HttpGet, Route("GetEmpAll/{ID:Guid}")]
-        public ActionResult<IEnumerable<Basic_Employee>> GetEmpAll(Guid ID)
+        public ActionResult<IEnumerable<EmployeeModelView>> GetEmpAll(Guid ID)
         {
             return bll.GetEmpAll(ID);
         }
