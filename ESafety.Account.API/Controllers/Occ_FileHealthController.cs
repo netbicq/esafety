@@ -70,7 +70,7 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>
-        [HttpGet,Route("DeleteFileHealthById/{ID}")]
+        [HttpGet,Route("DeleteFileHealthById/{ID:Guid}")]
         public ActionResult<bool> DeleteFileHealthById(Guid ID)
         {
             LogContent = "根据id删除健康档案,参数源:" + ID.ToString();
@@ -93,7 +93,7 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>
-        [HttpGet, Route("DeleteMedicalById/{ID}")]
+        [HttpGet, Route("DeleteMedicalById/{ID:Guid}")]
         public ActionResult<bool> DeleteMedicalById(Guid ID)
         {
             LogContent = "根据id删除体检数据,参数源:" + ID.ToString();

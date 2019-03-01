@@ -60,7 +60,15 @@ namespace ESafety.ORM
         public virtual DbSet<Flow_Result> Flow_Result { get; set; }
         public virtual DbSet<Flow_Task> Flow_Task { get; set; }
         public virtual DbSet<Doc_Crew> Docs { get; set; }
+        public virtual DbSet<Doc_EmePlan> Doc_EmePlan { get; set; }
 
+        public virtual DbSet<Doc_Meeting> Doc_Meeting { get; set; }
+        public virtual DbSet<Doc_MeetPeople> Doc_MeetPeople { get; set; }
+        public virtual DbSet<Doc_Qualification> Doc_Qualification { get; set; }
+        public virtual DbSet<Doc_Train> Doc_Train { get; set; }
+        public virtual DbSet<Doc_TrainPeople> Doc_TrainPeople { get; set; }
+        public virtual DbSet<Occ_FileHealth> Occ_FileHealth { get; set; }
+        public virtual DbSet<Occ_Medical> Occ_Medical { get; set; }
 
         #region "account"
         public virtual DbSet<Basic_Danger> Basic_Danger { get; set; }

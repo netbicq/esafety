@@ -48,7 +48,7 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="ID">主键</param>
         /// <returns></returns>
-        [HttpGet, Route("DeleteDocCrewById/{guid}")]
+        [HttpGet, Route("DeleteDocCrewById/{ID:Guid}")]
         public ActionResult<bool> DeleteDocCrewById(Guid ID)
         {
             LogContent = "删除一条制度数据，数据源:" + ID.ToString();
@@ -95,7 +95,7 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>
-        [HttpGet,Route("DeleteQualById/{guid}")]
+        [HttpGet,Route("DeleteQualById/{ID:Guid}")]
         public ActionResult<bool> DeleteQualById(Guid ID)
         {
             LogContent = "删除资质,参数源:" + ID.ToString();
@@ -142,7 +142,7 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>
-        [HttpGet,Route("GetEmpData/{ID}")]
+        [HttpGet,Route("GetEmpData/{ID:Guid}")]
         public ActionResult<IEnumerable<Basic_Employee>> GetEmpData(Guid ID)
         {
             return bll.GetEmpData(ID);
@@ -177,7 +177,7 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>
-        [HttpGet, Route("DeleteDocTranpeopleById/{ID}")]
+        [HttpGet, Route("DeleteDocTranpeopleById/{ID:Guid}")]
         public ActionResult<bool> DeleteDocTranpeopleById(Guid ID)
         {
             LogContent = "移除当前培训人员,参数源:" + ID.ToString();
@@ -200,7 +200,7 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>
-        [HttpGet, Route("DeleteDocTranById/{ID}")]
+        [HttpGet, Route("DeleteDocTranById/{ID:Guid}")]
         public ActionResult<bool> DeleteDocTranById(Guid ID)
         {
             LogContent = "删除培训,参数源:" + ID.ToString();
@@ -234,7 +234,7 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>        
-        [HttpGet, Route("DeleteEmeplanById/{ID}")]
+        [HttpGet, Route("DeleteEmeplanById/{ID:Guid}")]
         public ActionResult<bool> DeleteEmeplanById(Guid ID)
         {
             LogContent = "删除预案维护,参数源:" + ID.ToString();
@@ -258,7 +258,7 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>
-        [HttpGet, Route("DeleteMeetById/{ID}")]
+        [HttpGet, Route("DeleteMeetById/{ID:Guid}")]
         public ActionResult<bool> DeleteMeetById(Guid ID)
         {
             LogContent = "根据会议id删会议,参数源:" + ID.ToString();
@@ -282,7 +282,7 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>
-        [HttpGet,Route("DelMeetByEme/{ID}")]
+        [HttpGet,Route("DelMeetByEme/{ID:Guid}")]
         public ActionResult<bool> DelMeetByEme(Guid ID)
         {
             LogContent = "删除一个参会人员,参数源:" + ID.ToString();
@@ -294,7 +294,7 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="ID"></param>
         /// <returns></returns>
-        [HttpGet, Route("GetEmpAll/{ID}")]
+        [HttpGet, Route("GetEmpAll/{ID:Guid}")]
         public ActionResult<IEnumerable<Basic_Employee>> GetEmpAll(Guid ID)
         {
             return bll.GetEmpAll(ID);

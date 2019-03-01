@@ -25,12 +25,6 @@ namespace ESafety.Core.Model.DB.Account
 	[Serializable()]
 	public class Doc_MeetPeople: ModelBase
 	{    
-		[KeyAttribute]
-	    	     
-	    /// <summary>
-	    /// Guid:
-	    /// </summary>        				 
-	    public Guid Id {get;set;}   
 	    	     
 	    /// <summary>
 	    /// Int32:

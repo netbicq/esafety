@@ -85,7 +85,7 @@ namespace ESafety.Account.Service
         /// </summary>
         private IRepository<Doc_MeetPeople> _imeetPeople = null;
 
-        public Occ_FileManagerService(IUnitwork work, IAttachFile _attach,DictService dict)
+        public Occ_FileManagerService(IUnitwork work, IAttachFile _attach,IDict dict)
         {
 			_work = work;
             attach = _attach;
