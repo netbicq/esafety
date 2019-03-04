@@ -59,9 +59,20 @@ namespace ESafety.ORM
         public virtual DbSet<Flow_PointUsers> Flow_PointUsers { get; set; }
         public virtual DbSet<Flow_Result> Flow_Result { get; set; }
         public virtual DbSet<Flow_Task> Flow_Task { get; set; }
-     
+
 
         #region "account"
+
+
+        public virtual DbSet<Doc_Certificate> Doc_Certificate { get; set; }
+        public virtual DbSet<Doc_Institution> Doc_Institution { get; set; }
+        public virtual DbSet<Doc_Meeting> Doc_Meeting { get; set; }
+        public virtual DbSet<Doc_Solution> Doc_Solution { get; set; }
+        public virtual DbSet<Doc_TrainEmpoyees> Doc_TrainEmpoyees { get; set; }
+        public virtual DbSet<Doc_Training> Doc_Training { get; set; }
+        public virtual DbSet<Heal_Docment> Heal_Docment { get; set; }
+        public virtual DbSet<Heal_Records> Heal_Records { get; set; }
+
         public virtual DbSet<Basic_Danger> Basic_Danger { get; set; }
         public virtual DbSet<Basic_DangerRelation> Basic_DangerRelation { get; set; }
         public virtual DbSet<Basic_DangerSafetyStandards> Basic_DangerSafetyStandards { get; set; }
