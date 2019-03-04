@@ -54,6 +54,10 @@
     <Compile Include="Auth_UserService.cs" />
     <Compile Include="DangerManageService.cs" />
     <Compile Include="DangerSetService.cs" />
+    <Compile Include="DocInstitutionService.cs" />
+    <Compile Include="DocMeetingService.cs" />
+    <Compile Include="DocSolutionService.cs" />
+    <Compile Include="DocTrainManageService.cs" />
     <Compile Include="FacilitiesManageService.cs" />
     <Compile Include="InspectTaskService.cs" />
     <Compile Include="OpreationFlowService.cs" />
