@@ -6,41 +6,33 @@ namespace ESafety.Core.Model.DB.Account
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
     /// <summary>
-    /// 会议
-    /// 需要电子附件
+    /// 培训
+    /// 需要电子文档
     /// </summary>
-    public partial class Doc_Meeting : ModelBase
-    { 
+    public partial class Doc_Training : ModelBase
+    {
         /// <summary>
-        /// 会议主题
+        /// 培训主题
         /// </summary>
         [Required]
-        [StringLength(200)]
+        [StringLength(1000)]
         public string Motif { get; set; }
         /// <summary>
-        /// 参会人员
+        /// 培训日期
+        /// </summary>
+        public DateTime TrainDate { get; set; }
+        /// <summary>
+        /// 培训时长
+        /// </summary>
+        public int TrainLong { get; set; }
+        /// <summary>
+        /// 培训人
         /// </summary>
         [Required]
-        [StringLength(4000)]
-        public string EmployeeS { get; set; }
+        [StringLength(100)]
+        public string Trainer { get; set; }
         /// <summary>
-        /// 会议日期
-        /// </summary>
-        public DateTime MeetingDate { get; set; }
-        /// <summary>
-        /// 主持人
-        /// </summary>
-        [Required]
-        [StringLength(50)]
-        public string MeetingMaster { get; set; }
-        /// <summary>
-        /// 会义地点
-        /// </summary>
-        [Required]
-        [StringLength(500)]
-        public string Site { get; set; }
-        /// <summary>
-        /// 会议内容
+        /// 培训内容
         /// </summary>
         [Column(TypeName = "ntext")]
         [Required]

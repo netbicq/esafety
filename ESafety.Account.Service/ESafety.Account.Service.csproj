@@ -54,10 +54,8 @@
     <Compile Include="Auth_UserService.cs" />
     <Compile Include="DangerManageService.cs" />
     <Compile Include="DangerSetService.cs" />
-    <Compile Include="Occ_FileManagerService.cs" />
     <Compile Include="FacilitiesManageService.cs" />
     <Compile Include="InspectTaskService.cs" />
-    <Compile Include="Occ_FileHealthService.cs" />
     <Compile Include="OpreationFlowService.cs" />
     <Compile Include="PostManageService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

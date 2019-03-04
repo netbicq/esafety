@@ -43,10 +43,8 @@
   <ItemGroup>
     <Compile Include="IDangerManageService.cs" />
     <Compile Include="IDangerSetService.cs" />
-    <Compile Include="IOcc_FileManagerService.cs" />
     <Compile Include="IFacilitiesManageService.cs" />
     <Compile Include="IInspectTask.cs" />
-    <Compile Include="IOcc_FileHealthService.cs" />
     <Compile Include="IOpreationFlowService.cs" />
     <Compile Include="IPostManageService.cs" />
     <Compile Include="ISafetyStandardServcie.cs" />
