@@ -2,6 +2,7 @@
 using ESafety.Core.Model;
 using ESafety.Core.Model.DB;
 using ESafety.Core.Model.DB.Account;
+using ESafety.Core.Model.PARA;
 using ESafety.Web.Unity;
 using Newtonsoft.Json;
 using System;

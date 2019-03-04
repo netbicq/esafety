@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESafety.Core.Model.PARA;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,6 +37,10 @@ namespace ESafety.Account.Model.PARA
         /// 会议内容
         /// </summary>
         public string Content { get; set; }
+        /// <summary>
+        /// 电子文档
+        /// </summary>
+        public IEnumerable<AttachFileNew> AttachFiles { get; set; }
     }
 
     public class DocMeetingEdit : DocMeetingNew
