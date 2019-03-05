@@ -14,20 +14,19 @@ namespace ESafety.Core
     /// </summary>
     public interface IBusinessFlowBase
     {
+        
         /// <summary>
-        /// 发起业务单据审批流程
+        /// 审核
         /// </summary>
         /// <param name="businessid"></param>
         /// <returns></returns>
-        ActionResult<bool> FlowStart<T> (T rps, Guid businessid)where T: IRepository<ModelBase>;
-
+        ActionResult<bool> Approve(Guid businessid);
         /// <summary>
-        /// 审核业务单据
+        /// 发起审批
         /// </summary>
         /// <param name="businessid"></param>
         /// <returns></returns>
-        ActionResult<bool> ApproveBill<T>(T rps, Guid businessid) where T : IRepository<ModelBase>;
-
+        ActionResult<bool> StartBillFlow(Guid businessid);
 
     }
 }

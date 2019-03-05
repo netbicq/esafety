@@ -97,40 +97,15 @@ namespace ESafety.Core
                 return new ActionResult<Flow_Task>(ex);
             }
         }
-        /// <summary>
-        /// 业务单据发起审批流程
-        /// </summary>
-        /// <param name="businessid"></param>
-        /// <returns></returns>
-        public virtual  ActionResult<bool> FlowStart<T>(T rps, Guid businessid) where T:IRepository<ModelBase>
+         
+        public virtual ActionResult<bool> Approve(Guid businessid)
         {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                return new ActionResult<bool>(ex);
-            }
+            throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// 审核业务单据
-        /// </summary>
-        /// <param name="businessid"></param>
-        /// <returns></returns>
-        public virtual ActionResult<bool> ApproveBill<T> (T rps, Guid businessid) where T:IRepository<ModelBase>
+        public virtual ActionResult<bool> StartBillFlow(Guid businessid)
         {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                return new ActionResult<bool>(ex);
-            }
+            throw new NotImplementedException();
         }
-
-
     }
 }

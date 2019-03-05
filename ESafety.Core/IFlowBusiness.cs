@@ -13,7 +13,7 @@ namespace ESafety.Core
     /// <summary>
     /// 业务审批基类
     /// </summary>
-    public interface IFlowBusiness
+    public interface IFlowBusiness:IBusinessFlowBase
     {
 
         /// <summary>

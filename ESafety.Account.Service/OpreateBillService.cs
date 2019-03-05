@@ -22,7 +22,7 @@ namespace ESafety.Account.Service
 
         private IRepository<Bll_OpreationBill> rpsOpreateBill = null;
 
-        public OpreateBillService(IUnitwork work)
+        public OpreateBillService(IUnitwork work,IFlow flow):base(work,flow)
         {
 
             _work = work;
