@@ -21,6 +21,6 @@ namespace ESafety.Account.IService
         ActionResult<Pager<DocTrainingView>> GetTrainings(PagerQuery<DocTrainingQuery> para);
         ActionResult<bool> AddTrainEmployee(DocTrainEmpoyeesNew empoyeesNew);
         ActionResult<bool> DelTrainEmplyee(Guid id);
-        ActionResult<Pager<PostEmployeesView>> GetTrainEmployee(PagerQuery<DocTrainEmpoyeesQuery> para);
+        ActionResult<Pager<DocTrainEmpoyeesView>> GetTrainEmployee(PagerQuery<DocTrainEmpoyeesQuery> para);
     }
 }

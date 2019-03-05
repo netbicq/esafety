@@ -209,9 +209,11 @@
     <Compile Include="Controllers\DangerManageController.cs" />
     <Compile Include="Controllers\DangerRelationController.cs" />
     <Compile Include="Controllers\DictController.cs" />
+    <Compile Include="Controllers\DocCertificateController.cs" />
     <Compile Include="Controllers\DocInstitutionController.cs" />
     <Compile Include="Controllers\DocMeetingController.cs" />
     <Compile Include="Controllers\DocSolutionController.cs" />
+    <Compile Include="Controllers\DocTrainManageController.cs" />
     <Compile Include="Controllers\EnumItemController.cs" />
     <Compile Include="Controllers\FacilitiesManageController.cs" />
     <Compile Include="Controllers\InspectTaskController.cs" />

@@ -43,10 +43,12 @@
   <ItemGroup>
     <Compile Include="IDangerManageService.cs" />
     <Compile Include="IDangerSetService.cs" />
+    <Compile Include="IDocCertificateService.cs" />
     <Compile Include="IDocInstitutionService.cs" />
     <Compile Include="IDocMeetingService.cs" />
     <Compile Include="IDocSolutionService.cs" />
     <Compile Include="IFacilitiesManageService.cs" />
+    <Compile Include="IHealDocmentService.cs" />
     <Compile Include="IInspectTask.cs" />
     <Compile Include="IOpreateBill.cs" />
     <Compile Include="IOpreationFlowService.cs" />

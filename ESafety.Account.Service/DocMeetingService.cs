@@ -162,7 +162,7 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbdms = _rpsdm.Queryable(p => p.Motif.Contains(para.Query.Motif));
+                var dbdms = _rpsdm.Queryable(p => p.Motif.Contains(para.Query.Motif)||string.IsNullOrEmpty(para.Query.Motif));
                 var redms = from s in dbdms
                             select new DocMeetingView
                             {
