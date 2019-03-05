@@ -78,7 +78,7 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="para"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpPost]
         [Route("getdss")]
         public ActionResult<Pager<DocSolutionView>> GetDocSolutions(PagerQuery<DocSolutionQuery> para)
         {

@@ -60,6 +60,7 @@
     <Compile Include="DocSolutionService.cs" />
     <Compile Include="DocTrainManageService.cs" />
     <Compile Include="FacilitiesManageService.cs" />
+    <Compile Include="HealDocmentService.cs" />
     <Compile Include="InspectTaskService.cs" />
     <Compile Include="OpreationFlowService.cs" />
     <Compile Include="PostManageService.cs" />
