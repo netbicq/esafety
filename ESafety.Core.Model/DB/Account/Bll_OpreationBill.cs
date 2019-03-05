@@ -53,5 +53,9 @@ namespace ESafety.Core.Model.DB.Account
         /// </summary>
         [StringLength(4000)]
         public string Description { get; set; }
+        /// <summary>
+        /// 作业当前定义的流程JSON
+        /// </summary>
+        public string FlowJson { get; set; }
     }
 }

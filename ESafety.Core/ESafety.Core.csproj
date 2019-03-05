@@ -65,6 +65,7 @@
     <Compile Include="IAccount.cs" />
     <Compile Include="IAttachFile.cs" />
     <Compile Include="IAuth_User.cs" />
+    <Compile Include="IBusinessFlowBase.cs" />
     <Compile Include="IDict.cs" />
     <Compile Include="IFlow.cs" />
     <Compile Include="IFlowBusiness.cs" />

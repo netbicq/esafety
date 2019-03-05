@@ -292,7 +292,7 @@ namespace ESafety.Account.Service
         /// </summary>
         /// <param name="businessid"></param>
         /// <returns></returns>
-        public ActionResult<bool> Approve(Guid businessid)
+        public override ActionResult<bool> ApproveBill(Guid businessid)
         {
             try
             {
@@ -338,7 +338,7 @@ namespace ESafety.Account.Service
         /// </summary>
         /// <param name="taskid"></param>
         /// <returns></returns>
-        public ActionResult<bool> StartFlow(Guid taskid)
+        public override ActionResult<bool> FlowStart(Guid taskid)
         {
             try
             {

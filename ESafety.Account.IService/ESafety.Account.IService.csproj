@@ -51,6 +51,7 @@
     <Compile Include="IHealDocmentService.cs" />
     <Compile Include="IHealRecordsService.cs" />
     <Compile Include="IInspectTask.cs" />
+    <Compile Include="IOpreateBill.cs" />
     <Compile Include="IOpreationFlowService.cs" />
     <Compile Include="IPostManageService.cs" />
     <Compile Include="ISafetyStandardServcie.cs" />

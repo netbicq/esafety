@@ -63,6 +63,7 @@
     <Compile Include="HealDocmentService.cs" />
     <Compile Include="HealRecordsService.cs" />
     <Compile Include="InspectTaskService.cs" />
+    <Compile Include="OpreateBillService.cs" />
     <Compile Include="OpreationFlowService.cs" />
     <Compile Include="PostManageService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
