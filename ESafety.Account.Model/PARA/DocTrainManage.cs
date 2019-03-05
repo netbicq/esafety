@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESafety.Core.Model.PARA;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace ESafety.Account.Model.PARA
 {
     /// <summary>
     /// 培训
+    /// 需要电子文档
     /// </summary>
     public class DocTrainingNew
     {
@@ -31,9 +33,13 @@ namespace ESafety.Account.Model.PARA
         /// 培训内容
         /// </summary>
         public string Content { get; set; }
+        /// <summary>
+        /// 电子文档
+        /// </summary>
+        public IEnumerable<AttachFileNew> AttachFiles { get; set; }
     }
 
-    public class DocTrainingEdit:DocInstitutionNew
+    public class DocTrainingEdit: DocTrainingNew
     {
         /// <summary>
         /// 培训ID

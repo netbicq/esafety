@@ -1,8 +1,10 @@
 ﻿using ESafety.Account.IService;
 using ESafety.Account.Model.PARA;
 using ESafety.Account.Model.View;
+using ESafety.Core;
 using ESafety.Core.Model;
 using ESafety.Core.Model.DB.Account;
+using ESafety.Core.Model.PARA;
 using ESafety.ORM;
 using ESafety.Unity;
 using System;
@@ -20,7 +22,8 @@ namespace ESafety.Account.Service
         private IRepository<Doc_TrainEmpoyees> _rpsdtemp = null;
         private IRepository<Core.Model.DB.Basic_Employee> _rpsemp = null;
         private IRepository<Core.Model.DB.Basic_Org> _rpsorg = null;
-        public DocTrainManageService(IUnitwork work)
+        private IAttachFile srvFile = null;
+        public DocTrainManageService(IUnitwork work, IAttachFile file)
         {
             _work = work;
             Unitwork = work;
@@ -28,6 +31,7 @@ namespace ESafety.Account.Service
             _rpsdtemp = work.Repository<Doc_TrainEmpoyees>();
             _rpsemp = work.Repository<Core.Model.DB.Basic_Employee>();
             _rpsorg = work.Repository<Core.Model.DB.Basic_Org>();
+            srvFile = file;
         }
         /// <summary>
         /// 新建训练人员模型
@@ -73,6 +77,15 @@ namespace ESafety.Account.Service
                     throw new Exception("该训练项已存在");
                 }
                 var dbdt = trainingNew.MAPTO<Doc_Training>();
+                //电子文档
+                var files = new AttachFileSave
+                {
+                    BusinessID = dbdt.ID,
+                    files = from f in trainingNew.AttachFiles
+                            select f.CopyTo<AttachFileNew>(f)
+                };
+
+                srvFile.SaveFiles(files);
                 _rpsdt.Add(dbdt);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -122,6 +135,9 @@ namespace ESafety.Account.Service
                     throw new Exception("未找到该训练项");
                 }
                 _rpsdt.Delete(dbdt);
+                //删除电子文档
+                srvFile.DelFileByBusinessId(id);
+
                 _work.Commit();
                 return new ActionResult<bool>(true);
             }
@@ -131,25 +147,123 @@ namespace ESafety.Account.Service
                 return new ActionResult<bool>(ex);
             }
         }
-
+        /// <summary>
+        /// 修改训练模型
+        /// </summary>
+        /// <param name="trainingEdit"></param>
+        /// <returns></returns>
         public ActionResult<bool> EditTraining(DocTrainingEdit trainingEdit)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var dbdt = _rpsdt.GetModel(trainingEdit.ID);
+                if (dbdt == null)
+                {
+                    throw new Exception("未找到所需修改的训练项模型");
+                }
+                var check = _rpsdt.Any(p => p.ID != trainingEdit.ID && p.Motif == trainingEdit.Motif);
+                if (check)
+                {
+                    throw new Exception("该训练项已存在");
+                }
+                dbdt = trainingEdit.CopyTo<Doc_Training>(dbdt);
+
+                //电子文档 
+                srvFile.DelFileByBusinessId(dbdt.ID);
+                var files = new AttachFileSave
+                {
+                    BusinessID = dbdt.ID,
+                    files = from f in trainingEdit.AttachFiles
+                            select f.CopyTo<AttachFileNew>(f)
+                };
+
+                srvFile.SaveFiles(files);
+                _rpsdt.Update(dbdt);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+           
+
         }
 
-        public ActionResult<Pager<PostEmployeesView>> GetTrainEmployee(PagerQuery<DocTrainEmpoyeesQuery> para)
+        /// <summary>
+        /// 分页获取当前训练项下的人员
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        public ActionResult<Pager<DocTrainEmpoyeesView>> GetTrainEmployee(PagerQuery<DocTrainEmpoyeesQuery> para)
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                var dbdtemps = _rpsdtemp.Queryable(p=>p.TrainID==para.Query.TrainID);
+                var reemps = from s in dbdtemps.ToList()
+                         let emp= _rpsemp.GetModel(s.EmployeeID)
+                         select new DocTrainEmpoyeesView
+                         {
+                             ID=s.ID,
+                             TrainID=s.TrainID,
+                             EmployeeID=s.EmployeeID,
+                             Name=emp.CNName,
+                             Department=_rpsorg.GetModel(emp.OrgID).OrgName
+                         };
+                var re = new Pager<DocTrainEmpoyeesView>().GetCurrentPage(reemps,para.PageSize,para.PageIndex);
+                return new ActionResult<Pager<DocTrainEmpoyeesView>>(re);
 
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<Pager<DocTrainEmpoyeesView>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取训练项模型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult<DocTrainingView> GetTraining(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var dbdt = _rpsdt.GetModel(id);
+                var re = dbdt.MAPTO<DocTrainingView>();
+                return new ActionResult<DocTrainingView>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<DocTrainingView>(ex);
+            }
         }
-
+        /// <summary>
+        /// 分页获取训练项模型
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
         public ActionResult<Pager<DocTrainingView>> GetTrainings(PagerQuery<DocTrainingQuery> para)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var dbdts = _rpsdt.Queryable(p => p.Motif.Contains(para.Query.Motif)||string.IsNullOrEmpty(para.Query.Motif));
+                var redts = from s in dbdts
+                            select new DocTrainingView
+                            {
+                                ID = s.ID,
+                                Content = s.Content,
+                                TrainDate=s.TrainDate,
+                                Trainer=s.Trainer,
+                                TrainLong=s.TrainLong,
+                                Motif = s.Motif
+                            };
+                var re = new Pager<DocTrainingView>().GetCurrentPage(redts, para.PageSize, para.PageIndex);
+                return new ActionResult<Pager<DocTrainingView>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<Pager<DocTrainingView>>(ex);
+            }
         }
     }
 }

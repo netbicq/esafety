@@ -37,6 +37,10 @@ namespace ESafety.Account.Model.View
     public class DocTrainEmpoyeesView
     {
         /// <summary>
+        /// 人员与培训项的关系模型ID
+        /// </summary>
+        public Guid ID { get; set; }
+        /// <summary>
         /// 培训ID
         /// </summary>
         public Guid TrainID { get; set; }
