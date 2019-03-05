@@ -6,35 +6,35 @@ using System.Threading.Tasks;
 
 namespace ESafety.Account.Model.View
 {
-    public class DocMeetingView
+    public class HealRecordsView
     {
         /// <summary>
-        /// 会议ID
+        /// 体检ID
         /// </summary>
         public Guid ID { get; set; }
         /// <summary>
-        /// 会议主题
+        /// 健康档案ID
         /// </summary>
-        public string Motif { get; set; }
+        public Guid DocmentID { get; set; }
         /// <summary>
-        /// 参会人员
+        /// 体健日期
         /// </summary>
-        public string EmployeeS { get; set; }
+        public DateTime RecDate { get; set; }
         /// <summary>
-        /// 会议日期
+        /// 体检结果
         /// </summary>
-        public DateTime MeetingDate { get; set; }
+        public string RecResult { get; set; }
         /// <summary>
-        /// 主持人
+        /// 人员名
         /// </summary>
-        public string MeetingMaster { get; set; }
+        public string Name { get; set; }
         /// <summary>
-        /// 会义地点
+        /// 年龄
         /// </summary>
-        public string Site { get; set; }
+        public int Age { get; set; }
         /// <summary>
-        /// 会议内容
+        /// 性别
         /// </summary>
-        public string Content { get; set; }
+        public string Gender { get; set; }
     }
 }

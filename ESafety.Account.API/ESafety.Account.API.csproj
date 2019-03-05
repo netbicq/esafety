@@ -216,6 +216,8 @@
     <Compile Include="Controllers\DocTrainManageController.cs" />
     <Compile Include="Controllers\EnumItemController.cs" />
     <Compile Include="Controllers\FacilitiesManageController.cs" />
+    <Compile Include="Controllers\HealDocmentController.cs" />
+    <Compile Include="Controllers\HealRecordsController.cs" />
     <Compile Include="Controllers\InspectTaskController.cs" />
     <Compile Include="Controllers\FlowController.cs" />
     <Compile Include="Controllers\HomeController.cs" />

@@ -61,6 +61,7 @@
     <Compile Include="DocTrainManageService.cs" />
     <Compile Include="FacilitiesManageService.cs" />
     <Compile Include="HealDocmentService.cs" />
+    <Compile Include="HealRecordsService.cs" />
     <Compile Include="InspectTaskService.cs" />
     <Compile Include="OpreateBillService.cs" />
     <Compile Include="OpreationFlowService.cs" />
