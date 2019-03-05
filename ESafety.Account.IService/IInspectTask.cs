@@ -1,5 +1,6 @@
 ﻿using ESafety.Account.Model.PARA;
 using ESafety.Account.Model.View;
+using ESafety.Core;
 using ESafety.Core.Model;
 using ESafety.Unity;
 using System;
@@ -13,7 +14,7 @@ namespace ESafety.Account.IService
     /// <summary>
     /// 巡检任务
     /// </summary>
-    public interface IInspectTask
+    public interface IInspectTask:IBusinessFlowBase
     {
         /// <summary>
         /// 新建
@@ -52,19 +53,7 @@ namespace ESafety.Account.IService
         /// </summary>
         /// <param name="taskid"></param>
         /// <returns></returns>
-        ActionResult<IEnumerable<InspectTaskSubjectView>> GetTaskSubjects(Guid taskid);
-        /// <summary>
-        /// 审核业务单据
-        /// </summary>
-        /// <param name="businessid"></param>
-        /// <returns></returns>
-        ActionResult<bool> Approve(Guid businessid);
-        /// <summary>
-        /// 发起业务单据审批
-        /// </summary>
-        /// <param name="businessid"></param>
-        /// <returns></returns>
-        ActionResult<bool> StartFlow(Guid businessid);
+        ActionResult<IEnumerable<InspectTaskSubjectView>> GetTaskSubjects(Guid taskid); 
         /// <summary>
         /// 获取指定ID的模型
         /// </summary>

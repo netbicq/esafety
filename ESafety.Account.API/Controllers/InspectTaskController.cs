@@ -54,7 +54,7 @@ namespace ESafety.Account.API.Controllers
         public ActionResult<bool> Approve(Guid businessid)
         {
             LogContent = "审核了巡检任务，id:" + businessid.ToString();
-            return bll.Approve(businessid);
+            return bll.ApproveBill(businessid);
 
         }
 
@@ -142,7 +142,7 @@ namespace ESafety.Account.API.Controllers
         public ActionResult<bool> StartFlow(Guid taskid)
         {
             LogContent = "发起审批，业务id:" + taskid.ToString();
-            return bll.StartFlow(taskid);
+            return bll.FlowStart(taskid);
         }
     }
 }
