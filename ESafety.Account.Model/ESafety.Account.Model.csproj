@@ -50,6 +50,7 @@
     <Compile Include="PARA\DocSolution.cs" />
     <Compile Include="PARA\FacilitiesManage.cs" />
     <Compile Include="PARA\HealDocment.cs" />
+    <Compile Include="PARA\HealRecords.cs" />
     <Compile Include="PARA\InspectTask.cs" />
     <Compile Include="PARA\OpreationFlow.cs" />
     <Compile Include="PARA\PostManage.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="View\DocTrainManage.cs" />
     <Compile Include="View\FacilitiesManage.cs" />
     <Compile Include="View\HealDocment.cs" />
+    <Compile Include="View\HealRecords.cs" />
     <Compile Include="View\InspectTask.cs" />
     <Compile Include="View\OpreationFlow.cs" />
     <Compile Include="View\PostManage.cs" />

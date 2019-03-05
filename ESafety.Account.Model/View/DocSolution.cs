@@ -32,5 +32,9 @@ namespace ESafety.Account.Model.View
         /// 预案内容
         /// </summary>
         public string Content { get; set; }
+        /// <summary>
+        /// 风险等级名
+        /// </summary>
+        public string DangerLevelName { get; set; }
     }
 }

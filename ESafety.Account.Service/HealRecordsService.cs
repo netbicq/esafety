@@ -16,49 +16,52 @@ using System.Threading.Tasks;
 namespace ESafety.Account.Service
 {
     /// <summary>
-    /// 健康档案
+    /// 
     /// </summary>
-    public class HealDocmentService : ServiceBase,IHealDocmentService
+    public class HealRecordsService : ServiceBase,IHealRecordsService
     {
         private IUnitwork _work = null;
         private IRepository<Heal_Docment> _rpshd = null;
         private IRepository<Core.Model.DB.Basic_Employee> _rpsemp = null;
+        private IRepository<Heal_Records> _rpshr = null;
         private IAttachFile srvFile = null;
-        public HealDocmentService(IUnitwork work, IAttachFile file)
+        public HealRecordsService(IUnitwork work,IAttachFile file)
         {
             _work = work;
             Unitwork = work;
             _rpshd = work.Repository<Heal_Docment>();
             _rpsemp = work.Repository<Core.Model.DB.Basic_Employee>();
+            _rpshr = work.Repository<Heal_Records>();
             srvFile = file;
+
         }
         /// <summary>
-        /// 新建健康文档
+        /// 新建体检模型
         /// </summary>
-        /// <param name="docmentNew"></param>
+        /// <param name="recordsNew"></param>
         /// <returns></returns>
-        public ActionResult<bool> AddHealDocment(HealDocmentNew docmentNew)
+        public ActionResult<bool> AddHealRecord(HealRecordsNew recordsNew)
         {
             try
             {
-                var check = _rpshd.Any(p => p.EmployeeID == docmentNew.EmployeeID);
+                var check = _rpshr.Any(p => p.DocmentID == recordsNew.DocmentID&&p.RecDate==recordsNew.RecDate);
                 if (check)
                 {
-                    throw new Exception("该人员的健康档案已存在！");
+                    throw new Exception("该体检信息已存在！");
                 }
-                var dbhd = docmentNew.MAPTO<Heal_Docment>();
+                var dbhr = recordsNew.MAPTO<Heal_Records>();
 
                 //电子文档
                 var files = new AttachFileSave
                 {
-                    BusinessID = dbhd.ID,
-                    files = from f in docmentNew.AttachFiles
+                    BusinessID = dbhr.ID,
+                    files = from f in recordsNew.AttachFiles
                             select f.CopyTo<AttachFileNew>(f)
                 };
 
                 srvFile.SaveFiles(files);
 
-                _rpshd.Add(dbhd);
+                _rpshr.Add(dbhr);
                 _work.Commit();
                 return new ActionResult<bool>(true);
             }
@@ -68,20 +71,20 @@ namespace ESafety.Account.Service
             }
         }
         /// <summary>
-        /// 删除人员的健康档案
+        /// 删除体检信息模型
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult<bool> DelHealDocment(Guid id)
+        public ActionResult<bool> DelHealRecord(Guid id)
         {
             try
             {
-                var dbhd = _rpshd.GetModel(id);
-                if (dbhd == null)
+                var dbhr = _rpshr.GetModel(id);
+                if (dbhr == null)
                 {
-                    throw new Exception("未找到所要删除的人员健康档案");
+                    throw new Exception("未找到所要删除的体检信息");
                 }
-                _rpshd.Delete(dbhd);
+                _rpshr.Delete(dbhr);
                 //删除电子文档
                 srvFile.DelFileByBusinessId(id);
 
@@ -94,37 +97,37 @@ namespace ESafety.Account.Service
             }
         }
         /// <summary>
-        /// 修改人员健康档案
+        /// 修改体检模型
         /// </summary>
         /// <param name="docmentEdit"></param>
         /// <returns></returns>
-        public ActionResult<bool> EditHealDocment(HealDocmentEdit docmentEdit)
+        public ActionResult<bool> EditHealRecord(HealRecordsEdit recordsEdit)
         {
             try
             {
-                var dbhd = _rpshd.GetModel(docmentEdit.ID);
-                if (dbhd == null)
+                var dbhr = _rpshr.GetModel(recordsEdit.ID);
+                if (dbhr == null)
                 {
-                    throw new Exception("未找到所要修改的健康档案！");
+                    throw new Exception("未找到所要修改的体检信息！");
                 }
-                var check = _rpshd.Any(p => p.ID != docmentEdit.ID && p.EmployeeID == docmentEdit.EmployeeID);
+                var check = _rpshr.Any(p => p.ID != recordsEdit.ID && p.RecDate == recordsEdit.RecDate);
                 if (check)
                 {
-                    throw new Exception("该人员的健康档案已存在！");
+                    throw new Exception("该人员的体检信息已存在！");
                 }
-                dbhd = docmentEdit.CopyTo<Heal_Docment>(dbhd);
+                dbhr = recordsEdit.CopyTo<Heal_Records>(dbhr);
                 //电子文档 
-                srvFile.DelFileByBusinessId(dbhd.ID);
+                srvFile.DelFileByBusinessId(dbhr.ID);
                 var files = new AttachFileSave
                 {
-                    BusinessID = dbhd.ID,
-                    files = from f in docmentEdit.AttachFiles
+                    BusinessID = dbhr.ID,
+                    files = from f in recordsEdit.AttachFiles
                             select f.CopyTo<AttachFileNew>(f)
                 };
 
                 srvFile.SaveFiles(files);
 
-                _rpshd.Update(dbhd);
+                _rpshr.Update(dbhr);
                 _work.Commit();
                 return new ActionResult<bool>(true);
             }
@@ -134,58 +137,57 @@ namespace ESafety.Account.Service
             }
         }
         /// <summary>
-        /// 获取健康档案 模型
+        /// 获取体检信息
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult<HealDocmentView> GetHealDocment(Guid id)
+        public ActionResult<HealRecordsView> GetHealRecord(Guid id)
         {
             try
             {
-                var dbhd = _rpshd.GetModel(id);
-                var emp = _rpsemp.GetModel(dbhd.EmployeeID);
-                var re = dbhd.MAPTO<HealDocmentView>();
-                re.Age =DateTime.Now.Year-dbhd.BirthDay.Year;
-                re.CNName = emp.CNName;
+                var dbhr = _rpshr.GetModel(id);
+                var hd = _rpshd.GetModel(dbhr.DocmentID);
+                var emp = _rpsemp.GetModel(hd.EmployeeID);
+                var re = dbhr.MAPTO<HealRecordsView>();
+                re.Age = DateTime.Now.Year - hd.BirthDay.Year;
+                re.Name = emp.CNName;
                 re.Gender = emp.Gender;
-                return new ActionResult<HealDocmentView>(re);
+                return new ActionResult<HealRecordsView>(re);
             }
             catch (Exception ex)
             {
-                return new ActionResult<HealDocmentView>(ex);
+                return new ActionResult<HealRecordsView>(ex);
             }
         }
         /// <summary>
-        /// 分页获取健康档案
+        /// 分页获取体检信息
         /// </summary>
         /// <param name="para"></param>
         /// <returns></returns>
-        public ActionResult<Pager<HealDocmentView>> GetHealDocments(PagerQuery<HealDocmentQuery> para)
+        public ActionResult<Pager<HealRecordsView>> GetHealRecords(PagerQuery<HealRecordsQuery> para)
         {
             try
             {
-                var dbhds = _rpshd.Queryable(p => p.EmployeeID==para.Query.EmployeeID||Guid.Empty==para.Query.EmployeeID);
+                var dbhds = _rpshr.Queryable(p => p.DocmentID== para.Query.DocmentID || Guid.Empty == para.Query.DocmentID);
                 var rehds = from s in dbhds.ToList()
-                            let emp=_rpsemp.GetModel(s.EmployeeID)
-                            select new HealDocmentView
+                            let hd = _rpshd.GetModel(s.DocmentID)
+                            let emp = _rpsemp.GetModel(hd.EmployeeID)
+                            select new HealRecordsView
                             {
                                 ID = s.ID,
-                                BirthDay=s.BirthDay,
-                                Age=DateTime.Now.Year-s.BirthDay.Year,
-                                CNName=emp.CNName,
-                                EmployeeID=s.EmployeeID,
-                                Gender=emp.Gender,
-                                HeredityRec=s.HeredityRec,
-                                IllnessRec=s.IllnessRec,
-                                Nation=s.Nation,
-                                OpreatRec=s.OpreatRec
+                                Age = DateTime.Now.Year - hd.BirthDay.Year,
+                                Name = emp.CNName,
+                                Gender = emp.Gender,
+                                DocmentID=s.DocmentID,
+                                RecDate=s.RecDate,
+                                RecResult=s.RecResult
                             };
-                var re = new Pager<HealDocmentView>().GetCurrentPage(rehds, para.PageSize, para.PageIndex);
-                return new ActionResult<Pager<HealDocmentView>>(re);
+                var re = new Pager<HealRecordsView>().GetCurrentPage(rehds, para.PageSize, para.PageIndex);
+                return new ActionResult<Pager<HealRecordsView>>(re);
             }
             catch (Exception ex)
             {
-                return new ActionResult<Pager<HealDocmentView>>(ex);
+                return new ActionResult<Pager<HealRecordsView>>(ex);
             }
         }
     }

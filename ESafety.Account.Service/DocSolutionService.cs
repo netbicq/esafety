@@ -20,11 +20,13 @@ namespace ESafety.Account.Service
     {
         private IUnitwork _work = null;
         private IRepository<Doc_Solution> _rpsds = null;
+        private IRepository<Core.Model.DB.Basic_Dict> _rpsdict = null;
         public DocSolutionService(IUnitwork work)
         {
             _work = work;
             Unitwork = work;
             _rpsds = work.Repository<Doc_Solution>();
+            _rpsdict = work.Repository<Core.Model.DB.Basic_Dict>();
         }
 
         /// <summary>
@@ -115,6 +117,7 @@ namespace ESafety.Account.Service
             {
                 var dbds = _rpsds.GetModel(id);
                 var dsv = dbds.MAPTO<DocSolutionView>();
+                dsv.DangerLevelName = _rpsdict.GetModel(dbds.DangerLevel).DictName;
                 return new ActionResult<DocSolutionView>(dsv);
             }
             catch (Exception ex)
@@ -131,18 +134,19 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbdss = _rpsds.Queryable(p => p.TypeID == para.Query.TypeID && (p.Name.Contains(para.Query.Name) || string.IsNullOrEmpty(para.Query.Name)||p.DangerLevel==para.Query.DangerLevel));
-                var revs = from s in dbdss
+                var dbdss = _rpsds.Queryable(p => p.TypeID == para.Query.TypeID && (p.Name.Contains(para.Query.Name) || string.IsNullOrEmpty(para.Query.Name))&&(p.DangerLevel==para.Query.DangerLevel||Guid.Empty==para.Query.DangerLevel));
+                var revs = from s in dbdss.ToList()
+                           let dict= _rpsdict.GetModel(s.DangerLevel)
                            select new DocSolutionView
                            {
-                               Content=s.Content,
-                               ID=s.ID,
-                               DangerLevel=s.DangerLevel,
-                               IssueDate=s.IssueDate,
-                               Name=s.Name,
-                               TypeID=s.TypeID
+                               Content = s.Content,
+                               ID = s.ID,
+                               DangerLevel = s.DangerLevel,
+                               IssueDate = s.IssueDate,
+                               Name = s.Name,
+                               TypeID = s.TypeID,
+                               DangerLevelName = dict.DictName
                            };
-
                 var re = new Pager<DocSolutionView>().GetCurrentPage(revs, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<DocSolutionView>>(re);
             }
