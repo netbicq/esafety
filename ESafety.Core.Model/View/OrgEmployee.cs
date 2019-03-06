@@ -42,7 +42,11 @@ namespace ESafety.Core.Model.View
         /// 组织ID
         /// </summary>
         public Guid OrgID { get; set; }
-        
+        /// <summary>
+        /// 组织名
+        /// </summary>
+        public string OrgName { get; set; }
+
     }
 
     public class EmployeeModelView:EmployeeView
