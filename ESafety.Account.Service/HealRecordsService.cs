@@ -56,10 +56,19 @@ namespace ESafety.Account.Service
                 {
                     BusinessID = dbhr.ID,
                     files = from f in recordsNew.AttachFiles
-                            select f.CopyTo<AttachFileNew>(f)
+                            select new AttachFileNew
+                            {
+                                FileTitle = f.FileTitle,
+                                FileType = f.FileType,
+                                FileUrl = f.FileUrl
+                            }
                 };
 
-                srvFile.SaveFiles(files);
+                var fre = srvFile.SaveFiles(files);
+                if (fre.state != 200)
+                {
+                    throw new Exception(fre.msg);
+                }
 
                 _rpshr.Add(dbhr);
                 _work.Commit();
@@ -122,10 +131,18 @@ namespace ESafety.Account.Service
                 {
                     BusinessID = dbhr.ID,
                     files = from f in recordsEdit.AttachFiles
-                            select f.CopyTo<AttachFileNew>(f)
+                            select new AttachFileNew
+                            {
+                                FileTitle = f.FileTitle,
+                                FileType = f.FileType,
+                                FileUrl = f.FileUrl
+                            }
                 };
-
-                srvFile.SaveFiles(files);
+                var fre = srvFile.SaveFiles(files);
+                if (fre.state != 200)
+                {
+                    throw new Exception(fre.msg);
+                }
 
                 _rpshr.Update(dbhr);
                 _work.Commit();

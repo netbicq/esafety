@@ -33,35 +33,35 @@ namespace ESafety.Account.Service
             _rpsorg = work.Repository<Core.Model.DB.Basic_Org>();
             srvFile = file;
         }
-        /// <summary>
-        /// 新建训练人员模型
-        /// </summary>
-        /// <param name="empoyeesNew"></param>
-        /// <returns></returns>
-        public ActionResult<bool> AddTrainEmployee(DocTrainEmpoyeesNew empoyeesNew)
-        {
-            try
-            {
-                var check = _rpsdtemp.Any(p=>p.TrainID==empoyeesNew.TrainID);
-                if (!check)
-                {
-                    throw new Exception("未找到该培训项");
-                }
-                check = _rpsdtemp.Any(p => p.TrainID == empoyeesNew.TrainID && p.EmployeeID == empoyeesNew.EmployeeID);
-                if (check)
-                {
-                    throw new Exception("该培训项下已存在该人员");
-                }
-                var dbdtemp = empoyeesNew.MAPTO<Doc_TrainEmpoyees>();
-                _rpsdtemp.Add(dbdtemp);
-                _work.Commit();
-                return new ActionResult<bool>(true);
-            }
-            catch (Exception ex)
-            {
-                return new ActionResult<bool>(ex);
-            }
-        }
+        ///// <summary>
+        ///// 新建训练人员模型
+        ///// </summary>
+        ///// <param name="empoyeesNew"></param>
+        ///// <returns></returns>
+        //public ActionResult<bool> AddTrainEmployee(DocTrainEmpoyeesNew empoyeesNew)
+        //{
+        //    try
+        //    {
+        //        var check = _rpsdtemp.Any(p=>p.TrainID==empoyeesNew.TrainID);
+        //        if (!check)
+        //        {
+        //            throw new Exception("未找到该培训项");
+        //        }
+        //        check = _rpsdtemp.Any(p => p.TrainID == empoyeesNew.TrainID && p.EmployeeID == empoyeesNew.EmployeeID);
+        //        if (check)
+        //        {
+        //            throw new Exception("该培训项下已存在该人员");
+        //        }
+        //        var dbdtemp = empoyeesNew.MAPTO<Doc_TrainEmpoyees>();
+        //        _rpsdtemp.Add(dbdtemp);
+        //        _work.Commit();
+        //        return new ActionResult<bool>(true);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new ActionResult<bool>(ex);
+        //    }
+        //}
         /// <summary>
         /// 新建训练模型
         /// </summary>
@@ -82,10 +82,28 @@ namespace ESafety.Account.Service
                 {
                     BusinessID = dbdt.ID,
                     files = from f in trainingNew.AttachFiles
-                            select f.CopyTo<AttachFileNew>(f)
+                            select new AttachFileNew
+                            {
+                                FileTitle = f.FileTitle,
+                                FileType = f.FileType,
+                                FileUrl = f.FileUrl
+                            }
                 };
+                
+                var fileresult= srvFile.SaveFiles(files);
+                if (fileresult.state != 200)
+                {
+                    throw new Exception(fileresult.msg);
+                }
 
-                srvFile.SaveFiles(files);
+                List<DocTrainEmpoyeesNew> emps = (from empid in trainingNew.EmployeeIDs
+                                                  select new DocTrainEmpoyeesNew
+                                                  {
+                                                     EmployeeID=empid,
+                                                     TrainID=dbdt.ID
+                                                  }).ToList();
+               var dbdtemps = emps.MAPTO<Doc_TrainEmpoyees>();
+                _rpsdtemp.Add(dbdtemps);
                 _rpsdt.Add(dbdt);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -174,10 +192,19 @@ namespace ESafety.Account.Service
                 {
                     BusinessID = dbdt.ID,
                     files = from f in trainingEdit.AttachFiles
-                            select f.CopyTo<AttachFileNew>(f)
+                            select new AttachFileNew
+                            {
+                                FileTitle = f.FileTitle,
+                                FileType = f.FileType,
+                                FileUrl = f.FileUrl
+                            }
                 };
 
-                srvFile.SaveFiles(files);
+                var fileresult = srvFile.SaveFiles(files);
+                if (fileresult.state != 200)
+                {
+                    throw new Exception(fileresult.msg);
+                }
                 _rpsdt.Update(dbdt);
                 _work.Commit();
                 return new ActionResult<bool>(true);

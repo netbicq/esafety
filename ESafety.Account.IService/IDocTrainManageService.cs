@@ -19,7 +19,7 @@ namespace ESafety.Account.IService
         ActionResult<bool> EditTraining(DocTrainingEdit trainingEdit);
         ActionResult<DocTrainingView> GetTraining(Guid id);
         ActionResult<Pager<DocTrainingView>> GetTrainings(PagerQuery<DocTrainingQuery> para);
-        ActionResult<bool> AddTrainEmployee(DocTrainEmpoyeesNew empoyeesNew);
+       // ActionResult<bool> AddTrainEmployee(DocTrainEmpoyeesNew empoyeesNew);
         ActionResult<bool> DelTrainEmplyee(Guid id);
         ActionResult<Pager<DocTrainEmpoyeesView>> GetTrainEmployee(PagerQuery<DocTrainEmpoyeesQuery> para);
     }

@@ -37,6 +37,10 @@ namespace ESafety.Account.Model.PARA
         /// 电子文档
         /// </summary>
         public IEnumerable<AttachFileNew> AttachFiles { get; set; }
+        /// <summary>
+        /// 人员ID集合
+        /// </summary>
+        public IEnumerable<Guid> EmployeeIDs { get; set; }
     }
 
     public class DocTrainingEdit: DocTrainingNew

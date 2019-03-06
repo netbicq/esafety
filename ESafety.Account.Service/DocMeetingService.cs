@@ -128,11 +128,19 @@ namespace ESafety.Account.Service
                 {
                     BusinessID = dbdm.ID,
                     files = from f in meetingEdit.AttachFiles
-                            select f.CopyTo<AttachFileNew>(f)
+                            select new AttachFileNew
+                            {
+                                FileTitle = f.FileTitle,
+                                FileType = f.FileType,
+                                FileUrl = f.FileUrl
+                            }
                 };
 
-                srvFile.SaveFiles(files);
-
+                var fre= srvFile.SaveFiles(files);
+                if (fre.state!=200)
+                {
+                    throw new Exception(fre.msg);
+                }
                 _rpsdm.Update(dbdm);
                 _work.Commit();
                 return new ActionResult<bool>(true);

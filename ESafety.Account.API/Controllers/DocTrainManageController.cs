@@ -25,18 +25,18 @@ namespace ESafety.Account.API.Controllers
             bll = dtm;
             BusinessService = dtm;
         }
-        /// <summary>
-        /// 新建训练项与人员之间的关系模型
-        /// </summary>
-        /// <param name="empoyeesNew"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("adddtemp")]
-        public ActionResult<bool> AddTrainEmployee(DocTrainEmpoyeesNew empoyeesNew)
-        {
-            LogContent = "新建了训练项与人员之间的关系模型,参数源:" + JsonConvert.SerializeObject(empoyeesNew);
-            return bll.AddTrainEmployee(empoyeesNew);
-        }
+        ///// <summary>
+        ///// 新建训练项与人员之间的关系模型
+        ///// </summary>
+        ///// <param name="empoyeesNew"></param>
+        ///// <returns></returns>
+        //[HttpPost]
+        //[Route("adddtemp")]
+        //public ActionResult<bool> AddTrainEmployee(DocTrainEmpoyeesNew empoyeesNew)
+        //{
+        //    LogContent = "新建了训练项与人员之间的关系模型,参数源:" + JsonConvert.SerializeObject(empoyeesNew);
+        //    return bll.AddTrainEmployee(empoyeesNew);
+        //}
         /// <summary>
         /// 新建训练项模型
         /// </summary>

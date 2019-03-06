@@ -47,10 +47,19 @@ namespace ESafety.Account.Service
                 {
                     BusinessID = dbdc.ID,
                     files = from f in certificateNew.AttachFiles
-                            select f.CopyTo<AttachFileNew>(f)
+                            select new AttachFileNew
+                            {
+                                FileTitle = f.FileTitle,
+                                FileType = f.FileType,
+                                FileUrl = f.FileUrl
+                            }
                 };
 
-                srvFile.SaveFiles(files);
+                var fre=srvFile.SaveFiles(files);
+                if (fre.state != 200)
+                {
+                    throw new Exception(fre.msg);
+                }
                 _rpsdc.Add(dbdc);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -111,10 +120,19 @@ namespace ESafety.Account.Service
                 {
                     BusinessID = dbdc.ID,
                     files = from f in certificateEdit.AttachFiles
-                            select f.CopyTo<AttachFileNew>(f)
+                            select new AttachFileNew
+                            {
+                                FileTitle = f.FileTitle,
+                                FileType = f.FileType,
+                                FileUrl = f.FileUrl
+                            }
                 };
 
-                srvFile.SaveFiles(files);
+                var fre= srvFile.SaveFiles(files);
+                if (fre.state != 200)
+                {
+                    throw new Exception(fre.msg);
+                }
                 _rpsdc.Update(dbdc);
                 _work.Commit();
                 return new ActionResult<bool>(true);
