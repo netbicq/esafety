@@ -49,18 +49,18 @@ namespace ESafety.Account.API.Controllers
             LogContent = "新建了训练项模型，参数源:" + JsonConvert.SerializeObject(trainingNew);
             return bll.AddTraining(trainingNew);
         }
-        /// <summary>
-        /// 删除训练项人员
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("deldtemp/{id:Guid}")]
-        public ActionResult<bool> DelTrainEmplyee(Guid id)
-        {
-            LogContent = "删除了训练项人员，ID:" + JsonConvert.SerializeObject(id);
-            return bll.DelTrainEmplyee(id);
-        }
+        ///// <summary>
+        ///// 删除训练项人员
+        ///// </summary>
+        ///// <param name="id"></param>
+        ///// <returns></returns>
+        //[HttpGet]
+        //[Route("deldtemp/{id:Guid}")]
+        //public ActionResult<bool> DelTrainEmplyee(Guid id)
+        //{
+        //    LogContent = "删除了训练项人员，ID:" + JsonConvert.SerializeObject(id);
+        //    return bll.DelTrainEmplyee(id);
+        //}
         /// <summary>
         /// 删除训练项模型
         /// </summary>

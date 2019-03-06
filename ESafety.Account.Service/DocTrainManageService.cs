@@ -95,7 +95,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception(fileresult.msg);
                 }
-
+                //添加培训人员
                 List<DocTrainEmpoyeesNew> emps = (from empid in trainingNew.EmployeeIDs
                                                   select new DocTrainEmpoyeesNew
                                                   {
@@ -155,7 +155,8 @@ namespace ESafety.Account.Service
                 _rpsdt.Delete(dbdt);
                 //删除电子文档
                 srvFile.DelFileByBusinessId(id);
-
+                //删除培训人员
+                _rpsdtemp.Delete(p=>p.TrainID==id);
                 _work.Commit();
                 return new ActionResult<bool>(true);
             }
@@ -205,6 +206,19 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception(fileresult.msg);
                 }
+
+                //培训人员先删除后添加
+                _rpsdtemp.Delete(p=>p.TrainID==trainingEdit.ID);
+                //添加培训人员
+                List<DocTrainEmpoyeesNew> emps = (from empid in trainingEdit.EmployeeIDs
+                                                  select new DocTrainEmpoyeesNew
+                                                  {
+                                                      EmployeeID = empid,
+                                                      TrainID = dbdt.ID
+                                                  }).ToList();
+                var dbdtemps = emps.MAPTO<Doc_TrainEmpoyees>();
+                _rpsdtemp.Add(dbdtemps);
+
                 _rpsdt.Update(dbdt);
                 _work.Commit();
                 return new ActionResult<bool>(true);
