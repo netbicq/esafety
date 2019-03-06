@@ -53,10 +53,19 @@ namespace ESafety.Account.Service
                 {
                     BusinessID = dbdm.ID,
                     files = from f in meetingNew.AttachFiles
-                            select f.CopyTo<AttachFileNew>(f)
+                            select new AttachFileNew
+                            {
+                                FileTitle = f.FileTitle,
+                                FileType = f.FileType,
+                                FileUrl = f.FileUrl
+                            }
                 };
 
-                srvFile.SaveFiles(files);
+                var fileresult = srvFile.SaveFiles(files);
+                if (fileresult.state != 200)
+                {
+                    throw new Exception(fileresult.msg);
+                }
 
                 _rpsdm.Add(dbdm);
                 _work.Commit();
@@ -162,7 +171,7 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbdms = _rpsdm.Queryable(p => p.Motif.Contains(para.Query.Motif)||string.IsNullOrEmpty(para.Query.Motif));
+                var dbdms = _rpsdm.Queryable(p => p.Motif.Contains(para.Query.Motif) || string.IsNullOrEmpty(para.Query.Motif));
                 var redms = from s in dbdms
                             select new DocMeetingView
                             {

@@ -30,16 +30,24 @@ namespace ESafety.Account.Service
             Unitwork = work;
 
         }
-        public ActionResult<bool> AddNew(OperateBillNew bill)
+        public  ActionResult<bool> AddNew(OperateBillNew bill)
         {
             throw new NotImplementedException();
         }
          
 
-        public ActionResult<bool> EditBill(OpreateBillEdit bill)
+        public  ActionResult<bool> EditBill(OpreateBillEdit bill)
         {
             throw new NotImplementedException();
         }
-         
+
+        public override ActionResult<bool> StartBillFlow(Guid businessid)
+        {
+            return base.StartBillFlow(businessid);
+        }
+        public override ActionResult<bool> Approve(Guid businessid)
+        {
+            return base.Approve(businessid);
+        }
     }
 }

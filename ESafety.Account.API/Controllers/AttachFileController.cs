@@ -62,11 +62,11 @@ namespace ESafety.Account.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("uploadfile")]
-        [AllowAnonymous]
         public async Task<ActionResult<string>> Post()
         {
             try
-            {
+           {
+                
                 if (!Request.Content.IsMimeMultipartContent())
                 {
                     this.Request.CreateResponse(HttpStatusCode.UnsupportedMediaType);

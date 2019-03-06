@@ -98,6 +98,53 @@ namespace ESafety.Core
             }
         }
          
+        /// <summary>
+        /// 检查业务单据的审批
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="rps"></param>
+        /// <param name="businessid"></param>
+        /// <param name="businesstype"></param>
+        /// <returns></returns>
+        public ActionResult<bool> BilCheckApprove<T>(T rps,Guid businessid,PublicEnum.EE_BusinessType businesstype) where T :IRepository<ModelBase>
+        {
+            try
+            {
+                var billmodel = rps.GetModel(businessid);
+                if(billmodel == null)
+                {
+                    throw new Exception("业务单据不存在");
+                }
+
+                //检查审批流程状态
+                var flowcheck = BusinessAprove(new BusinessAprovePara
+                {
+                    BusinessID = businessid,
+                    BusinessType = businesstype
+                });
+                if (flowcheck.state != 200)
+                {
+                    throw new Exception(flowcheck.msg);
+                }
+                if (flowcheck.data)
+                {
+                    //billmodel.State = (int)PublicEnum.BillFlowState.audited;
+                    //rpstask.Update(businessmodel);
+                    //_work.Commit();
+
+                    return new ActionResult<bool>(true);
+                }
+                else
+                {
+                    throw new Exception("审批结果检查未通过");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
         public virtual ActionResult<bool> Approve(Guid businessid)
         {
             throw new NotImplementedException();

@@ -76,9 +76,10 @@ namespace ESafety.Core
             try
             {
                 var file = rpsFile.GetList(r => r.BusinessID == guid);
-                
+
                 rpsFile.Delete(q => q.BusinessID == guid);
-                var delfiles = file.Select(r => {
+                var delfiles = file.Select(r =>
+                {
                     var filepath = HttpContext.Current.Server.MapPath(r.FileUrl);
                     if (File.Exists(filepath))
                     {
@@ -92,11 +93,11 @@ namespace ESafety.Core
                 return new ActionResult<bool>(true);
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return new ActionResult<bool>(ex);
             }
-            
+
         }
 
 
@@ -129,7 +130,17 @@ namespace ESafety.Core
         {
             try
             {
-                var dbfiles = file.files.MAPTO<Bll_AttachFile>();
+                List<Bll_AttachFile> dbfiles= (from f in file.files
+                   select new Bll_AttachFile
+                   {
+                       BusinessID = file.BusinessID,
+                       FileTitle = f.FileTitle,
+                       FileType = f.FileType,
+                       FileUrl = f.FileUrl,
+                       ID = Guid.NewGuid()
+                   }).ToList();
+
+
                 rpsFile.Delete(q => q.BusinessID == file.BusinessID);
                 rpsFile.Add(dbfiles);
                 //不提交，与业务一起提交
