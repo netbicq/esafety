@@ -4,6 +4,7 @@ using ESafety.Core.Model.PARA;
 using ESafety.Core.Model.View;
 using ESafety.ORM;
 using ESafety.Unity;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -324,14 +325,40 @@ namespace ESafety.Core
                     {
                         throw new Exception("未找到自定义项");
                     }
-                    newvalues.Add(new Basic_UserDefinedValue
+                    var dbvalue = new Basic_UserDefinedValue()
                     {
                         BusinessID = values.BusinessID,
                         DefinedID = v.DefinedID,
                         DefinedType = definedmodel.DataType,
-                        DefinedValue = v.DefinedValue,
                         ID = Guid.NewGuid()
-                    });
+                    };
+                    //根据数据类型处理Value
+                    switch((PublicEnum.EE_UserDefinedDataType) definedmodel.DataType)
+                    {
+                        case PublicEnum.EE_UserDefinedDataType.Bool:
+                        case PublicEnum.EE_UserDefinedDataType.Str:
+                        case PublicEnum.EE_UserDefinedDataType.Number:
+                        case PublicEnum.EE_UserDefinedDataType.Int:
+                            dbvalue.DefinedValue = v.ToString();
+                            break;
+                        case PublicEnum.EE_UserDefinedDataType.Dict:
+                            if (definedmodel.IsMulti)
+                            {
+                                var valarry = JsonConvert.SerializeObject(v.DefinedValue);
+                                dbvalue.DefinedValue = valarry;
+                            }else
+                                {
+                                dbvalue.DefinedValue = v.DefinedValue.ToString();
+
+                            }
+                            break;
+                        
+                        default:
+                            dbvalue.DefinedValue = v.ToString();
+                            break;
+                    }
+                    newvalues.Add(dbvalue);
+
                 }
 
                 foreach(var dv in dbvalues)
