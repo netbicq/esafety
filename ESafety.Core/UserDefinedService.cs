@@ -295,7 +295,10 @@ namespace ESafety.Core
                              VisibleIndex = d.VisibleIndex,
                              DictSelection = dicts,
                              // ItemValue =valuemodel ==null?string.Empty:valuemodel.DefinedValue
-                             ItemValue = valuemodel != null ? (PublicEnum.EE_UserDefinedDataType)d.DataType == PublicEnum.EE_UserDefinedDataType.Dict ? d.IsMulti==true?JsonConvert.DeserializeObject(valuemodel.DefinedValue): valuemodel.DefinedValue: valuemodel.DefinedValue:string.Empty
+                             //ItemValue = valuemodel != null ? (PublicEnum.EE_UserDefinedDataType)d.DataType == PublicEnum.EE_UserDefinedDataType.Dict ? d.IsMulti == true ? JsonConvert.DeserializeObject(valuemodel.DefinedValue) : valuemodel.DefinedValue : valuemodel.DefinedValue : string.Empty,
+                             ItemValue = valuemodel != null ? (PublicEnum.EE_UserDefinedDataType)d.DataType == PublicEnum.EE_UserDefinedDataType.Bool?bool.Parse(valuemodel.DefinedValue):((PublicEnum.EE_UserDefinedDataType)d.DataType == PublicEnum.EE_UserDefinedDataType.Dict ? d.IsMulti == true ? JsonConvert.DeserializeObject(valuemodel.DefinedValue) : valuemodel.DefinedValue:valuemodel.DefinedValue):string.Empty
+
+
                          };
                 return new ActionResult<IEnumerable<UserDefinedForm>>(re);
             }
