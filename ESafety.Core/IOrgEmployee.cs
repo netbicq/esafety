@@ -1,4 +1,5 @@
 ﻿using ESafety.Core.Model;
+using ESafety.Core.Model.DB;
 using ESafety.Core.Model.PARA;
 using ESafety.Core.Model.View;
 using System;
@@ -40,6 +41,13 @@ namespace ESafety.Core
 
 
         ActionResult<IEnumerable<Model.View.OrgView>> GetOrgChildren(Guid id);
-         
+
+        ActionResult<IEnumerable<OrgTree>> GetTree(Guid id);
+
+        ActionResult<IEnumerable<Basic_Org>> GetParents(Guid id);
+
+        ActionResult<IEnumerable<Guid>> GetChildren(Guid id);
+       
+
     }
 }

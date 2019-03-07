@@ -26,6 +26,10 @@ namespace ESafety.Core
             _work = work;
             Unitwork = work;
             srvFlow = flow;
+            var flsrv = srvFlow as FlowService;
+            flsrv.AppUser = AppUser;
+            flsrv.ACOptions = ACOptions;
+
         }
         /// <summary>
         /// 业务审核
@@ -83,6 +87,7 @@ namespace ESafety.Core
                     BusinessID = para.BusinessID,
                     BusinessType = para.BusinessType
                 };
+                (srvFlow as FlowService).AppUser = AppUser;
 
                 var flowtask = srvFlow.InitTask(initpara);
                 if (flowtask.state != 200)

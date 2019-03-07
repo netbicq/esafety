@@ -23,5 +23,12 @@ namespace ESafety.Account.IService
         ActionResult<bool> DelFacility(Guid id);
 
         ActionResult<Pager<FacilityView>> GetFacilities(PagerQuery<FacilitiesQuery> para);
+        /// <summary>
+        /// 获取设备模型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        ActionResult<FacilityView> GetModel(Guid id);
+
     }
 }

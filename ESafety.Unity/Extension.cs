@@ -10,10 +10,44 @@ using System.Threading.Tasks;
 namespace ESafety.Unity
 {
     /// <summary>
+    /// 树形基类
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class TreeBase 
+    {
+
+        public Guid ID { get; set; }
+
+        public Guid ParentID { get; set; } 
+
+    }
+
+    /// <summary>
     /// 扩展
     /// </summary>
     public static class Extension
     {
+
+  
+
+        public static IEnumerable<Guid> GetParentIds<T>(this IEnumerable<T> tree,Guid id) where T : TreeBase
+        {
+            List<Guid> re = new List<Guid>();
+            re.Add(id);
+            T cnode = tree.FirstOrDefault(q => q.ID == id);
+
+            T pnode = tree.FirstOrDefault(q => q.ID == cnode.ParentID);
+
+            if(pnode != null)
+            {
+                
+                var pids =tree.GetParentIds<T>(pnode.ID);
+                re.AddRange(pids);
+            }
+
+            return re;
+
+        }
 
         /// <summary>
         /// 对象转换

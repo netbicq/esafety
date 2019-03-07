@@ -1,5 +1,6 @@
 ﻿using ESafety.Core;
 using ESafety.Core.Model;
+using ESafety.Core.Model.DB;
 using ESafety.Core.Model.PARA;
 using ESafety.Core.Model.View;
 using ESafety.Web.Unity;
@@ -42,6 +43,40 @@ namespace ESafety.Account.API.Controllers
         {
             LogContent = "新增人员，参数源：" + JsonConvert.SerializeObject(employee);
             return bll.AddEmployee(employee);
+        }
+
+        /// <summary>
+        /// 获取组织架构的树形结构
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route("gettree/{id:Guid}")]
+        [HttpGet]
+        public ActionResult<IEnumerable<OrgTree>> GetOrgTree(Guid id)
+        {
+            return bll.GetTree(id);
+        }
+        /// <summary>
+        /// 获取指定id的的所有父级
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route("getparents/{id:Guid}")]
+        [HttpGet]
+        public ActionResult<IEnumerable<Basic_Org>> GetParents(Guid id)
+        {
+            return bll.GetParents(id);
+        }
+        /// <summary>
+        /// 获取指定ID的所有子级ID强集合
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route("getchildrenids/{id:Guid}")]
+        [HttpGet]
+        public ActionResult<IEnumerable<Guid>> GetChildrenIds(Guid id)
+        {
+            return bll.GetChildren(id);
         }
         /// <summary>
         /// 新建组织
