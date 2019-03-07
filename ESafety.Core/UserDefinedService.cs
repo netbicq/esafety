@@ -43,16 +43,7 @@ namespace ESafety.Core
         /// <returns></returns>
         public ActionResult<bool> AddUserDefined(UserDefinedNew entity)
         {
-            //var userdefined = new Model.DB.Basic_UserDefined
-            //{ 
-            //     Caption=entity.Caption,
-            //     DefinedType=Convert.ToInt32(entity.DefinedType),
-            //     DictID=entity.DictID,
-            //     IsEmpty=entity.IsEmpty,
-            //     IsMulti=entity.IsMulti,
-            //     VisibleIndex=entity.VisibleIndex,
-            //     DataType=Convert.ToInt32(entity.DataType)
-            //};
+ 
             //必要的逻辑检查
 
             var datatypecheck = Command.GetItems(typeof(PublicEnum.EE_UserDefinedDataType)).Any(q => q.Value ==(int) entity.DataType);
@@ -146,17 +137,7 @@ namespace ESafety.Core
             }
             dbdefined = entity.CopyTo<Basic_UserDefined>(dbdefined);
 
-            //var userdefined = new Model.DB.Basic_UserDefined
-            //{
-            //    ID = entity.ID,
-            //    Caption = entity.Caption,
-            //    DataType = Convert.ToInt32(entity.DataType),
-            //    DefinedType = Convert.ToInt32(entity.DefinedType),
-            //    DictID=entity.DictID,
-            //    IsEmpty=entity.IsEmpty,
-            //    IsMulti=entity.IsMulti,
-            //    VisibleIndex=entity.VisibleIndex
-            //};
+            
             _rpsdefined.Update(dbdefined);
             _work.Commit();
             return new ActionResult<bool>(true);
@@ -268,17 +249,19 @@ namespace ESafety.Core
             try
             {
                 //自定义类型当前有效的自定义项
-                var defineds = _rpsdefined.Queryable(q => q.DefinedType == (int)para.DefinedType);
+                var defineds = _rpsdefined.Queryable(q => q.DefinedType == (int)para.DefinedType).ToList();
 
                 var businessid = para.BusinessID == null ? Guid.Empty : para.BusinessID;
 
                 var definedids = defineds.Select(s => s.ID);
                 //以最新的为准，已经删掉的自定义项值则忽略掉
-                var values = _rpsdefinedvalue.Queryable(q => definedids.Contains(q.DefinedID) && q.BusinessID == para.BusinessID).ToList();
+                var values = _rpsdefinedvalue.Queryable().ToList().Where(q => definedids.Contains(q.DefinedID) && q.BusinessID == para.BusinessID).ToList();
+                var dicts = _rpsdict.Queryable().ToList().Where(q=> defineds.Select(s=>s.DictID).Contains(q.ID)).ToList();
+                var dictitems = _rpsdict.Queryable().ToList().Where(q => dicts.Select(s => s.ID).Contains(q.ParentID));
 
-                var re = from d in defineds.ToList()
-                         let dict = _rpsdict.GetModel(q => q.ID == d.DictID)
-                         let dicts = _rpsdict.GetList(q => q.ParentID == dict.ID)
+                var re = from d in defineds
+                         let dict =dicts.FirstOrDefault(q=>q.ID == d.DictID)
+                         let dictits = dictitems.Where(q=>q.ParentID == d.DictID)
                          let valuemodel = values.FirstOrDefault(q => q.DefinedID == d.ID)
                          select new UserDefinedForm
                          {
@@ -288,14 +271,17 @@ namespace ESafety.Core
                              DefinedType = (PublicEnum.EE_UserDefinedType)d.DefinedType,
                              DefinedTypeName = Command.GetItems(typeof(PublicEnum.EE_UserDefinedType)).FirstOrDefault(q => q.Value == d.DefinedType).Caption,
                              DictID = d.DictID,
-                             DictName = dict.DictName,
+                             DictName =dict==null?string.Empty: dict.DictName,
                              ID = d.ID,
                              IsEmpty = d.IsEmpty,
                              IsMulti = d.IsMulti,
                              VisibleIndex = d.VisibleIndex,
-                             DictSelection = dicts,
+                             DictSelection =d.DataType ==(int)PublicEnum.EE_UserDefinedDataType.Dict?dictits:new List<Basic_Dict>(),
                              // ItemValue =valuemodel ==null?string.Empty:valuemodel.DefinedValue
-                             ItemValue = valuemodel != null ? (PublicEnum.EE_UserDefinedDataType)d.DataType == PublicEnum.EE_UserDefinedDataType.Dict ? d.IsMulti==true?JsonConvert.DeserializeObject(valuemodel.DefinedValue): valuemodel.DefinedValue: valuemodel.DefinedValue:string.Empty
+                             ItemValue = 
+                             valuemodel == null ? string.Empty:
+                             d.IsMulti ?(object)JsonConvert.DeserializeObject<IEnumerable< Guid>>(valuemodel.DefinedValue):
+                             d.DataType==(int)PublicEnum.EE_UserDefinedDataType.Bool? (object)bool.Parse(valuemodel.DefinedValue): (object)valuemodel.DefinedValue
                          };
                 return new ActionResult<IEnumerable<UserDefinedForm>>(re);
             }
@@ -324,6 +310,11 @@ namespace ESafety.Core
                     {
                         throw new Exception("未找到自定义项");
                     }
+                    var emptycheck = !definedmodel.IsEmpty && v.DefinedValue == null;
+                    if (emptycheck)
+                    {
+                        throw new Exception("不可空选项必须录入值");
+                    }
 
                     var dbudv = new Basic_UserDefinedValue
                     {
@@ -338,20 +329,25 @@ namespace ESafety.Core
                         case PublicEnum.EE_UserDefinedDataType.Dict:
                             if (definedmodel.IsMulti)
                             {
-                                var value = JsonConvert.SerializeObject(v.DefinedValue);
+                                var rearry = new List<Guid>();
+                                var dbvalue  = v.DefinedValue == null ?JsonConvert.SerializeObject( rearry) : JsonConvert.SerializeObject(v.DefinedValue);
+
+                                var value = dbvalue;
                                 dbudv.DefinedValue = value;
                             }
                             else
                             {
-                                dbudv.DefinedValue = v.DefinedValue.ToString();
+                                
+                                dbudv.DefinedValue =v.DefinedValue ==null?Guid.Empty.ToString(): v.DefinedValue.ToString();
                             }
                             break;
-                        case PublicEnum.EE_UserDefinedDataType.Str:
-                        case PublicEnum.EE_UserDefinedDataType.Number:
-                        case PublicEnum.EE_UserDefinedDataType.Int:
-                        case PublicEnum.EE_UserDefinedDataType.Date:
                         case PublicEnum.EE_UserDefinedDataType.Bool:
-                        default:dbudv.DefinedValue=v.DefinedValue.ToString();break;
+                            dbudv.DefinedValue = v.DefinedValue == null ? false.ToString() : v.DefinedValue.ToString();
+                            break;
+
+                        default:
+                            dbudv.DefinedValue=v.DefinedValue==null?string.Empty:v.DefinedValue.ToString();
+                            break;
                     }
                     newvalues.Add(dbudv);
                 }
