@@ -294,9 +294,8 @@ namespace ESafety.Core
                              IsMulti = d.IsMulti,
                              VisibleIndex = d.VisibleIndex,
                              DictSelection = dicts,
-                             ItemValue = valuemodel == null ? default(object) :
-                             d.DataType == (int)PublicEnum.EE_UserDefinedDataType.Bool ?(object) bool.Parse(valuemodel.DefinedValue):    
-                             valuemodel.DefinedValue
+                             // ItemValue =valuemodel ==null?string.Empty:valuemodel.DefinedValue
+                             ItemValue = valuemodel != null ? (PublicEnum.EE_UserDefinedDataType)d.DataType == PublicEnum.EE_UserDefinedDataType.Dict ? d.IsMulti==true?JsonConvert.DeserializeObject(valuemodel.DefinedValue): valuemodel.DefinedValue: valuemodel.DefinedValue:string.Empty
                          };
                 return new ActionResult<IEnumerable<UserDefinedForm>>(re);
             }
@@ -325,40 +324,36 @@ namespace ESafety.Core
                     {
                         throw new Exception("未找到自定义项");
                     }
-                    var dbvalue = new Basic_UserDefinedValue()
+
+                    var dbudv = new Basic_UserDefinedValue
                     {
                         BusinessID = values.BusinessID,
                         DefinedID = v.DefinedID,
                         DefinedType = definedmodel.DataType,
-                        ID = Guid.NewGuid()
+                        ID = Guid.NewGuid(),
+                        
                     };
-                    //根据数据类型处理Value
-                    switch((PublicEnum.EE_UserDefinedDataType) definedmodel.DataType)
+                    switch ((PublicEnum.EE_UserDefinedDataType)dbudv.DefinedType)
                     {
-                        case PublicEnum.EE_UserDefinedDataType.Bool:
-                        case PublicEnum.EE_UserDefinedDataType.Str:
-                        case PublicEnum.EE_UserDefinedDataType.Number:
-                        case PublicEnum.EE_UserDefinedDataType.Int:
-                            dbvalue.DefinedValue = v.ToString();
-                            break;
                         case PublicEnum.EE_UserDefinedDataType.Dict:
                             if (definedmodel.IsMulti)
                             {
-                                var valarry = JsonConvert.SerializeObject(v.DefinedValue);
-                                dbvalue.DefinedValue = valarry;
-                            }else
-                                {
-                                dbvalue.DefinedValue = v.DefinedValue.ToString();
-
+                                var value = JsonConvert.SerializeObject(v.DefinedValue);
+                                dbudv.DefinedValue = value;
+                            }
+                            else
+                            {
+                                dbudv.DefinedValue = v.DefinedValue.ToString();
                             }
                             break;
-                        
-                        default:
-                            dbvalue.DefinedValue = v.ToString();
-                            break;
+                        case PublicEnum.EE_UserDefinedDataType.Str:
+                        case PublicEnum.EE_UserDefinedDataType.Number:
+                        case PublicEnum.EE_UserDefinedDataType.Int:
+                        case PublicEnum.EE_UserDefinedDataType.Date:
+                        case PublicEnum.EE_UserDefinedDataType.Bool:
+                        default:dbudv.DefinedValue=v.DefinedValue.ToString();break;
                     }
-                    newvalues.Add(dbvalue);
-
+                    newvalues.Add(dbudv);
                 }
 
                 foreach(var dv in dbvalues)
