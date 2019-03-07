@@ -310,8 +310,9 @@ namespace ESafety.Core
         /// <returns></returns>
         public ActionResult<IEnumerable<EmployeeView>> GetEmployeelist(Guid orgid)
         {
-            var emps = _rpsemployee.Queryable(q => q.OrgID == orgid || Guid.Empty == orgid);
-            var reemps = from em in emps
+            var emps = _rpsemployee.Queryable(q => q.OrgID == orgid||Guid.Empty==orgid);
+            var reemps = from em in emps.ToList()
+                         let or = _rpsorg.GetModel(em.OrgID)
                          select new EmployeeView
                          {
                              ID = em.ID,
@@ -321,7 +322,8 @@ namespace ESafety.Core
                              IsLevel = em.IsLevel,
                              HeadIMG = em.HeadIMG,
                              Login = em.Login,
-                             OrgID = em.OrgID
+                             OrgID = em.OrgID,
+                             OrgName=or.OrgName
                          };
             return new ActionResult<IEnumerable<EmployeeView>>(reemps);
         }
@@ -337,6 +339,7 @@ namespace ESafety.Core
             {
                 var employee = _rpsemployee.GetModel(id);
                 var re = employee.MAPTO<EmployeeModelView>();
+                re.OrgName = _rpsorg.GetModel(employee.OrgID).OrgName;
                 //获取业务数据的自定义
                 //var defines = usedefinedService.GetUserDefineItems(new UserDefinedBusiness
                 //{
@@ -379,19 +382,21 @@ namespace ESafety.Core
 
                 var emps = _rpsemployee.Queryable(q => q.OrgID == para.Query.ID);
 
-                var reemps = from em in emps
-                             select new EmployeeView
-                             {
-                                 ID = em.ID,
-                                 CNName = em.CNName,
-                                 Gender = em.Gender,
-                                 IsLeader = em.IsLeader,
-                                 IsLevel = em.IsLevel,
-                                 HeadIMG = em.HeadIMG,
-                                 Login = em.Login,
-                                 OrgID = em.OrgID
-                             };
-
+                var reemps = from em in emps.ToList()
+                             let or = _rpsorg.GetModel(em.OrgID)
+                         select new EmployeeView
+                         {
+                             ID=em.ID,
+                             CNName = em.CNName,
+                             Gender = em.Gender,
+                             IsLeader = em.IsLeader,
+                             IsLevel = em.IsLevel,
+                             HeadIMG = em.HeadIMG,
+                             Login = em.Login,
+                             OrgID= em.OrgID,
+                            OrgName=or.OrgName
+                         };
+                 
                 var re = new Pager<EmployeeView>().GetCurrentPage(reemps, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<EmployeeView>>(re);
             }

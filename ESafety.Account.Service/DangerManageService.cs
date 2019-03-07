@@ -21,7 +21,7 @@ namespace ESafety.Account.Service
         private IRepository<Core.Model.DB.Account.Basic_Danger> _rpsdanger = null;
         private IRepository<Basic_DangerSort> _rpsdangersort = null;
         private IRepository<Basic_DangerSafetyStandards> _rpsdangersafetystandards = null;
-        private IReadOnlyCollection<Basic_DangerRelation> _rpsdr = null;
+        private IRepository<Basic_DangerRelation> _rpsdr = null;
 
         public DangerManageService(IUnitwork work)
         {
@@ -30,6 +30,7 @@ namespace ESafety.Account.Service
             _rpsdanger = work.Repository<Basic_Danger>();
             _rpsdangersort = work.Repository<Basic_DangerSort>();
             _rpsdangersafetystandards = work.Repository<Basic_DangerSafetyStandards>();
+            _rpsdr = work.Repository<Basic_DangerRelation>();
         }
 
 
