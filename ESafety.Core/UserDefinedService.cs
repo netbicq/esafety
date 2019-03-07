@@ -349,11 +349,11 @@ namespace ESafety.Core
                                 dbudv.DefinedValue = v.DefinedValue.ToString();
                             }
                             break;
-                        case PublicEnum.EE_UserDefinedDataType.Str:
-                        case PublicEnum.EE_UserDefinedDataType.Number:
-                        case PublicEnum.EE_UserDefinedDataType.Int:
-                        case PublicEnum.EE_UserDefinedDataType.Date:
-                        case PublicEnum.EE_UserDefinedDataType.Bool:
+                        //case PublicEnum.EE_UserDefinedDataType.Str:
+                        //case PublicEnum.EE_UserDefinedDataType.Number:
+                        //case PublicEnum.EE_UserDefinedDataType.Int:
+                        //case PublicEnum.EE_UserDefinedDataType.Date:
+                        //case PublicEnum.EE_UserDefinedDataType.Bool:
                         default:dbudv.DefinedValue=v.DefinedValue.ToString();break;
                     }
                     newvalues.Add(dbudv);
