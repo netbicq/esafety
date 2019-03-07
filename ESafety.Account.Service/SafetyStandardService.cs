@@ -36,6 +36,10 @@ namespace ESafety.Account.Service
         {
             try
             {
+                if (safetystandard == null)
+                {
+                    throw new Exception("参数有误");
+                }
                 var check = _rpssafetystandard.Any(p => p.DangerSortID == safetystandard.DangerSortID && p.Code == safetystandard.Code);
                 if (check)
                 {

@@ -38,6 +38,10 @@ namespace ESafety.Account.Service
         {
             try
             {
+                if (solutionNew == null)
+                {
+                    throw new Exception("参数有误");
+                }
                 var check = _rpsds.Any(p=>p.Name==solutionNew.Name&&p.TypeID==solutionNew.TypeID);
                 if (check)
                 {

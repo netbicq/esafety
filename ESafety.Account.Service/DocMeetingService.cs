@@ -41,6 +41,10 @@ namespace ESafety.Account.Service
         {
             try
             {
+                if (meetingNew == null)
+                {
+                    throw new Exception("参数有误");
+                }
                 var check = _rpsdm.Any(p => p.Motif == meetingNew.Motif);
                 if (check)
                 {

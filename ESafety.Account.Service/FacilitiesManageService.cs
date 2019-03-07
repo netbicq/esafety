@@ -39,6 +39,10 @@ namespace ESafety.Account.Service
         {
             try
             {
+                if (facilitiesSort == null)
+                {
+                    throw new Exception("参数有误");
+                }
                 var check = _rpsfacilitiessort.Any(p=>p.ParentID==facilitiesSort.ParentID&&p.SortName==facilitiesSort.SortName);
                 if (check)
                 {

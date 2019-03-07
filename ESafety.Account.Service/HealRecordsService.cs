@@ -44,6 +44,10 @@ namespace ESafety.Account.Service
         {
             try
             {
+                if (recordsNew== null)
+                {
+                    throw new Exception("参数有误");
+                }
                 var check = _rpshr.Any(p => p.DocmentID == recordsNew.DocmentID&&p.RecDate==recordsNew.RecDate);
                 if (check)
                 {

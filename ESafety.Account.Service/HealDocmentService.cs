@@ -41,6 +41,10 @@ namespace ESafety.Account.Service
         {
             try
             {
+                if (docmentNew == null)
+                {
+                    throw new Exception("参数有误");
+                }
                 var check = _rpshd.Any(p => p.EmployeeID == docmentNew.EmployeeID);
                 if (check)
                 {

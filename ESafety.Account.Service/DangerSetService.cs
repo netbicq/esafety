@@ -36,6 +36,10 @@ namespace ESafety.Account.Service
         {
             try
             {
+                if (dangerRelation.DangerID==Guid.Empty)
+                {
+                    throw new Exception("参数有误");
+                }
                 var check = _rpsdangerrelation.Any(p=>p.SubjectID==dangerRelation.SubjectID&&p.DangerID==dangerRelation.DangerID);
                 if (check)
                 {

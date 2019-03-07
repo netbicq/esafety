@@ -83,6 +83,10 @@ namespace ESafety.Account.Service
         {
             try
             {
+                if (postEmployee.EmployeeID==Guid.Empty)
+                {
+                    throw new Exception("参数有误");
+                }
                 var check = _rpspostemp.Any(p => p.PostID == postEmployee.PostID && p.EmployeeID == postEmployee.EmployeeID);
                 if (check)
                 {
