@@ -158,7 +158,8 @@ namespace ESafety.Core
                 var re = userdefined.MAPTO<UserDefinedView>();
                 re.DataTypeName = Command.GetItems(typeof(PublicEnum.EE_UserDefinedDataType)).FirstOrDefault(q => q.Value == userdefined.DataType).Caption;
                 re.DefinedTypeName = Command.GetItems(typeof(PublicEnum.EE_UserDefinedType)).FirstOrDefault(q => q.Value == userdefined.DefinedType).Caption;
-                re.DictName = _rpsdict.GetModel(p => p.ID == userdefined.DictID).DictName;
+                var dict = _rpsdict.GetModel(p => p.ID == userdefined.DictID);
+                re.DictName = dict == null ? "" : dict.DictName;
                 return new ActionResult<UserDefinedView>(re);
             }
             catch (Exception ex)
