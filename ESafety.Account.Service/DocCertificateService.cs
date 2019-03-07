@@ -36,6 +36,10 @@ namespace ESafety.Account.Service
         {
             try
             {
+                if (certificateNew == null)
+                {
+                    throw new Exception("参数有误");
+                }
                 var check = _rpsdc.Any(p=>p.Name==certificateNew.Name&&p.TypeID==certificateNew.TypeID);
                 if (check)
                 {

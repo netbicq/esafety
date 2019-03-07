@@ -43,6 +43,10 @@ namespace ESafety.Account.Service
         {
             try
             {
+                if (danger == null)
+                {
+                    throw new Exception("参数有误");
+                }
                 var check = _rpsdanger.Any(p => p.DangerSortID == danger.DangerSortID && p.Name == danger.Name && p.Code == danger.Code);
                 if (check)
                 {
@@ -70,6 +74,10 @@ namespace ESafety.Account.Service
         {
             try
             {
+                if (safetyStandards.SafetyStandardID==Guid.Empty)
+                {
+                    throw new Exception("参数有误");
+                }
                 var check = _rpsdanger.Any(p => p.ID == safetyStandards.DangerID);
                 if (!check)
                 {

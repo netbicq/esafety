@@ -71,6 +71,10 @@ namespace ESafety.Account.Service
         {
             try
             {
+                if (trainingNew == null)
+                {
+                    throw new Exception("参数有误");
+                }
                 var check = _rpsdt.Any(p => p.Motif == trainingNew.Motif);
                 if (check)
                 {

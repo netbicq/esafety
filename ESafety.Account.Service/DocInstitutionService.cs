@@ -37,6 +37,10 @@ namespace ESafety.Account.Service
         {
             try
             {
+                if (institutionNew == null)
+                {
+                    throw new Exception("参数有误");
+                }
                 var check = _rpsin.Any(p=>p.Name==institutionNew.Name&&p.TypeID==institutionNew.TypeID);
                 if (check)
                 {
