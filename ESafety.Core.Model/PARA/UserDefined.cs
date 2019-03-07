@@ -76,7 +76,7 @@ namespace ESafety.Core.Model.PARA
         /// <summary>
         /// 自定义项业务值
         /// </summary>
-        public string DefinedValue { get; set; }
+        public object DefinedValue { get; set; }
     }
     /// <summary>
     /// 业务数据

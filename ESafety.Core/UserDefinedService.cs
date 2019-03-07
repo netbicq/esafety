@@ -4,6 +4,7 @@ using ESafety.Core.Model.PARA;
 using ESafety.Core.Model.View;
 using ESafety.ORM;
 using ESafety.Unity;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -278,7 +279,7 @@ namespace ESafety.Core
                 var re = from d in defineds.ToList()
                          let dict = _rpsdict.GetModel(q => q.ID == d.DictID)
                          let dicts = _rpsdict.GetList(q => q.ParentID == dict.ID)
-                         let valuemodel =values.FirstOrDefault(q=>q.DefinedID == d.ID)
+                         let valuemodel = values.FirstOrDefault(q => q.DefinedID == d.ID)
                          select new UserDefinedForm
                          {
                              Caption = d.Caption,
@@ -293,7 +294,8 @@ namespace ESafety.Core
                              IsMulti = d.IsMulti,
                              VisibleIndex = d.VisibleIndex,
                              DictSelection = dicts,
-                             ItemValue =valuemodel ==null?string.Empty:valuemodel.DefinedValue
+                             // ItemValue =valuemodel ==null?string.Empty:valuemodel.DefinedValue
+                             ItemValue = valuemodel != null ? (PublicEnum.EE_UserDefinedDataType)d.DataType == PublicEnum.EE_UserDefinedDataType.Dict ? d.IsMulti==true?JsonConvert.DeserializeObject(valuemodel.DefinedValue): valuemodel.DefinedValue: valuemodel.DefinedValue:string.Empty
                          };
                 return new ActionResult<IEnumerable<UserDefinedForm>>(re);
             }
@@ -322,14 +324,36 @@ namespace ESafety.Core
                     {
                         throw new Exception("未找到自定义项");
                     }
-                    newvalues.Add(new Basic_UserDefinedValue
+
+                    var dbudv = new Basic_UserDefinedValue
                     {
                         BusinessID = values.BusinessID,
                         DefinedID = v.DefinedID,
                         DefinedType = definedmodel.DataType,
-                        DefinedValue = v.DefinedValue,
-                        ID = Guid.NewGuid()
-                    });
+                        ID = Guid.NewGuid(),
+                        
+                    };
+                    switch ((PublicEnum.EE_UserDefinedDataType)dbudv.DefinedType)
+                    {
+                        case PublicEnum.EE_UserDefinedDataType.Dict:
+                            if (definedmodel.IsMulti)
+                            {
+                                var value = JsonConvert.SerializeObject(v.DefinedValue);
+                                dbudv.DefinedValue = value;
+                            }
+                            else
+                            {
+                                dbudv.DefinedValue = v.DefinedValue.ToString();
+                            }
+                            break;
+                        case PublicEnum.EE_UserDefinedDataType.Str:
+                        case PublicEnum.EE_UserDefinedDataType.Number:
+                        case PublicEnum.EE_UserDefinedDataType.Int:
+                        case PublicEnum.EE_UserDefinedDataType.Date:
+                        case PublicEnum.EE_UserDefinedDataType.Bool:
+                        default:dbudv.DefinedValue=v.DefinedValue.ToString();break;
+                    }
+                    newvalues.Add(dbudv);
                 }
 
                 foreach(var dv in dbvalues)
