@@ -67,6 +67,6 @@ namespace ESafety.Core.Model.View
         /// <summary>
         /// 自定义项值 
         /// </summary>
-        public string ItemValue { get; set; }
+        public dynamic ItemValue { get; set; }
     }
 }

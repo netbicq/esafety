@@ -24,7 +24,7 @@ namespace ESafety.Core
 
         private IUserDefined usedefinedService = null;
 
-        public OrgEmployeeService(IUnitwork work,IUserDefined udf)
+        public OrgEmployeeService(IUnitwork work, IUserDefined udf)
         {
             _work = work;
             Unitwork = work;
@@ -39,10 +39,10 @@ namespace ESafety.Core
         /// <param name="employee"></param>
         /// <returns></returns>
         public ActionResult<bool> AddEmployee(EmployeeNew employee)
-        { 
+        {
             try
             {
-                if(employee == null)
+                if (employee == null)
                 {
                     throw new Exception("参数有误");
                 }
@@ -57,8 +57,8 @@ namespace ESafety.Core
                     BusinessID = _employee.ID,
                     Values = employee.UserDefineds
                 };
-                var defined =usedefinedService.SaveBuisnessValue(definedvalue);
-                if(defined.state !=200)
+                var defined = usedefinedService.SaveBuisnessValue(definedvalue);
+                if (defined.state != 200)
                 {
                     throw new Exception(defined.msg);
                 }
@@ -71,7 +71,7 @@ namespace ESafety.Core
             {
                 return new ActionResult<bool>(ex);
             }
-          
+
         }
 
         /// <summary>
@@ -86,7 +86,12 @@ namespace ESafety.Core
             {
                 throw new Exception("已经存在相同的组织名称 ：" + org.OrgName);
             }
+            var parent = _rpsorg.GetModel(org.ParentID);
+
             var _org = org.MAPTO<Basic_Org>();
+            //根据上级设置Level
+            _org.Level = parent == null ? 1 : parent.Level + 1;
+
             _rpsorg.Add(_org);
             _work.Commit();
             return new ActionResult<bool>(true);
@@ -116,7 +121,7 @@ namespace ESafety.Core
             {
                 return new ActionResult<bool>(ex);
             }
-         
+
         }
         /// <summary>
         /// 删除组织结构
@@ -153,7 +158,7 @@ namespace ESafety.Core
             {
                 return new ActionResult<bool>(ex);
             }
-          
+
         }
 
         /// <summary>
@@ -194,9 +199,79 @@ namespace ESafety.Core
             {
                 return new ActionResult<bool>(ex);
             }
-           
+
         }
 
+
+        /// <summary>
+        /// 递归算树
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public IEnumerable<OrgTree> GetOrgTree(Guid id)
+        {
+            try
+            {
+                List<OrgTree> re = new List<OrgTree>();
+
+
+                var orgall = from org in _rpsorg.Queryable(q => q.ParentID == id)
+                             select org;
+
+                foreach (var org in orgall)
+                {
+                    var orgtree = org.MAPTO<OrgTree>();
+                    orgtree.Children.AddRange(GetOrgTree(org.ID));
+                    re.Add(orgtree);
+                }
+
+
+                return re;
+
+
+            }
+            catch (Exception ex)
+            {
+                return new List<OrgTree>();
+            }
+        }
+
+        public IEnumerable<Guid> GetChildIds(Guid id)
+        {
+             
+            List<Guid> re = new List<Guid>();
+            re.Add(id);
+            var orgall = from org in _rpsorg.Queryable(q => q.ParentID == id)
+                         select org;
+
+            foreach (var t in orgall)
+            {
+                var ids = GetChildIds(t.ID);
+                re.AddRange(ids);
+            }
+
+            return re;
+        }
+
+        public IEnumerable<Basic_Org> GetParentIds(Guid id)
+        {
+            List<Basic_Org> re = new List<Basic_Org>();
+
+            var cnode = _rpsorg.GetModel(id);
+            if(cnode != null)
+            { 
+                var parent = _rpsorg.GetModel(q => q.ID == cnode.ParentID);
+                if (parent != null)
+                {
+                    
+                    re.Add(parent);
+                    re.AddRange(GetParentIds(parent.ID));
+                }
+            }
+            
+            return re;
+
+        }
         /// <summary>
         /// 修改组织结构
         /// </summary>
@@ -225,9 +300,9 @@ namespace ESafety.Core
             {
                 return new ActionResult<bool>(ex);
             }
-           
+
         }
- 
+
         /// <summary>
         /// 根据组织ID，返回人员列表
         /// </summary>
@@ -235,7 +310,7 @@ namespace ESafety.Core
         /// <returns></returns>
         public ActionResult<IEnumerable<EmployeeView>> GetEmployeelist(Guid orgid)
         {
-            var emps = _rpsemployee.Queryable(q => q.OrgID == orgid||Guid.Empty==orgid);
+            var emps = _rpsemployee.Queryable(q => q.OrgID == orgid || Guid.Empty == orgid);
             var reemps = from em in emps
                          select new EmployeeView
                          {
@@ -272,7 +347,7 @@ namespace ESafety.Core
                 //{
                 //    re.UserDefineds = defines.data;
                 //}
-                
+
                 return new ActionResult<EmployeeModelView>(re);
             }
             catch (Exception ex)
@@ -305,18 +380,18 @@ namespace ESafety.Core
                 var emps = _rpsemployee.Queryable(q => q.OrgID == para.Query.ID);
 
                 var reemps = from em in emps
-                         select new EmployeeView
-                         {
-                             ID=em.ID,
-                             CNName = em.CNName,
-                             Gender = em.Gender,
-                             IsLeader = em.IsLeader,
-                             IsLevel = em.IsLevel,
-                             HeadIMG = em.HeadIMG,
-                             Login = em.Login,
-                             OrgID= em.OrgID
-                         };
-                 
+                             select new EmployeeView
+                             {
+                                 ID = em.ID,
+                                 CNName = em.CNName,
+                                 Gender = em.Gender,
+                                 IsLeader = em.IsLeader,
+                                 IsLevel = em.IsLevel,
+                                 HeadIMG = em.HeadIMG,
+                                 Login = em.Login,
+                                 OrgID = em.OrgID
+                             };
+
                 var re = new Pager<EmployeeView>().GetCurrentPage(reemps, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<EmployeeView>>(re);
             }
@@ -324,10 +399,10 @@ namespace ESafety.Core
             {
                 return new ActionResult<Pager<EmployeeView>>(ex);
             }
-          
+
         }
 
-        
+
 
         public ActionResult<IEnumerable<OrgView>> GetOrgChildren(Guid id)
         {
@@ -350,8 +425,47 @@ namespace ESafety.Core
             {
                 return new ActionResult<IEnumerable<OrgView>>(ex);
             }
-           
+
         }
- 
+
+        public ActionResult<IEnumerable<OrgTree>> GetTree(Guid id)
+        {
+            try
+            {
+                var re = GetOrgTree(id);
+                return new ActionResult<IEnumerable<OrgTree>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<OrgTree>>(ex);
+            }
+        }
+
+        public ActionResult<IEnumerable<Basic_Org>> GetParents(Guid id)
+        {
+            try
+            {
+                var re = GetParentIds(id);
+                var result = re.OrderBy(o => o.Level);
+                return new ActionResult<IEnumerable<Basic_Org>>(result);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Org>>(ex);
+            }
+        }
+
+        public ActionResult<IEnumerable<Guid>> GetChildren(Guid id)
+        {
+            try
+            {
+                var re = GetChildIds(id);
+                return new ActionResult<IEnumerable<Guid>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Guid>>(ex);
+            }
+        }
     }
 }

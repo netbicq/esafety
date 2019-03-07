@@ -278,7 +278,7 @@ namespace ESafety.Core
                 var re = from d in defineds.ToList()
                          let dict = _rpsdict.GetModel(q => q.ID == d.DictID)
                          let dicts = _rpsdict.GetList(q => q.ParentID == dict.ID)
-                         let valuemodel =values.FirstOrDefault(q=>q.DefinedID == d.ID)
+                         let valuemodel = values.FirstOrDefault(q => q.DefinedID == d.ID)
                          select new UserDefinedForm
                          {
                              Caption = d.Caption,
@@ -293,7 +293,9 @@ namespace ESafety.Core
                              IsMulti = d.IsMulti,
                              VisibleIndex = d.VisibleIndex,
                              DictSelection = dicts,
-                             ItemValue =valuemodel ==null?string.Empty:valuemodel.DefinedValue
+                             ItemValue = valuemodel == null ? default(object) :
+                             d.DataType == (int)PublicEnum.EE_UserDefinedDataType.Bool ?(object) bool.Parse(valuemodel.DefinedValue):    
+                             valuemodel.DefinedValue
                          };
                 return new ActionResult<IEnumerable<UserDefinedForm>>(re);
             }

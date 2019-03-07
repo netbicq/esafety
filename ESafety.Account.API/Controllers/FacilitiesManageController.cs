@@ -50,6 +50,17 @@ namespace ESafety.Account.API.Controllers
             return bll.AddFacility(facility);
         }
         /// <summary>
+        /// 根据id获取自定义模型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getmode/{id:Guid}")]
+        public ActionResult<FacilityView> GetModel(Guid id)
+        {
+            return bll.GetModel(id);
+        }
+        /// <summary>
         /// 根据ID，删除设备设施类别
         /// </summary>
         /// <param name="id"></param>

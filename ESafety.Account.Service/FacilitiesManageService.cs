@@ -245,5 +245,31 @@ namespace ESafety.Account.Service
                 return new ActionResult<IEnumerable<FacilitiesSortView>>(ex);
             }
         }
+        /// <summary>
+        /// 获取设备模型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult<FacilityView> GetModel(Guid id)
+        {
+            try
+            {
+                var re = _rpsfacilities.GetModel(id);
+                
+                if(re == null)
+                {
+                    throw new Exception("设备未找到");
+                }
+
+                var result = re.MAPTO<FacilityView>();
+                result.SortName = _rpsfacilitiessort.GetModel(re.SortID).SortName;
+
+                return new ActionResult<FacilityView>(result);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<FacilityView>(ex);
+            }
+        }
     }
 }

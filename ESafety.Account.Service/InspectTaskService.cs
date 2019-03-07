@@ -37,6 +37,11 @@ namespace ESafety.Account.Service
             rpstask = work.Repository<Bll_InspectTask>();
             rpstaskSubject = work.Repository<Bll_InspectTaskSubject>();
             srvFlow = flow;
+            var flowser = srvFlow as FlowService;
+            flowser.AppUser = AppUser;
+            flowser.ACOptions = ACOptions;
+            
+
         }
         /// <summary>
         /// 新建任务
@@ -351,7 +356,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("状态不支持");
                 }
-
+                
                 var flowtask = base.StartFlow(new BusinessAprovePara
                 {
                     BusinessID = businessmodel.ID,
