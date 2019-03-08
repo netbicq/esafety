@@ -47,6 +47,10 @@ namespace ESafety.Account.Model.View
         ///年龄
         /// </summary>
         public int Age { get; set; }
+        /// <summary>
+        /// 组织ID
+        /// </summary>
+        public Guid OrgID { get; set; }
 
     }
 }

@@ -169,6 +169,7 @@ namespace ESafety.Account.Service
                 re.Age =DateTime.Now.Year-dbhd.BirthDay.Year;
                 re.CNName = emp.CNName;
                 re.Gender = emp.Gender;
+                re.OrgID = emp.OrgID;
                 return new ActionResult<HealDocmentView>(re);
             }
             catch (Exception ex)
@@ -199,7 +200,8 @@ namespace ESafety.Account.Service
                                 HeredityRec=s.HeredityRec,
                                 IllnessRec=s.IllnessRec,
                                 Nation=s.Nation,
-                                OpreatRec=s.OpreatRec
+                                OpreatRec=s.OpreatRec,
+                                OrgID=emp.OrgID
                             };
                 var re = new Pager<HealDocmentView>().GetCurrentPage(rehds, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<HealDocmentView>>(re);
