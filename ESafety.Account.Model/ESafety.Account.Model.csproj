@@ -73,6 +73,7 @@
     <Compile Include="View\OpreationFlow.cs" />
     <Compile Include="View\PostManage.cs" />
     <Compile Include="View\SafetyStandard.cs" />
+    <Compile Include="View\TaskBill.cs" />
     <Compile Include="View\Video.cs" />
   </ItemGroup>
   <ItemGroup>
