@@ -1,4 +1,6 @@
-﻿using ESafety.Core.Model.PARA;
+﻿using ESafety.Core.Model;
+using ESafety.Core.Model.DB;
+using ESafety.Core.Model.PARA;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +9,7 @@ using System.Threading.Tasks;
 
 namespace ESafety.Account.Model.View
 {
-    class FacilitiesManage
-    {
-    }
+   
 
     public class FacilitiesSortView
     {
@@ -60,5 +60,19 @@ namespace ESafety.Account.Model.View
         /// 负责人电话
         /// </summary>
         public string PrincipalTel { get; set; }
+    }
+    /// <summary>
+    /// 设备类别树
+    /// </summary>
+    public class FacilitiesSortTree : TreeBase<ModelBaseTree>
+    {
+        /// <summary>
+        /// 级次
+        /// </summary>
+        public int Level { get; set; }
+        /// <summary>
+        /// 类别名称
+        /// </summary>
+        public string SortName { get; set; }
     }
 }

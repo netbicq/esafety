@@ -6,12 +6,8 @@ namespace ESafety.Core.Model.DB.Account
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class Basic_FacilitiesSort : ModelBase
-    { 
-        /// <summary>
-        /// 设备设施类别父级ID
-        /// </summary>
-        public Guid ParentID { get; set; }
+    public partial class Basic_FacilitiesSort : ModelBaseTree
+    {  
 
         public int Level { get; set; }
         /// <summary>

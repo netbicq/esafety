@@ -51,23 +51,23 @@ namespace ESafety.Core.Model.View
     }
 
 
-    public class OrgTree:TreeBase
-    {
-        public OrgTree()
-        {
-            Children = new List<OrgTree>();
-        } 
+    //public class OrgTree:TreeBase
+    //{
+    //    public OrgTree()
+    //    {
+    //        Children = new List<OrgTree>();
+    //    } 
 
-        public int Level { get; set; }
+    //    public int Level { get; set; }
 
-        public string OrgName { get; set; }
+    //    public string OrgName { get; set; }
 
-        public string Principal { get; set; }
+    //    public string Principal { get; set; }
 
-        public string PrincipalTel { get; set; }
+    //    public string PrincipalTel { get; set; }
 
-        public List<OrgTree> Children { get; set; }
-    }
+    //    public List<OrgTree> Children { get; set; }
+    //}
     public class EmployeeModelView:EmployeeView
     {
         /// <summary>

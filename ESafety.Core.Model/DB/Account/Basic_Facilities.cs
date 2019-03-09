@@ -34,5 +34,9 @@ namespace ESafety.Core.Model.DB.Account
         /// </summary>
         [StringLength(100)]
         public string PrincipalTel { get; set; }
+        /// <summary>
+        /// 设备定位
+        /// </summary>
+        public string Location { get; set; }
     }
 }

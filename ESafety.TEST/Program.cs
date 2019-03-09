@@ -1,4 +1,6 @@
 ﻿using ESafety.Account.Model.PARA;
+using ESafety.Account.Service;
+using ESafety.Core.Model;
 using ESafety.Core.Model.DB;
 using ESafety.ORM;
 using System;
@@ -21,6 +23,12 @@ namespace ESafety.TEST
             
 
             ORM.IUnitwork work = new ORM.Unitwork(new ESFdb());
+
+            var bll = new TreeService(work);
+
+            var re = bll.GetTree<Basic_Org, OrgTree>(Guid.Empty);
+
+            string rtt = "";
 
             //var bll = new Core.AccountService(work);
             //var allu = new Core.Auth_UserService(work);

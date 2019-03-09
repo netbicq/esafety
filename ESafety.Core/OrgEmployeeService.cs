@@ -23,14 +23,16 @@ namespace ESafety.Core
         private IRepository<Basic_Employee> _rpsemployee = null;
 
         private IUserDefined usedefinedService = null;
-
-        public OrgEmployeeService(IUnitwork work, IUserDefined udf)
+        private ITree srvTree = null;
+        public OrgEmployeeService(IUnitwork work, IUserDefined udf,ITree tree)
         {
             _work = work;
             Unitwork = work;
             _rpsorg = work.Repository<Basic_Org>();
             _rpsemployee = work.Repository<Basic_Employee>();
             usedefinedService = udf;
+            srvTree = tree;
+
         }
 
         /// <summary>
@@ -203,75 +205,75 @@ namespace ESafety.Core
         }
 
 
-        /// <summary>
-        /// 递归算树
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public IEnumerable<OrgTree> GetOrgTree(Guid id)
-        {
-            try
-            {
-                List<OrgTree> re = new List<OrgTree>();
+        ///// <summary>
+        ///// 递归算树
+        ///// </summary>
+        ///// <param name="id"></param>
+        ///// <returns></returns>
+        //public IEnumerable<OrgTree> GetOrgTree(Guid id)
+        //{
+        //    try
+        //    {
+        //        List<OrgTree> re = new List<OrgTree>();
 
 
-                var orgall = from org in _rpsorg.Queryable(q => q.ParentID == id)
-                             select org;
+        //        var orgall = from org in _rpsorg.Queryable(q => q.ParentID == id)
+        //                     select org;
 
-                foreach (var org in orgall)
-                {
-                    var orgtree = org.MAPTO<OrgTree>();
-                    orgtree.Children.AddRange(GetOrgTree(org.ID));
-                    re.Add(orgtree);
-                }
-
-
-                return re;
+        //        foreach (var org in orgall)
+        //        {
+        //            var orgtree = org.MAPTO<OrgTree>();
+        //            orgtree.Children.AddRange(GetOrgTree(org.ID));
+        //            re.Add(orgtree);
+        //        }
 
 
-            }
-            catch (Exception ex)
-            {
-                return new List<OrgTree>();
-            }
-        }
+        //        return re;
 
-        public IEnumerable<Guid> GetChildIds(Guid id)
-        {
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new List<OrgTree>();
+        //    }
+        //}
+
+        //public IEnumerable<Guid> GetChildIds(Guid id)
+        //{
              
-            List<Guid> re = new List<Guid>();
-            re.Add(id);
-            var orgall = from org in _rpsorg.Queryable(q => q.ParentID == id)
-                         select org;
+        //    List<Guid> re = new List<Guid>();
+        //    re.Add(id);
+        //    var orgall = from org in _rpsorg.Queryable(q => q.ParentID == id)
+        //                 select org;
 
-            foreach (var t in orgall)
-            {
-                var ids = GetChildIds(t.ID);
-                re.AddRange(ids);
-            }
+        //    foreach (var t in orgall)
+        //    {
+        //        var ids = GetChildIds(t.ID);
+        //        re.AddRange(ids);
+        //    }
 
-            return re;
-        }
+        //    return re;
+        //}
 
-        public IEnumerable<Basic_Org> GetParentIds(Guid id)
-        {
-            List<Basic_Org> re = new List<Basic_Org>();
+        //public IEnumerable<Basic_Org> GetParentIds(Guid id)
+        //{
+        //    List<Basic_Org> re = new List<Basic_Org>();
 
-            var cnode = _rpsorg.GetModel(id);
-            if(cnode != null)
-            { 
-                var parent = _rpsorg.GetModel(q => q.ID == cnode.ParentID);
-                if (parent != null)
-                {
+        //    var cnode = _rpsorg.GetModel(id);
+        //    if(cnode != null)
+        //    { 
+        //        var parent = _rpsorg.GetModel(q => q.ID == cnode.ParentID);
+        //        if (parent != null)
+        //        {
                     
-                    re.Add(parent);
-                    re.AddRange(GetParentIds(parent.ID));
-                }
-            }
+        //            re.Add(parent);
+        //            re.AddRange(GetParentIds(parent.ID));
+        //        }
+        //    }
             
-            return re;
+        //    return re;
 
-        }
+        //}
         /// <summary>
         /// 修改组织结构
         /// </summary>
@@ -437,7 +439,10 @@ namespace ESafety.Core
         {
             try
             {
-                var re = GetOrgTree(id);
+                (srvTree as TreeService).AppUser = AppUser;
+
+                var re = srvTree.GetTree<Basic_Org,OrgTree>(id);
+                 
                 return new ActionResult<IEnumerable<OrgTree>>(re);
             }
             catch (Exception ex)
@@ -445,26 +450,39 @@ namespace ESafety.Core
                 return new ActionResult<IEnumerable<OrgTree>>(ex);
             }
         }
-
+        /// <summary>
+        /// 获取父级
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult<IEnumerable<Basic_Org>> GetParents(Guid id)
         {
             try
             {
-                var re = GetParentIds(id);
-                var result = re.OrderBy(o => o.Level);
-                return new ActionResult<IEnumerable<Basic_Org>>(result);
+                (srvTree as TreeService).AppUser = AppUser;
+
+                var re = srvTree.GetParents<Basic_Org>(id);
+
+                return new ActionResult<IEnumerable<Basic_Org>>(re);
             }
             catch (Exception ex)
             {
                 return new ActionResult<IEnumerable<Basic_Org>>(ex);
             }
         }
-
+        /// <summary>
+        /// 获取子级ID集合
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult<IEnumerable<Guid>> GetChildren(Guid id)
         {
             try
             {
-                var re = GetChildIds(id);
+                (srvTree as TreeService).AppUser = AppUser;
+
+                var re = srvTree.GetChildrenIds<Basic_Org>(id);
+
                 return new ActionResult<IEnumerable<Guid>>(re);
             }
             catch (Exception ex)

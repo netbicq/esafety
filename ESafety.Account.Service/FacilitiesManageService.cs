@@ -22,13 +22,17 @@ namespace ESafety.Account.Service
         private IRepository<Basic_Facilities> _rpsfacilities = null;
 
         private IUserDefined usedefinedService = null;
-        public FacilitiesManageService(IUnitwork work, IUserDefined usf)
+        public ITree srvTree = null;
+
+        public FacilitiesManageService(IUnitwork work, IUserDefined usf,ITree tree)
         {
             _work = work;
             Unitwork = work;
             _rpsfacilitiessort = work.Repository<Basic_FacilitiesSort>();
             _rpsfacilities = work.Repository<Basic_Facilities>();
             usedefinedService = usf;
+            srvTree = tree;
+
         }
         /// <summary>
         /// 新建设备设施类别
@@ -273,6 +277,61 @@ namespace ESafety.Account.Service
             catch (Exception ex)
             {
                 return new ActionResult<FacilityView>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取设备类别子级id集合
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Guid>> GetSortChildrenIds(Guid id)
+        {
+            try
+            {
+                (srvTree as TreeService).AppUser = AppUser;
+                var re = srvTree.GetChildrenIds<Basic_FacilitiesSort>(id);
+                return new ActionResult<IEnumerable<Guid>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Guid>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取设备类别父级
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_FacilitiesSort>> GetSortParents(Guid id)
+        {
+            try
+            {
+                (srvTree as TreeService).AppUser = AppUser;
+                var re = srvTree.GetParents<Basic_FacilitiesSort>(id);
+                return new ActionResult<IEnumerable<Basic_FacilitiesSort>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_FacilitiesSort>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取设备类别树
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<FacilitiesSortTree>> GetSortTree(Guid id)
+        {
+            try
+            {
+                (srvTree as TreeService).AppUser = AppUser;
+                var re = srvTree.GetTree<Basic_FacilitiesSort, FacilitiesSortTree>(id);
+
+                return new ActionResult<IEnumerable<FacilitiesSortTree>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<FacilitiesSortTree>>(ex);
             }
         }
     }

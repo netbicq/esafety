@@ -321,7 +321,7 @@ namespace ESafety.Core
                     {
                         BusinessID = values.BusinessID,
                         DefinedID = v.DefinedID,
-                        DefinedType = definedmodel.DataType,
+                        DefinedType = definedmodel.DefinedType,
                         ID = Guid.NewGuid(),
                         
                     };
@@ -331,10 +331,10 @@ namespace ESafety.Core
                             if (definedmodel.IsMulti)
                             {
                                 var rearry = new List<Guid>();
-                                var dbvalue  = v.DefinedValue == null ?JsonConvert.SerializeObject( rearry) : JsonConvert.SerializeObject(v.DefinedValue);
+                                var dbvalue  = v.DefinedValue == null ?rearry :JsonConvert.DeserializeObject<List<Guid>>(v.DefinedValue.ToString());
 
-                                var value = dbvalue;
-                                dbudv.DefinedValue = value;
+                                var value =JsonConvert.SerializeObject( dbvalue);
+                                dbudv.DefinedValue =value;
                             }
                             else
                             {

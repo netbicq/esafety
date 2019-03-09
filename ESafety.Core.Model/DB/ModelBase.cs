@@ -18,6 +18,16 @@ namespace ESafety.Core.Model.DB
         public Guid ID { get { return _id; } set { _id = value; } }
     }
 
+    /// <summary>
+    /// 树形表
+    /// </summary>
+    public class ModelBaseTree:ModelBase
+    {
+        /// <summary>
+        /// 父级ID
+        /// </summary>
+        public Guid ParentID { get; set; }
+    }
     public class ModelBaseEx:ModelBase
     {
         private DateTime _createdate=DateTime.Now;

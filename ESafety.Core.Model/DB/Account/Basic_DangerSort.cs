@@ -6,13 +6,12 @@ namespace ESafety.Core.Model.DB.Account
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class Basic_DangerSort : ModelBase
+    public partial class Basic_DangerSort : ModelBaseTree
     { 
-        /// <summary>
-        /// ¸¸¼¶ID
-        /// </summary>
-        public Guid ParetID { get; set; }
 
+        /// <summary>
+        /// ¼¶´Î
+        /// </summary>
         public int Level { get; set; }
 
         /// <summary>

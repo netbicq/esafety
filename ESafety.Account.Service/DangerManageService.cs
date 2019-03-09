@@ -1,6 +1,7 @@
 ﻿using ESafety.Account.IService;
 using ESafety.Account.Model.PARA;
 using ESafety.Account.Model.View;
+using ESafety.Core;
 using ESafety.Core.Model;
 using ESafety.Core.Model.DB.Account;
 using ESafety.ORM;
@@ -22,8 +23,9 @@ namespace ESafety.Account.Service
         private IRepository<Basic_DangerSort> _rpsdangersort = null;
         private IRepository<Basic_DangerSafetyStandards> _rpsdangersafetystandards = null;
         private IRepository<Basic_DangerRelation> _rpsdr = null;
+        private ITree srvTree = null;
 
-        public DangerManageService(IUnitwork work)
+        public DangerManageService(IUnitwork work,ITree tree)
         {
             _work = work;
             Unitwork = work;
@@ -31,6 +33,7 @@ namespace ESafety.Account.Service
             _rpsdangersort = work.Repository<Basic_DangerSort>();
             _rpsdangersafetystandards = work.Repository<Basic_DangerSafetyStandards>();
             _rpsdr = work.Repository<Basic_DangerRelation>();
+            srvTree = tree;
         }
 
 
@@ -110,13 +113,18 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var check = _rpsdangersort.Any(p => p.ParetID == dangersort.ParetID && p.SortName == dangersort.SortName);
+                var check = _rpsdangersort.Any(p => p.ParentID == dangersort.ParentID && p.SortName == dangersort.SortName);
                 if (check)
                 {
                     throw new Exception("当前节点下已存在该类别名称:" + dangersort.SortName);
                 }
 
                 var _dangersort = dangersort.MAPTO<Basic_DangerSort>();
+                //父级
+                var parent = _rpsdangersort.GetModel(dangersort.ParentID);
+
+                _dangersort.Level = parent == null ? 1 : parent.Level + 1;
+
                 _rpsdangersort.Add(_dangersort);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -203,7 +211,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到该风险类别");
                 }
-                var check = _rpsdangersort.Any(p => p.ParetID == id);
+                var check = _rpsdangersort.Any(p => p.ParentID == id);
                 if (check)
                 {
                     throw new Exception("该类别下存在子类别，无法删除");
@@ -335,6 +343,27 @@ namespace ESafety.Account.Service
                 return new ActionResult<IEnumerable<DangerView>>(ex);
             }
         }
+        /// <summary>
+        /// 获取子级ID集合
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Guid>> GetDangerSortChildrenIds(Guid id)
+        {
+            try
+            {
+                (srvTree as TreeService).AppUser = AppUser;
+
+                var re = srvTree.GetChildrenIds<Basic_DangerSort>(id);
+
+                return new ActionResult<IEnumerable<Guid>>(re);
+
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Guid>>(ex);
+            }
+        }
 
         /// <summary>
         /// 获取风险类别树节点
@@ -345,12 +374,12 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbdangersorts = _rpsdangersort.Queryable(p => p.ParetID == id);
+                var dbdangersorts = _rpsdangersort.Queryable(p => p.ParentID == id);
                 var re = from s in dbdangersorts.ToList()
                          select new DangerSortView
                          {
                              ID = s.ID,
-                             ParetID = s.ParetID,
+                             ParentID = s.ParentID,
                              Level = s.Level,
                              SortName = s.SortName
                          };
@@ -362,6 +391,42 @@ namespace ESafety.Account.Service
             }
            
         }
+        /// <summary>
+        /// 获取风险点类型Tree
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<DangerSortTree>> GetDangerSortTree(Guid id)
+        {
+            try
+            {
+                (srvTree as TreeService).AppUser = AppUser;
+                var re = srvTree.GetTree<Basic_DangerSort, DangerSortTree>(id);
 
+                return new ActionResult<IEnumerable<DangerSortTree>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<DangerSortTree>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取风险点父级
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_DangerSort>> GetParents(Guid id)
+        {
+            try
+            {
+                (srvTree as TreeService).AppUser = AppUser;
+                var re =srvTree.GetParents<Basic_DangerSort>(id);
+                return new ActionResult<IEnumerable<Basic_DangerSort>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_DangerSort>>(ex);
+            }
+        }
     }
 }

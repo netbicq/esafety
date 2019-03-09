@@ -19,7 +19,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 父级ID
         /// </summary>
-        public Guid ParetID { get; set; }
+        public Guid ParentID { get; set; }
         public int Level { get; set; }
         /// <summary>
         /// 类别名称

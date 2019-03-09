@@ -25,8 +25,7 @@ namespace ESafety.Core.Model.DB
         public Guid DefinedID { get; set; }
         /// <summary>
         /// 自定义项业务值
-        /// </summary>
-        [Required]
+        /// </summary> 
         public string DefinedValue { get; set; }
     }
 }

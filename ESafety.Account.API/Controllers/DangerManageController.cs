@@ -3,6 +3,7 @@ using ESafety.Account.Model.PARA;
 using ESafety.Account.Model.View;
 using ESafety.Core;
 using ESafety.Core.Model;
+using ESafety.Core.Model.DB.Account;
 using ESafety.Web.Unity;
 using Newtonsoft.Json;
 using System;
@@ -157,6 +158,41 @@ namespace ESafety.Account.API.Controllers
         public ActionResult<IEnumerable<DangerSortView>> GetDangerSorts(Guid id)
         {
             return bll.GetDangerSorts(id);
+        }
+        /// <summary>
+        /// 获取指定ID的父级集合
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getsortparents/{id:Guid}")]
+        public ActionResult<IEnumerable<Basic_DangerSort>> GetSortParent(Guid id)
+        {
+            return bll.GetParents(id);
+
+        }
+        /// <summary>
+        /// 获取指定ID的子级ID集合
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getchildrenids/{id:Guid}")]
+        public ActionResult<IEnumerable<Guid>> GetSortChildrenIds(Guid id)
+        {
+
+            return bll.GetDangerSortChildrenIds(id);
+        }
+        /// <summary>
+        /// 获取指定ID的树
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getsorttree/{id:Guid}")]
+        public ActionResult<IEnumerable<DangerSortTree>> GetSortTree(Guid id)
+        {
+            return bll.GetDangerSortTree(id);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ESafety.Account.Model.PARA;
 using ESafety.Account.Model.View;
 using ESafety.Core.Model;
+using ESafety.Core.Model.DB.Account;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,5 +33,12 @@ namespace ESafety.Account.IService
         ActionResult<bool> AddDangerSafetyStandard(DangerSafetyStandards safetyStandards);
 
         ActionResult<bool> DelDangerSafetyStandard(DangerSafetyStandards safetyStandard);
+
+        ActionResult<IEnumerable<Guid>> GetDangerSortChildrenIds(Guid id);
+
+        ActionResult<IEnumerable<Basic_DangerSort>>GetParents(Guid id);
+
+        ActionResult<IEnumerable<DangerSortTree>> GetDangerSortTree(Guid id);
+
     }
 }

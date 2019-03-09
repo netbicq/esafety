@@ -74,6 +74,7 @@
     <Compile Include="IReport.cs" />
     <Compile Include="IReportManager.cs" />
     <Compile Include="IReportResult.cs" />
+    <Compile Include="ITree.cs" />
     <Compile Include="IUserDefined.cs" />
     <Compile Include="LogService.cs" />
     <Compile Include="OrgEmployeeService.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="ReportManagerService.cs" />
     <Compile Include="ReportResultService.cs" />
     <Compile Include="ReportService.cs" />
+    <Compile Include="TreeService.cs" />
     <Compile Include="UserDefinedService.cs" />
   </ItemGroup>
   <ItemGroup>

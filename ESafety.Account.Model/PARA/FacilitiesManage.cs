@@ -47,6 +47,10 @@ namespace ESafety.Account.Model.PARA
         /// 负责人电话
         /// </summary>
         public string PrincipalTel { get; set; }
+        /// <summary>
+        /// 定位
+        /// </summary>
+        public string Location { get; set; }
 
         /// <summary>
         /// 自定义类项

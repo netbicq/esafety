@@ -9,9 +9,9 @@ namespace ESafety.Core.Model.DB
     /// <summary>
     /// 组织架构
     /// </summary>
-    public class Basic_Org : ModelBase
+    public class Basic_Org : ModelBaseTree
     { 
-        public Guid ParentID { get; set; }
+
         /// <summary>
         /// 级次
         /// </summary>
