@@ -57,6 +57,7 @@
     <Compile Include="PARA\PostManage.cs" />
     <Compile Include="PARA\SafetyStandard.cs" />
     <Compile Include="PARA\DocTrainManage.cs" />
+    <Compile Include="PARA\TaskBill.cs" />
     <Compile Include="PARA\Video.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="View\DangerManage.cs" />

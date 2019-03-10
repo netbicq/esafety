@@ -58,6 +58,42 @@ namespace ESafety.Account.Model.View
         public string TaskResult { get; set; }
     }
 
+    public class TaskBillModelView
+    {
+        /// <summary>
+        /// 单据id
+        /// </summary>
+        public Guid BillID { get; set; }
+        /// <summary>
+        /// 主体类型
+        /// </summary>
+        public int SubjectType { get; set; }
+        /// <summary>
+        /// 主体id
+        /// </summary>
+        public Guid SubjectID { get; set; }
+        /// <summary>
+        /// 风险点id
+        /// </summary>
+        public Guid DangerID { get; set; }
+        /// <summary>
+        ///危险源名称 
+        /// </summary>
+        public string DangerName { get; set; }
+        /// <summary>
+        /// 任务结果
+        /// </summary>
+        public int TaskResult { get; set; }
+        /// <summary>
+        /// 任务结果名
+        /// </summary>
+        public string TaskResultName { get; set; }
+        /// <summary>
+        /// 任务巡检描述
+        /// </summary>
+        public string TaskResultMemo { get; set; }
+    }
+
     public class TaskSubjectBillView
     {
         /// <summary>
@@ -77,9 +113,17 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public Guid DangerID { get; set; }
         /// <summary>
+        ///危险源名称 
+        /// </summary>
+        public string DangerName { get; set; }
+        /// <summary>
         /// 任务结果
         /// </summary>
         public int TaskResult { get; set; }
+        /// <summary>
+        /// 任务结果名
+        /// </summary>
+        public string TaskResultName { get; set; }
         /// <summary>
         /// 任务巡检描述
         /// </summary>
@@ -89,24 +133,48 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public Guid Eval_WHYS { get; set; }
         /// <summary>
+        /// 危害因素名
+        /// </summary>
+        public string WHYSDic { get; set; }
+        /// <summary>
         /// 事故类型
         /// </summary>
         public Guid Eval_SGLX { get; set; }
+        /// <summary>
+        /// 事故类型名
+        /// </summary>
+        public string SGLXDic { get; set; }
         /// <summary>
         /// 事故后果
         /// </summary>
         public Guid Eval_SGJG { get; set; }
         /// <summary>
+        /// 事故后果名
+        /// </summary>
+        public string SGJGDic { get; set; }
+        /// <summary>
         /// 影响范围
         /// </summary>
         public Guid Eval_YXFW { get; set; }
+        /// <summary>
+        /// 影响范围名
+        /// </summary>
+        public string YXFWDic { get; set; }
         /// <summary>
         /// 评测方法
         /// </summary>
         public int Eval_Method { get; set; }
         /// <summary>
+        /// 评测方法名
+        /// </summary>
+        public string MethodName { get; set; }
+        /// <summary>
         /// 隐患等级
         /// </summary>
         public int TroubleLevel { get; set; }
+        /// <summary>
+        /// 隐患等级名
+        /// </summary>
+        public string TroubleLevelName { get; set; }
     }
 }

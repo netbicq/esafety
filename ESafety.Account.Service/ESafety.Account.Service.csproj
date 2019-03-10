@@ -68,6 +68,7 @@
     <Compile Include="PostManageService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SafetyStandardService.cs" />
+    <Compile Include="TaskBillService.cs" />
     <Compile Include="VideoService.cs" />
   </ItemGroup>
   <ItemGroup>

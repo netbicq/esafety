@@ -186,9 +186,11 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbhds = _rpshd.Queryable(p => p.EmployeeID==para.Query.EmployeeID||Guid.Empty==para.Query.EmployeeID);
+                var emps = _rpsemp.Queryable(p=>(p.OrgID==para.Query.OrgID||p.OrgID==Guid.Empty)&&(p.CNName.Contains(para.Query.Key)||para.Query.Key==string.Empty)).ToList();
+                var empsid = emps.Select(p=>p.ID);
+                var dbhds = _rpshd.Queryable(p=>empsid.Contains(p.EmployeeID));
                 var rehds = from s in dbhds.ToList()
-                            let emp=_rpsemp.GetModel(s.EmployeeID)
+                            let emp=emps.FirstOrDefault(p=>p.ID==s.EmployeeID)
                             select new HealDocmentView
                             {
                                 ID = s.ID,

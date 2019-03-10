@@ -53,8 +53,12 @@ namespace ESafety.Account.Model.PARA
     public class HealDocmentQuery
     {
         /// <summary>
-        /// 人员ID
+        /// 组织架构ID
         /// </summary>
-        public Guid EmployeeID { get; set; }
+        public Guid OrgID { get; set; }
+        /// <summary>
+        /// 关键字，姓名
+        /// </summary>
+        public string Key { get; set; }
     }
 }
