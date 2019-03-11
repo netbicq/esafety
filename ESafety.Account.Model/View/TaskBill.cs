@@ -73,6 +73,10 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public Guid SubjectID { get; set; }
         /// <summary>
+        /// 主体名
+        /// </summary>
+        public string SubName { get; set; }
+        /// <summary>
         /// 风险点id
         /// </summary>
         public Guid DangerID { get; set; }
@@ -96,6 +100,10 @@ namespace ESafety.Account.Model.View
 
     public class TaskSubjectBillView
     {
+        /// <summary>
+        /// 详情ID
+        /// </summary>
+        public Guid ID { get; set; }
         /// <summary>
         /// 单据id
         /// </summary>
@@ -176,5 +184,9 @@ namespace ESafety.Account.Model.View
         /// 隐患等级名
         /// </summary>
         public string TroubleLevelName { get; set; }
+        /// <summary>
+        /// 是否隐患管控
+        /// </summary>
+        public bool IsControl { get; set; }
     }
 }

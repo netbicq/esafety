@@ -57,6 +57,7 @@
     <Compile Include="ISafetyStandardServcie.cs" />
     <Compile Include="IDocTrainManageService.cs" />
     <Compile Include="ITaskBillService.cs" />
+    <Compile Include="ITroubleCtrService.cs" />
     <Compile Include="IVideoService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

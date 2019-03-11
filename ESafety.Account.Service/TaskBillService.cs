@@ -28,7 +28,7 @@ namespace ESafety.Account.Service
         /// <summary>
         /// 新建任务单据详情
         /// </summary>
-        /// <param name="subjectBillNew"></param>
+        /// <param name="subjectBillEdit"></param>
         /// <returns></returns>
         public ActionResult<bool> EditTaskBillSubjects(TaskSubjectBillEdit subjectBillEdit)
         {
@@ -54,9 +54,38 @@ namespace ESafety.Account.Service
         /// 获取巡检任务模型
         /// </summary>
         /// <returns></returns>
-        public ActionResult<TaskBillModelView> GetTaskBillModel()
+        public ActionResult<TaskBillModelView> GetTaskBillModel(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var dbtbs = _rpstbs.GetModel(id);
+                if (dbtbs == null)
+                {
+                    throw new Exception("未找到提交的单据的具体详情");
+                }
+                var dbdanger = _work.Repository<Basic_Danger>().GetModel(dbtbs.DangerID);
+                var dev = _work.Repository<Basic_Facilities>().GetModel(dbtbs.SubjectID);
+                var post = _work.Repository<Basic_Post>().GetModel(dbtbs.SubjectID);
+                var opr = _work.Repository<Basic_Opreation>().GetModel(dbtbs.SubjectID);
+                var re = new TaskBillModelView
+                {
+                    BillID=dbtbs.BillID,
+                    DangerID=dbtbs.DangerID,
+                    DangerName=dbdanger.Name,
+                    SubjectID=dbtbs.SubjectID,
+                    SubName = dev != null ? dev.Name : post != null ? post.Name : opr != null ? opr.Name : default(string),
+                    SubjectType =dbtbs.SubjectType,
+                    TaskResult=dbtbs.TaskResult,
+                    TaskResultMemo=dbtbs.TaskResultMemo,
+                    TaskResultName= Command.GetItems(typeof(PublicEnum.EE_TaskResultType)).FirstOrDefault(q => q.Value == dbtbs.TaskResult).Caption,
+                };
+                return new ActionResult<TaskBillModelView>(re);
+            }
+            catch (Exception ex)
+            {
+
+                return new ActionResult<TaskBillModelView>(ex);
+            }
         }
 
         /// <summary>
@@ -69,15 +98,20 @@ namespace ESafety.Account.Service
             try
             {
                 var dbtb = _rpstb.Queryable(q=>q.PostID==para.Query.PostID&&q.State==para.Query.TaskState&&(q.BillCode.Contains(para.Query.Key)||q.BillCode==string.Empty)).ToList();
+                var tbid = dbtb.Select(s => s.ID);
+
                 var taskid = dbtb.Select(s => s.TaskID);
                 var empids = dbtb.Select(p=>p.EmployeeID);
                 var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p=>empids.Contains(p.ID)).ToList();
 
                 var dbts = _work.Repository<Bll_InspectTask>().Queryable(p=>taskid.Contains(p.ID));
 
+                var dbtbs = _rpstbs.Queryable(p=>tbid.Contains(p.BillID)).ToList();
+
                 var rev = from s in dbtb
                           let emp=emps.FirstOrDefault(p=>p.ID==s.EmployeeID)
                           let ts=dbts.FirstOrDefault(p=>p.ID==s.TaskID)
+                          let tbs=dbtbs.FindAll(p=>p.BillID==s.ID).Max(s=>s.TroubleLevel)
                           select new TaskBillView
                           {
                               ID=s.ID,
@@ -91,6 +125,7 @@ namespace ESafety.Account.Service
                               EmployeeName=emp.CNName,
                               PostID=s.PostID,
                               TaskName=ts.Name,
+                              TaskResult=tbs==0?"":Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == tbs).Caption,
                           };
                 var re = new Pager<TaskBillView>().GetCurrentPage(rev, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<TaskBillView>>(re);
@@ -109,51 +144,58 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<Pager<TaskSubjectBillView>> GetTaskBillSubjects(PagerQuery<TaskBillSubjectsQuery> para)
         {
-            var dbtb = _rpstb.GetModel(para.Query.BillID);
-            var dbtbs = _rpstbs.Queryable(p => p.BillID == para.Query.BillID && p.SubjectID == para.Query.SubjectID).ToList() ;
+            try
+            {
+                var dbtb = _rpstb.GetModel(para.Query.BillID);
+                var dbtbs = _rpstbs.Queryable(p => p.BillID == para.Query.BillID && p.SubjectID == para.Query.SubjectID).ToList();
 
-            var dangers = _work.Repository<Basic_DangerRelation>().Queryable(p => p.SubjectID == para.Query.SubjectID).ToList();
-            var ids = dangers.Select(p=>p.DangerID);
-            var dbdanger = _work.Repository<Basic_Danger>().Queryable(p=>ids.Contains(p.ID)).ToList();
+                var ids = dbtbs.Select(p => p.DangerID);
 
-            var dict = _work.Repository<Core.Model.DB.Basic_Dict>();
+                var dbdanger = _work.Repository<Basic_Danger>().Queryable(p => ids.Contains(p.ID)).ToList();
 
-            var rev = from s in dbdanger
-                     let tbd=dbtbs.FirstOrDefault(q=>q.DangerID==s.ID)
-                     select new TaskSubjectBillView
-                     {
-                         
-                         DangerName=s.Name,
-                         DangerID=s.ID,
-                         BillID=dbtb.ID,
-                         TaskResult=dbtb.State,
-                         TaskResultName = Command.GetItems(typeof(PublicEnum.EE_TaskResultType)).FirstOrDefault(q => q.Value ==dbtb.State).Caption,
+                var dict = _work.Repository<Core.Model.DB.Basic_Dict>();
 
-                         TroubleLevel =tbd==null?0:tbd.TroubleLevel,
-                         TaskResultMemo=tbd==null?string.Empty:tbd.TaskResultMemo,
+                var rev = from tbd in dbtbs
+                          let  s=dbdanger.FirstOrDefault(p=>p.ID==tbd.DangerID)
+                          select new TaskSubjectBillView
+                          {
+                              ID = tbd.ID,
+                              DangerName = s.Name,
+                              DangerID = s.ID,
+                              BillID = dbtb.ID,
+                              TaskResult = dbtb.State,
+                              TaskResultName = Command.GetItems(typeof(PublicEnum.EE_TaskResultType)).FirstOrDefault(q => q.Value == dbtb.State).Caption,
 
-                         Eval_Method=tbd==null?0:tbd.Eval_Method,
-                         MethodName =tbd==null?string.Empty:Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(q => q.Value == tbd.Eval_Method).Caption,
+                              TroubleLevel = tbd.TroubleLevel,
+                              TroubleLevelName = tbd.TroubleLevel == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == tbd.TroubleLevel).Caption,
 
-                         Eval_SGJG =tbd==null?Guid.Empty:tbd.Eval_SGJG,
-                         SGJGDic=tbd==null?string.Empty:dict.GetModel(tbd.Eval_SGJG).DictName,
-                      
+                              TaskResultMemo = tbd.TaskResultMemo,
 
-                         Eval_SGLX=tbd==null?Guid.Empty:tbd.Eval_SGLX,
-                         SGLXDic =tbd==null?string.Empty:dict.GetModel(tbd.Eval_SGLX).DictName,
+                              Eval_Method = tbd.Eval_Method,
+                              MethodName = tbd.Eval_Method == 0 ? string.Empty : Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(q => q.Value == tbd.Eval_Method).Caption,
 
-                         Eval_WHYS=tbd.Eval_WHYS,
-                         WHYSDic=tbd==null?string.Empty:dict.GetModel(tbd.Eval_WHYS).DictName,
+                              Eval_SGJG = tbd.Eval_SGJG,
+                              SGJGDic = tbd.Eval_SGJG == Guid.Empty ? string.Empty : dict.GetModel(tbd.Eval_SGJG).DictName,
 
-                         Eval_YXFW=tbd.Eval_YXFW,
-                         YXFWDic=tbd==null?string.Empty:dict.GetModel(tbd.Eval_YXFW).DictName,
+                              Eval_SGLX = tbd.Eval_SGLX,
+                              SGLXDic = tbd.Eval_SGLX == Guid.Empty ? string.Empty : dict.GetModel(tbd.Eval_SGLX).DictName,
 
-                         SubjectID=tbd.SubjectID,
-                         SubjectType=tbd.SubjectType,
-                     };
-            var re = new Pager<TaskSubjectBillView>().GetCurrentPage(rev,para.PageSize,para.PageIndex);
-            return new ActionResult<Pager<TaskSubjectBillView>>(re);
+                              Eval_WHYS = tbd.Eval_WHYS,
+                              WHYSDic = tbd.Eval_WHYS == Guid.Empty ? string.Empty : dict.GetModel(tbd.Eval_WHYS).DictName,
 
+                              Eval_YXFW = tbd.Eval_YXFW,
+                              YXFWDic = tbd.Eval_YXFW == Guid.Empty ? string.Empty : dict.GetModel(tbd.Eval_YXFW).DictName,
+                              SubjectID = tbd.SubjectID,
+                              SubjectType = tbd.SubjectType,
+                              IsControl=tbd.IsContorl
+                          };
+                var re = new Pager<TaskSubjectBillView>().GetCurrentPage(rev, para.PageSize, para.PageIndex);
+                return new ActionResult<Pager<TaskSubjectBillView>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<Pager<TaskSubjectBillView>>(ex);
+            }
         }
     }
 }

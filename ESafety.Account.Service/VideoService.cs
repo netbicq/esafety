@@ -109,7 +109,7 @@ namespace ESafety.Account.Service
                 }
                 dbv = videoEdit.CopyTo<Basic_Vedio>(dbv);
 
-                _rpsvs.Delete(p => p.ID == videoEdit.ID);
+                _rpsvs.Delete(p => p.VedioID == videoEdit.ID);
                 var lsvs = (from vs in videoEdit.Subjects
                             select new Basic_VedioSubject
                             {

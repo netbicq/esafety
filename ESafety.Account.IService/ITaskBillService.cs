@@ -14,7 +14,7 @@ namespace ESafety.Account.IService
     /// </summary>
     public interface ITaskBillService
     {
-        ActionResult<TaskBillModelView> GetTaskBillModel();
+        ActionResult<TaskBillModelView> GetTaskBillModel(Guid id);
         ActionResult<Pager<TaskSubjectBillView>> GetTaskBillSubjects(PagerQuery<TaskBillSubjectsQuery> para);
 
         ActionResult<Pager<TaskBillView>> GetTaskBillPage(PagerQuery<TaskBillQuery> para);

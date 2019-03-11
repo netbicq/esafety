@@ -10,7 +10,11 @@ namespace ESafety.Core.Model.DB.Account
     /// 管控验收申请日志
     /// </summary>
     public partial class Bll_TroubleControlFlows:ModelBase
-    { 
+    {
+        /// <summary>
+        /// 隐患控制ID
+        /// </summary>
+        public Guid ControlID { get; set; }
         /// <summary>
         /// 日期
         /// </summary>
