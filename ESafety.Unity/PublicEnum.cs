@@ -258,6 +258,14 @@ namespace ESafety.Unity
             Minute = 6
 
         }
+
+        /// <summary>
+        ///隐患等级
+        /// </summary>
+        public enum EE_TroubleLevel
+        {
+            
+        }
         /// <summary>
         /// 审批节点类型
         /// </summary>

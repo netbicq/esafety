@@ -1,5 +1,6 @@
 ﻿using ESafety.Account.Model.PARA;
 using ESafety.Account.Service;
+using ESafety.Core;
 using ESafety.Core.Model;
 using ESafety.Core.Model.DB;
 using ESafety.ORM;

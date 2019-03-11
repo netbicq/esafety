@@ -59,5 +59,9 @@ namespace ESafety.Core.Model.DB.Account
         /// 隐患等级
         /// </summary>
         public int TroubleLevel { get; set; }
+        /// <summary>
+        /// 是否管控
+        /// </summary>
+        public bool IsContorl { get; set; }
     }
 }

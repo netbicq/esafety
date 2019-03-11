@@ -60,6 +60,10 @@ namespace ESafety.Account.Model.View
         /// 负责人电话
         /// </summary>
         public string PrincipalTel { get; set; }
+        /// <summary>
+        /// 定位
+        /// </summary>
+        public string Location { get; set; }
     }
     /// <summary>
     /// 设备类别树
