@@ -24,28 +24,24 @@ namespace ESafety.Account.Service
             Unitwork = work;
             _rpstb = work.Repository<Bll_TaskBill>();
             _rpstbs = work.Repository<Bll_TaskBillSubjects>();
-            _rpstbs = work.Repository<Bll_TaskBillSubjects>();
         }
         /// <summary>
         /// 新建任务单据详情
         /// </summary>
         /// <param name="subjectBillNew"></param>
         /// <returns></returns>
-        public ActionResult<bool> AddTaskBillSubjects(TaskSubjectBillNew subjectBillNew)
+        public ActionResult<bool> EditTaskBillSubjects(TaskSubjectBillEdit subjectBillEdit)
         {
             try
             {
-                if (subjectBillNew == null)
+
+                var dbtbs = _rpstbs.GetModel(subjectBillEdit.ID);
+                if (dbtbs==null)
                 {
-                    throw new Exception("参数错误");
+                    throw new Exception("未找到要处理的信息");
                 }
-                var check = _rpstbs.Any(p => p.BillID == subjectBillNew.BillID);
-                if (check)
-                {
-                    throw new Exception("该任务单据详情已存在");
-                }
-                var dbtbs = subjectBillNew.MAPTO<Bll_TaskBillSubjects>();
-                _rpstbs.Add(dbtbs);
+                dbtbs = subjectBillEdit.CopyTo<Bll_TaskBillSubjects>(dbtbs);
+                _rpstbs.Update(dbtbs);
                 _work.Commit();
                 return new ActionResult<bool>(true);
             }
@@ -54,7 +50,10 @@ namespace ESafety.Account.Service
                 return new ActionResult<bool>(ex);
             }
         }
-
+        /// <summary>
+        /// 获取巡检任务模型
+        /// </summary>
+        /// <returns></returns>
         public ActionResult<TaskBillModelView> GetTaskBillModel()
         {
             throw new NotImplementedException();
@@ -69,8 +68,16 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbtb = _rpstb.Queryable(q=>q.PostID==para.Query.PostID&&q.State==para.Query.TaskState&&(q.BillCode.Contains(para.Query.Key)||q.BillCode==string.Empty));
+                var dbtb = _rpstb.Queryable(q=>q.PostID==para.Query.PostID&&q.State==para.Query.TaskState&&(q.BillCode.Contains(para.Query.Key)||q.BillCode==string.Empty)).ToList();
+                var taskid = dbtb.Select(s => s.TaskID);
+                var empids = dbtb.Select(p=>p.EmployeeID);
+                var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p=>empids.Contains(p.ID)).ToList();
+
+                var dbts = _work.Repository<Bll_InspectTask>().Queryable(p=>taskid.Contains(p.ID));
+
                 var rev = from s in dbtb
+                          let emp=emps.FirstOrDefault(p=>p.ID==s.EmployeeID)
+                          let ts=dbts.FirstOrDefault(p=>p.ID==s.TaskID)
                           select new TaskBillView
                           {
                               ID=s.ID,
@@ -81,7 +88,9 @@ namespace ESafety.Account.Service
                               DangerID=s.DangerID,
                               State=s.State,
                               EndTime=s.EndTime,
-                              
+                              EmployeeName=emp.CNName,
+                              PostID=s.PostID,
+                              TaskName=ts.Name,
                           };
                 var re = new Pager<TaskBillView>().GetCurrentPage(rev, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<TaskBillView>>(re);

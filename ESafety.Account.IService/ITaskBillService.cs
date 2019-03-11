@@ -19,6 +19,6 @@ namespace ESafety.Account.IService
 
         ActionResult<Pager<TaskBillView>> GetTaskBillPage(PagerQuery<TaskBillQuery> para);
 
-        ActionResult<bool> AddTaskBillSubjects(TaskSubjectBillNew subjectBillNew);
+        ActionResult<bool> EditTaskBillSubjects(TaskSubjectBillEdit subjectBillEdit);
     }
 }

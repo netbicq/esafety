@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace ESafety.Account.Model.PARA
 {
-    public class TaskSubjectBillNew
+    public class TaskSubjectBillEdit
     {
+        /// <summary>
+        /// 详情ID
+        /// </summary>
+        public Guid ID { get; set; }
         /// <summary>
         /// 单据id
         /// </summary>
