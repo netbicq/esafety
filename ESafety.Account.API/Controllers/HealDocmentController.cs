@@ -17,7 +17,7 @@ namespace ESafety.Account.API.Controllers
     /// 健康档案
     /// </summary>
     [RoutePrefix("api/healdocment")]
-    public class HealDocmentController : ESFAPI
+    public class HealDocmentController : ESFAPI 
     {
         private IHealDocmentService bll = null;
         public HealDocmentController(IHealDocmentService hd)
@@ -61,6 +61,17 @@ namespace ESafety.Account.API.Controllers
             LogContent = "修改了健康文档" + JsonConvert.SerializeObject(docmentEdit);
             return bll.EditHealDocment(docmentEdit);
         }
+        /// <summary>
+        /// 获取健康档案列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("gethdlist")]
+        public ActionResult<IEnumerable<HealDocmentView>> GetHealDocList()
+        {
+            return bll.GetHealDocList();
+        }
+
         /// <summary>
         /// 根据ID,获取健康档案
         /// </summary>

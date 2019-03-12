@@ -16,5 +16,7 @@ namespace ESafety.Account.IService
         ActionResult<bool> EditHealDocment(HealDocmentEdit docmentEdit);
         ActionResult<HealDocmentView> GetHealDocment(Guid id);
         ActionResult<Pager<HealDocmentView>> GetHealDocments(PagerQuery<HealDocmentQuery> para);
+
+        ActionResult<IEnumerable<HealDocmentView>> GetHealDocList();
     }
 }

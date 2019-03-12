@@ -82,13 +82,13 @@ namespace ESafety.Account.Model.PARA
     public class TroubleCtrQuery
     {
         /// <summary>
-        /// 发现日期
+        /// 起始时间
         /// </summary>
-        public DateTime CreateDate { get; set; }
+        public DateTime StartDate { get; set; }
         /// <summary>
         /// 完成时间
         /// </summary>
-        public DateTime FinishTime { get; set; }
+        public DateTime EndTime { get; set; }
         /// <summary>
         /// 是否历史
         /// </summary>
@@ -97,6 +97,10 @@ namespace ESafety.Account.Model.PARA
         /// 隐患等级
         /// </summary>
         public int TroubleLevel { get; set; }
+        /// <summary>
+        /// 关键字
+        /// </summary>
+        public string Key { get; set; }
     }
 
     public class TroubleControlDetailQuery

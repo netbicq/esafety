@@ -45,5 +45,6 @@ namespace ESafety.Core.Model.DB.Account
         /// µ¥¾Ý×´Ì¬
         /// </summary>
         public int State { get; set; }
+
     }
 }

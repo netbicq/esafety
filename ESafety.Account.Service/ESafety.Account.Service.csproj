@@ -69,6 +69,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SafetyStandardService.cs" />
     <Compile Include="TaskBillService.cs" />
+    <Compile Include="TroubleCtrService.cs" />
     <Compile Include="VideoService.cs" />
   </ItemGroup>
   <ItemGroup>

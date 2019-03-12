@@ -155,6 +155,42 @@ namespace ESafety.Account.Service
             }
         }
         /// <summary>
+        /// 获取健康档案列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<HealDocmentView>> GetHealDocList()
+        {
+            try
+            {
+                var dbhds = _rpshd.Queryable().ToList();
+                var empsid = dbhds.Select(p => p.ID);
+                var emps = _rpsemp.Queryable(p =>empsid.Contains(p.ID)).ToList();
+                var rehds = from s in dbhds
+                            let emp = emps.FirstOrDefault(p => p.ID == s.EmployeeID)
+                            select new HealDocmentView
+                            {
+                                ID = s.ID,
+                                BirthDay = s.BirthDay,
+                                Age = DateTime.Now.Year - s.BirthDay.Year,
+                                CNName = emp.CNName,
+                                EmployeeID = s.EmployeeID,
+                                Gender = emp.Gender,
+                                HeredityRec = s.HeredityRec,
+                                IllnessRec = s.IllnessRec,
+                                Nation = s.Nation,
+                                OpreatRec = s.OpreatRec,
+                                OrgID = emp.OrgID
+                            };
+               
+                return new ActionResult<IEnumerable<HealDocmentView>>(rehds);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<HealDocmentView>>(ex);
+            }
+        }
+
+        /// <summary>
         /// 获取健康档案 模型
         /// </summary>
         /// <param name="id"></param>
@@ -213,5 +249,7 @@ namespace ESafety.Account.Service
                 return new ActionResult<Pager<HealDocmentView>>(ex);
             }
         }
+
+        
     }
 }
