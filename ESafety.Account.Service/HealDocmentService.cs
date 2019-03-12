@@ -162,24 +162,24 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbhds = _rpshd.Queryable().ToList();
-                var empsid = dbhds.Select(p => p.ID);
-                var emps = _rpsemp.Queryable(p =>empsid.Contains(p.ID)).ToList();
-                var rehds = from s in dbhds
+                var dbhds = _rpshd.Queryable();
+                var empsid = dbhds.Select(p => p.EmployeeID);
+                var emps = _rpsemp.Queryable(p =>empsid.Contains(p.ID));
+                var rehds = from s in dbhds.ToList()
                             let emp = emps.FirstOrDefault(p => p.ID == s.EmployeeID)
                             select new HealDocmentView
                             {
                                 ID = s.ID,
                                 BirthDay = s.BirthDay,
                                 Age = DateTime.Now.Year - s.BirthDay.Year,
-                                CNName = emp.CNName,
+                                CNName =emp.CNName,
                                 EmployeeID = s.EmployeeID,
                                 Gender = emp.Gender,
                                 HeredityRec = s.HeredityRec,
                                 IllnessRec = s.IllnessRec,
                                 Nation = s.Nation,
                                 OpreatRec = s.OpreatRec,
-                                OrgID = emp.OrgID
+                                OrgID =emp.OrgID
                             };
                
                 return new ActionResult<IEnumerable<HealDocmentView>>(rehds);
@@ -222,8 +222,9 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var emps = _rpsemp.Queryable(p=>(p.OrgID==para.Query.OrgID||p.OrgID==Guid.Empty)&&(p.CNName.Contains(para.Query.Key)||para.Query.Key==string.Empty)).ToList();
+                var emps = _rpsemp.Queryable(p=>(p.OrgID== para.Query.OrgID || para.Query.OrgID==Guid.Empty)&&(p.CNName.Contains(para.Query.Key)||para.Query.Key==string.Empty)).ToList();
                 var empsid = emps.Select(p=>p.ID);
+
                 var dbhds = _rpshd.Queryable(p=>empsid.Contains(p.EmployeeID));
                 var rehds = from s in dbhds.ToList()
                             let emp=emps.FirstOrDefault(p=>p.ID==s.EmployeeID)

@@ -92,10 +92,51 @@ namespace ESafety.Account.Service
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// 分页获取管控类容
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
         public ActionResult<Pager<TroubleCtrDetailView>> GetTroubleCtrDetails(PagerQuery<TroubleControlDetailQuery> para)
         {
+            try
+            {
+                var dbtcds = _rpstcd.Queryable(p=>p.TroubleControlID==para.Query.TroubleControlID).ToList();
+                var billids = dbtcds.Select(s => s.BillSubjectsID);
+                var subs = _work.Repository<Bll_TaskBillSubjects>().Queryable(p => billids.Contains(p.ID)).ToList();
+
+                var did = subs.Select(s => s.DangerID);
+                var dangers = _work.Repository<Basic_Danger>().Queryable(p => did.Contains(p.ID)).ToList() ;
+                var dic = _work.Repository<Core.Model.DB.Basic_Dict>();
+
+                var subids = subs.Select(s => s.SubjectID);
+
+                var devs = _work.Repository<Basic_Facilities>().Queryable(q => subids.Contains(q.ID)).ToList();
+                var posts = _work.Repository<Basic_Post>().Queryable(q => subids.Contains(q.ID)).ToList();
+                var opres = _work.Repository<Basic_Opreation>().Queryable(q => subids.Contains(q.ID)).ToList();
+
+                var retcds = from s in subs
+                             let d=dangers.FirstOrDefault(q=>q.ID==s.DangerID)
+                             select new TroubleCtrDetailView
+                             {
+                                 ID=s.ID,
+                                 DangerName=d.Name,
+                                 MethodName=s.Eval_Method==0?"":Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(p=>p.Value==s.Eval_Method).Caption,
+                                 TaskResultMemo=s.TaskResultMemo,
+                                 
+                                 
+                             };
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
             throw new NotImplementedException();
+
         }
 
         public ActionResult<IEnumerable<TroubleCtrFlowView>> GetTroubleCtrFlows(Guid id)
@@ -103,7 +144,7 @@ namespace ESafety.Account.Service
             throw new NotImplementedException();
         }
         /// <summary>
-        /// 分页获取隐患管控
+        /// 分页获取隐患管控项
         /// </summary>
         /// <param name="para"></param>
         /// <returns></returns>
@@ -119,14 +160,33 @@ namespace ESafety.Account.Service
                     (q.CreateDate>=starttime&&q.CreateDate<endtime)
                     &&(q.TroubleLevel==para.Query.TroubleLevel||para.Query.TroubleLevel==0)
                     && (q.ControlName.Contains(para.Query.Key)||para.Query.Key==string.Empty)
-                    &&q.State==(int)PublicEnum.EE_TroubleState.history);
+                    &&q.State==(int)PublicEnum.EE_TroubleState.history).ToList();
+
+                    var pempids = dbtc.Select(s => s.PrincipalID);
+                    var pemps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q=>pempids.Contains(q.ID)).ToList();
+
+                    var porgids = dbtc.Select(s => s.OrgID);
+                    var porgs = _work.Repository<Core.Model.DB.Basic_Org>().Queryable(q => porgids.Contains(q.ID)).ToList();
 
                     var retc = from tc in dbtc
-                             select new TroubleCtrView
-                             {
-                                 ID=tc.ID,
-                                 State=tc.State,
-                                 
+                               let pemp = pemps.FirstOrDefault(q => q.ID == tc.PrincipalID)
+                               let porg=porgs.FirstOrDefault(q=>q.ID==tc.OrgID)
+                               select new TroubleCtrView
+                               {
+                                   ID = tc.ID,
+                                   State = tc.State,
+                                   CreateDate = tc.CreateDate,
+                                   ControlName = tc.ControlName,
+                                   ControlDescription = tc.ControlDescription,
+                                   PrincipalID = tc.PrincipalID,
+                                   PrincipalName = pemp.CNName,
+                                   OrgID=tc.OrgID,
+                                   OrgName=porg.OrgName,
+                                   FinishTime=tc.FinishTime,
+                                   PrincipalTEL=tc.PrincipalTEL,
+                                   TroubleLevel=tc.TroubleLevel,
+                                   TroubleLevelDesc=Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p=>p.Value==tc.TroubleLevel).Caption,
+                                   
                              };
                     var re = new Pager<TroubleCtrView>().GetCurrentPage(retc,para.PageSize,para.PageIndex);
                     return new ActionResult<Pager<TroubleCtrView>>(re);
@@ -139,16 +199,35 @@ namespace ESafety.Account.Service
                         && (q.ControlName.Contains(para.Query.Key) || para.Query.Key == string.Empty)
                         && q.State != (int)PublicEnum.EE_TroubleState.history);
 
-                        var retc = from tc in dbtc
-                                   select new TroubleCtrView
-                                   {
-                                       ID = tc.ID,
-                                       State = tc.State,
+                    var pempids = dbtc.Select(s => s.PrincipalID);
+                    var pemps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q => pempids.Contains(q.ID)).ToList();
 
-                                   };
-                        var re = new Pager<TroubleCtrView>().GetCurrentPage(retc, para.PageSize, para.PageIndex);
-                        return new ActionResult<Pager<TroubleCtrView>>(re);
-                    }
+                    var porgids = dbtc.Select(s => s.OrgID);
+                    var porgs = _work.Repository<Core.Model.DB.Basic_Org>().Queryable(q => porgids.Contains(q.ID)).ToList();
+
+                    var retc = from tc in dbtc
+                               let pemp = pemps.FirstOrDefault(q => q.ID == tc.PrincipalID)
+                               let porg = porgs.FirstOrDefault(q => q.ID == tc.OrgID)
+                               select new TroubleCtrView
+                               {
+                                   ID = tc.ID,
+                                   State = tc.State,
+                                   CreateDate = tc.CreateDate,
+                                   ControlName = tc.ControlName,
+                                   ControlDescription = tc.ControlDescription,
+                                   PrincipalID = tc.PrincipalID,
+                                   PrincipalName = pemp.CNName,
+                                   OrgID = tc.OrgID,
+                                   OrgName = porg.OrgName,
+                                   FinishTime = tc.FinishTime,
+                                   PrincipalTEL = tc.PrincipalTEL,
+                                   TroubleLevel = tc.TroubleLevel,
+                                   TroubleLevelDesc = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p => p.Value == tc.TroubleLevel).Caption,
+
+                               };
+                    var re = new Pager<TroubleCtrView>().GetCurrentPage(retc, para.PageSize, para.PageIndex);
+                    return new ActionResult<Pager<TroubleCtrView>>(re);
+                }
             }
             catch (Exception ex)
             {

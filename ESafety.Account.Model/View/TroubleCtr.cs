@@ -53,6 +53,10 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public int TroubleLevel { get; set; }
         /// <summary>
+        /// 隐患等级描述
+        /// </summary>
+        public string TroubleLevelDesc { get; set; }
+        /// <summary>
         /// 发现日期
         /// </summary>
         public DateTime CreateDate { get; set; }
@@ -64,7 +68,54 @@ namespace ESafety.Account.Model.View
 
     public class TroubleCtrDetailView
     {
-
+        /// <summary>
+        /// 隐患详情ID
+        /// </summary>
+        public Guid ID { get; set; }
+        /// <summary>
+        /// 主体类型
+        /// </summary>
+        public string SubjectTypeName { get; set; }
+        /// <summary>
+        /// 主体名
+        /// </summary>
+        public string SubjectName { get; set; }
+        /// <summary>
+        ///危险源名称 
+        /// </summary>
+        public string DangerName { get; set; }
+        /// <summary>
+        /// 任务结果名
+        /// </summary>
+        public string TaskResultName { get; set; }
+        /// <summary>
+        /// 任务巡检描述
+        /// </summary>
+        public string TaskResultMemo { get; set; }
+        /// <summary>
+        /// 危害因素名
+        /// </summary>
+        public string WHYSDic { get; set; }
+        /// <summary>
+        /// 事故类型名
+        /// </summary>
+        public string SGLXDic { get; set; }
+        /// <summary>
+        /// 事故后果名
+        /// </summary>
+        public string SGJGDic { get; set; }
+        /// <summary>
+        /// 影响范围名
+        /// </summary>
+        public string YXFWDic { get; set; }
+        /// <summary>
+        /// 评测方法名
+        /// </summary>
+        public string MethodName { get; set; }
+        /// <summary>
+        /// 隐患等级名
+        /// </summary>
+        public string TroubleLevelName { get; set; }
     }
 
     public class TroubleCtrFlowView
