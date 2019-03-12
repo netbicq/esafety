@@ -28,6 +28,8 @@ namespace ESafety.Account.IService
 
         ActionResult<IEnumerable<TroubleCtrFlowView>> GetTroubleCtrFlows(Guid id);
 
+        ActionResult<TroubleCtrDetailView> GetTroubleCtrDetailModel(Guid id);
+
         /// <summary>
         /// 改变状态
         /// </summary>

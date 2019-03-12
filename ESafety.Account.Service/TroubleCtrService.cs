@@ -67,10 +67,42 @@ namespace ESafety.Account.Service
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// 改变状态
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
         public ActionResult<bool> ChangeState(TroubleCtrChangeState state)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (state == null)
+                {
+                    throw new Exception("参数有误");
+                }
+                var dbtask = _rpstc.GetModel(state.ID);
+                if (dbtask == null)
+                {
+                    throw new Exception("任务不存在");
+                }
+                if (dbtask.State == (int)PublicEnum.EE_TroubleState.history)
+                {
+                    throw new Exception("当前状态不允许");
+                }
+                if (dbtask.State == (int)state.State)
+                {
+                    throw new Exception("状态有误");
+                }
+                dbtask.State = (int)state.State;
+
+                _rpstc.Update(dbtask);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
         }
 
         public ActionResult<bool> DelTroubleCtr(Guid id)
@@ -87,11 +119,92 @@ namespace ESafety.Account.Service
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// 获取隐患管控模型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult<TroubleCtrView> GetTroubleCtr(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var dbtc = _rpstc.GetModel(id);
+
+                var pemp = _work.Repository<Core.Model.DB.Basic_Employee>().GetModel(dbtc.PrincipalID);
+
+                var porg = _work.Repository<Core.Model.DB.Basic_Org>().GetModel(dbtc.OrgID);
+
+                var retc = new TroubleCtrView
+                {
+                    ID = dbtc.ID,
+                    State = dbtc.State,
+                    CreateDate = dbtc.CreateDate,
+                    ControlName = dbtc.ControlName,
+                    ControlDescription = dbtc.ControlDescription,
+                    PrincipalID = dbtc.PrincipalID,
+                    PrincipalName = pemp.CNName,
+                    OrgID = dbtc.OrgID,
+                    OrgName = porg.OrgName,
+                    FinishTime = dbtc.FinishTime,
+                    PrincipalTEL = dbtc.PrincipalTEL,
+                    TroubleLevel = dbtc.TroubleLevel,
+                    TroubleLevelDesc = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p => p.Value == dbtc.TroubleLevel).Caption,
+
+                };
+
+                return new ActionResult<TroubleCtrView>(retc);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<TroubleCtrView>(ex);
+            }
         }
+
+        /// <summary>
+        /// 获取隐患管控细节模型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult<TroubleCtrDetailView> GetTroubleCtrDetailModel(Guid id)
+        {
+            try
+            {
+                var dbtcd= _rpstcd.GetModel(id);
+
+                var sub = _work.Repository<Bll_TaskBillSubjects>().GetModel(dbtcd.BillSubjectsID);
+
+                var danger = _work.Repository<Basic_Danger>().GetModel(sub.DangerID);
+
+                var dic = _work.Repository<Core.Model.DB.Basic_Dict>();
+
+
+                var dev = _work.Repository<Basic_Facilities>().GetModel(sub.SubjectID);
+                var post = _work.Repository<Basic_Post>().GetModel(sub.SubjectID);
+                var opr = _work.Repository<Basic_Opreation>().GetModel(sub.SubjectID);
+
+                var retcds =new TroubleCtrDetailView
+                             {
+                                 ID = sub.ID,
+                                 DangerName = danger.Name,
+                                 MethodName = sub.Eval_Method == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(p => p.Value == sub.Eval_Method).Caption,
+                                 TaskResultMemo = sub.TaskResultMemo,
+                                 SubjectName = dev != null ? dev.Name : post != null ? post.Name : opr != null ? opr.Name : default(string),
+                                 SubjectTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == sub.SubjectType).Caption,
+                                 TaskResultName = Command.GetItems(typeof(PublicEnum.EE_TaskResultType)).FirstOrDefault(q => q.Value == sub.TaskResult).Caption,
+                                 TroubleLevelName = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == sub.TroubleLevel).Caption,
+                                 SGJGDic = dic.GetModel(sub.Eval_SGJG).DictName,
+                                 SGLXDic = dic.GetModel(sub.Eval_SGLX).DictName,
+                                 WHYSDic = dic.GetModel(sub.Eval_WHYS).DictName,
+                                 YXFWDic = dic.GetModel(sub.Eval_YXFW).DictName
+                             };
+                return new ActionResult<TroubleCtrDetailView>(retcds);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<TroubleCtrDetailView>(ex);
+            }
+        }
+
         /// <summary>
         /// 分页获取管控类容
         /// </summary>
@@ -103,6 +216,7 @@ namespace ESafety.Account.Service
             {
                 var dbtcds = _rpstcd.Queryable(p=>p.TroubleControlID==para.Query.TroubleControlID).ToList();
                 var billids = dbtcds.Select(s => s.BillSubjectsID);
+
                 var subs = _work.Repository<Bll_TaskBillSubjects>().Queryable(p => billids.Contains(p.ID)).ToList();
 
                 var did = subs.Select(s => s.DangerID);
@@ -117,25 +231,33 @@ namespace ESafety.Account.Service
 
                 var retcds = from s in subs
                              let d=dangers.FirstOrDefault(q=>q.ID==s.DangerID)
+                             let dev = devs.FirstOrDefault(q => q.ID == s.SubjectID)
+                             let ppst = posts.FirstOrDefault(q => q.ID == s.SubjectID)
+                             let opr = opres.FirstOrDefault(q => q.ID == s.SubjectID)
                              select new TroubleCtrDetailView
                              {
                                  ID=s.ID,
                                  DangerName=d.Name,
                                  MethodName=s.Eval_Method==0?"":Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(p=>p.Value==s.Eval_Method).Caption,
                                  TaskResultMemo=s.TaskResultMemo,
-                                 
-                                 
+                                 SubjectName = dev != null ? dev.Name : ppst != null ? ppst.Name : opr != null ? opr.Name : default(string),
+                                 SubjectTypeName= Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == s.SubjectType).Caption,
+                                 TaskResultName= Command.GetItems(typeof(PublicEnum.EE_TaskResultType)).FirstOrDefault(q => q.Value == s.TaskResult).Caption,
+                                 TroubleLevelName= Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == s.TroubleLevel).Caption,
+                                 SGJGDic=dic.GetModel(s.Eval_SGJG).DictName,
+                                 SGLXDic=dic.GetModel(s.Eval_SGLX).DictName,
+                                 WHYSDic=dic.GetModel(s.Eval_WHYS).DictName,
+                                 YXFWDic=dic.GetModel(s.Eval_YXFW).DictName
                              };
 
-
-
+                var re = new Pager<TroubleCtrDetailView>().GetCurrentPage(retcds,para.PageSize,para.PageIndex);
+                return new ActionResult<Pager<TroubleCtrDetailView>>(re);
             }
             catch (Exception ex)
             {
-
-                throw;
+                return new ActionResult<Pager<TroubleCtrDetailView>>(ex);
             }
-            throw new NotImplementedException();
+            
 
         }
 

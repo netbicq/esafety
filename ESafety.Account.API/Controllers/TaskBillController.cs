@@ -64,6 +64,8 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="para"></param>
         /// <returns></returns>
+        [HttpPost]
+        [Route("gettbs")]
         public ActionResult<Pager<TaskSubjectBillView>> GetTaskBillSubjects(PagerQuery<TaskBillSubjectsQuery> para)
         {
             return bll.GetTaskBillSubjects(para);
