@@ -1,8 +1,11 @@
 ﻿using ESafety.Account.IService;
 using ESafety.Account.Model.PARA;
 using ESafety.Account.Model.View;
+using ESafety.Core;
 using ESafety.Core.Model;
+using ESafety.Core.Model.DB;
 using ESafety.Core.Model.DB.Account;
+using ESafety.Core.Model.PARA;
 using ESafety.ORM;
 using ESafety.Unity;
 using System;
@@ -13,17 +16,24 @@ using System.Threading.Tasks;
 
 namespace ESafety.Account.Service
 {
-    class TaskBillService : ServiceBase, ITaskBillService
+    class TaskBillService : FlowBusinessService, ITaskBillService
     {
         private IUnitwork _work = null;
         private IRepository<Bll_TaskBill> _rpstb = null;
         private IRepository<Bll_TaskBillSubjects> _rpstbs = null;
-        public TaskBillService(IUnitwork work)
+
+        private Core.IFlow srvFlow = null;
+        public TaskBillService(IUnitwork work,IFlow flow):base(work,flow)
         {
             _work = work;
             Unitwork = work;
             _rpstb = work.Repository<Bll_TaskBill>();
             _rpstbs = work.Repository<Bll_TaskBillSubjects>();
+
+            srvFlow = flow;
+            var flowser = srvFlow as FlowService;
+            flowser.AppUser = AppUser;
+            flowser.ACOptions = ACOptions;
         }
         /// <summary>
         /// 新建任务单据详情
@@ -195,6 +205,115 @@ namespace ESafety.Account.Service
             catch (Exception ex)
             {
                 return new ActionResult<Pager<TaskSubjectBillView>>(ex);
+            }
+        }
+
+        /// <summary>
+        /// 业务单据审核
+        /// </summary>
+        /// <param name="businessid"></param>
+        /// <returns></returns>
+        public override ActionResult<bool> Approve(Guid businessid)
+        {
+            try
+            {
+                var businessmodel = _rpstb.GetModel(businessid);
+                if (businessmodel == null)
+                {
+                    throw new Exception("业务单据不存在");
+                }
+                if (businessmodel.State != (int)PublicEnum.BillFlowState.approved)
+                {
+                    throw new Exception("业务单据状态不支持");
+                }
+
+                //检查审批流程状态
+                var flowcheck = base.BusinessAprove(new BusinessAprovePara
+                {
+                    BusinessID = businessid,
+                    BusinessType = PublicEnum.EE_BusinessType.TaskBill
+                });
+                if (flowcheck.state != 200)
+                {
+                    throw new Exception(flowcheck.msg);
+                }
+                if (flowcheck.data)
+                {
+                    businessmodel.State = (int)PublicEnum.BillFlowState.audited;
+                    _rpstb.Update(businessmodel);
+                    _work.Commit();
+                    return new ActionResult<bool>(true);
+                }
+                else
+                {
+                    throw new Exception("审批结果检查未通过");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+        /// <summary>
+        /// 发起业务审批
+        /// </summary>
+        /// <param name="taskid"></param>
+        /// <returns></returns>
+        public override ActionResult<bool> StartBillFlow(Guid taskid)
+        {
+            try
+            {
+                var businessmodel = _rpstb.GetModel(taskid);
+                if (businessmodel == null)
+                {
+                    throw new Exception("任务单据不存在");
+                }
+                if (businessmodel.State >= (int)PublicEnum.BillFlowState.pending)
+                {
+                    throw new Exception("状态不支持");
+                }
+
+                var flowtask = base.StartFlow(new BusinessAprovePara
+                {
+                    BusinessID = businessmodel.ID,
+                    BusinessType = PublicEnum.EE_BusinessType.TaskBill
+                });
+                if (flowtask.state != 200)
+                {
+                    throw new Exception(flowtask.msg);
+                }
+                var taskmodel = flowtask.data;
+                if (taskmodel == null)//未定义审批流程
+                {
+                    //没有流程，直接为审批通过
+                    businessmodel.State = (int)PublicEnum.BillFlowState.approved;
+
+                   _rpstb.Update(businessmodel);
+                    _work.Commit();
+                }
+                else
+                {
+                    //更新业务单据状态
+                    businessmodel.State = (int)PublicEnum.BillFlowState.pending;
+                   _rpstb.Update(businessmodel);
+
+                    //写入审批流程起始任务
+                    taskmodel.BusinessCode = businessmodel.BillCode;
+                    taskmodel.BusinessDate = businessmodel.CreateDate;
+
+                    _work.Repository<Flow_Task>().Add(taskmodel);
+
+                    _work.Commit();
+
+                }
+
+
+                return new ActionResult<bool>(true);
+
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
             }
         }
     }

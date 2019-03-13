@@ -227,6 +227,7 @@
     <Compile Include="Controllers\PostManageController.cs" />
     <Compile Include="Controllers\SafetyStandardController.cs" />
     <Compile Include="Controllers\TaskBillController.cs" />
+    <Compile Include="Controllers\TroubleCtrController.cs" />
     <Compile Include="Controllers\UserDefinedController.cs" />
     <Compile Include="Controllers\VideoController.cs" />
     <Compile Include="Global.asax.cs">

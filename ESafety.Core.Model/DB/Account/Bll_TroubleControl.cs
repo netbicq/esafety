@@ -9,7 +9,7 @@ namespace ESafety.Core.Model.DB.Account
     /// <summary>
     /// 管控单
     /// </summary>
-    public partial class Bll_TroubleControl : ModelBase
+    public partial class Bll_TroubleControl : ModelBaseEx
     { 
         /// <summary>
         /// 管控名称

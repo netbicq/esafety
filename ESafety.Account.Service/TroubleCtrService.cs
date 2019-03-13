@@ -1,8 +1,11 @@
 ﻿using ESafety.Account.IService;
 using ESafety.Account.Model.PARA;
 using ESafety.Account.Model.View;
+using ESafety.Core;
 using ESafety.Core.Model;
+using ESafety.Core.Model.DB;
 using ESafety.Core.Model.DB.Account;
+using ESafety.Core.Model.PARA;
 using ESafety.ORM;
 using ESafety.Unity;
 using System;
@@ -13,20 +16,27 @@ using System.Threading.Tasks;
 
 namespace ESafety.Account.Service
 {
-    public class TroubleCtrService : ServiceBase,ITroubleCtrService
+    public class TroubleCtrService : FlowBusinessService, ITroubleCtrService
     {
         private IUnitwork _work = null;
         private IRepository<Bll_TroubleControl> _rpstc = null;
         private IRepository<Bll_TroubleControlDetails> _rpstcd = null;
         private IRepository<Bll_TroubleControlFlows> _rpstcf = null;
-        
-        public TroubleCtrService(IUnitwork work)
+
+        private Core.IFlow srvFlow = null;
+
+        public TroubleCtrService(IUnitwork work, IFlow flow) : base(work,flow)
         {
             _work = work;
             Unitwork = work;
             _rpstc = work.Repository<Bll_TroubleControl>();
             _rpstcd = work.Repository<Bll_TroubleControlDetails>();
             _rpstcf = work.Repository<Bll_TroubleControlFlows>();
+
+            srvFlow = flow;
+            var flowser = srvFlow as FlowService;
+            flowser.AppUser = AppUser;
+            flowser.ACOptions = ACOptions;
 
         }
         /// <summary>
@@ -44,6 +54,7 @@ namespace ESafety.Account.Service
                     throw new Exception("该隐患管控已存在!");
                 }
                 var dbtc = ctrNew.MAPTO<Bll_TroubleControl>();
+                dbtc.State = (int)PublicEnum.EE_TroubleState.pending;
                 var dbtcd = (from d in ctrNew.TroubleCtrDetails
                              select new Bll_TroubleControlDetails
                              {
@@ -52,6 +63,7 @@ namespace ESafety.Account.Service
                                  BillSubjectsID=d.BillSubjectsID
                              }
                            ).ToList();
+
                 _rpstc.Add(dbtc);
                 _rpstcd.Add(dbtcd);
                 _work.Commit();
@@ -62,10 +74,28 @@ namespace ESafety.Account.Service
                 return new ActionResult<bool>(ex);
             }
         }
-
+        /// <summary>
+        /// 新建管控验收申请日志
+        /// </summary>
+        /// <param name="flowNew"></param>
+        /// <returns></returns>
         public ActionResult<bool> AddTroubleCtrFlow(TroubleCtrFlowNew flowNew)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (flowNew == null)
+                {
+                    throw new Exception("参数有误!");
+                }
+                var dbf = flowNew.MAPTO<Bll_TroubleControlFlows>();
+                _rpstcf.Add(dbf);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
         }
         /// <summary>
         /// 改变状态
@@ -105,20 +135,41 @@ namespace ESafety.Account.Service
             }
         }
 
+        /// <summary>
+        /// 删除隐患管控
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult<bool> DelTroubleCtr(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var tc = _rpstc.GetModel(id);
+                if (tc == null)
+                {
+                    throw new Exception("未找到所需删除的隐患管控!");
+                }
+                if (tc.State != (int)PublicEnum.EE_TroubleState.pending)
+                {
+                    throw new Exception("隐患管控当前状态不允许删除!");
+                }
+                var check = _rpstcf.Any(p=>p.ControlID==id);
+                if (check)
+                {
+                    throw new Exception("该隐患管控存在管控验收申请日志,无法删除!");
+                }
+
+                _rpstc.Delete(tc);
+                _rpstcd.Delete(p=>p.TroubleControlID==id);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
         }
 
-        public ActionResult<bool> EditTroubleCtr(TroubleCtrEdit ctrEdit)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ActionResult<bool> EditTroubleCtrFlow(TroubleCtrFlowEdit flowEdit)
-        {
-            throw new NotImplementedException();
-        }
         /// <summary>
         /// 获取隐患管控模型
         /// </summary>
@@ -260,10 +311,40 @@ namespace ESafety.Account.Service
             
 
         }
-
+        /// <summary>
+        /// 获取管控验收申请日志列表
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult<IEnumerable<TroubleCtrFlowView>> GetTroubleCtrFlows(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var tcf = _rpstcf.Queryable(p => p.ControlID == id);
+                var fempids = tcf.Select(s => s.FlowEmployeeID);
+
+                var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p=>fempids.Contains(p.ID));
+
+                var re = from f in tcf
+                         let emp=emps.FirstOrDefault(p=>p.ID==f.FlowEmployeeID)
+                         select new TroubleCtrFlowView
+                         {
+                             ControlID=f.ControlID,
+                             FlowDate=f.FlowDate,
+                             FlowEmployeeID=f.FlowEmployeeID,
+                             EmpName=emp.CNName,
+                             FlowMemo=f.FlowMemo,
+                             FlowResult=f.FlowResult,
+                             FlowType=f.FlowType,
+                             FlowResultName=Command.GetItems(typeof(PublicEnum.EE_FlowResult)).FirstOrDefault(s=>s.Value==f.FlowResult).Caption,
+                             FlowTypeName=Command.GetItems(typeof(PublicEnum.EE_BusinessType)).FirstOrDefault(s=>s.Value==f.FlowType).Caption
+                         };
+                return new ActionResult<IEnumerable<TroubleCtrFlowView>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<TroubleCtrFlowView>>(ex);
+            }
         }
         /// <summary>
         /// 分页获取隐患管控项
@@ -354,6 +435,169 @@ namespace ESafety.Account.Service
             catch (Exception ex)
             {
                 return new ActionResult<Pager<TroubleCtrView>>(ex);
+            }
+        }
+
+
+        /// <summary>
+        /// 业务单据审核
+        /// </summary>
+        /// <param name="businessid"></param>
+        /// <returns></returns>
+        public override ActionResult<bool> Approve(Guid businessid)
+        {
+            try
+            {
+                var businessmodel = _rpstc.GetModel(businessid);
+                if (businessmodel == null)
+                {
+                    throw new Exception("业务单据不存在");
+                }
+                if (businessmodel.State != (int)PublicEnum.BillFlowState.approved)
+                {
+                    throw new Exception("业务单据状态不支持");
+                }
+
+                //检查审批流程状态
+                var flowcheck = base.BusinessAprove(new BusinessAprovePara
+                {
+                    BusinessID = businessid,
+                    BusinessType = PublicEnum.EE_BusinessType.TroubleControl
+                });
+                if (flowcheck.state != 200)
+                {
+                    throw new Exception(flowcheck.msg);
+                }
+                if (flowcheck.data)
+                {
+                    businessmodel.State = (int)PublicEnum.BillFlowState.audited;
+                    _rpstc.Update(businessmodel);
+                    _work.Commit();
+                    return new ActionResult<bool>(true);
+                }
+                else
+                {
+                    throw new Exception("审批结果检查未通过");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+        /// <summary>
+        /// 发起业务审批
+        /// </summary>
+        /// <param name="taskid"></param>
+        /// <returns></returns>
+        public override ActionResult<bool> StartBillFlow(Guid taskid)
+        {
+            try
+            {
+                var businessmodel = _rpstc.GetModel(taskid);
+                if (businessmodel == null)
+                {
+                    throw new Exception("任务单据不存在");
+                }
+                if (businessmodel.State >= (int)PublicEnum.BillFlowState.pending)
+                {
+                    throw new Exception("状态不支持");
+                }
+
+                var flowtask = base.StartFlow(new BusinessAprovePara
+                {
+                    BusinessID = businessmodel.ID,
+                    BusinessType = PublicEnum.EE_BusinessType.TroubleControl
+                });
+                if (flowtask.state != 200)
+                {
+                    throw new Exception(flowtask.msg);
+                }
+                var taskmodel = flowtask.data;
+                if (taskmodel == null)//未定义审批流程
+                {
+                    //没有流程，直接为审批通过
+                    businessmodel.State = (int)PublicEnum.BillFlowState.approved;
+
+                    _rpstc.Update(businessmodel);
+                    _work.Commit();
+                }
+                else
+                {
+                    //更新业务单据状态
+                    businessmodel.State = (int)PublicEnum.BillFlowState.pending;
+                    _rpstc.Update(businessmodel);
+
+                    //写入审批流程起始任务
+                    taskmodel.BusinessCode = businessmodel.ControlName;
+                    taskmodel.BusinessDate = businessmodel.CreateDate;
+
+                    _work.Repository<Flow_Task>().Add(taskmodel);
+
+                    _work.Commit();
+
+                }
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+        /// <summary>
+        /// 修改完成时间
+        /// </summary>
+        /// <param name="finishTime"></param>
+        /// <returns></returns>
+        public ActionResult<bool> DelayFinishTime(DelayFinishTime finishTime)
+        {
+            try
+            {
+                if (finishTime == null)
+                {
+                    throw new Exception("参数有误");
+                }
+                var dbtask = _rpstc.GetModel(finishTime.ID);
+                if (dbtask == null)
+                {
+                    throw new Exception("任务不存在");
+                }
+                dbtask.FinishTime = finishTime.FinishTime;
+                _rpstc.Update(dbtask);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+        /// <summary>
+        /// 修改隐患等级
+        /// </summary>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        public ActionResult<bool> ChangeLevel(ChangeLevel level)
+        {
+            try
+            {
+                if (level == null)
+                {
+                    throw new Exception("参数有误");
+                }
+                var dbtask = _rpstc.GetModel(level.ID);
+                if (dbtask == null)
+                {
+                    throw new Exception("任务不存在");
+                }
+                dbtask.TroubleLevel= (int)level.TroubleLevel;
+                _rpstc.Update(dbtask);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
             }
         }
     }

@@ -25,6 +25,20 @@ namespace ESafety.Account.API.Controllers
             bll = tb;
             BusinessService = tb;
         }
+
+        /// <summary>
+        /// 巡检任务审核
+        /// </summary>
+        /// <param name="businessid"></param>
+        /// <returns></returns>
+        [Route("approve/{businessid:Guid}")]
+        [HttpGet]
+        public ActionResult<bool> Approve(Guid businessid)
+        {
+            LogContent = "审核了隐患管控，id:" + businessid.ToString();
+            return bll.Approve(businessid);
+        }
+
         /// <summary>
         /// 处理任务单据
         /// </summary>
@@ -69,6 +83,19 @@ namespace ESafety.Account.API.Controllers
         public ActionResult<Pager<TaskSubjectBillView>> GetTaskBillSubjects(PagerQuery<TaskBillSubjectsQuery> para)
         {
             return bll.GetTaskBillSubjects(para);
+        }
+
+        /// <summary>
+        /// 发起流程
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("startflow/{id:Guid}")]
+        public ActionResult<bool> StartFlow(Guid id)
+        {
+            LogContent = "发起审批，业务id:" + id.ToString();
+            return bll.StartBillFlow(id);
         }
     }
 }

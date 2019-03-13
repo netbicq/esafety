@@ -63,7 +63,7 @@ namespace ESafety.Account.Model.PARA
         public Guid BillSubjectsID { get; set; }
     }
 
-    public class TroubleCtrEdit
+    public class DelayFinishTime
     {
         /// <summary>
         /// ID
@@ -73,11 +73,22 @@ namespace ESafety.Account.Model.PARA
         /// 完成时间
         /// </summary>
         public DateTime FinishTime { get; set; }
+
+    }
+
+
+    public class ChangeLevel
+    {
+        /// <summary>
+        /// ID
+        /// </summary>
+        public Guid ID { get; set; }
         /// <summary>
         /// 隐患级别
         /// </summary>
         public int TroubleLevel { get; set; }
     }
+
 
     public class TroubleCtrQuery
     {
@@ -125,11 +136,29 @@ namespace ESafety.Account.Model.PARA
 
     public class TroubleCtrFlowNew
     {
-
-    }
-
-    public class TroubleCtrFlowEdit
-    {
-
+        /// <summary>
+        /// 隐患控制ID
+        /// </summary>
+        public Guid ControlID { get; set; }
+        /// <summary>
+        /// 日期
+        /// </summary>
+        public DateTime FlowDate { get; set; }
+        /// <summary>
+        /// 结果
+        /// </summary>
+        public int FlowResult { get; set; }
+        /// <summary>
+        /// 操作人员id
+        /// </summary>
+        public Guid FlowEmployeeID { get; set; }
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string FlowMemo { get; set; }
+        /// <summary>
+        /// 类型
+        /// </summary>
+        public int FlowType { get; set; }
     }
 }

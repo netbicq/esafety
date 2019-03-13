@@ -120,7 +120,42 @@ namespace ESafety.Account.Model.View
 
     public class TroubleCtrFlowView
     {
-
+        /// <summary>
+        /// 隐患控制ID
+        /// </summary>
+        public Guid ControlID { get; set; }
+        /// <summary>
+        /// 日期
+        /// </summary>
+        public DateTime FlowDate { get; set; }
+        /// <summary>
+        /// 结果
+        /// </summary>
+        public int FlowResult { get; set; }
+        /// <summary>
+        /// 结果名
+        /// </summary>
+        public string FlowResultName { get; set; }
+        /// <summary>
+        /// 操作人员id
+        /// </summary>
+        public Guid FlowEmployeeID { get; set; }
+        /// <summary>
+        /// 人员名
+        /// </summary>
+        public string EmpName { get; set; }
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string FlowMemo { get; set; }
+        /// <summary>
+        /// 类型
+        /// </summary>
+        public int FlowType { get; set; }
+        /// <summary>
+        /// 流程类型名
+        /// </summary>
+        public string FlowTypeName { get; set; }
     }
 
 }

@@ -9,7 +9,7 @@ namespace ESafety.Core.Model.DB.Account
     /// <summary>
     /// 任务单据
     /// </summary>
-    public partial class Bll_TaskBill : ModelBase
+    public partial class Bll_TaskBill : ModelBaseEx
     { 
         /// <summary>
         /// 单据号

@@ -1,5 +1,6 @@
 ﻿using ESafety.Account.Model.PARA;
 using ESafety.Account.Model.View;
+using ESafety.Core;
 using ESafety.Core.Model;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace ESafety.Account.IService
     /// <summary>
     /// 巡查任务
     /// </summary>
-    public interface ITaskBillService
+    public interface ITaskBillService : IBusinessFlowBase
     {
         ActionResult<TaskBillModelView> GetTaskBillModel(Guid id);
         ActionResult<Pager<TaskSubjectBillView>> GetTaskBillSubjects(PagerQuery<TaskBillSubjectsQuery> para);

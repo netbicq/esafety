@@ -1,5 +1,6 @@
 ﻿using ESafety.Account.Model.PARA;
 using ESafety.Account.Model.View;
+using ESafety.Core;
 using ESafety.Core.Model;
 using System;
 using System.Collections.Generic;
@@ -9,11 +10,13 @@ using System.Threading.Tasks;
 
 namespace ESafety.Account.IService
 {
-    public interface ITroubleCtrService
+    public interface ITroubleCtrService:IBusinessFlowBase
     {
         ActionResult<bool> AddTroubleCtr(TroubleCtrNew ctrNew);
 
-        ActionResult<bool> EditTroubleCtr(TroubleCtrEdit ctrEdit);
+        ActionResult<bool>  DelayFinishTime(DelayFinishTime finishTime);
+
+        ActionResult<bool> ChangeLevel(ChangeLevel level);
 
         ActionResult<bool> DelTroubleCtr(Guid id);
 
@@ -24,8 +27,6 @@ namespace ESafety.Account.IService
         ActionResult<Pager<TroubleCtrDetailView>> GetTroubleCtrDetails(PagerQuery<TroubleControlDetailQuery> para);
 
         ActionResult<bool> AddTroubleCtrFlow(TroubleCtrFlowNew flowNew);
-        ActionResult<bool> EditTroubleCtrFlow(TroubleCtrFlowEdit flowEdit);
-
         ActionResult<IEnumerable<TroubleCtrFlowView>> GetTroubleCtrFlows(Guid id);
 
         ActionResult<TroubleCtrDetailView> GetTroubleCtrDetailModel(Guid id);
