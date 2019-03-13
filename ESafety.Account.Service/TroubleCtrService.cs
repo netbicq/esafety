@@ -55,12 +55,12 @@ namespace ESafety.Account.Service
                 }
                 var dbtc = ctrNew.MAPTO<Bll_TroubleControl>();
                 dbtc.State = (int)PublicEnum.EE_TroubleState.pending;
-                var dbtcd = (from d in ctrNew.TroubleCtrDetails
+                var dbtcd = (from d in ctrNew.BillSubjectsIDs
                              select new Bll_TroubleControlDetails
                              {
                                  ID = Guid.NewGuid(),
-                                 TroubleControlID=d.TroubleControlID,
-                                 BillSubjectsID=d.BillSubjectsID
+                                 TroubleControlID=dbtc.ID,
+                                 BillSubjectsID=d
                              }
                            ).ToList();
 

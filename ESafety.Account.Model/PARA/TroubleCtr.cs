@@ -48,19 +48,7 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 隐患控制明细
         /// </summary>
-        public IEnumerable<TroubleControlDetail> TroubleCtrDetails { get; set; }
-    }
-
-    public class TroubleControlDetail
-    {
-        /// <summary>
-        /// 管控ID
-        /// </summary>
-        public Guid TroubleControlID { get; set; }
-        /// <summary>
-        /// 任务单据明细id
-        /// </summary>
-        public Guid BillSubjectsID { get; set; }
+        public IEnumerable<Guid> BillSubjectsIDs { get; set; }
     }
 
     public class DelayFinishTime
