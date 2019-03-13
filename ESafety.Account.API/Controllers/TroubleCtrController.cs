@@ -17,7 +17,7 @@ namespace ESafety.Account.API.Controllers
     /// 隐患管控
     /// </summary>
     [RoutePrefix("api/troublectr")]
-    public class TroubleCtrController : ESFAPI, ITroubleCtrService
+    public class TroubleCtrController : ESFAPI
     {
         private ITroubleCtrService bll = null;
         public TroubleCtrController(ITroubleCtrService ctr)

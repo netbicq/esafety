@@ -107,12 +107,13 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbtb = _rpstb.Queryable(q=>q.PostID==para.Query.PostID&&q.State==para.Query.TaskState&&(q.BillCode.Contains(para.Query.Key)||q.BillCode==string.Empty)).ToList();
+                var dbtb = _rpstb.Queryable(q=>(q.PostID==para.Query.PostID||para.Query.PostID==Guid.Empty)&&(q.State==para.Query.TaskState||para.Query.TaskState==0)&&(q.BillCode.Contains(para.Query.Key)||q.BillCode==string.Empty)).ToList();
                 var tbid = dbtb.Select(s => s.ID);
 
                 var taskid = dbtb.Select(s => s.TaskID);
                 var empids = dbtb.Select(p=>p.EmployeeID);
-                var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p=>empids.Contains(p.ID)).ToList();
+
+                var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p=>empids.Contains(p.ID));
 
                 var dbts = _work.Repository<Bll_InspectTask>().Queryable(p=>taskid.Contains(p.ID));
 
@@ -121,7 +122,7 @@ namespace ESafety.Account.Service
                 var rev = from s in dbtb
                           let emp=emps.FirstOrDefault(p=>p.ID==s.EmployeeID)
                           let ts=dbts.FirstOrDefault(p=>p.ID==s.TaskID)
-                          let tbs=dbtbs.FindAll(p=>p.BillID==s.ID).Max(s=>s.TroubleLevel)
+                          let tbs=dbtbs.Count()==0?0:dbtbs.FindAll(p=>p.BillID==s.ID).Max(s=>s.TroubleLevel)
                           select new TaskBillView
                           {
                               ID=s.ID,
@@ -197,7 +198,7 @@ namespace ESafety.Account.Service
                               YXFWDic = tbd.Eval_YXFW == Guid.Empty ? string.Empty : dict.GetModel(tbd.Eval_YXFW).DictName,
                               SubjectID = tbd.SubjectID,
                               SubjectType = tbd.SubjectType,
-                              IsControl=tbd.IsContorl
+                              IsControl=tbd.IsControl
                           };
                 var re = new Pager<TaskSubjectBillView>().GetCurrentPage(rev, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<TaskSubjectBillView>>(re);
@@ -299,7 +300,7 @@ namespace ESafety.Account.Service
 
                     //写入审批流程起始任务
                     taskmodel.BusinessCode = businessmodel.BillCode;
-                    taskmodel.BusinessDate = businessmodel.CreateDate;
+                    taskmodel.BusinessDate = businessmodel.StartTime;
 
                     _work.Repository<Flow_Task>().Add(taskmodel);
 

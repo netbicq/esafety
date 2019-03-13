@@ -62,6 +62,6 @@ namespace ESafety.Core.Model.DB.Account
         /// <summary>
         /// ÊÇ·ñ¹Ü¿Ø
         /// </summary>
-        public bool IsContorl { get; set; }
+        public bool IsControl { get; set; }
     }
 }
