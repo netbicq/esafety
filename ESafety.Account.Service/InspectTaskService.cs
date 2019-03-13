@@ -265,9 +265,14 @@ namespace ESafety.Account.Service
                 var retemp = rpstaskSubject.Queryable(q => q.InspectTaskID == taskid);
                 var subids = retemp.Select(s => s.SubjectID);
 
+                var rt = rpstask.GetModel(taskid);
+
                 var devices = _work.Repository<Basic_Facilities>().Queryable(q => subids.Contains(q.ID)).ToList();
                 var posts = _work.Repository<Basic_Post>().Queryable(q => subids.Contains(q.ID)).ToList();
                 var opreats = _work.Repository<Basic_Opreation>().Queryable(q => subids.Contains(q.ID)).ToList();
+
+                var danger = _work.Repository<Basic_Danger>().GetModel(rt.DangerID);
+                var lv = _work.Repository<Basic_Dict>().GetModel(danger.DangerLevel);
 
                 var re = from s in retemp.ToList()
                          let subinfo =
@@ -281,7 +286,8 @@ namespace ESafety.Account.Service
                              SubjectID = s.SubjectID,
                              SubjectName = subinfo,
                              SubjectType = s.SubjectType,
-                             SubjectTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == s.SubjectType).Caption
+                             SubjectTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == s.SubjectType).Caption,
+                             DangerLevel=lv==null?"":lv.DictName
                          };
 
                 return new ActionResult<IEnumerable<InspectTaskSubjectView>>(re);

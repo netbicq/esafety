@@ -116,6 +116,10 @@ namespace ESafety.Account.Model.View
         /// 主体名
         /// </summary>
         public string SubjectName { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public string DangerLevel { get; set; }
     }
     /// <summary>
     /// 巡查任务模型

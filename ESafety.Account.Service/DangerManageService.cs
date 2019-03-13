@@ -280,7 +280,8 @@ namespace ESafety.Account.Service
                 }
                 var re = dbdanger.MAPTO<DangerView>();
                 re.DangerSortName = _rpsdangersort.GetModel(dbdanger.DangerSortID).SortName;
-                re.DangerLevelName = _work.Repository<Core.Model.DB.Basic_Dict>().GetModel(dbdanger.DangerLevel).DictName;
+                var dict = _work.Repository<Core.Model.DB.Basic_Dict>().GetModel(dbdanger.DangerLevel);
+                re.DangerLevelName =dict==null?"":dict.DictName;
                 return new ActionResult<DangerView>(re);
             }
             catch (Exception ex)
@@ -311,7 +312,7 @@ namespace ESafety.Account.Service
                                   Name = danger.Name,
                                   ID = danger.ID,
                                   DangerLevel=danger.DangerLevel,
-                                  DangerLevelName=d.DictName,
+                                  DangerLevelName=d==null?"":d.DictName,
                                   DangerSortName = _rpsdangersort.GetModel(p => p.ID == danger.DangerSortID || p.ID == dangersortid).SortName
                               };
                 return new ActionResult<IEnumerable<DangerView>>(dangers);
@@ -344,8 +345,8 @@ namespace ESafety.Account.Service
                                   ID = danger.ID,
                                   DangerSortName = o==null?"":o.SortName,
                                   DangerLevel=danger.DangerLevel,
-                                  DangerLevelName=d.DictName
-                                  
+                                  DangerLevelName = d == null ? "" : d.DictName
+
                               };
                 return new ActionResult<IEnumerable<DangerView>>(dangers);
             }
