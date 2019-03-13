@@ -41,6 +41,10 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public Guid PostID { get; set; }
         /// <summary>
+        /// 执行岗位
+        /// </summary>
+        public string PostName { get; set; }
+        /// <summary>
         /// 执行人
         /// </summary>
         public Guid EmployeeID { get; set; }

@@ -49,5 +49,13 @@ namespace ESafety.Account.Model.View
         /// 类别名称
         /// </summary>
         public string DangerSortName { get; set; }
+        /// <summary>
+        /// 风险等级名
+        /// </summary>
+        public string DangerLevelName { get; set; }
+        /// <summary>
+        /// 风险等级ID
+        /// </summary>
+        public Guid DangerLevel { get; set; }
     }
 }

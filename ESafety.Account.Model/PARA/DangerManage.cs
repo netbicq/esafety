@@ -36,6 +36,10 @@ namespace ESafety.Account.Model.PARA
         /// 类别ID
         /// </summary>
         public Guid DangerSortID { get; set; }
+        /// <summary>
+        /// 风险级别
+        /// </summary>
+        public Guid DangerLevel { get; set; }
     }
 
     public class DangerEdit:DangerNew

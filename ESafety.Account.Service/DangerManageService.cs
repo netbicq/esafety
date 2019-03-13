@@ -280,6 +280,7 @@ namespace ESafety.Account.Service
                 }
                 var re = dbdanger.MAPTO<DangerView>();
                 re.DangerSortName = _rpsdangersort.GetModel(dbdanger.DangerSortID).SortName;
+                re.DangerLevelName = _work.Repository<Core.Model.DB.Basic_Dict>().GetModel(dbdanger.DangerLevel).DictName;
                 return new ActionResult<DangerView>(re);
             }
             catch (Exception ex)
@@ -299,13 +300,18 @@ namespace ESafety.Account.Service
             try
             {
                 var dbdangers = _rpsdanger.Queryable(p => p.DangerSortID == dangersortid);
+                var lvids = dbdangers.Select(s => s.DangerLevel);
+                var dicts = _work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => lvids.Contains(p.ID));
                 var dangers = from danger in dbdangers.ToList()
+                              let d=dicts.FirstOrDefault(p=>p.ID==danger.DangerLevel)
                               select new DangerView
                               {
                                   Code = danger.Code,
                                   DangerSortID = danger.DangerSortID,
                                   Name = danger.Name,
                                   ID = danger.ID,
+                                  DangerLevel=danger.DangerLevel,
+                                  DangerLevelName=d.DictName,
                                   DangerSortName = _rpsdangersort.GetModel(p => p.ID == danger.DangerSortID || p.ID == dangersortid).SortName
                               };
                 return new ActionResult<IEnumerable<DangerView>>(dangers);
@@ -325,15 +331,21 @@ namespace ESafety.Account.Service
             try
             {
                 var dbdangers = _rpsdanger.Queryable();
+                var lvids = dbdangers.Select(s => s.DangerLevel);
+                var dicts = _work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p=>lvids.Contains(p.ID));
                 var dangers = from danger in dbdangers.ToList()
                               let o = _rpsdangersort.GetModel(danger.DangerSortID)
+                              let d=dicts.FirstOrDefault(p=>p.ID==danger.DangerLevel)
                               select new DangerView
                               {
                                   Code = danger.Code,
                                   DangerSortID = danger.DangerSortID,
                                   Name = danger.Name,
                                   ID = danger.ID,
-                                  DangerSortName = o==null?"":o.SortName
+                                  DangerSortName = o==null?"":o.SortName,
+                                  DangerLevel=danger.DangerLevel,
+                                  DangerLevelName=d.DictName
+                                  
                               };
                 return new ActionResult<IEnumerable<DangerView>>(dangers);
             }

@@ -110,6 +110,7 @@ namespace ESafety.Account.Service
                 var dbtb = _rpstb.Queryable(q=>(q.PostID==para.Query.PostID||para.Query.PostID==Guid.Empty)&&(q.State==para.Query.TaskState||para.Query.TaskState==0)&&(q.BillCode.Contains(para.Query.Key)||q.BillCode==string.Empty)).ToList();
                 var tbid = dbtb.Select(s => s.ID);
 
+                var popstid = dbtb.Select(s => s.PostID);
                 var taskid = dbtb.Select(s => s.TaskID);
                 var empids = dbtb.Select(p=>p.EmployeeID);
 
@@ -119,10 +120,13 @@ namespace ESafety.Account.Service
 
                 var dbtbs = _rpstbs.Queryable(p=>tbid.Contains(p.BillID)).ToList();
 
+                var posts = _work.Repository<Basic_Post>().Queryable(q => popstid.Contains(q.ID));
+
                 var rev = from s in dbtb
                           let emp=emps.FirstOrDefault(p=>p.ID==s.EmployeeID)
                           let ts=dbts.FirstOrDefault(p=>p.ID==s.TaskID)
                           let tbs=dbtbs.Count()==0?0:dbtbs.FindAll(p=>p.BillID==s.ID).Max(s=>s.TroubleLevel)
+                          let post=posts.FirstOrDefault(p=>p.ID==s.PostID)
                           select new TaskBillView
                           {
                               ID=s.ID,
@@ -135,6 +139,7 @@ namespace ESafety.Account.Service
                               EndTime=s.EndTime,
                               EmployeeName=emp.CNName,
                               PostID=s.PostID,
+                              PostName=post.Name,
                               TaskName=ts.Name,
                               TaskResult=tbs==0?"":Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == tbs).Caption,
                           };
