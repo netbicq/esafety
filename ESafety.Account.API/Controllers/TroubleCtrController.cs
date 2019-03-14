@@ -158,7 +158,7 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="para"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpPost]
         [Route("gettcp")]
         public ActionResult<Pager<TroubleCtrView>> GetTroubleCtrs(PagerQuery<TroubleCtrQuery> para)
         {

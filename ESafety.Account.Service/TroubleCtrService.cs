@@ -295,10 +295,10 @@ namespace ESafety.Account.Service
                                  SubjectTypeName= Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == s.SubjectType).Caption,
                                  TaskResultName= Command.GetItems(typeof(PublicEnum.EE_TaskResultType)).FirstOrDefault(q => q.Value == s.TaskResult).Caption,
                                  TroubleLevelName= Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == s.TroubleLevel).Caption,
-                                 SGJGDic=dic.GetModel(s.Eval_SGJG).DictName,
-                                 SGLXDic=dic.GetModel(s.Eval_SGLX).DictName,
-                                 WHYSDic=dic.GetModel(s.Eval_WHYS).DictName,
-                                 YXFWDic=dic.GetModel(s.Eval_YXFW).DictName
+                                 SGJGDic=s.Eval_SGJG==Guid.Empty?"":dic.GetModel(s.Eval_SGJG).DictName,
+                                 SGLXDic=s.Eval_SGLX==Guid.Empty?"":dic.GetModel(s.Eval_SGLX).DictName,
+                                 WHYSDic=s.Eval_WHYS==Guid.Empty?"":dic.GetModel(s.Eval_WHYS).DictName,
+                                 YXFWDic=s.Eval_YXFW==Guid.Empty?"":dic.GetModel(s.Eval_YXFW).DictName
                              };
 
                 var re = new Pager<TroubleCtrDetailView>().GetCurrentPage(retcds,para.PageSize,para.PageIndex);
@@ -325,7 +325,7 @@ namespace ESafety.Account.Service
 
                 var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p=>fempids.Contains(p.ID));
 
-                var re = from f in tcf
+                var re = from f in tcf.ToList()
                          let emp=emps.FirstOrDefault(p=>p.ID==f.FlowEmployeeID)
                          select new TroubleCtrFlowView
                          {
@@ -355,23 +355,23 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var starttime = para.Query.StartDate;
-                var endtime = para.Query.EndTime.AddDays(1);
+                DateTime starttime = para.Query.StartDate;
+                DateTime endtime = para.Query.EndTime.AddDays(1);
                 if (para.Query.IsHistory)
                 {
                     var dbtc = _rpstc.Queryable(q=>
                     (q.CreateDate>=starttime&&q.CreateDate<endtime)
                     &&(q.TroubleLevel==para.Query.TroubleLevel||para.Query.TroubleLevel==0)
                     && (q.ControlName.Contains(para.Query.Key)||para.Query.Key==string.Empty)
-                    &&q.State==(int)PublicEnum.EE_TroubleState.history).ToList();
+                    &&q.State==(int)PublicEnum.EE_TroubleState.history);
 
                     var pempids = dbtc.Select(s => s.PrincipalID);
-                    var pemps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q=>pempids.Contains(q.ID)).ToList();
+                    var pemps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q=>pempids.Contains(q.ID));
 
                     var porgids = dbtc.Select(s => s.OrgID);
-                    var porgs = _work.Repository<Core.Model.DB.Basic_Org>().Queryable(q => porgids.Contains(q.ID)).ToList();
+                    var porgs = _work.Repository<Core.Model.DB.Basic_Org>().Queryable(q => porgids.Contains(q.ID));
 
-                    var retc = from tc in dbtc
+                    var retc = from tc in dbtc.ToList()
                                let pemp = pemps.FirstOrDefault(q => q.ID == tc.PrincipalID)
                                let porg=porgs.FirstOrDefault(q=>q.ID==tc.OrgID)
                                select new TroubleCtrView
@@ -403,12 +403,12 @@ namespace ESafety.Account.Service
                         && q.State != (int)PublicEnum.EE_TroubleState.history);
 
                     var pempids = dbtc.Select(s => s.PrincipalID);
-                    var pemps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q => pempids.Contains(q.ID)).ToList();
+                    var pemps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q => pempids.Contains(q.ID));
 
                     var porgids = dbtc.Select(s => s.OrgID);
-                    var porgs = _work.Repository<Core.Model.DB.Basic_Org>().Queryable(q => porgids.Contains(q.ID)).ToList();
+                    var porgs = _work.Repository<Core.Model.DB.Basic_Org>().Queryable(q => porgids.Contains(q.ID));
 
-                    var retc = from tc in dbtc
+                    var retc = from tc in dbtc.ToList()
                                let pemp = pemps.FirstOrDefault(q => q.ID == tc.PrincipalID)
                                let porg = porgs.FirstOrDefault(q => q.ID == tc.OrgID)
                                select new TroubleCtrView

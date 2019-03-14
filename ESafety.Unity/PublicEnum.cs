@@ -264,7 +264,27 @@ namespace ESafety.Unity
         /// </summary>
         public enum EE_TroubleLevel
         {
-            
+            /// <summary>
+            /// 一般风险
+            /// </summary>
+            [Description("一般风险")]
+            OneLevel=1,
+            /// <summary>
+            /// 一般风险
+            /// </summary>
+            [Description("较大风险")]
+            TwoLevel = 2,
+            /// <summary>
+            /// 一般风险
+            /// </summary>
+            [Description("严重风险")]
+            ThreeLevel = 3,
+            /// <summary>
+            /// 一般风险
+            /// </summary>
+            [Description("重大风险")]
+            FourLevel = 4,
+
         }
         /// <summary>
         /// 审批节点类型
@@ -311,7 +331,17 @@ namespace ESafety.Unity
             /// 临时任务
             /// </summary>
             [Description("临时任务")]
-            TempTask = 5
+            TempTask = 5,
+            /// <summary>
+            /// 管控验收申请
+            /// </summary>
+            [Description("管控验收申请")]
+            TroubleApply=6,
+            /// <summary>
+            /// 管控验收
+            /// </summary>
+            [Description("管控验收")]
+            TroubleR=7
         }
         /// <summary>
         /// 检查主体类型
