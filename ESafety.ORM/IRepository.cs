@@ -68,7 +68,7 @@ namespace ESafety.ORM
         T GetModel(Guid key);
         /// <summary>
         /// 获取条件内实体，如果多条则返回第一条
-        /// </summar
+        /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
         T GetModel(Expression<Func<T, bool>> predicate); 

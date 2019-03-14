@@ -50,6 +50,8 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到要处理的信息");
                 }
+              
+
                 dbtbs = subjectBillEdit.CopyTo<Bll_TaskBillSubjects>(dbtbs);
                 _rpstbs.Update(dbtbs);
                 _work.Commit();
@@ -69,10 +71,18 @@ namespace ESafety.Account.Service
             try
             {
                 var dbtbs = _rpstbs.GetModel(id);
+                var dbtb = _rpstb.GetModel(dbtbs.BillID);
+                var _CanHandle = true;
                 if (dbtbs == null)
                 {
                     throw new Exception("未找到提交的单据的具体详情");
                 }
+                var check = _work.Repository<Bll_TroubleControlDetails>().Any(p => p.BillSubjectsID == dbtbs.BillID);
+                if (check)
+                {
+                    _CanHandle = false;
+                }
+                var dict = _work.Repository<Core.Model.DB.Basic_Dict>();
                 var dbdanger = _work.Repository<Basic_Danger>().GetModel(dbtbs.DangerID);
                 var dev = _work.Repository<Basic_Facilities>().GetModel(dbtbs.SubjectID);
                 var post = _work.Repository<Basic_Post>().GetModel(dbtbs.SubjectID);
@@ -83,11 +93,33 @@ namespace ESafety.Account.Service
                     DangerID=dbtbs.DangerID,
                     DangerName=dbdanger.Name,
                     SubjectID=dbtbs.SubjectID,
-                    SubName = dev != null ? dev.Name : post != null ? post.Name : opr != null ? opr.Name : default(string),
+                    SubName= dev != null ? dev.Name : post != null ? post.Name : opr != null ? opr.Name : default(string),
                     SubjectType =dbtbs.SubjectType,
                     TaskResult=dbtbs.TaskResult,
                     TaskResultMemo=dbtbs.TaskResultMemo,
                     TaskResultName= Command.GetItems(typeof(PublicEnum.EE_TaskResultType)).FirstOrDefault(q => q.Value == dbtbs.TaskResult).Caption,
+                    CanHandle=_CanHandle,
+                    ID=dbtbs.ID,
+
+                    TroubleLevel = dbtbs.TroubleLevel,
+                    TroubleLevelName = dbtbs.TroubleLevel == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == dbtbs.TroubleLevel).Caption,
+
+                    Eval_Method = dbtbs.Eval_Method,
+                    MethodName = dbtbs.Eval_Method == 0 ? string.Empty : Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(q => q.Value == dbtbs.Eval_Method).Caption,
+
+                    Eval_SGJG = dbtbs.Eval_SGJG,
+                    SGJGDic = dbtbs.Eval_SGJG == Guid.Empty ? string.Empty : dict.GetModel(dbtbs.Eval_SGJG).DictName,
+
+                    Eval_SGLX = dbtbs.Eval_SGLX,
+                    SGLXDic = dbtbs.Eval_SGLX == Guid.Empty ? string.Empty : dict.GetModel(dbtbs.Eval_SGLX).DictName,
+
+                    Eval_WHYS = dbtbs.Eval_WHYS,
+                    WHYSDic = dbtbs.Eval_WHYS == Guid.Empty ? string.Empty : dict.GetModel(dbtbs.Eval_WHYS).DictName,
+
+                    Eval_YXFW = dbtbs.Eval_YXFW,
+                    YXFWDic = dbtbs.Eval_YXFW == Guid.Empty ? string.Empty : dict.GetModel(dbtbs.Eval_YXFW).DictName,
+                    IsControl = dbtbs.IsControl
+
                 };
                 return new ActionResult<TaskBillModelView>(re);
             }
@@ -163,7 +195,7 @@ namespace ESafety.Account.Service
             try
             {
                 var dbtb = _rpstb.GetModel(para.Query.BillID);
-                var dbtbs = _rpstbs.Queryable(p => p.BillID == para.Query.BillID && p.SubjectID == para.Query.SubjectID).ToList();
+                var dbtbs = _rpstbs.Queryable(p => p.BillID == para.Query.BillID).ToList();
 
                 var ids = dbtbs.Select(p => p.DangerID);
 

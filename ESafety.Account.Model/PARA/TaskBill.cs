@@ -84,11 +84,6 @@ namespace ESafety.Account.Model.PARA
         /// 任务单据ID
         /// </summary>
         public Guid BillID { get; set; }
-        /// <summary>
-        /// 主体ID
-        /// </summary>
-        public Guid SubjectID { get; set; }
-
     }
 
 }

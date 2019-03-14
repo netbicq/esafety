@@ -54,7 +54,7 @@ namespace ESafety.Account.Service
                     throw new Exception("该隐患管控已存在!");
                 }
                 var dbtc = ctrNew.MAPTO<Bll_TroubleControl>();
-                dbtc.State = (int)PublicEnum.EE_TroubleState.pending;
+                dbtc.Code = Command.CreateCode();
                 var dbtcd = (from d in ctrNew.BillSubjectsIDs
                              select new Bll_TroubleControlDetails
                              {
@@ -115,7 +115,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("任务不存在");
                 }
-                if (dbtask.State == (int)PublicEnum.EE_TroubleState.history)
+                if (dbtask.State == (int)PublicEnum.EE_TroubleState.history||dbtask.State==0)
                 {
                     throw new Exception("当前状态不允许");
                 }
@@ -149,7 +149,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到所需删除的隐患管控!");
                 }
-                if (tc.State != (int)PublicEnum.EE_TroubleState.pending)
+                if (tc.State != (int)PublicEnum.EE_TroubleState.pending||tc.State!=0)
                 {
                     throw new Exception("隐患管控当前状态不允许删除!");
                 }
@@ -187,6 +187,7 @@ namespace ESafety.Account.Service
 
                 var retc = new TroubleCtrView
                 {
+                    Code=dbtc.Code,
                     ID = dbtc.ID,
                     State = dbtc.State,
                     CreateDate = dbtc.CreateDate,
@@ -355,12 +356,12 @@ namespace ESafety.Account.Service
         {
             try
             {
-                DateTime starttime = para.Query.StartDate;
-                DateTime endtime = para.Query.EndTime.AddDays(1);
+                DateTime? starttime = para.Query.StartDate;
+                DateTime? endtime = para.Query.EndTime?.AddDays(1);
                 if (para.Query.IsHistory)
                 {
                     var dbtc = _rpstc.Queryable(q=>
-                    (q.CreateDate>=starttime&&q.CreateDate<endtime)
+                    ((q.CreateDate>=starttime&&q.CreateDate<endtime)||(starttime==null&&endtime==null))
                     &&(q.TroubleLevel==para.Query.TroubleLevel||para.Query.TroubleLevel==0)
                     && (q.ControlName.Contains(para.Query.Key)||para.Query.Key==string.Empty)
                     &&q.State==(int)PublicEnum.EE_TroubleState.history);
@@ -376,6 +377,7 @@ namespace ESafety.Account.Service
                                let porg=porgs.FirstOrDefault(q=>q.ID==tc.OrgID)
                                select new TroubleCtrView
                                {
+                                   Code=tc.Code,
                                    ID = tc.ID,
                                    State = tc.State,
                                    CreateDate = tc.CreateDate,
@@ -397,7 +399,7 @@ namespace ESafety.Account.Service
                 else
                 {
                         var dbtc = _rpstc.Queryable(q =>
-                        (q.CreateDate >= starttime && q.CreateDate < endtime)
+                        ((q.CreateDate >= starttime && q.CreateDate < endtime)||(starttime ==null && endtime == null))
                         && (q.TroubleLevel == para.Query.TroubleLevel || para.Query.TroubleLevel == 0)
                         && (q.ControlName.Contains(para.Query.Key) || para.Query.Key == string.Empty)
                         && q.State != (int)PublicEnum.EE_TroubleState.history);
@@ -413,6 +415,7 @@ namespace ESafety.Account.Service
                                let porg = porgs.FirstOrDefault(q => q.ID == tc.OrgID)
                                select new TroubleCtrView
                                {
+                                   Code=tc.Code,
                                    ID = tc.ID,
                                    State = tc.State,
                                    CreateDate = tc.CreateDate,
@@ -470,7 +473,7 @@ namespace ESafety.Account.Service
                 }
                 if (flowcheck.data)
                 {
-                    businessmodel.State = (int)PublicEnum.BillFlowState.audited;
+                    businessmodel.State = (int)PublicEnum.EE_TroubleState.pending;
                     _rpstc.Update(businessmodel);
                     _work.Commit();
                     return new ActionResult<bool>(true);
@@ -562,6 +565,11 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("任务不存在");
                 }
+                if (dbtask.State == (int)PublicEnum.EE_TroubleState.history || dbtask.State == (int)PublicEnum.EE_TroubleState.over)
+                {
+                    throw new Exception("当前状态无法延期!");
+                }
+
                 dbtask.FinishTime = finishTime.FinishTime;
                 _rpstc.Update(dbtask);
                 _work.Commit();

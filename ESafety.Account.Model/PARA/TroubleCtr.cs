@@ -9,6 +9,7 @@ namespace ESafety.Account.Model.PARA
 {
     public class TroubleCtrNew
     {
+
         /// <summary>
         /// 管控名称
         /// </summary>
@@ -41,10 +42,6 @@ namespace ESafety.Account.Model.PARA
         /// 发现日期
         /// </summary>
         public DateTime CreateDate { get; set; }
-        /// <summary>
-        /// 状态
-        /// </summary>
-        public int State { get; set; }
         /// <summary>
         /// 隐患控制明细
         /// </summary>
@@ -83,11 +80,11 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 起始时间
         /// </summary>
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
         /// <summary>
         /// 完成时间
         /// </summary>
-        public DateTime EndTime { get; set; }
+        public DateTime? EndTime { get; set; }
         /// <summary>
         /// 是否历史
         /// </summary>
@@ -133,10 +130,6 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public DateTime FlowDate { get; set; }
         /// <summary>
-        /// 结果
-        /// </summary>
-        public int FlowResult { get; set; }
-        /// <summary>
         /// 操作人员id
         /// </summary>
         public Guid FlowEmployeeID { get; set; }
@@ -148,5 +141,9 @@ namespace ESafety.Account.Model.PARA
         /// 类型
         /// </summary>
         public int FlowType { get; set; }
+        /// <summary>
+        /// 是否通过验收(0:当前为状态为管控状态时，1通过、2拒绝)
+        /// </summary>
+        public int FlowResult { get; set; }
     }
 }

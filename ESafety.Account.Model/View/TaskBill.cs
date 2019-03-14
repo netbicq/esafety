@@ -62,44 +62,16 @@ namespace ESafety.Account.Model.View
         public string TaskResult { get; set; }
     }
 
-    public class TaskBillModelView
+    public class TaskBillModelView: TaskSubjectBillView
     {
-        /// <summary>
-        /// 单据id
-        /// </summary>
-        public Guid BillID { get; set; }
-        /// <summary>
-        /// 主体类型
-        /// </summary>
-        public int SubjectType { get; set; }
-        /// <summary>
-        /// 主体id
-        /// </summary>
-        public Guid SubjectID { get; set; }
         /// <summary>
         /// 主体名
         /// </summary>
         public string SubName { get; set; }
         /// <summary>
-        /// 风险点id
+        /// 能否处理
         /// </summary>
-        public Guid DangerID { get; set; }
-        /// <summary>
-        ///危险源名称 
-        /// </summary>
-        public string DangerName { get; set; }
-        /// <summary>
-        /// 任务结果
-        /// </summary>
-        public int TaskResult { get; set; }
-        /// <summary>
-        /// 任务结果名
-        /// </summary>
-        public string TaskResultName { get; set; }
-        /// <summary>
-        /// 任务巡检描述
-        /// </summary>
-        public string TaskResultMemo { get; set; }
+        public bool CanHandle { get; set; }
     }
 
     public class TaskSubjectBillView

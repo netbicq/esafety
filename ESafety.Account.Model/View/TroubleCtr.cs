@@ -9,6 +9,10 @@ namespace ESafety.Account.Model.View
     public class TroubleCtrView
     {
         /// <summary>
+        ///隐患管控编号
+        /// </summary>
+        public string Code { get; set; }
+        /// <summary>
         /// 隐患管控ID
         /// </summary>
         public Guid ID { get; set; }
