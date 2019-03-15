@@ -67,7 +67,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 状态
         /// </summary>
-        public int State { get; set; }
+        public Unity.PublicEnum.EE_TroubleState State { get; set; }
         /// <summary>
         /// 状态名
         /// </summary>
@@ -133,6 +133,10 @@ namespace ESafety.Account.Model.View
         /// 隐患等级名
         /// </summary>
         public string TroubleLevelName { get; set; }
+        /// <summary>
+        /// 风险点ID
+        /// </summary>
+        public Guid DangerID { get; set; }
     }
 
     public class TroubleCtrFlowView
@@ -146,7 +150,7 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public DateTime FlowDate { get; set; }
         /// <summary>
-        /// 结果
+        /// 结果(0(表示在申请中),1通过,2拒绝)
         /// </summary>
         public int FlowResult { get; set; }
         /// <summary>
@@ -166,9 +170,9 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string FlowMemo { get; set; }
         /// <summary>
-        /// 类型
+        /// 类型(取6，7)
         /// </summary>
-        public int FlowType { get; set; }
+        public Unity.PublicEnum.EE_BusinessType FlowType { get; set; }
         /// <summary>
         /// 流程类型名
         /// </summary>

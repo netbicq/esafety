@@ -194,7 +194,7 @@ namespace ESafety.Account.Service
                 {
                     Code=dbtc.Code,
                     ID = dbtc.ID,
-                    State = dbtc.State,
+                    State = (PublicEnum.EE_TroubleState)dbtc.State,
                     StateName = dbtc.State == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(p => p.Value == dbtc.State).Caption,
 
                     CreateDate = dbtc.CreateDate,
@@ -250,6 +250,7 @@ namespace ESafety.Account.Service
                              {
                                  ID = sub.ID,
                                  DangerName = danger.Name,
+                                 DangerID=danger.ID,
                                  MethodName = sub.Eval_Method == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(p => p.Value == sub.Eval_Method).Caption,
                                  TaskResultMemo = sub.TaskResultMemo,
                                  SubjectName = dev != null ? dev.Name : post != null ? post.Name : opr != null ? opr.Name : default(string),
@@ -302,6 +303,7 @@ namespace ESafety.Account.Service
                              {
                                  ID=s.ID,
                                  DangerName=d.Name,
+                                 DangerID=d.ID,
                                  MethodName=s.Eval_Method==0?"":Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(p=>p.Value==s.Eval_Method).Caption,
                                  TaskResultMemo=s.TaskResultMemo,
                                  SubjectName = dev != null ? dev.Name : ppst != null ? ppst.Name : opr != null ? opr.Name : default(string),
@@ -348,8 +350,8 @@ namespace ESafety.Account.Service
                              EmpName=emp.CNName,
                              FlowMemo=f.FlowMemo,
                              FlowResult=f.FlowResult,
-                             FlowType=f.FlowType,
-                             FlowResultName=Command.GetItems(typeof(PublicEnum.EE_FlowResult)).FirstOrDefault(s=>s.Value==f.FlowResult).Caption,
+                             FlowType=(PublicEnum.EE_BusinessType)f.FlowType,
+                             FlowResultName=f.FlowResult==0?"":Command.GetItems(typeof(PublicEnum.EE_FlowResult)).FirstOrDefault(s=>s.Value==f.FlowResult).Caption,
                              FlowTypeName=Command.GetItems(typeof(PublicEnum.EE_BusinessType)).FirstOrDefault(s=>s.Value==f.FlowType).Caption
                          };
                 return new ActionResult<IEnumerable<TroubleCtrFlowView>>(re);
@@ -401,7 +403,7 @@ namespace ESafety.Account.Service
                                {
                                    Code = tc.Code,
                                    ID = tc.ID,
-                                   State = tc.State,
+                                   State = (PublicEnum.EE_TroubleState)tc.State,
                                    StateName = tc.State == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(p => p.Value == tc.State).Caption,
 
                                    CreateDate = tc.CreateDate,
@@ -452,7 +454,7 @@ namespace ESafety.Account.Service
                                {
                                    Code=tc.Code,
                                    ID = tc.ID,
-                                   State = tc.State,
+                                   State = (PublicEnum.EE_TroubleState)tc.State,
                                    StateName=tc.State==0?"":Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(p=>p.Value==tc.State).Caption,
 
                                    CreateDate = tc.CreateDate,
