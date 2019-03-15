@@ -154,6 +154,7 @@ namespace ESafety.Account.Service
 
                 var posts = _work.Repository<Basic_Post>().Queryable(q => popstid.Contains(q.ID));
 
+           
                 var rev = from s in dbtb
                           let emp=emps.FirstOrDefault(p=>p.ID==s.EmployeeID)
                           let ts=dbts.FirstOrDefault(p=>p.ID==s.TaskID)
@@ -168,6 +169,7 @@ namespace ESafety.Account.Service
                               EmployeeID=s.EmployeeID,
                               DangerID=s.DangerID,
                               State=s.State,
+                              StateName=s.State==0?"":Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q=>q.Value==s.State).Caption,
                               EndTime=s.EndTime,
                               EmployeeName=emp.CNName,
                               PostID=s.PostID,

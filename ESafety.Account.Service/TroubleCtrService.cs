@@ -185,11 +185,18 @@ namespace ESafety.Account.Service
 
                 var porg = _work.Repository<Core.Model.DB.Basic_Org>().GetModel(dbtc.OrgID);
 
+
+                var tcf = _rpstcf.GetModel(p => p.ControlID == id&&p.FlowResult==(int)PublicEnum.EE_FlowResult.Pass);
+                
+                var emps = _work.Repository<Core.Model.DB.Basic_Employee>().GetModel(p =>p.ID==tcf.FlowEmployeeID);
+
                 var retc = new TroubleCtrView
                 {
                     Code=dbtc.Code,
                     ID = dbtc.ID,
                     State = dbtc.State,
+                    StateName = dbtc.State == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(p => p.Value == dbtc.State).Caption,
+
                     CreateDate = dbtc.CreateDate,
                     ControlName = dbtc.ControlName,
                     ControlDescription = dbtc.ControlDescription,
@@ -201,6 +208,11 @@ namespace ESafety.Account.Service
                     PrincipalTEL = dbtc.PrincipalTEL,
                     TroubleLevel = dbtc.TroubleLevel,
                     TroubleLevelDesc = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p => p.Value == dbtc.TroubleLevel).Caption,
+                    
+                    FlowEmp=emps==null?"":emps.CNName,
+                    FlowTime=tcf?.FlowDate
+                    
+                    
 
                 };
 
@@ -372,26 +384,40 @@ namespace ESafety.Account.Service
                     var porgids = dbtc.Select(s => s.OrgID);
                     var porgs = _work.Repository<Core.Model.DB.Basic_Org>().Queryable(q => porgids.Contains(q.ID));
 
+                    var tcids = dbtc.Select(s => s.ID);
+
+                    var tcfs = _rpstcf.Queryable(p => tcids.Contains(p.ControlID) && p.FlowResult == (int)PublicEnum.EE_FlowResult.Pass);
+                    var tcfempids = tcfs.Select(s => s.FlowEmployeeID);
+
+                    var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p =>tcfempids.Contains(p.ID));
+
+
                     var retc = from tc in dbtc.ToList()
                                let pemp = pemps.FirstOrDefault(q => q.ID == tc.PrincipalID)
-                               let porg=porgs.FirstOrDefault(q=>q.ID==tc.OrgID)
+                               let porg = porgs.FirstOrDefault(q => q.ID == tc.OrgID)
+                               let tcf = tcfs.FirstOrDefault(q => q.ControlID == tc.ID)
+                               let emp = emps.FirstOrDefault(q => q.ID == tcf.FlowEmployeeID)
                                select new TroubleCtrView
                                {
-                                   Code=tc.Code,
+                                   Code = tc.Code,
                                    ID = tc.ID,
                                    State = tc.State,
+                                   StateName = tc.State == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(p => p.Value == tc.State).Caption,
+
                                    CreateDate = tc.CreateDate,
                                    ControlName = tc.ControlName,
                                    ControlDescription = tc.ControlDescription,
                                    PrincipalID = tc.PrincipalID,
                                    PrincipalName = pemp.CNName,
-                                   OrgID=tc.OrgID,
-                                   OrgName=porg.OrgName,
-                                   FinishTime=tc.FinishTime,
-                                   PrincipalTEL=tc.PrincipalTEL,
-                                   TroubleLevel=tc.TroubleLevel,
-                                   TroubleLevelDesc=Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p=>p.Value==tc.TroubleLevel).Caption,
-                                   
+                                   OrgID = tc.OrgID,
+                                   OrgName = porg.OrgName,
+                                   FinishTime = tc.FinishTime,
+                                   PrincipalTEL = tc.PrincipalTEL,
+                                   TroubleLevel = tc.TroubleLevel,
+                                   TroubleLevelDesc = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p => p.Value == tc.TroubleLevel).Caption,
+
+                                   FlowEmp =emp==null?"":emp.CNName,
+                                   FlowTime=tcf?.FlowDate
                              };
                     var re = new Pager<TroubleCtrView>().GetCurrentPage(retc,para.PageSize,para.PageIndex);
                     return new ActionResult<Pager<TroubleCtrView>>(re);
@@ -410,14 +436,25 @@ namespace ESafety.Account.Service
                     var porgids = dbtc.Select(s => s.OrgID);
                     var porgs = _work.Repository<Core.Model.DB.Basic_Org>().Queryable(q => porgids.Contains(q.ID));
 
+                    var tcids = dbtc.Select(s => s.ID);
+
+                    var tcfs = _rpstcf.Queryable(p => tcids.Contains(p.ControlID) && p.FlowResult == (int)PublicEnum.EE_FlowResult.Pass);
+                    var tcfempids = tcfs.Select(s => s.FlowEmployeeID);
+
+                    var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p => tcfempids.Contains(p.ID));
+
                     var retc = from tc in dbtc.ToList()
                                let pemp = pemps.FirstOrDefault(q => q.ID == tc.PrincipalID)
                                let porg = porgs.FirstOrDefault(q => q.ID == tc.OrgID)
+                               let tcf = tcfs.FirstOrDefault(q => q.ControlID == tc.ID)
+                               let emp = emps.FirstOrDefault(q => q.ID == tcf.FlowEmployeeID)
                                select new TroubleCtrView
                                {
                                    Code=tc.Code,
                                    ID = tc.ID,
                                    State = tc.State,
+                                   StateName=tc.State==0?"":Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(p=>p.Value==tc.State).Caption,
+
                                    CreateDate = tc.CreateDate,
                                    ControlName = tc.ControlName,
                                    ControlDescription = tc.ControlDescription,
@@ -430,6 +467,8 @@ namespace ESafety.Account.Service
                                    TroubleLevel = tc.TroubleLevel,
                                    TroubleLevelDesc = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p => p.Value == tc.TroubleLevel).Caption,
 
+                                   FlowEmp = emp == null ? "" : emp.CNName,
+                                   FlowTime = tcf?.FlowDate
                                };
                     var re = new Pager<TroubleCtrView>().GetCurrentPage(retc, para.PageSize, para.PageIndex);
                     return new ActionResult<Pager<TroubleCtrView>>(re);

@@ -57,9 +57,15 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public int State { get; set; }
         /// <summary>
+        /// 状态名
+        /// </summary>
+        public string StateName { get; set; }
+        /// <summary>
         /// 任务结果
         /// </summary>
         public string TaskResult { get; set; }
+
+
     }
 
     public class TaskBillModelView: TaskSubjectBillView

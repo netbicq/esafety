@@ -270,17 +270,17 @@ namespace ESafety.Unity
             [Description("一般风险")]
             OneLevel=1,
             /// <summary>
-            /// 一般风险
+            /// 较大风险
             /// </summary>
             [Description("较大风险")]
             TwoLevel = 2,
             /// <summary>
-            /// 一般风险
+            ///严重风险
             /// </summary>
             [Description("严重风险")]
             ThreeLevel = 3,
             /// <summary>
-            /// 一般风险
+            /// 重大风险
             /// </summary>
             [Description("重大风险")]
             FourLevel = 4,

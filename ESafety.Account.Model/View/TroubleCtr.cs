@@ -68,6 +68,19 @@ namespace ESafety.Account.Model.View
         /// 状态
         /// </summary>
         public int State { get; set; }
+        /// <summary>
+        /// 状态名
+        /// </summary>
+        public string StateName { get; set; }
+
+        /// <summary>
+        /// 验收人
+        /// </summary>
+        public string FlowEmp { get; set; }
+        /// <summary>
+        /// 验收时间
+        /// </summary>
+        public DateTime? FlowTime { get; set; }
     }
 
     public class TroubleCtrDetailView
