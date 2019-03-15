@@ -342,6 +342,7 @@ namespace ESafety.Account.Service
 
                 var re = from f in tcf.ToList()
                          let emp=emps.FirstOrDefault(p=>p.ID==f.FlowEmployeeID)
+                         orderby f.FlowDate
                          select new TroubleCtrFlowView
                          {
                              ControlID=f.ControlID,
