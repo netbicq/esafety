@@ -31,9 +31,7 @@ namespace ESafety.Account.Service
             _rpstbs = work.Repository<Bll_TaskBillSubjects>();
 
             srvFlow = flow;
-            var flowser = srvFlow as FlowService;
-            flowser.AppUser = AppUser;
-            flowser.ACOptions = ACOptions;
+            var flowser = srvFlow as FlowService; 
         }
         /// <summary>
         /// 新建任务单据详情
@@ -82,6 +80,8 @@ namespace ESafety.Account.Service
                 {
                     _CanHandle = false;
                 }
+
+                
                 var dict = _work.Repository<Core.Model.DB.Basic_Dict>();
                 var dbdanger = _work.Repository<Basic_Danger>().GetModel(dbtbs.DangerID);
                 var dev = _work.Repository<Basic_Facilities>().GetModel(dbtbs.SubjectID);

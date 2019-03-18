@@ -29,25 +29,7 @@ namespace ESafety.Unity
     {
 
   
-
-        public static IEnumerable<Guid> GetParentIds<T>(this IEnumerable<T> tree,Guid id) where T : TreeBase
-        {
-            List<Guid> re = new List<Guid>();
-            re.Add(id);
-            T cnode = tree.FirstOrDefault(q => q.ID == id);
-
-            T pnode = tree.FirstOrDefault(q => q.ID == cnode.ParentID);
-
-            if(pnode != null)
-            {
-                
-                var pids =tree.GetParentIds<T>(pnode.ID);
-                re.AddRange(pids);
-            }
-
-            return re;
-
-        }
+ 
 
         /// <summary>
         /// 对象转换

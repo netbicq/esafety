@@ -37,6 +37,10 @@ namespace ESafety.Core.Model
         /// 导出文件路径
         /// </summary>
         public string OutPutPaht { get; set; }
+        /// <summary>
+        /// 职员信息
+        /// </summary>
+        public Basic_Employee EmployeeInfo { get; set; }
     }
 
     /// <summary>

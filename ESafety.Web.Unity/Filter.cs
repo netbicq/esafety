@@ -1,5 +1,6 @@
 ﻿using ESafety.Core;
 using ESafety.Core.Model;
+using ESafety.Core.Model.DB;
 using ESafety.Core.Model.DB.Platform;
 using System;
 using System.Collections.Generic;
@@ -45,7 +46,7 @@ namespace ESafety.Web.Unity
                 || actionExecutedContext.ActionContext.ControllerContext.RouteData.Route.RouteTemplate == "api/device/getdevicedata/{deviceid}"
                 || actionExecutedContext.ActionContext.ControllerContext.RouteData.Route.RouteTemplate == "api/device/getindentity")
             {
- 
+
                 var objBytes = Encoding.GetEncoding("UTF-8").GetBytes(dmsgstr);
                 var reBytes = Encoding.Convert(Encoding.GetEncoding("UTF-8"), Encoding.GetEncoding("GB2312"), objBytes);
                 var reStr = Encoding.GetEncoding("GB2312").GetString(reBytes);
@@ -132,12 +133,15 @@ namespace ESafety.Web.Unity
             // user.Pwd = "";
             var dbuser = obj.Unitwork.Repository<Core.Model.DB.Auth_UserProfile>();
             var userpro = dbuser.GetModel(q => q.Login == user.Login);
+            var employee = obj.Unitwork.Repository<Basic_Employee>().Queryable(q => q.Login == user.Login).FirstOrDefault();
+
             api.AppUser = new AppUser()
             {
                 UserInfo = user,
                 UserDB = userdb,
                 AccountCode = account.AccountCode,
-                UserProfile = userpro
+                UserProfile = userpro,
+                EmployeeInfo = employee
             };
 
 
@@ -296,7 +300,7 @@ namespace ESafety.Web.Unity
             api.SetService();
             base.OnActionExecuting(actionContext);
         }
-        
+
         public override Task OnActionExecutedAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
         {
             ESFAPI api = (ESFAPI)actionExecutedContext.ActionContext.ControllerContext.Controller;
@@ -311,5 +315,5 @@ namespace ESafety.Web.Unity
 
         public static IEnumerable<Core.Model.DB.Auth_KeyDetail> AuthKeys { get; set; }
 
-    } 
+    }
 }

@@ -42,6 +42,8 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> AddPost(PostNew post)
         {
+
+           
             try
             {
                 if (post== null)
@@ -123,6 +125,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("该岗位已分配人员，无法删除");
                 }
+                
                 _rpspost.Delete(dbpost);
                 _work.Commit();
                 return new ActionResult<bool>(true);
