@@ -130,10 +130,6 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public DateTime FlowDate { get; set; }
         /// <summary>
-        /// 操作人员id
-        /// </summary>
-        public Guid FlowEmployeeID { get; set; }
-        /// <summary>
         /// 备注
         /// </summary>
         public string FlowMemo { get; set; }

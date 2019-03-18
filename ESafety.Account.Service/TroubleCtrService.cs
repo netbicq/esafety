@@ -88,6 +88,7 @@ namespace ESafety.Account.Service
                     throw new Exception("参数有误!");
                 }
                 var dbf = flowNew.MAPTO<Bll_TroubleControlFlows>();
+                dbf.FlowEmployeeID = AppUser.EmployeeInfo.ID;
                 _rpstcf.Add(dbf);
                 _work.Commit();
                 return new ActionResult<bool>(true);
