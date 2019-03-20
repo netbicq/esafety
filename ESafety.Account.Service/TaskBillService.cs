@@ -34,7 +34,7 @@ namespace ESafety.Account.Service
             var flowser = srvFlow as FlowService; 
         }
         /// <summary>
-        /// 新建任务单据详情
+        /// 修改任务单据详情
         /// </summary>
         /// <param name="subjectBillEdit"></param>
         /// <returns></returns>
@@ -48,8 +48,6 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到要处理的信息");
                 }
-              
-
                 dbtbs = subjectBillEdit.CopyTo<Bll_TaskBillSubjects>(dbtbs);
                 _rpstbs.Update(dbtbs);
                 _work.Commit();

@@ -50,20 +50,7 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public Guid ID { get; set; }
     }
-    /// <summary>
-    /// 培训人员
-    /// </summary>
-    public class DocTrainEmpoyeesNew
-    {
-        /// <summary>
-        /// 培训ID
-        /// </summary>
-        public Guid TrainID { get; set; }
-        /// <summary>
-        /// 人员ID
-        /// </summary>
-        public Guid EmployeeID { get; set; }
-    }
+    
 
     public class DocTrainingQuery
     {
