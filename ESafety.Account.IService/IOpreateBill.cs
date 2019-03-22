@@ -26,7 +26,24 @@ namespace ESafety.Account.IService
         /// <param name="bill"></param>
         /// <returns></returns>
         ActionResult<bool> EditBill(OpreateBillEdit bill);
-         
 
+        /// <summary>
+        /// 获取我作业单模型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        ActionResult<OpreateBillModel> GetModel(Guid id);
+        /// <summary>
+        /// 获取列表
+        /// </summary>
+        /// <param name="Para"></param>
+        /// <returns></returns>
+        ActionResult<Pager<OpreateBillModel>> GetList(PagerQuery<string> Para);
+        /// <summary>
+        /// 删除单据
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        ActionResult<bool> DelBill(Guid id);
     }
 }

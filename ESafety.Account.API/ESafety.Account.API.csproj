@@ -222,6 +222,7 @@
     <Compile Include="Controllers\FlowController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LogController.cs" />
+    <Compile Include="Controllers\OpreateBillController.cs" />
     <Compile Include="Controllers\OpreationFlowController.cs" />
     <Compile Include="Controllers\OrgEmployeeController.cs" />
     <Compile Include="Controllers\PostManageController.cs" />

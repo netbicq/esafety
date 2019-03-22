@@ -57,6 +57,28 @@ namespace ESafety.Unity
             [Description("结束")]
             Over = 4
         }
+       
+        /// <summary>
+        /// 作业申请单节点流转状态
+        /// </summary>
+        public enum OpreateFlowResult
+        {
+            /// <summary>
+            /// 完成
+            /// </summary>
+            [Description("完成")]
+            over=1,
+            /// <summary>
+            /// 作业终止
+            /// </summary>
+            [Description("作业终止")]
+            stop=2,
+            /// <summary>
+            /// 作业回退
+            /// </summary>
+            [Description("作业回退")]
+            reback=3
+        }
         /// <summary>
         /// 审批业务单据状态
         /// </summary>
