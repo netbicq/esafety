@@ -72,6 +72,7 @@
     <Compile Include="View\HealDocment.cs" />
     <Compile Include="View\HealRecords.cs" />
     <Compile Include="View\InspectTask.cs" />
+    <Compile Include="View\OpreateBill.cs" />
     <Compile Include="View\OpreationFlow.cs" />
     <Compile Include="View\PostManage.cs" />
     <Compile Include="View\SafetyStandard.cs" />

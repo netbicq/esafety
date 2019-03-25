@@ -1,4 +1,5 @@
 ﻿using ESafety.Account.Model.PARA;
+using ESafety.Account.Model.View;
 using ESafety.Core;
 using ESafety.Core.Model;
 using System;
@@ -45,5 +46,19 @@ namespace ESafety.Account.IService
         /// <param name="id"></param>
         /// <returns></returns>
         ActionResult<bool> DelBill(Guid id);
+        /// <summary>
+        /// 流程节点处理
+        /// </summary>
+        /// <param name="flow"></param>
+        /// <returns></returns>
+        ActionResult<bool> FlowResult(Model.PARA.OpreateBillFlowResult flow);
+
+        /// <summary>
+        /// 获取带节点处理信息的表单模型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        ActionResult<OpreateBillFlowModel> GetBillFlowModel(Guid id);
+
     }
 }

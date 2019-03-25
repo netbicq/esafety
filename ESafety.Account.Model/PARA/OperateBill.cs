@@ -50,90 +50,28 @@ namespace ESafety.Account.Model.PARA
     {
         public Guid ID { get; set; }
     }
+   
     /// <summary>
-    /// 作业申请单模型
+    /// 作业申请单提交节点处理参数模型
     /// </summary>
-    public class OpreateBillModel
-    {
-
-        public Guid ID { get; set; }
-
-        public string BillCode { get; set; }
-
-        public Guid OpreationID { get; set; }
-
-        public string OpreationName { get; set; }
-
-        public string BillName { get; set; }
-
-        public DateTime StartTime { get; set; }
-
-        public DateTime EndTime { get; set; }
-
-        public Guid PrincipalEmployeeID { get; set; }
-
-        public int BillLong { get; set; }
-
-        public PublicEnum.BillFlowState State { get; set; }
-
-        public string StateName { get; set; }
-
-        public string CreateMan { get; set; }
-
-        public string CreateDate { get; set; }
-
-
-    }
-    /// <summary>
-    /// 作业单节点
-    /// </summary>
-    public class OpreateBillFlow
+    public class OpreateBillFlowResult
     {
         /// <summary>
-        /// ID
+        /// 作业单单据ID
         /// </summary>
-        public Guid ID { get; set; }
+        public Guid BillID { get; set; }
         /// <summary>
-        /// 节点id
+        /// 作业流程节点ID
+        /// 
         /// </summary>
         public Guid OpreationFlowID { get; set; }
         /// <summary>
-        /// 作业流程id
+        /// 处理结果
         /// </summary>
-        public Guid OpreationID { get; set; }
+        public PublicEnum.OpreateFlowResult FlowResult { get; set; }
         /// <summary>
-        ///节点名称
+        /// 备注
         /// </summary>
-        public string PointName { get; set; }
-        /// <summary>
-        /// 岗位id
-        /// </summary>
-        public Guid PostID { get; set; }
-        /// <summary>
-        /// 岗位名称
-        /// </summary>
-        public string PostName { get; set; }
-        /// <summary>
-        /// 节点顺序
-        /// </summary>
-        public int PointIndex { get; set; }
-
-
-    }
-    /// <summary>
-    /// 
-    /// </summary>
-    public class OpreateFlowUEModel
-    {
-
-        public bool FinishEnable { get; set; }
-
-        public bool StopEnable { get; set; }
-
-        public bool ReBackEnable { get; set; }
-
-        public bool LeftLine { get; set; }
-
-        public bool RightLien { get; set; }
+        public string FlowMemo { get; set; }
     }
 }

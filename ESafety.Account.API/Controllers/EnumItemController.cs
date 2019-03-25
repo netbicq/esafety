@@ -126,5 +126,17 @@ namespace ESafety.Account.API.Controllers
             var re = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel));
             return new ActionResult<IEnumerable<EnumItem>>(re);
         }
+        /// <summary>
+        /// 获取作业申请单的节点处理类型
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getopreateflowresult")]
+        public ActionResult<IEnumerable<EnumItem>> GetOpreateFlowResult()
+        {
+            var re = Command.GetItems(typeof(PublicEnum.OpreateFlowResult));
+            return new ActionResult<IEnumerable<EnumItem>>(re);
+
+        }
     }
 }

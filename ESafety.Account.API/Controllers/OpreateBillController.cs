@@ -1,5 +1,6 @@
 ﻿using ESafety.Account.IService;
 using ESafety.Account.Model.PARA;
+using ESafety.Account.Model.View;
 using ESafety.Core.Model;
 using ESafety.Web.Unity;
 using Newtonsoft.Json;
