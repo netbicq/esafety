@@ -440,6 +440,8 @@ namespace ESafety.Account.Service
                 //节点处理
                 var flows = _work.Repository<Bll_OpreateionBillFlow>().Queryable(q => q.BillID == billmodel.ID);
 
+                var postids = _work.Repository<Core.Model.DB.Account.Basic_PostEmployees>().Queryable(q => q.EmployeeID == AppUser.EmployeeInfo.ID).Select(s=>s.PostID).ToList();
+
                 var reflows = from f in points
                               let uppoint = points.FirstOrDefault(q => q.ID == points.Where(p => p.PointIndex < f.PointIndex).OrderByDescending(o => o.PointIndex).FirstOrDefault().ID)
                               let nextpoint =points.FirstOrDefault(q=>q.ID == points.Where(p=>p.PointIndex >f.PointIndex ).OrderBy(o=>o.PointIndex).FirstOrDefault().ID)
@@ -462,6 +464,8 @@ namespace ESafety.Account.Service
                                          flows.Any(q => q.OpreationFlowID == f.ID) ? false
                                          : //如果存在上级节点，且上级节点没有完成记录则不可用
                                          uppoint != null && !flows.Any(q => q.OpreationFlowID == uppoint.ID) ? false
+                                         ://如果当前人员不在节点的岗位，不可用
+                                         !postids.Contains(f.PostID)?false
                                          :
                                          true,
                                       StopEnable =//单据状态为结束装态，处理按钮不可有
@@ -472,7 +476,8 @@ namespace ESafety.Account.Service
                                          uppoint != null && !flows.Any(q => q.OpreationFlowID == uppoint.ID && q.FlowResult ==(int)PublicEnum.OpreateFlowResult.over) ? false
                                          ://如果存在终止记录数据处理，不可用
                                          flows.Any(q=>q.OpreationFlowID == f.ID && q.FlowResult ==(int)PublicEnum.OpreateFlowResult.stop)?false
-                                         
+                                         ://如果当前人员不在节点的岗位，不可用
+                                         !postids.Contains(f.PostID) ? false
                                          : true,
                                       ReBackEnable =//单据状态为结束装态，处理按钮不可有
                                          (billmodel.State == (int)PublicEnum.BillFlowState.stop ||
@@ -480,7 +485,8 @@ namespace ESafety.Account.Service
                                          billmodel.State == (int)PublicEnum.BillFlowState.Over) ? false
                                          ://如果存在上级且上级没有完成记录数据处理 不可用
                                          uppoint !=null && !flows.Any(q=>q.OpreationFlowID == uppoint.ID)?false
-                                         
+                                         ://如果当前人员不在节点的岗位，不可用
+                                         !postids.Contains(f.PostID) ? false
                                          : true,
                                       LeftLine =
                                          flows.Any(q => q.OpreationFlowID == f.ID) ? true
