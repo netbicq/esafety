@@ -447,7 +447,7 @@ namespace ESafety.Account.Service
                                          FinishEnable =
                                          (billmodel.State ==(int)PublicEnum.BillFlowState.stop ||
                                          billmodel.State ==(int)PublicEnum.BillFlowState.Reback ||
-                                         billmodel.State ==(int)PublicEnum.BillFlowState.Over)?false:
+                                         billmodel.State ==(int)PublicEnum.BillFlowState.Over)?false:true
 
                                     }
                               };
