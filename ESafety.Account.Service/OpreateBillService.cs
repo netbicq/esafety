@@ -58,7 +58,10 @@ namespace ESafety.Account.Service
 
                 var billdb = bill.MAPTO<Core.Model.DB.Account.Bll_OpreationBill>();
                 billdb.BillCode = Command.CreateCode();
-                billdb.FlowJson = JsonConvert.SerializeObject(flows);
+                billdb.FlowsJson = JsonConvert.SerializeObject(flows);
+                billdb.OpreationJSON = JsonConvert.SerializeObject(opreationmodel);
+
+                billdb.CreateMan = AppUser.EmployeeInfo.CNName;
 
                 _work.Repository<Core.Model.DB.Account.Bll_OpreationBill>().Add(billdb);
                 _work.Commit();
@@ -308,7 +311,11 @@ namespace ESafety.Account.Service
                 return new ActionResult<bool>(ex);
             }
         }
-
+        /// <summary>
+        /// 处理作业单流程
+        /// </summary>
+        /// <param name="flow"></param>
+        /// <returns></returns>
         public ActionResult<bool> FlowResult(OpreateBillFlowResult flow)
         {
             try
@@ -321,18 +328,137 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("处理结果数据有误");
                 }
-                return new ActionResult<bool>(new Exception("未处理完"));
+                var oflow = _work.Repository<Basic_OpreationFlow>().GetModel(q=>q.ID == flow.OpreationFlowID);
+                if(oflow == null)
+                {
+                    throw new Exception("作业流程节点不存在");
+                }
+                var opreationflow = _work.Repository<Basic_Opreation>().GetModel(oflow.OpreationID);
+                if (opreationflow == null)
+                {
+                    throw new Exception("作业流程不存在");
+                }
 
+                if(flow.FlowResult == PublicEnum.OpreateFlowResult.reback && !opreationflow.IsBackReturn)
+                {
+                    throw new Exception("作业流和不支持回退");
+                }
+                var checkflow = rpsBillFlow.Any(q => q.FlowResult == (int)flow.FlowResult && q.OpreationFlowID == flow.OpreationFlowID);
+                if(checkflow)
+                {
+                    throw new Exception("该作业单已经提交了该节点的处理结果");
+                }
+                var billmodel = rpsOpreateBill.GetModel(flow.BillID);
+                if (billmodel == null)
+                {
+                    throw new Exception("业务单据不存在");
+                }
+                if(billmodel.State != (int)PublicEnum.BillFlowState.audited)
+                {
+                    throw new Exception("作业单状态不允许");
+                }
+
+                //所有节点集合，
+                IEnumerable<Basic_OpreationFlow> points = JsonConvert.DeserializeObject<IEnumerable<Basic_OpreationFlow>>(billmodel.FlowsJson);
+
+                bool writbill = false;
+
+                switch (flow.FlowResult)
+                {
+                    case PublicEnum.OpreateFlowResult.stop: //终止
+                        billmodel.State =(int) PublicEnum.BillFlowState.stop;
+                        writbill = true;
+                        break;
+                    case PublicEnum.OpreateFlowResult.over: //完成，如果是最后一步则修改单据状态
+                        var lastpointid = points.OrderByDescending(o => o.PointIndex).FirstOrDefault().ID;
+                        if(flow.OpreationFlowID == lastpointid)
+                        {
+                            billmodel.State = (int)PublicEnum.BillFlowState.Over;
+                            writbill = true;
+                        }
+                        break;
+                    case PublicEnum.OpreateFlowResult.reback://退回到最后一步时则退回完成
+                        var relastpointid = points.OrderBy(o => o.PointIndex).FirstOrDefault().ID;
+                        if(flow.OpreationFlowID == relastpointid)
+                        {
+                            billmodel.State = (int)PublicEnum.BillFlowState.Reback;
+                            writbill = true;
+                        }
+                        break;
+                    default:
+                        break;
+
+                }
+                  
+                var dbflow = flow.MAPTO<Bll_OpreateionBillFlow>();
+                dbflow.BillID = billmodel.ID;
+                dbflow.FlowEmployeeID = AppUser.EmployeeInfo.ID;
+                dbflow.FlowTime = DateTime.Now;
+                dbflow.ID = Guid.NewGuid();
+
+                rpsBillFlow.Add(dbflow);
+                if (writbill)
+                {
+                    rpsOpreateBill.Update(billmodel);
+                }
+                _work.Commit();
+
+                return new ActionResult<bool>(true);
             }
             catch (Exception ex)
             {
                 return new ActionResult<bool>(ex);
             }
         }
-
+        /// <summary>
+        /// 获取带处理节点的单据模型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult<OpreateBillFlowModel> GetBillFlowModel(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var billmodel = _work.Repository<Bll_OpreationBill>().GetModel(id);
+                if(billmodel == null)
+                {
+                    throw new Exception("作业单据不存在");
+                }
+                var remodel = billmodel.MAPTO<OpreateBillFlowModel>();
+
+                var points = JsonConvert.DeserializeObject<IEnumerable<Basic_OpreationFlow>>(billmodel.FlowsJson);
+
+                var opreationmodel = JsonConvert.DeserializeObject<Basic_Opreation>(billmodel.OpreationJSON);
+                var emp = _work.Repository<Basic_Employee>().GetModel(billmodel.PrincipalEmployeeID);
+
+                //返回值的属性赋值
+                remodel.OpreationName = opreationmodel.Name;
+                remodel.PrincipalEmployeeName = emp == null ? "" : emp.CNName;
+                remodel.StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == billmodel.State).Caption;
+
+                //节点处理
+                var flows = _work.Repository<Bll_OpreateionBillFlow>().Queryable(q => q.BillID == billmodel.ID);
+
+                var reflows = from f in points
+                              select new OpreateBillFlow
+                              {
+                                    OpreationFlowID =f.ID, OpreationID =opreationmodel.ID, PointIndex =f.PointIndex, PointName =f.PointName, PostID =f.PostID, PostName =f.PointName, FlowUEModel= new OpreateFlowUEModel
+                                    {
+                                         FinishEnable =
+                                         (billmodel.State ==(int)PublicEnum.BillFlowState.stop ||
+                                         billmodel.State ==(int)PublicEnum.BillFlowState.Reback ||
+                                         billmodel.State ==(int)PublicEnum.BillFlowState.Over)?false:
+
+                                    }
+                              };
+                
+                
+                return new ActionResult<OpreateBillFlowModel>(remodel);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<OpreateBillFlowModel>(ex);
+            }
         }
     }
 }

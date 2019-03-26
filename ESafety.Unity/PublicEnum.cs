@@ -128,7 +128,22 @@ namespace ESafety.Unity
             /// 已验收
             /// </summary>
             [Description("已验收")]
-            check = 9
+            check = 9,
+            /// <summary>
+            /// 已终止
+            /// </summary>
+            [Description("已终止")]
+            stop =10,
+            /// <summary>
+            /// 已完成
+            /// </summary>
+            [Description("已完成")]
+            Over =11,
+            /// <summary>
+            /// 已退回
+            /// </summary>
+            [Description("已退回")]
+            Reback=12
 
         }
         /// <summary>
