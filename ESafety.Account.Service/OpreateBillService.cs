@@ -60,7 +60,7 @@ namespace ESafety.Account.Service
                 billdb.BillCode = Command.CreateCode();
                 billdb.FlowsJson = JsonConvert.SerializeObject(flows);
                 billdb.OpreationJSON = JsonConvert.SerializeObject(opreationmodel);
-
+                billdb.State = (int)PublicEnum.BillFlowState.normal;
                 billdb.CreateMan = AppUser.EmployeeInfo.CNName;
 
                 _work.Repository<Core.Model.DB.Account.Bll_OpreationBill>().Add(billdb);
@@ -220,7 +220,8 @@ namespace ESafety.Account.Service
                 var opreation = _work.Repository<Basic_Opreation>().GetModel(dbmodel.OpreationID);
                 re.OpreationName = opreation == null ? "" : opreation.Name;
                 re.StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == dbmodel.State).Caption;
-
+                var emp = _work.Repository<Basic_Employee>().GetModel(p => p.ID == dbmodel.PrincipalEmployeeID);
+                re.OrgID =emp==null?Guid.Empty:emp.OrgID;
                 return new ActionResult<OpreateBillModel>(re);
 
             }

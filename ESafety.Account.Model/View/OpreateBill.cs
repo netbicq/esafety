@@ -69,6 +69,10 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public DateTime  CreateDate { get; set; }
 
+        /// <summary>
+        /// 组织架构ID
+        /// </summary>
+        public Guid OrgID { get; set; }
 
     }
     /// <summary>
