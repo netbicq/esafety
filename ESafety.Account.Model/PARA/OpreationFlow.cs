@@ -26,6 +26,14 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public bool IsBackReturn { get; set; }
         /// <summary>
+        /// 负责人
+        /// </summary>
+        public string Principal { get; set; }
+        /// <summary>
+        /// 负责人电话
+        /// </summary>
+        public string PrincipalTel { get; set; }
+        /// <summary>
         /// 操作描述
         /// </summary>
         public string Memo { get; set; }

@@ -25,6 +25,14 @@ namespace ESafety.Core.Model.DB.Account
         /// </summary>
         public bool IsBackReturn { get; set; }
         /// <summary>
+        /// 负责人
+        /// </summary>
+        public string Principal { get; set; }
+        /// <summary>
+        /// 负责人电话
+        /// </summary>
+        public string PrincipalTel { get; set; }
+        /// <summary>
         /// 描述
         /// </summary>
         public string Memo { get; set; }

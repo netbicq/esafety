@@ -26,6 +26,7 @@ namespace ESafety.Account.API.Controllers
 
         public APPController(IInspectTask spectask, ITaskBillService taskbill)
         {
+
             spectbll = spectask;
             billbll = taskbill;
             BusinessService = taskbill;
@@ -87,5 +88,7 @@ namespace ESafety.Account.API.Controllers
         {
             return billbll.GetTaskSubjects(billid);
         }
+
+        
     }
 }
