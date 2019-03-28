@@ -251,6 +251,8 @@ namespace ESafety.Account.Service
                                  BillCode = bill.BillCode,
                                  OpreationID = bill.OpreationID,
                                  ID = bill.ID,
+                                 Description=bill.Description,
+                                 OrgID=emp.OrgID,
                                  BillLong = bill.BillLong,
                                  BillName = bill.BillName,
                                  CreateDate = bill.CreateDate,

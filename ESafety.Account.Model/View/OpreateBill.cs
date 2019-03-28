@@ -74,6 +74,11 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public Guid OrgID { get; set; }
 
+        /// <summary>
+        /// 作业描述
+        /// </summary>
+        public string Description { get; set; }
+
     }
     /// <summary>
     /// 作业申请单带流程节点
