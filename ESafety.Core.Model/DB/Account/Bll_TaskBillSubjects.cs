@@ -27,6 +27,10 @@ namespace ESafety.Core.Model.DB.Account
         /// </summary>
         public Guid DangerID { get; set; }
         /// <summary>
+        /// 任务提交时间
+        /// </summary>
+        public DateTime TaskTime { get; set; }
+        /// <summary>
         /// 任务结果
         /// </summary>
         public int TaskResult { get; set; }
