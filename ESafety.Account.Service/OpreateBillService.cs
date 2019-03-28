@@ -221,7 +221,7 @@ namespace ESafety.Account.Service
                 re.OpreationName = opreation == null ? "" : opreation.Name;
                 re.StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == dbmodel.State).Caption;
                 var emp = _work.Repository<Basic_Employee>().GetModel(p => p.ID == dbmodel.PrincipalEmployeeID);
-                re.OrgID =emp==null?Guid.Empty:emp.OrgID;
+                re.OrgID = emp == null ? Guid.Empty : emp.OrgID;
                 return new ActionResult<OpreateBillModel>(re);
 
             }
@@ -427,7 +427,7 @@ namespace ESafety.Account.Service
                 }
                 var remodel = billmodel.MAPTO<OpreateBillFlowModel>();
 
-                var points = JsonConvert.DeserializeObject<IEnumerable<Basic_OpreationFlow>>(billmodel.FlowsJson).OrderBy(o => o.PointIndex);
+                var points = JsonConvert.DeserializeObject<IEnumerable<Basic_OpreationFlow>>(billmodel.FlowsJson).OrderBy(o => o.PointIndex).ToList();
 
                 var opreationmodel = JsonConvert.DeserializeObject<Basic_Opreation>(billmodel.OpreationJSON);
                 var emp = _work.Repository<Basic_Employee>().GetModel(billmodel.PrincipalEmployeeID);
@@ -438,13 +438,18 @@ namespace ESafety.Account.Service
                 remodel.StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == billmodel.State).Caption;
 
                 //节点处理
-                var flows = _work.Repository<Bll_OpreateionBillFlow>().Queryable(q => q.BillID == billmodel.ID);
+                var flows = _work.Repository<Bll_OpreateionBillFlow>().Queryable(q => q.BillID == billmodel.ID).ToList();
 
-                var postids = _work.Repository<Core.Model.DB.Account.Basic_PostEmployees>().Queryable(q => q.EmployeeID == AppUser.EmployeeInfo.ID).Select(s=>s.PostID).ToList();
+                var postids = points.Select(s => s.PostID);
+                var emps = _work.Repository<Basic_Employee>().Queryable(q => flows.Select(s => s.FlowEmployeeID).Contains(q.ID)).ToList();
+
+                var posts = _work.Repository<Basic_Post>().Queryable(q => postids.Contains(q.ID)).ToList();
 
                 var reflows = from f in points
-                              let uppoint = points.FirstOrDefault(q => q.ID == points.Where(p => p.PointIndex < f.PointIndex).OrderByDescending(o => o.PointIndex).FirstOrDefault().ID)
-                              let nextpoint =points.FirstOrDefault(q=>q.ID == points.Where(p=>p.PointIndex >f.PointIndex ).OrderBy(o=>o.PointIndex).FirstOrDefault().ID)
+                              let uppoint = points.OrderBy(o => o.PointIndex).FirstOrDefault(q => q.PointIndex < f.PointIndex)
+                              let nextpoint = points.OrderBy(o => o.PointIndex).FirstOrDefault(q => q.PointIndex > f.PointIndex)
+                              let post = posts.FirstOrDefault(q => q.ID == f.PostID)
+                              let flow = flows.FirstOrDefault(q => q.OpreationFlowID == f.ID)
                               select new OpreateBillFlow
                               {
                                   OpreationFlowID = f.ID,
@@ -452,7 +457,9 @@ namespace ESafety.Account.Service
                                   PointIndex = f.PointIndex,
                                   PointName = f.PointName,
                                   PostID = f.PostID,
-                                  PostName = f.PointName,
+                                  FlowEmployeeID = flow == null ? Guid.Empty : flow.FlowEmployeeID,
+                                  FlowEmployeeName = flow == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID) == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID).CNName,
+                                  PostName = post == null ? "" : post.Name,
                                   FlowUEModel = new OpreateFlowUEModel
                                   {
                                       FinishEnable =
@@ -465,7 +472,7 @@ namespace ESafety.Account.Service
                                          : //如果存在上级节点，且上级节点没有完成记录则不可用
                                          uppoint != null && !flows.Any(q => q.OpreationFlowID == uppoint.ID) ? false
                                          ://如果当前人员不在节点的岗位，不可用
-                                         !postids.Contains(f.PostID)?false
+                                         !postids.Contains(f.PostID) ? false
                                          :
                                          true,
                                       StopEnable =//单据状态为结束装态，处理按钮不可有
@@ -473,9 +480,9 @@ namespace ESafety.Account.Service
                                          billmodel.State == (int)PublicEnum.BillFlowState.Reback ||
                                          billmodel.State == (int)PublicEnum.BillFlowState.Over) ? false
                                          ://如果存在上一级且上级没有完成记录数据处理 不可用
-                                         uppoint != null && !flows.Any(q => q.OpreationFlowID == uppoint.ID && q.FlowResult ==(int)PublicEnum.OpreateFlowResult.over) ? false
+                                         uppoint != null && !flows.Any(q => q.OpreationFlowID == uppoint.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.over) ? false
                                          ://如果存在终止记录数据处理，不可用
-                                         flows.Any(q=>q.OpreationFlowID == f.ID && q.FlowResult ==(int)PublicEnum.OpreateFlowResult.stop)?false
+                                         flows.Any(q => q.OpreationFlowID == f.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.stop) ? false
                                          ://如果当前人员不在节点的岗位，不可用
                                          !postids.Contains(f.PostID) ? false
                                          : true,
@@ -484,7 +491,7 @@ namespace ESafety.Account.Service
                                          billmodel.State == (int)PublicEnum.BillFlowState.Reback ||
                                          billmodel.State == (int)PublicEnum.BillFlowState.Over) ? false
                                          ://如果存在上级且上级没有完成记录数据处理 不可用
-                                         uppoint !=null && !flows.Any(q=>q.OpreationFlowID == uppoint.ID)?false
+                                         uppoint != null && !flows.Any(q => q.OpreationFlowID == uppoint.ID) ? false
                                          ://如果当前人员不在节点的岗位，不可用
                                          !postids.Contains(f.PostID) ? false
                                          : true,
@@ -498,6 +505,7 @@ namespace ESafety.Account.Service
                                   }
                               };
 
+                remodel.BillFlows = reflows;
 
                 return new ActionResult<OpreateBillFlowModel>(remodel);
             }

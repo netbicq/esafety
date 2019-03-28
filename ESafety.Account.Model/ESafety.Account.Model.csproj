@@ -58,6 +58,7 @@
     <Compile Include="PARA\SafetyStandard.cs" />
     <Compile Include="PARA\DocTrainManage.cs" />
     <Compile Include="PARA\TaskBill.cs" />
+    <Compile Include="PARA\TaskBillPhone.cs" />
     <Compile Include="PARA\TroubleCtr.cs" />
     <Compile Include="PARA\Video.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="View\PostManage.cs" />
     <Compile Include="View\SafetyStandard.cs" />
     <Compile Include="View\TaskBill.cs" />
+    <Compile Include="View\TaskBillPhone.cs" />
     <Compile Include="View\TroubleCtr.cs" />
     <Compile Include="View\Video.cs" />
   </ItemGroup>

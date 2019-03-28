@@ -119,6 +119,14 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public int PointIndex { get; set; }
         /// <summary>
+        /// 执行人ID        /// 
+        /// </summary>
+        public Guid FlowEmployeeID { get; set; }
+        /// <summary>
+        /// 执行人姓名
+        /// </summary>
+        public string FlowEmployeeName { get; set; }
+        /// <summary>
         /// 节点交互模型
         /// </summary>
         public OpreateFlowUEModel FlowUEModel { get; set; }

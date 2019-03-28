@@ -110,6 +110,30 @@ namespace ESafety.Account.API.Controllers
         {
             LogContent = "发起作业申请单审批，单据id:" + businessid.ToString();
             return bll.StartBillFlow(businessid);
+            
+        }
+        /// <summary>
+        /// 获取带作业节点的作业单模型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getbillflowmodel/{id:Guid}")]
+        public ActionResult<OpreateBillFlowModel> GetBillFlowModel(Guid id)
+        {
+            return bll.GetBillFlowModel(id);
+        }
+        /// <summary>
+        /// 处理作业单流程节点
+        /// </summary>
+        /// <param name="flow"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("billflowset")]
+        public ActionResult<bool> BillFlowSet(Model.PARA.OpreateBillFlowResult flow)
+        {
+            LogContent = "处理了作业节点，参数源：" + JsonConvert.SerializeObject(flow);
+            return bll.FlowResult(flow);
         }
     }
 }

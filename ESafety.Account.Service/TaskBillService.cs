@@ -354,5 +354,35 @@ namespace ESafety.Account.Service
                 return new ActionResult<bool>(ex);
             }
         }
+
+        /// <summary>
+        /// 新建巡检任务单
+        /// </summary>
+        /// <param name="bill"></param>
+        /// <returns></returns>
+        public ActionResult<bool> AddTaskBillMaster(TaskBillNew bill)
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
+        /// 根据任务单id获取设备集合
+        /// 如果在此单据中已经执行了的设备则不再提供
+        /// </summary>
+        /// <param name="taskbillid"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<TaskSubjectsByTask>> GetTaskSubjects(Guid taskbillid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ActionResult<bool> AddTaskSubject(TaskBillSubjectNew bill)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ActionResult<bool> TaskBillOver(Guid billid)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -458,5 +458,47 @@ namespace ESafety.Account.Service
                 return new ActionResult<InspectTaskModelView>(ex);
             }
         }
+        /// <summary>
+        /// 获取当前用户的任务列表
+        /// 
+        /// </summary>
+        /// <param name="istimeout"></param>
+        /// <returns></returns>
+        private ActionResult<IEnumerable<InsepctTaskByEmployee>> GetTaskList(bool istimeout)
+        {
+            try
+            {
+                throw new NotImplementedException();
+
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取当前用户的任务列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<InsepctTaskByEmployee>> GetTaskListByEmployee()
+        {
+            try
+            {
+                throw new NotImplementedException();
+
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取当前用户超时任务列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<InsepctTaskByEmployee>> GetTaskListByTimeOut()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

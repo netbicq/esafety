@@ -132,4 +132,42 @@ namespace ESafety.Account.Model.View
         public IEnumerable<InspectTaskSubjectView> Subjects { get; set; }
 
     }
+    /// <summary>
+    /// 任务列表
+    /// </summary>
+    public class InsepctTaskByEmployee
+    {
+        /// <summary>
+        /// 任务ID
+        /// </summary>
+        public Guid ID { get; set; }
+        /// <summary>
+        /// 任务名称
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// 风险点ID
+        /// </summary>
+        public Guid DangerID { get; set; }
+        /// <summary>
+        /// 任务类型
+        /// </summary>
+        public PublicEnum.EE_InspectTaskType TaskTypeID { get; set; }
+        /// <summary>
+        /// 风险点名称
+        /// </summary>
+        public string DangerName { get; set; }
+        /// <summary>
+        /// 任务类型名称
+        /// </summary>
+        public string TaskTypeName { get; set; }
+        /// <summary>
+        /// 最后执行时间
+        /// </summary>
+        public DateTime LastTime { get; set; }
+        /// <summary>
+        /// 超时小时数
+        /// </summary>
+        public int TimeOutHours { get; set; }
+    }
 }

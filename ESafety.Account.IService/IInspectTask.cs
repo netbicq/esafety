@@ -60,5 +60,16 @@ namespace ESafety.Account.IService
         /// <param name="id"></param>
         /// <returns></returns>
         ActionResult<InspectTaskModelView> GetModel(Guid id);
+        /// <summary>
+        /// 获取职员的任务列表
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<IEnumerable<InsepctTaskByEmployee>> GetTaskListByEmployee();
+        /// <summary>
+        /// 获取职员的超时任务列表
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<IEnumerable<InsepctTaskByEmployee>> GetTaskListByTimeOut();
+
     }
 }
