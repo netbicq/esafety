@@ -487,8 +487,8 @@ namespace ESafety.Account.Service
                     billmodel.State == (int)PublicEnum.BillFlowState.Over) ? false
                     ://如果本节点已经存在了记录，按钮不允许处理
                     flows.Any(q => q.OpreationFlowID == f.ID) ? false
-                     : //如果存在上级节点，且上级节点没有任保记录则不可用
-                    (uppoint != null && flows.FirstOrDefault(q => q.OpreationFlowID == uppoint.ID) == null) ? false
+                     : //如果存在上级节点，且上级节点没有任保记录或是上级已回退记录则不可用
+                    (uppoint != null && (flows.FirstOrDefault(q => q.OpreationFlowID == uppoint.ID) == null||flows.Any(p => p.OpreationFlowID == uppoint.ID && p.FlowResult== (int)PublicEnum.OpreateFlowResult.reback))) ? false
                     ://如果当前人员不在当前节点的岗位，不可用
                      f.PostID!=cpostid ? false
                     : true;
@@ -518,8 +518,8 @@ namespace ESafety.Account.Service
                     (billmodel.State == (int)PublicEnum.BillFlowState.stop ||
                     billmodel.State == (int)PublicEnum.BillFlowState.Reback ||
                     billmodel.State == (int)PublicEnum.BillFlowState.Over) ? false
-                    ://存在上级，而上级没有任何数据
-                    (uppoint != null && flows.FirstOrDefault(q => q.OpreationFlowID == uppoint.ID) == null) ? false
+                    ://存在上级，而上级没有任何数据或上级已回退则不可用
+                    (uppoint != null && (flows.FirstOrDefault(q => q.OpreationFlowID == uppoint.ID) == null||flows.Any(p => p.OpreationFlowID == uppoint.ID && p.FlowResult== (int)PublicEnum.OpreateFlowResult.reback))) ? false
                     ://已经存在了退回则不可用
                     flows.Any(q => q.OpreationFlowID == f.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.reback) ? false
                     ://如果后面节点有任何终止记录则不可用
