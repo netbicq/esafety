@@ -504,9 +504,9 @@ namespace ESafety.Account.Service
                     (uppoint != null && flows.FirstOrDefault(q => q.OpreationFlowID == uppoint.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.over) == null) ? false
                     ://如果后面节点有任何终止记录则不可用
                     flows.Any(q => nextids.Contains(q.OpreationFlowID) && q.FlowResult == (int)PublicEnum.OpreateFlowResult.stop) ? false
-                    ://如果存在终止记录数据处理，不可用
-                    flows.Any(q => q.OpreationFlowID == f.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.stop) ? false
-                    ://如果存在完成，而下一级没有退回则不可用
+                    ://如果当前节点是终止记录数据处理或者是回退，不可用
+                    flows.Any(q => q.OpreationFlowID == f.ID && (q.FlowResult == (int)PublicEnum.OpreateFlowResult.stop||q.FlowResult == (int)PublicEnum.OpreateFlowResult.reback)) ? false
+                    ://如果当前节点是完成，而下一级没有退回则不可用
                     (flows.Any(q => q.OpreationFlowID == f.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.over)
                     && (nexpoint != null && flows.FirstOrDefault(q => q.OpreationFlowID == nexpoint.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.reback) == null)) ? false
                     ://如果当前人员不在节点的岗位，不可用
