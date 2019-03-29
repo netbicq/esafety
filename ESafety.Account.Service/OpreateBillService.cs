@@ -434,6 +434,7 @@ namespace ESafety.Account.Service
                 var opreationmodel = JsonConvert.DeserializeObject<Basic_Opreation>(billmodel.OpreationJSON);
                 var emp = _work.Repository<Basic_Employee>().GetModel(billmodel.PrincipalEmployeeID);
 
+                
                 //返回值的属性赋值
                 remodel.OpreationName = opreationmodel.Name;
                 remodel.PrincipalEmployeeName = emp == null ? "" : emp.CNName;
@@ -446,6 +447,9 @@ namespace ESafety.Account.Service
                 var empids = flows.Select(s => s.FlowEmployeeID);
 
                 var emps = _work.Repository<Basic_Employee>().Queryable(q => empids.Contains(q.ID)).ToList();
+                
+                //获取当前登录人的岗位ID
+                var cpostid = _work.Repository<Basic_PostEmployees>().GetModel(q=>q.EmployeeID==AppUser.EmployeeInfo.ID).PostID;
 
                 var posts = _work.Repository<Basic_Post>().Queryable(q => postids.Contains(q.ID)).ToList();
 
@@ -453,7 +457,9 @@ namespace ESafety.Account.Service
 
                 foreach (var f in points)
                 {
-                    var uppoint = points.OrderBy(o => o.PointIndex).FirstOrDefault(q => q.PointIndex < f.PointIndex);
+                    //上一个需要倒序查找小于当前节点index的第一个
+                    var uppoint = points.OrderByDescending(o => o.PointIndex).FirstOrDefault(q => q.PointIndex < f.PointIndex);
+
                     var nexpoint = points.OrderBy(o => o.PointIndex).FirstOrDefault(q => q.PointIndex > f.PointIndex);
                     var post = posts.FirstOrDefault(q => q.ID == f.PostID);
                     var flow = flows.FirstOrDefault(q => q.OpreationFlowID == f.ID);
@@ -469,6 +475,8 @@ namespace ESafety.Account.Service
                         FlowEmployeeID = flow == null ? Guid.Empty : flow.FlowEmployeeID,
                         FlowEmployeeName = flow == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID) == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID).CNName,
                         PostName = post == null ? "" : post.Name,
+                       
+                        
                     };
                     var uemodel = new OpreateFlowUEModel();
                     //完成按钮
@@ -481,8 +489,8 @@ namespace ESafety.Account.Service
                     flows.Any(q => q.OpreationFlowID == f.ID) ? false
                      : //如果存在上级节点，且上级节点没有任保记录则不可用
                     (uppoint != null && flows.FirstOrDefault(q => q.OpreationFlowID == uppoint.ID) == null) ? false
-                    ://如果当前人员不在节点的岗位，不可用
-                    !postids.Contains(f.PostID) ? false
+                    ://如果当前人员不在当前节点的岗位，不可用
+                     f.PostID!=cpostid ? false
                     : true;
 
 
@@ -502,7 +510,7 @@ namespace ESafety.Account.Service
                     (flows.Any(q => q.OpreationFlowID == f.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.over)
                     && (nexpoint != null && flows.FirstOrDefault(q => q.OpreationFlowID == nexpoint.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.reback) == null)) ? false
                     ://如果当前人员不在节点的岗位，不可用
-                    !postids.Contains(f.PostID) ? false
+                     f.PostID != cpostid ? false
                     : true;
 
                     uemodel.ReBackEnable =
@@ -519,7 +527,7 @@ namespace ESafety.Account.Service
                     ://如果存在完成，而下一级没有退回则不可用
                     (flows.Any(q => q.OpreationFlowID == f.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.over)
                     && (nexpoint != null && flows.FirstOrDefault(q => q.OpreationFlowID == nexpoint.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.reback) == null)) ? false
-                    : !postids.Contains(f.PostID) ? false
+                    : f.PostID!=cpostid  ? false
                     : true;
 
                     //左连接线
