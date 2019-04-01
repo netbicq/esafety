@@ -36,11 +36,12 @@ namespace ESafety.Account.Service
             Unitwork = work;
             rpstask = work.Repository<Bll_InspectTask>();
             rpstaskSubject = work.Repository<Bll_InspectTaskSubject>();
+            var s = AppUser;
             srvFlow = flow;
             var flowser = srvFlow as FlowService;
             flowser.AppUser = AppUser;
             flowser.ACOptions = ACOptions;
-            
+
 
         }
         /// <summary>
@@ -469,7 +470,6 @@ namespace ESafety.Account.Service
             try
             {
                 throw new NotImplementedException();
-
             }
             catch (Exception ex)
             {
@@ -484,8 +484,36 @@ namespace ESafety.Account.Service
         {
             try
             {
-                throw new NotImplementedException();
+                var user = AppUser.EmployeeInfo;
+                if (user == null)
+                {
+                    throw new Exception("还未配置该用户!");
+                }
+                var tasks = rpstask.Queryable(q => q.EmployeeID ==user.ID);
+                var dangers = rpstask.Queryable();
+                var billsubjects = _work.Repository<Bll_TaskBillSubjects>().Queryable();
+                var bills = _work.Repository<Bll_TaskBill>().Queryable();
+                var re = from t in tasks
+                         let danger = dangers.FirstOrDefault(q => q.DangerID == t.DangerID)
+                         let bill=bills.FirstOrDefault(q=>q.TaskID==t.ID)
+                         let lasttime=billsubjects.Where(q=>q.BillID==bill.ID).Max(s=>s.TaskTime)
+                         where lasttime==null|| (int)Math.Ceiling((lasttime - t.EndTime).TotalHours)<=0
+                         select new InsepctTaskByEmployee
+                         {
+                             
+                             ID = t.ID,
+                             DangerID = t.DangerID,
+                             DangerName = danger.Name,
+                             Name = t.Name,
+                             TaskTypeID = (PublicEnum.EE_InspectTaskType)t.TaskType,
+                             TaskTypeName = Command.GetItems(typeof(PublicEnum.EE_InspectTaskType)).FirstOrDefault(p => p.Value == t.TaskType).Caption,
+                             //最后时间和超时时间
+                             LastTime=lasttime,
+                             TimeOutHours= 0
 
+                         };
+
+                return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(re);
             }
             catch (Exception ex)
             {
@@ -498,7 +526,43 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<IEnumerable<InsepctTaskByEmployee>> GetTaskListByTimeOut()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var user = AppUser.EmployeeInfo;
+                if (user == null)
+                {
+                    throw new Exception("还未配置该用户!");
+                }
+                var tasks = rpstask.Queryable(q => q.EmployeeID == user.ID);
+                var dangers = rpstask.Queryable();
+                var billsubjects = _work.Repository<Bll_TaskBillSubjects>().Queryable();
+                var bills = _work.Repository<Bll_TaskBill>().Queryable();
+                var re = from t in tasks
+                         let danger = dangers.FirstOrDefault(q => q.DangerID == t.DangerID)
+                         let bill = bills.FirstOrDefault(q => q.TaskID == t.ID)
+                         let lasttime = billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime)
+                         where (int)Math.Ceiling((lasttime - t.EndTime).TotalHours)> 0
+                         select new InsepctTaskByEmployee
+                         {
+
+                             ID = t.ID,
+                             DangerID = t.DangerID,
+                             DangerName = danger.Name,
+                             Name = t.Name,
+                             TaskTypeID = (PublicEnum.EE_InspectTaskType)t.TaskType,
+                             TaskTypeName = Command.GetItems(typeof(PublicEnum.EE_InspectTaskType)).FirstOrDefault(p => p.Value == t.TaskType).Caption,
+                             //最后时间和超时时间
+                             LastTime = lasttime,
+                             TimeOutHours = (int)Math.Ceiling((lasttime - t.EndTime).TotalHours)
+
+                         };
+
+                return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(ex);
+            }
         }
     }
 }
