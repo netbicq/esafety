@@ -89,6 +89,7 @@ namespace ESafety.Account.Model.View
         /// 业务单据流程节点
         /// </summary>
         public IEnumerable<OpreateBillFlow> BillFlows { get; set; }
+
     }
     /// <summary>
     /// 作业单节点
@@ -135,6 +136,10 @@ namespace ESafety.Account.Model.View
         /// 节点交互模型
         /// </summary>
         public OpreateFlowUEModel FlowUEModel { get; set; }
+        /// <summary>
+        /// 流程描述
+        /// </summary>
+        public string FlowMemo { get; set; }
     }
     /// <summary>
     /// 作业申请单流程节点

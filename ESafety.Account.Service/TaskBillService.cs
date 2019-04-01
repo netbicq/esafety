@@ -363,6 +363,11 @@ namespace ESafety.Account.Service
         public ActionResult<bool> AddTaskBillMaster(TaskBillNew bill)
         {
             throw new NotImplementedException();
+            if (bill == null)
+            {
+                throw new Exception("参数错误!");
+            }
+
         }
         /// <summary>
         /// 根据任务单id获取设备集合

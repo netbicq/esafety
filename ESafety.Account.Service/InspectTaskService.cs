@@ -489,15 +489,31 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("还未配置该用户!");
                 }
-                var tasks = rpstask.Queryable(q => q.EmployeeID ==user.ID);
-                var dangers = rpstask.Queryable();
-                var billsubjects = _work.Repository<Bll_TaskBillSubjects>().Queryable();
-                var bills = _work.Repository<Bll_TaskBill>().Queryable();
+                var tasks = rpstask.Queryable(q => q.EmployeeID ==user.ID).ToList();
+
+                //风险点
+                var dangerids = tasks.Select(s => s.DangerID);
+                var dangers = _work.Repository<Basic_Danger>().Queryable(q=>dangerids.Contains(q.ID));
+
+                //任务单据
+                var taskids = tasks.Select(s => s.ID);
+                var bills = _work.Repository<Bll_TaskBill>().Queryable(q=>taskids.Contains(q.TaskID));
+
+                //任务主体
+                var billids = bills.Select(s => s.ID);
+                var billsubjects = _work.Repository<Bll_TaskBillSubjects>().Queryable(q=>billids.Contains(q.BillID));
+
+           
                 var re = from t in tasks
-                         let danger = dangers.FirstOrDefault(q => q.DangerID == t.DangerID)
+                         let danger = dangers.FirstOrDefault(q => q.ID== t.DangerID)
                          let bill=bills.FirstOrDefault(q=>q.TaskID==t.ID)
-                         let lasttime=billsubjects.Where(q=>q.BillID==bill.ID).Max(s=>s.TaskTime)
-                         where lasttime==null|| (int)Math.Ceiling((lasttime - t.EndTime).TotalHours)<=0
+                         let date=t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Year?t.CycleValue*365*24*60
+                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Month ?t.CycleValue*30*24*60
+                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Week ? t.CycleValue * 7 * 24 * 60
+                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Day ? t.CycleValue * 24 * 60
+                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Houre ? t.CycleValue * 60
+                         : t.CycleValue
+                         where bill==null|| (billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime)-DateTime.Now).TotalMinutes<date
                          select new InsepctTaskByEmployee
                          {
                              
@@ -507,9 +523,12 @@ namespace ESafety.Account.Service
                              Name = t.Name,
                              TaskTypeID = (PublicEnum.EE_InspectTaskType)t.TaskType,
                              TaskTypeName = Command.GetItems(typeof(PublicEnum.EE_InspectTaskType)).FirstOrDefault(p => p.Value == t.TaskType).Caption,
+                             TaskDescription=t.TaskDescription,
                              //最后时间和超时时间
-                             LastTime=lasttime,
-                             TimeOutHours= 0
+                             LastTime=bill==null?DateTime.MinValue:billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime),
+                             TimeOutHours= 0,
+                             CycleDateType=t.CycleDateType,
+                             CycleValue=t.CycleValue
 
                          };
 
@@ -533,15 +552,31 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("还未配置该用户!");
                 }
-                var tasks = rpstask.Queryable(q => q.EmployeeID == user.ID);
-                var dangers = rpstask.Queryable();
-                var billsubjects = _work.Repository<Bll_TaskBillSubjects>().Queryable();
-                var bills = _work.Repository<Bll_TaskBill>().Queryable();
+                var tasks = rpstask.Queryable(q => q.EmployeeID == user.ID).ToList();
+
+                //风险点
+                var dangerids = tasks.Select(s => s.DangerID);
+                var dangers = _work.Repository<Basic_Danger>().Queryable(q => dangerids.Contains(q.ID));
+
+                //任务单据
+                var taskids = tasks.Select(s => s.ID);
+                var bills = _work.Repository<Bll_TaskBill>().Queryable(q => taskids.Contains(q.TaskID));
+
+                //任务主体
+                var billids = bills.Select(s => s.ID);
+                var billsubjects = _work.Repository<Bll_TaskBillSubjects>().Queryable(q => billids.Contains(q.BillID));
+
+
                 var re = from t in tasks
-                         let danger = dangers.FirstOrDefault(q => q.DangerID == t.DangerID)
+                         let danger = dangers.FirstOrDefault(q => q.ID == t.DangerID)
                          let bill = bills.FirstOrDefault(q => q.TaskID == t.ID)
-                         let lasttime = billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime)
-                         where (int)Math.Ceiling((lasttime - t.EndTime).TotalHours)> 0
+                         let date = t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Year ? t.CycleValue * 365 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Month ? t.CycleValue * 30 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Week ? t.CycleValue * 7 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Day ? t.CycleValue * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Houre ? t.CycleValue * 60
+                        : t.CycleValue
+                         where bill != null && (billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime) - DateTime.Now).TotalMinutes > date
                          select new InsepctTaskByEmployee
                          {
 
@@ -551,9 +586,10 @@ namespace ESafety.Account.Service
                              Name = t.Name,
                              TaskTypeID = (PublicEnum.EE_InspectTaskType)t.TaskType,
                              TaskTypeName = Command.GetItems(typeof(PublicEnum.EE_InspectTaskType)).FirstOrDefault(p => p.Value == t.TaskType).Caption,
+                             TaskDescription = t.TaskDescription,
                              //最后时间和超时时间
-                             LastTime = lasttime,
-                             TimeOutHours = (int)Math.Ceiling((lasttime - t.EndTime).TotalHours)
+                             LastTime = billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime),
+                             TimeOutHours = (int)(billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime) - DateTime.Now).TotalMinutes
 
                          };
 
