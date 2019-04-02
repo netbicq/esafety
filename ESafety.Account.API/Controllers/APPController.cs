@@ -85,11 +85,90 @@ namespace ESafety.Account.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("getsubjects/{billid:Guid}")]
-        public ActionResult<IEnumerable<TaskSubjectsByTask>> GetTaskSubjectByTask(Guid billid)
+        public ActionResult<IEnumerable<TaskSubjectView>> GetTaskSubjectByTask(Guid billid)
         {
             return billbll.GetTaskSubjects(billid);
         }
+        /// <summary>
+        /// 完成任务单据
+        /// </summary>
+        /// <param name="billid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("taskbillover/{billid:Guid}")]
+        public ActionResult<bool> TaskBillOver(Guid billid)
+        {
+            LogContent = "任务单据已完成检查，ID为：" + JsonConvert.SerializeObject(billid);
+            return billbll.TaskBillOver(billid);
+        }
+        /// <summary>
+        /// 删除任务单据
+        /// </summary>
+        /// <param name="billid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("deltaskbill/{billid:Guid}")]
+        public ActionResult<bool> DelTaskBillMaster(Guid billid)
+        {
+            LogContent = "删除了任务单据，ID为：" + JsonConvert.SerializeObject(billid);
+            return billbll.DelTaskBillMaster(billid);
+        }
+        /// <summary>
+        /// 获取当前任务单据列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("gettaskbills")]
+        public ActionResult<IEnumerable<TaskBillModel>> GetTaskBillMasters()
+        {
+            return billbll.GetTaskBillMasters();
+        }
 
-        
+        /// <summary>
+        /// 获取历史任务单据列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("gettaskbillsover")]
+        public ActionResult<IEnumerable<TaskBillModel>> GetTaskBillMastersOver()
+        {
+            return billbll.GetTaskBillMastersOver();
+        }
+
+        /// <summary>
+        /// 根据任务单id获取已检查了的主体的集合
+        /// </summary>
+        /// <param name="taskbillid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("gettasksubover/{taskbillid:Guid}")]
+        public ActionResult<IEnumerable<TaskSubjectOverView>> GetTaskSubjectsOver(Guid taskbillid)
+        {
+            return billbll.GetTaskSubjectsOver(taskbillid);
+        }
+        /// <summary>
+        /// 根据结果ID，删除检查结果
+        /// </summary>
+        /// <param name="subresultid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("delsubresult/{subresultid:Guid}")]
+        public ActionResult<bool> DelSubResult(Guid subresultid)
+        {
+            LogContent = "删除了主体检查结果，ID为：" + JsonConvert.SerializeObject(subresultid);
+            return billbll.DelSubResult(subresultid);
+        }
+
+        /// <summary>
+        /// 获取检查结果模型
+        /// </summary>
+        /// <param name="subresultid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getsubresult/{subresultid:Guid}")]
+        public ActionResult<SubResultView> GetSubResultModel(Guid subresultid)
+        {
+            return billbll.GetSubResultModel(subresultid);
+        }
     }
 }

@@ -465,6 +465,8 @@ namespace ESafety.Account.Service
                     var flow = flows.FirstOrDefault(q => q.OpreationFlowID == f.ID);
                     var nextids = points.OrderBy(o => o.PointIndex).Where(q => q.PointIndex > f.PointIndex).Select(s => s.ID);
 
+                    var flownew = flows.OrderByDescending(q => q.FlowTime).FirstOrDefault(q => q.OpreationFlowID == f.ID);
+
                     var rf = new OpreateBillFlow
                     {
                         OpreationFlowID = f.ID,
@@ -475,7 +477,7 @@ namespace ESafety.Account.Service
                         FlowEmployeeID = flow == null ? Guid.Empty : flow.FlowEmployeeID,
                         FlowEmployeeName = flow == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID) == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID).CNName,
                         PostName = post == null ? "" : post.Name,
-                       
+                        FlowMemo=flownew==null?"":flownew.FlowMemo
                         
                     };
                     var uemodel = new OpreateFlowUEModel();

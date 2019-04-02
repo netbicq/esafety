@@ -36,11 +36,12 @@ namespace ESafety.Account.Service
             Unitwork = work;
             rpstask = work.Repository<Bll_InspectTask>();
             rpstaskSubject = work.Repository<Bll_InspectTaskSubject>();
+            var s = AppUser;
             srvFlow = flow;
             var flowser = srvFlow as FlowService;
             flowser.AppUser = AppUser;
             flowser.ACOptions = ACOptions;
-            
+
 
         }
         /// <summary>
@@ -469,7 +470,6 @@ namespace ESafety.Account.Service
             try
             {
                 throw new NotImplementedException();
-
             }
             catch (Exception ex)
             {
@@ -484,8 +484,55 @@ namespace ESafety.Account.Service
         {
             try
             {
-                throw new NotImplementedException();
+                var user = AppUser.EmployeeInfo;
+                if (user == null)
+                {
+                    throw new Exception("还未配置该用户!");
+                }
+                var tasks = rpstask.Queryable(q => q.EmployeeID ==user.ID&&q.State== (int)PublicEnum.BillFlowState.audited).ToList();
 
+                //风险点
+                var dangerids = tasks.Select(s => s.DangerID);
+                var dangers = _work.Repository<Basic_Danger>().Queryable(q=>dangerids.Contains(q.ID));
+
+                //任务单据
+                var taskids = tasks.Select(s => s.ID);
+                var bills = _work.Repository<Bll_TaskBill>().Queryable(q=>taskids.Contains(q.TaskID));
+
+                //任务主体
+                var billids = bills.Select(s => s.ID);
+                var billsubjects = _work.Repository<Bll_TaskBillSubjects>().Queryable(q=>billids.Contains(q.BillID));
+
+           
+                var re = from t in tasks
+                         let danger = dangers.FirstOrDefault(q => q.ID== t.DangerID)
+                         let bill=bills.FirstOrDefault(q=>q.TaskID==t.ID)
+                         let date=t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Year?t.CycleValue*365*24*60
+                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Month ?t.CycleValue*30*24*60
+                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Week ? t.CycleValue * 7 * 24 * 60
+                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Day ? t.CycleValue * 24 * 60
+                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Houre ? t.CycleValue * 60
+                         : t.CycleValue
+                         where bill==null|| (billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime)-DateTime.Now).TotalMinutes<date
+                         select new InsepctTaskByEmployee
+                         {
+                             
+                             ID = t.ID,
+                             DangerID = t.DangerID,
+                             DangerName = danger.Name,
+                             Name = t.Name,
+                             TaskTypeID = (PublicEnum.EE_InspectTaskType)t.TaskType,
+                             TaskTypeName = Command.GetItems(typeof(PublicEnum.EE_InspectTaskType)).FirstOrDefault(p => p.Value == t.TaskType).Caption,
+                             TaskDescription=t.TaskDescription,
+                             //最后时间和超时时间
+                             LastTime=bill==null?DateTime.MinValue:billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime),
+                             TimeOutHours= 0,
+                             CycleDateType=t.CycleDateType,
+                             CycleValue=t.CycleValue
+
+                         };
+
+                return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(re);
             }
             catch (Exception ex)
             {
@@ -498,7 +545,60 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<IEnumerable<InsepctTaskByEmployee>> GetTaskListByTimeOut()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var user = AppUser.EmployeeInfo;
+                if (user == null)
+                {
+                    throw new Exception("还未配置该用户!");
+                }
+                var tasks = rpstask.Queryable(q => q.EmployeeID == user.ID && q.State == (int)PublicEnum.BillFlowState.audited).ToList();
+
+                //风险点
+                var dangerids = tasks.Select(s => s.DangerID);
+                var dangers = _work.Repository<Basic_Danger>().Queryable(q => dangerids.Contains(q.ID));
+
+                //任务单据
+                var taskids = tasks.Select(s => s.ID);
+                var bills = _work.Repository<Bll_TaskBill>().Queryable(q => taskids.Contains(q.TaskID));
+
+                //任务主体
+                var billids = bills.Select(s => s.ID);
+                var billsubjects = _work.Repository<Bll_TaskBillSubjects>().Queryable(q => billids.Contains(q.BillID));
+
+
+                var re = from t in tasks
+                         let danger = dangers.FirstOrDefault(q => q.ID == t.DangerID)
+                         let bill = bills.FirstOrDefault(q => q.TaskID == t.ID)
+                         let date = t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Year ? t.CycleValue * 365 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Month ? t.CycleValue * 30 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Week ? t.CycleValue * 7 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Day ? t.CycleValue * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Houre ? t.CycleValue * 60
+                        : t.CycleValue
+                         where bill != null && (billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime) - DateTime.Now).TotalMinutes > date
+                         select new InsepctTaskByEmployee
+                         {
+
+                             ID = t.ID,
+                             DangerID = t.DangerID,
+                             DangerName = danger.Name,
+                             Name = t.Name,
+                             TaskTypeID = (PublicEnum.EE_InspectTaskType)t.TaskType,
+                             TaskTypeName = Command.GetItems(typeof(PublicEnum.EE_InspectTaskType)).FirstOrDefault(p => p.Value == t.TaskType).Caption,
+                             TaskDescription = t.TaskDescription,
+                             //最后时间和超时时间
+                             LastTime = billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime),
+                             TimeOutHours = (int)(billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime) - DateTime.Now).TotalMinutes
+
+                         };
+
+                return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(ex);
+            }
         }
     }
 }

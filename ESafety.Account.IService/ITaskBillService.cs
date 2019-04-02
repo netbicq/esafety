@@ -46,12 +46,50 @@ namespace ESafety.Account.IService
         /// <returns></returns>
         ActionResult<bool> AddTaskBillMaster(Account.Model.PARA.TaskBillNew bill);
         /// <summary>
-        /// 根据任务单据ID获取任务的设备集合
-        /// 已经执行了的设备则不再显示
+        /// 删除任务单据
+        /// </summary>
+        /// <param name="billid"></param>
+        /// <returns></returns>
+        ActionResult<bool> DelTaskBillMaster(Guid billid);
+
+        /// <summary>
+        /// 获取当前用户待执行的任务单据列表
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<IEnumerable<TaskBillModel>> GetTaskBillMasters();
+
+        /// <summary>
+        /// 获取当前用户的历史任务单据列表
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<IEnumerable<TaskBillModel>> GetTaskBillMastersOver();
+        /// <summary>
+        /// 根据任务单据ID获取任务的主体集合
+        /// 已经执行了的主体则不再显示
         /// </summary> 
         /// <param name="taskbillid">任务单ID</param>
         /// <returns></returns>
-        ActionResult<IEnumerable<TaskSubjectsByTask>> GetTaskSubjects(Guid taskbillid);
+        ActionResult<IEnumerable<TaskSubjectView>> GetTaskSubjects(Guid taskbillid);
+
+        /// <summary>
+        /// 根据任务单据ID获取已经执行了的任务的主体集合
+        /// 
+        /// </summary>
+        /// <param name="taskbillid">任务单ID</param>
+        /// <returns></returns>
+        ActionResult<IEnumerable<TaskSubjectOverView>> GetTaskSubjectsOver(Guid taskbillid);
+        /// <summary>
+        /// 根据检查结果ID，删除检查结果
+        /// </summary>
+        /// <param name="subresultid"></param>
+        /// <returns></returns>
+        ActionResult<bool> DelSubResult(Guid subresultid);
+        /// <summary>
+        /// 根据检查结果ID，获取检查结果模型
+        /// </summary>
+        /// <param name="subresultid"></param>
+        /// <returns></returns>
+        ActionResult<SubResultView> GetSubResultModel(Guid subresultid);
         /// <summary>
         /// 新建任务的主体检查
         /// </summary>
