@@ -85,6 +85,11 @@ namespace ESafety.Unity
         public enum BillFlowState
         {
             /// <summary>
+            /// 待检查完成
+            /// </summary>
+            [Description("待检查完成")]
+            wait=-1,
+            /// <summary>
             /// 待审批
             /// </summary>
             [Description("正常")]

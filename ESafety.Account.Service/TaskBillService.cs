@@ -348,8 +348,6 @@ namespace ESafety.Account.Service
                     _work.Commit();
 
                 }
-
-
                 return new ActionResult<bool>(true);
 
             }
@@ -407,7 +405,7 @@ namespace ESafety.Account.Service
         /// </summary>
         /// <param name="taskbillid"></param>
         /// <returns></returns>
-        public ActionResult<IEnumerable<InspectTaskSubjectView>> GetTaskSubjects(Guid taskbillid)
+        public ActionResult<IEnumerable<TaskSubjectView>> GetTaskSubjects(Guid taskbillid)
         {
             try
             {
@@ -435,27 +433,33 @@ namespace ESafety.Account.Service
 
                 // 在此单据中未执行的主体信息
                 var re = from sub in tasksubs
-                         let subinfo =
-                        (PublicEnum.EE_SubjectType)sub.SubjectType == PublicEnum.EE_SubjectType.Device ? devices.FirstOrDefault(q => q.ID == sub.SubjectID).Name :
-                        (PublicEnum.EE_SubjectType)sub.SubjectType == PublicEnum.EE_SubjectType.Opreate ? opreats.FirstOrDefault(q => q.ID == sub.SubjectID).Name :
-                        (PublicEnum.EE_SubjectType)sub.SubjectType == PublicEnum.EE_SubjectType.Post ? posts.FirstOrDefault(q => q.ID == sub.SubjectID).Name : ""
-                         select new InspectTaskSubjectView
+                         let dev = devices.FirstOrDefault(q => q.ID == sub.SubjectID)
+                         let ppst = posts.FirstOrDefault(q => q.ID == sub.SubjectID)
+                         let opr = opreats.FirstOrDefault(q => q.ID == sub.SubjectID)
+                         select new TaskSubjectView
                          {
-                             ID = sub.ID,
-                             InspectTaskID = sub.InspectTaskID,
-                             SubjectID = sub.SubjectID,
-                             SubjectName = subinfo,
-                             SubjectType = sub.SubjectType,
-                             SubjectTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == sub.SubjectType).Caption,
-                             DangerLevel = lv == null ? "" : lv.DictName
+                             BillID = bill.ID,
+                             SubID = sub.ID,
+                             DangerLevel = lv == null ? "" : lv.DictName,
+                             SubType = (PublicEnum.EE_SubjectType)sub.SubjectType,
+                             SubTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == sub.SubjectType).Caption,
+                             SubName =
+                                dev != null ? dev.Name : ppst != null ? ppst.Name : opr != null ? opr.Name : default(string),
+                             Principal=
+                                 dev != null ? dev.Principal : ppst != null ? ppst.Principal : opr != null ? opr.Principal : default(string),
+                             PrincipalTel=
+                                 dev != null ? dev.PrincipalTel : ppst != null ? ppst.PrincipalTel : opr != null ? opr.PrincipalTel : default(string)
                          };
-                return new ActionResult<IEnumerable<InspectTaskSubjectView>>(re);
+                return new ActionResult<IEnumerable<TaskSubjectView>>(re);
             }
             catch (Exception ex)
             {
-                return new ActionResult<IEnumerable<InspectTaskSubjectView>>(ex);
+                return new ActionResult<IEnumerable<TaskSubjectView>>(ex);
             }
         }
+
+
+
 
         /// <summary>
         /// 新建任务单据主体详情
@@ -520,17 +524,252 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到该任务单据!");
                 }
-                if (dbbill.State != (int)PublicEnum.BillFlowState.audited)
+                if (dbbill.State != (int)PublicEnum.BillFlowState.wait)
                 {
                     throw new Exception("当前状态不允许");
                 }
-                dbbill.State = (int)PublicEnum.BillFlowState.Over;
+                dbbill.State = (int)PublicEnum.BillFlowState.normal;
                 _rpstb.Update(dbbill);
                 return new ActionResult<bool>(true);
             }
             catch (Exception ex)
             {
                 return new ActionResult<bool>(ex);
+            }
+        }
+        /// <summary>
+        /// 删除任务单据
+        /// </summary>
+        /// <param name="billid"></param>
+        /// <returns></returns>
+        public ActionResult<bool> DelTaskBillMaster(Guid billid)
+        {
+            try
+            {
+                var bill = _rpstb.GetModel(billid);
+                if (bill==null)
+                {
+                    throw new Exception("未找到所需删除的任务单据!");
+                }
+                if (bill.State != (int)PublicEnum.BillFlowState.wait)
+                {
+                    throw new Exception("单据状态不允许删除!");
+                }
+                var subs = _rpstbs.Queryable(p=>p.BillID==billid);
+                var businessids = subs.Select(s=>s.ID);
+                //删除单据处理上传的文件
+                foreach (var id in businessids)
+                {
+                    srvFile.DelFileByBusinessId(id);
+                }
+                //删除单据处理的信息
+                _rpstbs.Delete(p => p.BillID == bill.ID);
+                //删除单据
+                _rpstb.Delete(bill);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取当前待执行的任务单据
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<TaskBillModel>> GetTaskBillMasters()
+        {
+            try
+            {
+                //当前人
+                var user = AppUser.EmployeeInfo;
+                //当前人的所有待完成单据
+                var tbs=_rpstb.Queryable(q=>q.EmployeeID==user.ID&&q.State==(int)PublicEnum.BillFlowState.wait);
+
+                //当前人所有单据对应的任务
+                var taskids = tbs.Select(s => s.TaskID);
+                var tasks = _work.Repository<Bll_InspectTask>().Queryable(p=>taskids.Contains(p.ID));
+
+                //单据的风险点
+                var dangerids = tbs.Select(s=>s.DangerID);
+                var dangers = _work.Repository<Basic_Danger>().Queryable(p=>dangerids.Contains(p.ID));
+                var re = from tb in tbs
+                         let task=tasks.FirstOrDefault(q=>q.ID==tb.TaskID)
+                         let danger=dangers.FirstOrDefault(q=>q.ID==tb.DangerID)
+                         select new TaskBillModel
+                         {
+                             BillID=tb.ID,
+                             StartTime=tb.StartTime,
+                             EndTime=(DateTime)tb.EndTime,
+                             EmployeeName=user.CNName,
+                             TaskName=task.Name,
+                             State=Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(p=>p.Value==tb.State).Caption,
+                             DangerName=danger.Name
+                         };
+                return new ActionResult<IEnumerable<TaskBillModel>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<TaskBillModel>>(ex);
+            }
+           
+        }
+        /// <summary>
+        /// 获取历史任务单据
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<TaskBillModel>> GetTaskBillMastersOver()
+        {
+            try
+            {
+                //当前人
+                var user = AppUser.EmployeeInfo;
+                //当前人的所有已完成单据
+                var tbs = _rpstb.Queryable(q => q.EmployeeID == user.ID && q.State >= (int)PublicEnum.BillFlowState.normal);
+
+                //当前人所有单据对应的任务
+                var taskids = tbs.Select(s => s.TaskID);
+                var tasks = _work.Repository<Bll_InspectTask>().Queryable(p => taskids.Contains(p.ID));
+
+                //单据的风险点
+                var dangerids = tbs.Select(s => s.DangerID);
+                var dangers = _work.Repository<Basic_Danger>().Queryable(p => dangerids.Contains(p.ID));
+                var re = from tb in tbs
+                         let task = tasks.FirstOrDefault(q => q.ID == tb.TaskID)
+                         let danger = dangers.FirstOrDefault(q => q.ID == tb.DangerID)
+                         select new TaskBillModel
+                         {
+                             BillID = tb.ID,
+                             StartTime = tb.StartTime,
+                             EndTime = (DateTime)tb.EndTime,
+                             EmployeeName = user.CNName,
+                             TaskName = task.Name,
+                             State = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(p => p.Value == tb.State).Caption,
+                             DangerName = danger.Name
+                         };
+                return new ActionResult<IEnumerable<TaskBillModel>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<TaskBillModel>>(ex);
+            }
+        }
+
+        /// <summary>
+        /// /// 根据任务单id获取已执行了的集合
+        /// </summary>
+        /// <param name="taskbillid"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<TaskSubjectOverView>> GetTaskSubjectsOver(Guid taskbillid)
+        {
+            try
+            {
+                var bill = _rpstb.GetModel(taskbillid);
+                if (bill == null)
+                {
+                    throw new Exception("未找到该任务单!");
+                }
+                //获取已经执行了的主体
+                var subs = _rpstbs.Queryable(p => p.BillID == taskbillid);
+                var osubid = subs.Select(s => s.SubjectID);
+
+                //获取任务主体中未执行的主体
+                var tasksubs = _work.Repository<Bll_InspectTaskSubject>().Queryable(q => q.InspectTaskID == bill.TaskID && osubid.Contains(q.SubjectID));
+                var subids = tasksubs.Select(s => s.SubjectID);
+
+                //主体的类型
+                var devices = _work.Repository<Basic_Facilities>().Queryable(q => subids.Contains(q.ID)).ToList();
+                var posts = _work.Repository<Basic_Post>().Queryable(q => subids.Contains(q.ID)).ToList();
+                var opreats = _work.Repository<Basic_Opreation>().Queryable(q => subids.Contains(q.ID)).ToList();
+
+                //主体的风险等级
+                var danger = _work.Repository<Basic_Danger>().GetModel(bill.DangerID);
+                var lv = _work.Repository<Basic_Dict>().GetModel(danger.DangerLevel);
+
+                // 在此单据中未执行的主体信息
+                var re = from sub in tasksubs
+                         let dev = devices.FirstOrDefault(q => q.ID == sub.SubjectID)
+                         let ppst = posts.FirstOrDefault(q => q.ID == sub.SubjectID)
+                         let opr = opreats.FirstOrDefault(q => q.ID == sub.SubjectID)
+                         let rest=subs.FirstOrDefault(p=>p.BillID==sub.ID&&p.SubjectID==sub.SubjectID)
+                         select new TaskSubjectOverView
+                         {
+                             SubResultID=rest.ID,
+                             BillID = bill.ID,
+                             SubID = sub.ID,
+                             DangerLevel = lv == null ? "" : lv.DictName,
+                             SubType = (PublicEnum.EE_SubjectType)sub.SubjectType,
+                             SubTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == sub.SubjectType).Caption,
+                             SubName =
+                                dev != null ? dev.Name : ppst != null ? ppst.Name : opr != null ? opr.Name : default(string),
+                             Principal =
+                                 dev != null ? dev.Principal : ppst != null ? ppst.Principal : opr != null ? opr.Principal : default(string),
+                             PrincipalTel =
+                                 dev != null ? dev.PrincipalTel : ppst != null ? ppst.PrincipalTel : opr != null ? opr.PrincipalTel : default(string)
+                         };
+                return new ActionResult<IEnumerable<TaskSubjectOverView>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<TaskSubjectOverView>>(ex);
+            }
+        }
+        /// <summary>
+        /// 根据结果ID，删除检查结果
+        /// </summary>
+        /// <param name="subresultid"></param>
+        /// <returns></returns>
+        public ActionResult<bool> DelSubResult(Guid subresultid)
+        {
+            try
+            {
+                var subresult = _rpstbs.GetModel(subresultid);
+                if (subresult == null)
+                {
+                    throw new Exception("未找到所需删除的主体检查结果！");
+                }
+                var check = _rpstb.Any(p => p.ID == subresult.BillID && p.State >= (int)PublicEnum.BillFlowState.normal);
+                if (check)
+                {
+                    throw new Exception("当前单据状态属于已完成检查状态，无法删除检查结果！");
+                }
+                //删除文件
+                srvFile.DelFileByBusinessId(subresultid);
+                _rpstbs.Delete(subresult);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取检查结果模型
+        /// </summary>
+        /// <param name="subresultid"></param>
+        /// <returns></returns>
+        public ActionResult<SubResultView> GetSubResultModel(Guid subresultid)
+        {
+            try
+            {
+                var subresult = _rpstbs.GetModel(subresultid);
+                if (subresult == null)
+                {
+                    throw new Exception("未找到检查结果");
+                }
+                var re = new SubResultView
+                {
+                    ResultTime = subresult.TaskTime,
+                    TaskResult = (PublicEnum.EE_TaskResultType)subresult.TaskResult,
+                    TaskResultMemo = subresult.TaskResultMemo
+                };
+                return new ActionResult<SubResultView>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<SubResultView>(ex);
             }
         }
     }
