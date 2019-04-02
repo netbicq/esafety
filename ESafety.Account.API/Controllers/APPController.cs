@@ -2,6 +2,7 @@
 using ESafety.Account.Model.PARA;
 using ESafety.Account.Model.View;
 using ESafety.Core.Model;
+using ESafety.ORM;
 using ESafety.Web.Unity;
 using Newtonsoft.Json;
 using System;
@@ -29,8 +30,8 @@ namespace ESafety.Account.API.Controllers
 
             spectbll = spectask;
             billbll = taskbill;
-            BusinessService = taskbill;
-
+            BusinessService = taskbill;            
+            
         }
         /// <summary>
         /// 新建任务单

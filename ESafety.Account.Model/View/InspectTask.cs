@@ -157,6 +157,15 @@ namespace ESafety.Account.Model.View
         /// 风险点名称
         /// </summary>
         public string DangerName { get; set; }
+
+        /// <summary>
+        /// 执行频率
+        /// </summary>
+        public string CycleName { get; set; }
+        /// <summary>
+        /// 任务描述
+        /// </summary>
+        public string TaskDescription { get; set; }
         /// <summary>
         /// 任务类型名称
         /// </summary>
