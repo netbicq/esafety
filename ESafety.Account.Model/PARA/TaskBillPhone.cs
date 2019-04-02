@@ -24,7 +24,7 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 预计完成时间
         /// </summary>
-        public DateTime EndDate { get; set; }
+        public DateTime EndTime { get; set; }
     }
 
     /// <summary>

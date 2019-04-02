@@ -45,13 +45,14 @@ namespace ESafety.Account.IService
         /// <param name="bill"></param>
         /// <returns></returns>
         ActionResult<bool> AddTaskBillMaster(Account.Model.PARA.TaskBillNew bill);
+
         /// <summary>
         /// 根据任务单据ID获取任务的设备集合
         /// 已经执行了的设备则不再显示
         /// </summary> 
         /// <param name="taskbillid">任务单ID</param>
         /// <returns></returns>
-        ActionResult<IEnumerable<TaskSubjectsByTask>> GetTaskSubjects(Guid taskbillid);
+        ActionResult<IEnumerable<InspectTaskSubjectView>> GetTaskSubjects(Guid taskbillid);
         /// <summary>
         /// 新建任务的主体检查
         /// </summary>

@@ -23,7 +23,8 @@ namespace ESafety.Account.Service
         private IRepository<Bll_TaskBillSubjects> _rpstbs = null;
 
         private Core.IFlow srvFlow = null;
-        public TaskBillService(IUnitwork work,IFlow flow):base(work,flow)
+        private IAttachFile srvFile = null;
+        public TaskBillService(IUnitwork work,IFlow flow, IAttachFile file) :base(work,flow)
         {
             _work = work;
             Unitwork = work;
@@ -31,7 +32,10 @@ namespace ESafety.Account.Service
             _rpstbs = work.Repository<Bll_TaskBillSubjects>();
 
             srvFlow = flow;
-            var flowser = srvFlow as FlowService; 
+            var flowser = srvFlow as FlowService;
+
+            srvFile = file;
+
         }
         /// <summary>
         /// 修改任务单据详情
@@ -167,7 +171,7 @@ namespace ESafety.Account.Service
                               EmployeeID=s.EmployeeID,
                               DangerID=s.DangerID,
                               State=s.State,
-                              StateName=s.State==0?"":Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q=>q.Value==s.State).Caption,
+                              StateName=Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q=>q.Value==s.State).Caption,
                               EndTime=s.EndTime,
                               EmployeeName=emp.CNName,
                               PostID=s.PostID,
@@ -362,12 +366,40 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> AddTaskBillMaster(TaskBillNew bill)
         {
-            throw new NotImplementedException();
-            if (bill == null)
+            try
             {
-                throw new Exception("参数错误!");
-            }
+                if (bill == null)
+                {
+                    throw new Exception("参数错误!");
+                }
+                var check = _rpstb.Any(bill.TaskID);
+                if (check)
+                {
+                    throw new Exception("该任务单据已存在!");
+                }
+                var dbbill = bill.MAPTO<Bll_TaskBill>();
+                //单据编号
+                dbbill.BillCode = Command.CreateCode();
 
+                var task = _work.Repository<Bll_InspectTask>().GetModel(bill.TaskID);
+                //执行岗位ID
+                dbbill.PostID = task.ExecutePostID;
+                //执行人ID
+                dbbill.EmployeeID = (Guid)task.EmployeeID;
+                //风险点ID
+                dbbill.DangerID = task.DangerID;
+                //单据状态
+                dbbill.State = (int)PublicEnum.BillFlowState.normal;
+
+                _rpstb.Add(dbbill);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
         }
         /// <summary>
         /// 根据任务单id获取设备集合
@@ -375,19 +407,131 @@ namespace ESafety.Account.Service
         /// </summary>
         /// <param name="taskbillid"></param>
         /// <returns></returns>
-        public ActionResult<IEnumerable<TaskSubjectsByTask>> GetTaskSubjects(Guid taskbillid)
+        public ActionResult<IEnumerable<InspectTaskSubjectView>> GetTaskSubjects(Guid taskbillid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var bill = _rpstb.GetModel(taskbillid);
+                if (bill == null)
+                {
+                    throw new Exception("未找到该任务单!");
+                }
+                //获取已经执行了的主体
+                var subs = _rpstbs.Queryable(p => p.BillID == taskbillid);
+                var osubid = subs.Select(s => s.SubjectID);
+
+                //获取任务主体中未执行的主体
+                var tasksubs = _work.Repository<Bll_InspectTaskSubject>().Queryable(q=>q.InspectTaskID==bill.TaskID&&!osubid.Contains(q.SubjectID));
+                var subids = tasksubs.Select(s => s.SubjectID);
+
+                //主体的类型
+                var devices = _work.Repository<Basic_Facilities>().Queryable(q => subids.Contains(q.ID)).ToList();
+                var posts = _work.Repository<Basic_Post>().Queryable(q => subids.Contains(q.ID)).ToList();
+                var opreats = _work.Repository<Basic_Opreation>().Queryable(q => subids.Contains(q.ID)).ToList();
+
+                //主体的风险等级
+                var danger = _work.Repository<Basic_Danger>().GetModel(bill.DangerID);
+                var lv = _work.Repository<Basic_Dict>().GetModel(danger.DangerLevel);
+
+                // 在此单据中未执行的主体信息
+                var re = from sub in tasksubs
+                         let subinfo =
+                        (PublicEnum.EE_SubjectType)sub.SubjectType == PublicEnum.EE_SubjectType.Device ? devices.FirstOrDefault(q => q.ID == sub.SubjectID).Name :
+                        (PublicEnum.EE_SubjectType)sub.SubjectType == PublicEnum.EE_SubjectType.Opreate ? opreats.FirstOrDefault(q => q.ID == sub.SubjectID).Name :
+                        (PublicEnum.EE_SubjectType)sub.SubjectType == PublicEnum.EE_SubjectType.Post ? posts.FirstOrDefault(q => q.ID == sub.SubjectID).Name : ""
+                         select new InspectTaskSubjectView
+                         {
+                             ID = sub.ID,
+                             InspectTaskID = sub.InspectTaskID,
+                             SubjectID = sub.SubjectID,
+                             SubjectName = subinfo,
+                             SubjectType = sub.SubjectType,
+                             SubjectTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == sub.SubjectType).Caption,
+                             DangerLevel = lv == null ? "" : lv.DictName
+                         };
+                return new ActionResult<IEnumerable<InspectTaskSubjectView>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<InspectTaskSubjectView>>(ex);
+            }
         }
 
+        /// <summary>
+        /// 新建任务单据主体详情
+        /// </summary>
+        /// <param name="bill"></param>
+        /// <returns></returns>
         public ActionResult<bool> AddTaskSubject(TaskBillSubjectNew bill)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (bill == null)
+                {
+                    throw new Exception("参数有误!");
+                }
+                var check = _rpstbs.Any(p=>p.BillID==bill.BillID);
+                if (check)
+                {
+                    throw new Exception("检查结果已存在!");
+                }
+                var dbsub = bill.MAPTO<Bll_TaskBillSubjects>();
+                dbsub.TaskTime = DateTime.Now;
+
+                //电子文档
+                var files = new AttachFileSave
+                {
+                    BusinessID = dbsub.ID,
+                    files = from f in bill.AttachFiles
+                            select new AttachFileNew
+                            {
+                                FileTitle = f.FileTitle,
+                                FileType = f.FileType,
+                                FileUrl = f.FileUrl
+                            }
+                };
+                var fileresult = srvFile.SaveFiles(files);
+                if (fileresult.state != 200)
+                {
+                    throw new Exception(fileresult.msg);
+                }
+                _rpstbs.Add(dbsub);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
         }
 
+        /// <summary>
+        /// 完成任务单据
+        /// </summary>
+        /// <param name="billid"></param>
+        /// <returns></returns>
         public ActionResult<bool> TaskBillOver(Guid billid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var dbbill = _rpstb.GetModel(billid);
+                if (dbbill == null)
+                {
+                    throw new Exception("未找到该任务单据!");
+                }
+                if (dbbill.State != (int)PublicEnum.BillFlowState.audited)
+                {
+                    throw new Exception("当前状态不允许");
+                }
+                dbbill.State = (int)PublicEnum.BillFlowState.Over;
+                _rpstb.Update(dbbill);
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
         }
     }
 }
