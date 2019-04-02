@@ -23,7 +23,7 @@ namespace ESafety.Account.API.Controllers
         public DocInstitutionController(IDocInstitutionService din)
         {
             bll = din;
-            BusinessService = din;
+            BusinessServices =new List<object>() { din };
         }
         /// <summary>
         /// 新建安全制度模型

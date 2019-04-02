@@ -23,7 +23,7 @@ namespace ESafety.Account.API.Controllers
         public DocCertificateController(IDocCertificateService dc)
         {
             bll = dc;
-            BusinessService = dc;
+            BusinessServices =new List<object>() { dc };
         }
         /// <summary>
         /// 新建资质模型

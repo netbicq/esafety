@@ -31,7 +31,7 @@ namespace ESafety.Account.API.Controllers
         {
 
             bll = file;
-            BusinessService = file;
+            BusinessServices =new List<object> { file };
 
         }
         /// <summary>

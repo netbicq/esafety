@@ -89,7 +89,7 @@ namespace ESafety.Web.Unity
             if (!(actionContext.Request.Headers.TryGetValues("accountid", out AccountID)))
                 throw new Exception("非法请求");
 
-            ORM.ServiceBase obj = api.BusinessService as ORM.ServiceBase;
+            ORM.ServiceBase obj = api.BusinessServices[0] as ORM.ServiceBase;
 
 
             var acdb = obj.Unitwork.Repository<AccountInfo>();
@@ -215,7 +215,7 @@ namespace ESafety.Web.Unity
                 throw new Exception("非法请求");
 
 
-            ORM.ServiceBase obj = api.BusinessService as ORM.ServiceBase;
+            ORM.ServiceBase obj = api.BusinessServices[0] as ORM.ServiceBase;
 
 
             var db = obj.Unitwork.Repository<Core.Model.DB.Auth_User>();

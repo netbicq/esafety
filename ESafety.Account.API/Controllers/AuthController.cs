@@ -26,7 +26,7 @@ namespace ESafety.Account.API.Controllers
         {
 
             bll = user;
-            BusinessService = bll as Account.Service.Auth_UserService;
+            BusinessServices =new List<object>() { bll as Account.Service.Auth_UserService };
 
         }
         /// <summary>

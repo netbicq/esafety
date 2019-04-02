@@ -26,7 +26,7 @@ namespace ESafety.Account.API.Controllers
         public DictController(IDict dict)
         {
             bll = dict;
-            BusinessService = dict;
+            BusinessServices =new List<object>() { dict };
 
         }
         /// <summary>

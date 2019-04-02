@@ -26,7 +26,7 @@ namespace ESafety.Account.API.Controllers
         public DangerManageController(IDangerManageService dms)
         {
             bll = dms;
-            BusinessService = dms;
+            BusinessServices =new List<object>() { dms };
         }
 
         /// <summary>

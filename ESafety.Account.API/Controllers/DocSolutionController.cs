@@ -24,7 +24,7 @@ namespace ESafety.Account.API.Controllers
         public  DocSolutionController(IDocSolutionService ds)
         {
             bll = ds;
-            BusinessService = ds;
+            BusinessServices =new List<object>() { ds };
         }
         /// <summary>
         /// 新建紧急预案模型

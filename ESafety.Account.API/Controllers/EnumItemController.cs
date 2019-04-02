@@ -23,7 +23,7 @@ namespace ESafety.Account.API.Controllers
         public EnumItemController(IDict dict)
         {
             bll = dict;
-            BusinessService = dict;
+            BusinessServices =new List<object>() { dict };
         }
         /// <summary>
         /// 执行频率日期类型

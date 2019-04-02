@@ -26,7 +26,7 @@ namespace ESafety.Platform.API.Controllers
         {
 
             bll = user;
-            BusinessService = bll;
+            BusinessServices =new List<object>() { bll };
 
         }
         /// <summary>

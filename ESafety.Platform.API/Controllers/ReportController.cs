@@ -28,7 +28,7 @@ namespace ESafety.Platform.API.Controllers
         {
             bll = report;
             rbll = rreport;
-            BusinessService = bll;
+            BusinessServices =new List<object>() { bll };
 
         }
         /// <summary>

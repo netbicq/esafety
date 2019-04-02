@@ -23,7 +23,7 @@ namespace ESafety.Account.API.Controllers
         public VideoController(IVideoService v)
         {
             bll = v;
-            BusinessService = v;
+            BusinessServices =new List<object>() { v };
         }
         /// <summary>
         /// 新建监控模型

@@ -27,7 +27,7 @@ namespace ESafety.Account.API.Controllers
         public UserDefinedController(IUserDefined uf)
         {
             bll = uf;
-            BusinessService = uf;
+            BusinessServices = new List<object>() { uf };
         }
 
         /// <summary>

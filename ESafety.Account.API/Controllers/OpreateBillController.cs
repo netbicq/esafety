@@ -26,7 +26,7 @@ namespace ESafety.Account.API.Controllers
         public OpreateBillController(IOpreateBill bill)
         {
             bll = bill;
-            BusinessService = bill;
+            BusinessServices =new List<object>() { bill };
         }
         /// <summary>
         /// 新建作业申请单

@@ -24,7 +24,7 @@ namespace ESafety.Account.API.Controllers
         public PostManageController(IPostManageService pm)
         {
             bll = pm;
-            BusinessService = pm;
+            BusinessServices =new List<object>() { pm };
         }
         /// <summary>
         /// 新建岗位模型

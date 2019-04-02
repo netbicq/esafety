@@ -23,7 +23,7 @@ namespace ESafety.Account.API.Controllers
         public TaskBillController(ITaskBillService tb)
         {
             bll = tb;
-            BusinessService = tb;
+            BusinessServices =new List<object>() { tb };
         }
 
         /// <summary>

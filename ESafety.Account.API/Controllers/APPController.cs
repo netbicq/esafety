@@ -30,7 +30,7 @@ namespace ESafety.Account.API.Controllers
 
             spectbll = spectask;
             billbll = taskbill;
-            BusinessService = taskbill;            
+            BusinessServices = new List<object> { taskbill, spectask };            
             
         }
         /// <summary>

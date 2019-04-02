@@ -24,7 +24,7 @@ namespace ESafety.Account.API.Controllers
         public LogController(ILog log)
         {
             bll = log;
-            BusinessService = log;
+            BusinessServices =new List<object>() { log };
         }
         /// <summary>
         /// 删除批定id的日志

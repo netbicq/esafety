@@ -177,11 +177,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 超时小时数
         /// </summary>
-        public int TimeOutHours { get; set; }
-        /// <summary>
-        /// 任务描述 
-        /// </summary>
-        public string TaskDescription { get; set; }
+        public int TimeOutHours { get; set; } 
         /// <summary>
         /// 频率值
         /// </summary>

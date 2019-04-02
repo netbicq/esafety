@@ -28,7 +28,7 @@ namespace ESafety.Account.API.Controllers
         {
 
             bll = orgemp;
-            BusinessService = orgemp;
+            BusinessServices =new List<object>() { orgemp };
 
         }
 

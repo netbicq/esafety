@@ -23,7 +23,7 @@ namespace ESafety.Account.API.Controllers
         public HealRecordsController(IHealRecordsService hr)
         {
             bll = hr;
-            BusinessService = hr;
+            BusinessServices =new List<object>() { hr };
         }
         /// <summary>
         /// 新建体检信息模型

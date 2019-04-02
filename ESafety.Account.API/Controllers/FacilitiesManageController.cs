@@ -24,7 +24,7 @@ namespace ESafety.Account.API.Controllers
         public FacilitiesManageController(IFacilitiesManageService fm)
         {
             bll = fm;
-            BusinessService = fm;
+            BusinessServices =new List<object>() { fm };
         }
         /// <summary>
         /// 新建设施设备类别模型

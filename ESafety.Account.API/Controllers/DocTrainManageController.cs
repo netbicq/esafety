@@ -23,7 +23,7 @@ namespace ESafety.Account.API.Controllers
         public DocTrainManageController(IDocTrainManageService dtm)
         {
             bll = dtm;
-            BusinessService = dtm;
+            BusinessServices =new List<object>() { dtm };
         }
         ///// <summary>
         ///// 新建训练项与人员之间的关系模型

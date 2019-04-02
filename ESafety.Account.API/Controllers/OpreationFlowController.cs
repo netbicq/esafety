@@ -24,7 +24,7 @@ namespace ESafety.Account.API.Controllers
         public OpreationFlowController(IOpreationFlowService of)
         {
             bll = of;
-            BusinessService = of;
+            BusinessServices =new List<object>() { of };
 
         }
         /// <summary>

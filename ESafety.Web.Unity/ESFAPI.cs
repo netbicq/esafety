@@ -11,7 +11,7 @@ using System.Web.Http;
 
 namespace ESafety.Web.Unity
 {
-    public  class ESFAPI: ApiController
+    public class ESFAPI : ApiController
     {
         /// <summary>
         /// 账套用户信息
@@ -24,7 +24,7 @@ namespace ESafety.Web.Unity
         /// <summary>
         /// 业务类
         /// </summary>
-        public object BusinessService { get; set; }
+        public List<object> BusinessServices { get; set; }
         /// <summary>
         /// 当前请求的客户端IP
         /// </summary>
@@ -58,18 +58,22 @@ namespace ESafety.Web.Unity
         [NonAction]
         public void SetService()
         {
-            ORM.ServiceBase obj = BusinessService as ServiceBase;
-            if (AppUser != null)
+            foreach (var s in BusinessServices)
             {
-                obj.AppUser = AppUser;
-                obj.AppUser.UploadPath = uploadPath;
-                obj.AppUser.OutPutPaht = OutPutPath;
-                obj.ACOptions = ACOptions;
-                if (AppUser.UserDB != null)
+                ORM.ServiceBase obj = s as ServiceBase;
+                if (AppUser != null)
                 {
-                    obj.Unitwork.SetUserDB(AppUser.UserDB);
+                    obj.AppUser = AppUser;
+                    obj.AppUser.UploadPath = uploadPath;
+                    obj.AppUser.OutPutPaht = OutPutPath;
+                    obj.ACOptions = ACOptions;
+                    if (AppUser.UserDB != null)
+                    {
+                        obj.Unitwork.SetUserDB(AppUser.UserDB);
+                    }
                 }
             }
+
         }
 
         /// <summary>
@@ -107,7 +111,7 @@ namespace ESafety.Web.Unity
                     MSG = msg,
                     OperateResult = ex == null
                 };
-                ORM.ServiceBase obj = BusinessService as ORM.ServiceBase;
+                ORM.ServiceBase obj = BusinessServices[0] as ORM.ServiceBase;
                 var db = obj.Unitwork.Repository<Sys_Log>();
                 db.Add(log);
                 obj.Unitwork.Commit();

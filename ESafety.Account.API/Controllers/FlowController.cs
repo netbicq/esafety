@@ -28,7 +28,7 @@ namespace ESafety.Account.API.Controllers
         {
 
             bll = flow;
-            BusinessService = flow;
+            BusinessServices =new List<object>() { flow };
         }
         /// <summary>
         /// 新建审批流程节点

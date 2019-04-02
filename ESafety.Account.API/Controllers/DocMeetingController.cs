@@ -23,7 +23,7 @@ namespace ESafety.Account.API.Controllers
         public DocMeetingController(IDocMeetingService dm)
         {
             bll = dm;
-            BusinessService = dm;
+            BusinessServices =new List<object>() { dm };
         }
         /// <summary>
         /// 新建安全会议模型

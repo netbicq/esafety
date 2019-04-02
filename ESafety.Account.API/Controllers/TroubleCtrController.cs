@@ -23,7 +23,7 @@ namespace ESafety.Account.API.Controllers
         public TroubleCtrController(ITroubleCtrService ctr)
         {
             bll = ctr;
-            BusinessService = ctr;
+            BusinessServices =new List<object>() { ctr };
         }
         /// <summary>
         /// 新建隐患管控模型
