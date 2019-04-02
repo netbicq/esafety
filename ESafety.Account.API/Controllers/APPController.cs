@@ -86,7 +86,7 @@ namespace ESafety.Account.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("getsubjects/{billid:Guid}")]
-        public ActionResult<IEnumerable<TaskSubjectsByTask>> GetTaskSubjectByTask(Guid billid)
+        public ActionResult<IEnumerable<InspectTaskSubjectView>> GetTaskSubjectByTask(Guid billid)
         {
             return billbll.GetTaskSubjects(billid);
         }
