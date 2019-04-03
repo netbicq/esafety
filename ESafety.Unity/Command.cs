@@ -45,7 +45,7 @@ namespace ESafety.Unity
                 int value = (int)enumType.InvokeMember(field.Name, BindingFlags.GetField, null, null, null);
 
                 // 不包括空项
-                if (value > 0)
+                if (value >=0)
                 {
                     string text = string.Empty;
                     object[] array = field.GetCustomAttributes(typeDescription, false);

@@ -370,16 +370,20 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("参数错误!");
                 }
-                var check = _rpstb.Any(bill.TaskID);
+                var check = _rpstb.Any(p=>p.TaskID==bill.TaskID&&p.State==(int)PublicEnum.BillFlowState.wait);
                 if (check)
                 {
-                    throw new Exception("该任务单据已存在!");
+                    throw new Exception("该待检查任务单据已存在!");
                 }
                 var dbbill = bill.MAPTO<Bll_TaskBill>();
                 //单据编号
                 dbbill.BillCode = Command.CreateCode();
 
                 var task = _work.Repository<Bll_InspectTask>().GetModel(bill.TaskID);
+                if (task == null)
+                {
+                    throw new Exception("未找到该任务!");
+                }
                 //执行岗位ID
                 dbbill.PostID = task.ExecutePostID;
                 //执行人ID
@@ -387,7 +391,7 @@ namespace ESafety.Account.Service
                 //风险点ID
                 dbbill.DangerID = task.DangerID;
                 //单据状态
-                dbbill.State = (int)PublicEnum.BillFlowState.normal;
+                dbbill.State = (int)PublicEnum.BillFlowState.wait;
 
                 _rpstb.Add(dbbill);
                 _work.Commit();
@@ -419,7 +423,7 @@ namespace ESafety.Account.Service
                 var osubid = subs.Select(s => s.SubjectID);
 
                 //获取任务主体中未执行的主体
-                var tasksubs = _work.Repository<Bll_InspectTaskSubject>().Queryable(q=>q.InspectTaskID==bill.TaskID&&!osubid.Contains(q.SubjectID));
+                var tasksubs = _work.Repository<Bll_InspectTaskSubject>().Queryable(q=>q.InspectTaskID==bill.TaskID&&!osubid.Contains(q.SubjectID)).ToList();
                 var subids = tasksubs.Select(s => s.SubjectID);
 
                 //主体的类型
@@ -439,7 +443,7 @@ namespace ESafety.Account.Service
                          select new TaskSubjectView
                          {
                              BillID = bill.ID,
-                             SubID = sub.ID,
+                             SubID = sub.SubjectID,
                              DangerLevel = lv == null ? "" : lv.DictName,
                              SubType = (PublicEnum.EE_SubjectType)sub.SubjectType,
                              SubTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == sub.SubjectType).Caption,
@@ -481,6 +485,7 @@ namespace ESafety.Account.Service
                 }
                 var dbsub = bill.MAPTO<Bll_TaskBillSubjects>();
                 dbsub.TaskTime = DateTime.Now;
+                dbsub.DangerID = _rpstb.GetModel(bill.BillID).DangerID;
 
                 //电子文档
                 var files = new AttachFileSave
@@ -527,6 +532,13 @@ namespace ESafety.Account.Service
                 if (dbbill.State != (int)PublicEnum.BillFlowState.wait)
                 {
                     throw new Exception("当前状态不允许");
+                }
+                var resubs = _work.Repository<Bll_TaskBillSubjects>().Queryable(p=>p.BillID==billid);
+                var subids = resubs.Select(s => s.SubjectID);
+                var check = _work.Repository<Bll_InspectTaskSubject>().Any(p => p.InspectTaskID == dbbill.TaskID && !subids.Contains(p.SubjectID));
+                if (check)
+                {
+                    throw new Exception("存在未检查的项，无法提交完成单据!");
                 }
                 dbbill.State = (int)PublicEnum.BillFlowState.normal;
                 _rpstb.Update(dbbill);
@@ -585,7 +597,7 @@ namespace ESafety.Account.Service
                 //当前人
                 var user = AppUser.EmployeeInfo;
                 //当前人的所有待完成单据
-                var tbs=_rpstb.Queryable(q=>q.EmployeeID==user.ID&&q.State==(int)PublicEnum.BillFlowState.wait);
+                var tbs=_rpstb.Queryable(q=>q.EmployeeID==user.ID&&q.State==(int)PublicEnum.BillFlowState.wait).ToList();
 
                 //当前人所有单据对应的任务
                 var taskids = tbs.Select(s => s.TaskID);
@@ -626,7 +638,7 @@ namespace ESafety.Account.Service
                 //当前人
                 var user = AppUser.EmployeeInfo;
                 //当前人的所有已完成单据
-                var tbs = _rpstb.Queryable(q => q.EmployeeID == user.ID && q.State >= (int)PublicEnum.BillFlowState.normal);
+                var tbs = _rpstb.Queryable(q => q.EmployeeID == user.ID && q.State >= (int)PublicEnum.BillFlowState.normal).ToList();
 
                 //当前人所有单据对应的任务
                 var taskids = tbs.Select(s => s.TaskID);
@@ -671,11 +683,11 @@ namespace ESafety.Account.Service
                     throw new Exception("未找到该任务单!");
                 }
                 //获取已经执行了的主体
-                var subs = _rpstbs.Queryable(p => p.BillID == taskbillid);
+                var subs = _rpstbs.Queryable(p => p.BillID == taskbillid).ToList();
                 var osubid = subs.Select(s => s.SubjectID);
 
                 //获取任务主体中未执行的主体
-                var tasksubs = _work.Repository<Bll_InspectTaskSubject>().Queryable(q => q.InspectTaskID == bill.TaskID && osubid.Contains(q.SubjectID));
+                var tasksubs = _work.Repository<Bll_InspectTaskSubject>().Queryable(q => q.InspectTaskID == bill.TaskID && osubid.Contains(q.SubjectID)).ToList();
                 var subids = tasksubs.Select(s => s.SubjectID);
 
                 //主体的类型
@@ -692,12 +704,12 @@ namespace ESafety.Account.Service
                          let dev = devices.FirstOrDefault(q => q.ID == sub.SubjectID)
                          let ppst = posts.FirstOrDefault(q => q.ID == sub.SubjectID)
                          let opr = opreats.FirstOrDefault(q => q.ID == sub.SubjectID)
-                         let rest=subs.FirstOrDefault(p=>p.BillID==sub.ID&&p.SubjectID==sub.SubjectID)
+                         let rest=subs.FirstOrDefault(p=>p.SubjectID==sub.SubjectID)
                          select new TaskSubjectOverView
                          {
                              SubResultID=rest.ID,
                              BillID = bill.ID,
-                             SubID = sub.ID,
+                             SubID = sub.SubjectID,
                              DangerLevel = lv == null ? "" : lv.DictName,
                              SubType = (PublicEnum.EE_SubjectType)sub.SubjectType,
                              SubTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == sub.SubjectType).Caption,

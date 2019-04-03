@@ -140,7 +140,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 任务ID
         /// </summary>
-        public Guid ID { get; set; }
+        public Guid TaskID { get; set; }
         /// <summary>
         /// 任务名称
         /// </summary>
@@ -173,7 +173,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 最后执行时间
         /// </summary>
-        public DateTime LastTime { get; set; }
+        public string LastTime { get; set; }
         /// <summary>
         /// 超时小时数
         /// </summary>

@@ -89,7 +89,7 @@ namespace ESafety.Unity
             /// 待检查完成
             /// </summary>
             [Description("待检查完成")]
-            wait=-1,
+            wait=0,
             /// <summary>
             /// 待审批
             /// </summary>
