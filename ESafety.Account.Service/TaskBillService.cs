@@ -42,7 +42,7 @@ namespace ESafety.Account.Service
         /// </summary>
         /// <param name="subjectBillEdit"></param>
         /// <returns></returns>
-        public ActionResult<bool> EditTaskBillSubjects(TaskSubjectBillEdit subjectBillEdit)
+        public ActionResult<bool> EditTaskBillSubjects(TaskBillEval subjectBillEdit)
         {
             try
             {
@@ -144,23 +144,23 @@ namespace ESafety.Account.Service
                 var dbtb = _rpstb.Queryable(q=>(q.PostID==para.Query.PostID||para.Query.PostID==Guid.Empty)&&(q.State==para.Query.TaskState||para.Query.TaskState==1)&&(q.BillCode.Contains(para.Query.Key)||q.BillCode==string.Empty)).ToList();
                 var tbid = dbtb.Select(s => s.ID);
 
-                var popstid = dbtb.Select(s => s.PostID);
-                var taskid = dbtb.Select(s => s.TaskID);
-                var empids = dbtb.Select(p=>p.EmployeeID);
+                var popstid = dbtb.Select(s => s.PostID).ToList();
+                var taskid = dbtb.Select(s => s.TaskID).ToList();
+                var empids = dbtb.Select(p=>p.EmployeeID).ToList();
 
-                var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p=>empids.Contains(p.ID));
+                var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p=>empids.Contains(p.ID)).ToList();
 
-                var dbts = _work.Repository<Bll_InspectTask>().Queryable(p=>taskid.Contains(p.ID));
+                var dbts = _work.Repository<Bll_InspectTask>().Queryable(p=>taskid.Contains(p.ID)).ToList();
 
-                var dbtbs = _rpstbs.Queryable(p=>tbid.Contains(p.BillID)).ToList();
+                var dbtbs = _rpstbs.Queryable(p=>tbid.Contains(p.BillID));
 
-                var posts = _work.Repository<Basic_Post>().Queryable(q => popstid.Contains(q.ID));
+                var posts = _work.Repository<Basic_Post>().Queryable(q => popstid.Contains(q.ID)).ToList();
 
            
                 var rev = from s in dbtb
                           let emp=emps.FirstOrDefault(p=>p.ID==s.EmployeeID)
                           let ts=dbts.FirstOrDefault(p=>p.ID==s.TaskID)
-                          let tbs=dbtbs.Count()==0?0:dbtbs.FindAll(p=>p.BillID==s.ID).Max(s=>s.TroubleLevel)
+                          let tbs=dbtbs.Where(p=>p.BillID==s.ID).ToList()
                           let post=posts.FirstOrDefault(p=>p.ID==s.PostID)
                           select new TaskBillView
                           {
@@ -177,7 +177,7 @@ namespace ESafety.Account.Service
                               PostID=s.PostID,
                               PostName=post.Name,
                               TaskName=ts.Name,
-                              TaskResult=tbs==0?"":Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == tbs).Caption,
+                              TaskResult=tbs.Count()==0 ?"":(int)tbs.Max(s => s.TroubleLevel)==0?"":Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == (int)tbs.Max(s=>s.TroubleLevel)).Caption,
                           };
                 var re = new Pager<TaskBillView>().GetCurrentPage(rev, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<TaskBillView>>(re);

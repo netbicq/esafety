@@ -38,7 +38,7 @@ namespace ESafety.Account.IService
         /// </summary>
         /// <param name="subjectBillEdit"></param>
         /// <returns></returns>
-        ActionResult<bool> EditTaskBillSubjects(TaskSubjectBillEdit subjectBillEdit);
+        ActionResult<bool> EditTaskBillSubjects(TaskBillEval subjectBillEdit);
         /// <summary>
         /// 新建任务单据
         /// </summary>

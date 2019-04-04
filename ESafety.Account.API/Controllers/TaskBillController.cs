@@ -46,7 +46,7 @@ namespace ESafety.Account.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("edittbs")]
-        public ActionResult<bool> EditTaskBillSubjects(TaskSubjectBillEdit subjectBillEdit)
+        public ActionResult<bool> EditTaskBillSubjects(TaskBillEval subjectBillEdit)
         {
             LogContent = "更新任务明细,参数源：" + JsonConvert.SerializeObject(subjectBillEdit);
             return bll.EditTaskBillSubjects(subjectBillEdit);

@@ -7,41 +7,6 @@ using System.Threading.Tasks;
 
 namespace ESafety.Account.Model.PARA
 {
-    public class TaskSubjectBillEdit
-    {
-        /// <summary>
-        /// 详情ID
-        /// </summary>
-        public Guid ID { get; set; }
-        /// <summary>
-        /// 任务巡检描述
-        /// </summary>
-        public string TaskResultMemo { get; set; }
-        /// <summary>
-        /// 危害因素
-        /// </summary>
-        public Guid Eval_WHYS { get; set; }
-        /// <summary>
-        /// 事故类型
-        /// </summary>
-        public Guid Eval_SGLX { get; set; }
-        /// <summary>
-        /// 事故后果
-        /// </summary>
-        public Guid Eval_SGJG { get; set; }
-        /// <summary>
-        /// 影响范围
-        /// </summary>
-        public Guid Eval_YXFW { get; set; }
-        /// <summary>
-        /// 评测方法
-        /// </summary>
-        public int Eval_Method { get; set; }
-        /// <summary>
-        /// 隐患等级
-        /// </summary>
-        public int TroubleLevel { get; set; }
-    }
 
     public class TaskBillQuery
     {
@@ -75,7 +40,7 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 任务单ID
         /// </summary>
-        public Guid BillID { get; set; }
+        public Guid ID { get; set; }
         /// <summary>
         /// 危害因素
         /// </summary>
