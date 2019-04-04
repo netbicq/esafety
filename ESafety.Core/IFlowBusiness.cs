@@ -28,6 +28,12 @@ namespace ESafety.Core
         /// <param name="para"></param>
         /// <returns></returns>
         ActionResult<bool> BusinessAprove(BusinessAprovePara para);
-         
+        /// <summary>
+        /// 审批流程结算处理
+        /// </summary>
+        /// <param name="businessid"></param>
+        /// <param name="businesstype"></param>
+        /// <returns></returns>
+        ActionResult<bool> BusinessOver(Guid businessid, PublicEnum.EE_BusinessType businesstype);
     }
 }
