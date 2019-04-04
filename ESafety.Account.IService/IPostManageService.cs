@@ -25,6 +25,12 @@ namespace ESafety.Account.IService
         ActionResult<bool> AddPostEmployee(PostEmployeeNew  postEmployee);
 
         ActionResult<Pager<PostEmployeesView>> GetEmployeesByPostID(PagerQuery<PostEmployeeQuery> para);
+        /// <summary>
+        /// 获取人员选择器根据岗位ID
+        /// </summary>
+        /// <param name="postid"></param>
+        /// <returns></returns>
+        ActionResult<IEnumerable<PostEmpSelect>> GetEmpByPostID(Guid postid);
 
         ActionResult<bool> DelPostEmployee(Guid id);
     }

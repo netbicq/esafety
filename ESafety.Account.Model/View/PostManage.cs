@@ -79,5 +79,17 @@ namespace ESafety.Account.Model.View
         public string OrgName { get; set; }
     }
 
+    public class PostEmpSelect
+    {
+        /// <summary>
+        /// 人员ID
+        /// </summary>
+        public Guid EmpID { get; set; }
+        /// <summary>
+        /// 人员名
+        /// </summary>
+        public string EmpName { get; set; }
+    }
+
 
 }

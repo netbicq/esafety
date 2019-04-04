@@ -14,26 +14,6 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public Guid ID { get; set; }
         /// <summary>
-        /// 单据id
-        /// </summary>
-        public Guid BillID { get; set; }
-        /// <summary>
-        /// 主体类型
-        /// </summary>
-        public int SubjectType { get; set; }
-        /// <summary>
-        /// 主体id
-        /// </summary>
-        public Guid SubjectID { get; set; }
-        /// <summary>
-        /// 风险点id
-        /// </summary>
-        public Guid DangerID { get; set; }
-        /// <summary>
-        /// 任务结果
-        /// </summary>
-        public int TaskResult { get; set; }
-        /// <summary>
         /// 任务巡检描述
         /// </summary>
         public string TaskResultMemo { get; set; }

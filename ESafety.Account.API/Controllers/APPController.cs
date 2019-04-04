@@ -42,6 +42,7 @@ namespace ESafety.Account.API.Controllers
         [Route("addbill")]
         public ActionResult<bool> AddTaskBill(TaskBillNew bill)
         {
+            
             LogContent = "新建任务单，参数源：" + JsonConvert.SerializeObject(bill);
             return billbll.AddTaskBillMaster(bill);
         }

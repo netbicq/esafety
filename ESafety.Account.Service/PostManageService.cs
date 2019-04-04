@@ -201,6 +201,26 @@ namespace ESafety.Account.Service
                 return new ActionResult<bool>(ex);
             }
         }
+
+        /// <summary>
+        /// 根据岗位ID获取人员选择器
+        /// </summary>
+        /// <param name="postid"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<PostEmpSelect>> GetEmpByPostID(Guid postid)
+        {
+            var posts = _rpspostemp.Queryable(p => p.PostID==postid);
+            var empids = posts.Select(s=>s.EmployeeID);
+            var emps = _rpsemp.Queryable(p=>empids.Contains(p.ID));
+            var re = from emp in emps
+                     select new PostEmpSelect
+                     {
+                       EmpID=emp.ID,
+                       EmpName=emp.CNName
+                     };
+            return new ActionResult<IEnumerable<PostEmpSelect>>(re);
+        }
+
         /// <summary>
         /// 根据岗位获取所有人员信息
         /// </summary>
