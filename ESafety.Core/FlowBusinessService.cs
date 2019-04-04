@@ -120,16 +120,55 @@ namespace ESafety.Core
                 switch (businesstype)
                 {
                     case PublicEnum.EE_BusinessType.InspectTask:
-                        var rpsitep = _work.Repository<Model.DB.Account.Bll_InspectTask>();
-                        billmodel = rpsitep.GetModel(businessid);
+                        var rpsitask = _work.Repository<Model.DB.Account.Bll_InspectTask>();
+                        billmodel = rpsitask.GetModel(businessid);
                         if (billmodel == null)
                         {
                             throw new Exception("业务单据不存在");
                         }
 
                         billmodel.State = (int)PublicEnum.BillFlowState.audited;
+                        rpsitask.Update(billmodel);
+                        break;
+                    case PublicEnum.EE_BusinessType.TempTask:
+                        var rpsitep = _work.Repository<Model.DB.Account.Bll_InspectTask>();
+                        billmodel = rpsitep.GetModel(businessid);
+                        if (billmodel == null)
+                        {
+                            throw new Exception("业务单据不存在");
+                        }
+                        billmodel.State = (int)PublicEnum.BillFlowState.audited;
                         rpsitep.Update(billmodel);
-
+                        break;
+                    case PublicEnum.EE_BusinessType.TaskBill: 
+                         var rpsbill = _work.Repository<Model.DB.Account.Bll_TaskBill>();
+                        billmodel = rpsbill.GetModel(businessid);
+                        if (billmodel == null)
+                        {
+                            throw new Exception("业务单据不存在");
+                        }
+                        billmodel.State = (int)PublicEnum.BillFlowState.audited;
+                        rpsbill.Update(billmodel);
+                        break;
+                    case PublicEnum.EE_BusinessType.Apply:
+                        var rpopbill = _work.Repository<Model.DB.Account.Bll_OpreationBill>();
+                        billmodel = rpopbill.GetModel(businessid);
+                        if (billmodel == null)
+                        {
+                            throw new Exception("业务单据不存在");
+                        }
+                        billmodel.State = (int)PublicEnum.BillFlowState.audited;
+                        rpopbill.Update(billmodel);
+                        break;
+                    case PublicEnum.EE_BusinessType.TroubleControl:
+                        var rpstrcrl = _work.Repository<Model.DB.Account.Bll_TroubleControl>();
+                        billmodel = rpstrcrl.GetModel(businessid);
+                        if (billmodel == null)
+                        {
+                            throw new Exception("业务单据不存在");
+                        }
+                        billmodel.State = (int)PublicEnum.BillFlowState.audited;
+                        rpstrcrl.Update(billmodel);
                         break;
                     default:
                         break;
