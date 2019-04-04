@@ -138,5 +138,18 @@ namespace ESafety.Account.API.Controllers
             return new ActionResult<IEnumerable<EnumItem>>(re);
 
         }
+
+        /// <summary>
+        ///  获取审批业务单据状态
+        /// </summary>
+        [HttpGet]
+        [Route("getbillflowstate")]
+        public ActionResult<IEnumerable<EnumItem>> GetBillFlowState()
+        {
+            var re = Command.GetItems(typeof(PublicEnum.BillFlowState));
+            return new ActionResult<IEnumerable<EnumItem>>(re);
+        }
+
+
     }
 }

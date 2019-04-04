@@ -483,11 +483,14 @@ namespace ESafety.Account.Service
             try
             {
                 var user = AppUser.EmployeeInfo;
+                var userpost = _work.Repository<Basic_PostEmployees>().Queryable(p => p.EmployeeID == user.ID);
+                var postids = userpost.Select(s => s.PostID);
+
                 if (user == null)
                 {
                     throw new Exception("还未配置该用户!");
                 }
-                var tasks = rpstask.Queryable(q => q.EmployeeID ==user.ID&&q.State== (int)PublicEnum.BillFlowState.audited).ToList();
+                var tasks = rpstask.Queryable(q =>( q.EmployeeID ==user.ID||postids.Contains(q.ExecutePostID))&&q.State== (int)PublicEnum.BillFlowState.audited).ToList();
 
                 //风险点
                 var dangerids = tasks.Select(s => s.DangerID).ToList();
@@ -551,7 +554,10 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("还未配置该用户!");
                 }
-                var tasks = rpstask.Queryable(q => q.EmployeeID == user.ID && q.State == (int)PublicEnum.BillFlowState.audited).ToList();
+                var userpost = _work.Repository<Basic_PostEmployees>().Queryable(p => p.EmployeeID == user.ID);
+                var postids = userpost.Select(s => s.PostID);
+
+                var tasks = rpstask.Queryable(q => (q.EmployeeID == user.ID||postids.Contains(q.ExecutePostID)) && q.State == (int)PublicEnum.BillFlowState.audited).ToList();
 
                 //风险点
                 var dangerids = tasks.Select(s => s.DangerID);

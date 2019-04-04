@@ -122,19 +122,6 @@ namespace ESafety.Account.API.Controllers
         }
 
         /// <summary>
-        /// 移动端获取巡检任务列表
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("app/gettask")]
-        public ActionResult<Pager<InspectTaskView>> GetTasksApp(PagerQuery<InspectTaskQuery> query)
-        {
-            return bll.GetTasks(query);
-        }
-
-
-        /// <summary>
         /// 根据巡检任务id获取任务主体明细集合
         /// </summary>
         /// <param name="taskid"></param>

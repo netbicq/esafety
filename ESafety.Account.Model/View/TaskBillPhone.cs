@@ -42,6 +42,15 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string DangerName { get; set; }
 
+        /// <summary>
+        /// 检查主体总数
+        /// </summary>
+        public int SubCount { get; set; }
+        /// <summary>
+        /// 已检查主体数
+        /// </summary>
+        public int SubCheckedCount { get; set; }
+
     }
 
     public class TaskSubjectView

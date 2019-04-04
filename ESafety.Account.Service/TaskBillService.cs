@@ -141,7 +141,7 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbtb = _rpstb.Queryable(q=>(q.PostID==para.Query.PostID||para.Query.PostID==Guid.Empty)&&(q.State==para.Query.TaskState||para.Query.TaskState==0)&&(q.BillCode.Contains(para.Query.Key)||q.BillCode==string.Empty)).ToList();
+                var dbtb = _rpstb.Queryable(q=>(q.PostID==para.Query.PostID||para.Query.PostID==Guid.Empty)&&(q.State==para.Query.TaskState||para.Query.TaskState==1)&&(q.BillCode.Contains(para.Query.Key)||q.BillCode==string.Empty)).ToList();
                 var tbid = dbtb.Select(s => s.ID);
 
                 var popstid = dbtb.Select(s => s.PostID);
@@ -453,6 +453,7 @@ namespace ESafety.Account.Service
                                  dev != null ? dev.Principal : ppst != null ? ppst.Principal : opr != null ? opr.Principal : default(string),
                              PrincipalTel=
                                  dev != null ? dev.PrincipalTel : ppst != null ? ppst.PrincipalTel : opr != null ? opr.PrincipalTel : default(string)
+
                          };
                 return new ActionResult<IEnumerable<TaskSubjectView>>(re);
             }
@@ -609,6 +610,8 @@ namespace ESafety.Account.Service
                 var re = from tb in tbs
                          let task=tasks.FirstOrDefault(q=>q.ID==tb.TaskID)
                          let danger=dangers.FirstOrDefault(q=>q.ID==tb.DangerID)
+                         let subcount=_work.Repository<Bll_InspectTaskSubject>().Queryable(q => q.InspectTaskID == tb.TaskID).Count()//当前单据检查主体总数
+                         let osubcount=_rpstbs.Queryable(p=>p.BillID==tb.ID).Count()//已查主体数
                          select new TaskBillModel
                          {
                              BillID=tb.ID,
@@ -617,7 +620,9 @@ namespace ESafety.Account.Service
                              EmployeeName=user.CNName,
                              TaskName=task.Name,
                              State=Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(p=>p.Value==tb.State).Caption,
-                             DangerName=danger.Name
+                             DangerName=danger.Name,
+                             SubCheckedCount=osubcount,
+                             SubCount=subcount
                          };
                 return new ActionResult<IEnumerable<TaskBillModel>>(re);
             }
@@ -650,6 +655,7 @@ namespace ESafety.Account.Service
                 var re = from tb in tbs
                          let task = tasks.FirstOrDefault(q => q.ID == tb.TaskID)
                          let danger = dangers.FirstOrDefault(q => q.ID == tb.DangerID)
+                         let osubcount = _rpstbs.Queryable(p => p.BillID == tb.ID).Count()//已查主体数
                          select new TaskBillModel
                          {
                              BillID = tb.ID,
@@ -658,7 +664,9 @@ namespace ESafety.Account.Service
                              EmployeeName = user.CNName,
                              TaskName = task.Name,
                              State = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(p => p.Value == tb.State).Caption,
-                             DangerName = danger.Name
+                             DangerName = danger.Name,
+                             SubCheckedCount=osubcount,
+                             SubCount=osubcount
                          };
                 return new ActionResult<IEnumerable<TaskBillModel>>(re);
             }

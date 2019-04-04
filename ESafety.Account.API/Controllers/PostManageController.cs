@@ -101,6 +101,16 @@ namespace ESafety.Account.API.Controllers
         {
             return bll.GetEmployeesByPostID(para);
         }
+        /// <summary>
+        /// 根据岗位ID,获取人员选择器
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getempbypost/{postid:Guid}")]
+        public ActionResult<IEnumerable<PostEmpSelect>> GetEmpByPostID(Guid postid)
+        {
+            return bll.GetEmpByPostID(postid);
+        }
 
         /// <summary>
         /// 根据岗位ID，获取岗位模型
