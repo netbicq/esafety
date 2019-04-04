@@ -25,11 +25,13 @@ namespace ESafety.Core
         private IRepository<Model.DB.Flow_Result> rpsResult = null;
         private IRepository<Basic_Employee> rpsEmployee = null;
 
+        private IFlowBusiness srvflowBusiness = null;
+
         /// <summary>
         /// 构造
         /// </summary>
         /// <param name="work"></param>
-        public FlowService(IUnitwork work)
+        public FlowService(IUnitwork work ,IFlowBusiness flowbusiness)
         {
             _work = work;
             Unitwork = work;
@@ -38,6 +40,11 @@ namespace ESafety.Core
             rpsTask = _work.Repository<Flow_Task>();
             rpsResult = _work.Repository<Model.DB.Flow_Result>();
             rpsEmployee = _work.Repository<Basic_Employee>();
+
+            srvflowBusiness = flowbusiness;
+            var srvfb = srvflowBusiness as FlowBusinessService;
+            srvfb.AppUser = AppUser;
+            srvfb.ACOptions = ACOptions;
 
         }
         /// <summary>
@@ -211,7 +218,7 @@ namespace ESafety.Core
                         else//不存在一下节点
                         {
                             result.FlowResult = (int)PublicEnum.EE_FlowResult.Over; //审批结束了
-                            approveResult = PublicEnum.EE_FlowApproveResult.over; //返回审批结束的审批结果
+                            approveResult = PublicEnum.EE_FlowApproveResult.over; //返回审批结束的审批结果 
                         }
                     }
 
@@ -236,6 +243,8 @@ namespace ESafety.Core
                 return new ActionResult<PublicEnum.EE_FlowApproveResult>(ex);
             }
         }
+
+
         /// <summary>
         /// 检查业务是否需要审批流程
         /// </summary>

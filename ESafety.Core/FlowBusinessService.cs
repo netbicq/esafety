@@ -115,7 +115,7 @@ namespace ESafety.Core
         {
             try
             {
-                var billmodel = rps.GetModel(businessid);
+                var billmodel =(dynamic) rps.GetModel(businessid);
                 if(billmodel == null)
                 {
                     throw new Exception("业务单据不存在");
@@ -133,9 +133,10 @@ namespace ESafety.Core
                 }
                 if (flowcheck.data)
                 {
-                    //billmodel.State = (int)PublicEnum.BillFlowState.audited;
-                    //rpstask.Update(businessmodel);
-                    //_work.Commit();
+
+                    billmodel.State = (int)PublicEnum.BillFlowState.audited;
+                    rps.Update(billmodel);
+                    _work.Commit();  
 
                     return new ActionResult<bool>(true);
                 }
