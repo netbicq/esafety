@@ -1,6 +1,7 @@
 ﻿using ESafety.Core.Model.DB; 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,6 +42,7 @@ namespace ESafety.Core.Model
         /// 职员信息
         /// </summary>
         public Basic_Employee EmployeeInfo { get; set; }
+
     }
 
     /// <summary>

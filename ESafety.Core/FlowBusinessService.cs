@@ -15,7 +15,7 @@ namespace ESafety.Core
     /// <summary>
     /// 业务审批基类
     /// </summary>
-    public abstract class FlowBusinessService : ServiceBase, IFlowBusiness
+    public class FlowBusinessService : ServiceBase, IFlowBusiness
     {
 
         private IUnitwork _work = null;
@@ -31,6 +31,7 @@ namespace ESafety.Core
             flsrv.ACOptions = ACOptions;
 
         }
+
         /// <summary>
         /// 业务审核
         /// </summary>

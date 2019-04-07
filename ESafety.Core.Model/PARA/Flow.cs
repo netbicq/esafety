@@ -99,6 +99,7 @@ namespace ESafety.Core.Model.PARA
         /// </summary>
         public Guid TaskID { get; set; }
     }
+    
      /// <summary>
      /// 审批撤回
      /// </summary>

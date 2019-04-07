@@ -56,6 +56,7 @@ namespace ESafety.Account.API
             var resolver = new AutofacWebApiDependencyResolver(container);
             System.Web.Http.GlobalConfiguration.Configuration.DependencyResolver = resolver;
 
+           
         }
     }
 }

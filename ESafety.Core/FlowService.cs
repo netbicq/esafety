@@ -24,14 +24,13 @@ namespace ESafety.Core
         private IRepository<Flow_Task> rpsTask = null;
         private IRepository<Model.DB.Flow_Result> rpsResult = null;
         private IRepository<Basic_Employee> rpsEmployee = null;
-
-        private FlowBusinessService srvflowBusiness = null;
+      
 
         /// <summary>
         /// 构造
         /// </summary>
         /// <param name="work"></param>
-        public FlowService(IUnitwork work ,IFlowBusiness flowbusiness)
+        public FlowService(IUnitwork work)
         {
             _work = work;
             Unitwork = work;
@@ -40,11 +39,7 @@ namespace ESafety.Core
             rpsTask = _work.Repository<Flow_Task>();
             rpsResult = _work.Repository<Model.DB.Flow_Result>();
             rpsEmployee = _work.Repository<Basic_Employee>();
-
-            srvflowBusiness = flowbusiness as FlowBusinessService;
-
-            srvflowBusiness.AppUser = AppUser;
-            srvflowBusiness.ACOptions = ACOptions;
+ 
 
         }
         /// <summary>
@@ -226,8 +221,20 @@ namespace ESafety.Core
                             result.FlowResult = (int)PublicEnum.EE_FlowResult.Over; //审批结束了
                             approveResult = PublicEnum.EE_FlowApproveResult.over; //返回审批结束的审批结果 
 
-                            var overresult =srvflowBusiness.BusinessOver(task.BusinessID,(PublicEnum.EE_BusinessType) task.BusinessType);
 
+                            //审批的最后节点，直接实例化，不使用注入
+
+                            
+                            var bservice = new FlowBusinessService(Unitwork, this);
+                            bservice.AppUser = AppUser;
+                            bservice.ACOptions = ACOptions;
+
+                            var overresult = bservice.BusinessOver(task.BusinessID,(PublicEnum.EE_BusinessType) task.BusinessType);
+
+                            if (overresult.state != 200)
+                            {
+                                throw new Exception(overresult.msg);
+                            }
                         }
                     }
 
