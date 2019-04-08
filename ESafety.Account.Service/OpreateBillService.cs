@@ -443,13 +443,16 @@ namespace ESafety.Account.Service
                 //节点处理
                 var flows = _work.Repository<Bll_OpreateionBillFlow>().Queryable(q => q.BillID == billmodel.ID).ToList();
 
+                
                 var postids = points.Select(s => s.PostID).ToList();
+
                 var empids = flows.Select(s => s.FlowEmployeeID);
 
-                var emps = _work.Repository<Basic_Employee>().Queryable(q => empids.Contains(q.ID)).ToList();
-                
+                var emps =empids==null?null:_work.Repository<Basic_Employee>().Queryable(q => empids.Contains(q.ID)).ToList();
+
                 //获取当前登录人的岗位ID
-                var cpostid = _work.Repository<Basic_PostEmployees>().GetModel(q=>q.EmployeeID==AppUser.EmployeeInfo.ID).PostID;
+                var cuserpost = _work.Repository<Basic_PostEmployees>().GetModel(q => q.EmployeeID == AppUser.EmployeeInfo.ID);
+                var cpostid = cuserpost == null ?Guid.Empty:cuserpost.PostID;
 
                 var posts = _work.Repository<Basic_Post>().Queryable(q => postids.Contains(q.ID)).ToList();
 

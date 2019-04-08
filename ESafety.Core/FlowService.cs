@@ -519,7 +519,7 @@ namespace ESafety.Core
                                     select new FlowLogPoint
                                     {
                                         PointName = p.PointName,
-                                        Users = from u in pointuser.Where(q => q.PointID == p.ID).OrderBy(o => o.UserIndex)
+                                        Users = from u in pointuser.Where(q => q.PointID == p.ID).OrderBy(o => o.UserIndex).ToList()
                                                 let emp = emps.FirstOrDefault(q => q.Login == u.PointUser)
                                                 let loginfo = g.FirstOrDefault(q => q.FlowVersion == g.Key && q.FlowUser == u.PointUser)
                                                 select new FlowUser
