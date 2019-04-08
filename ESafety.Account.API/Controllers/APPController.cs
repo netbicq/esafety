@@ -171,5 +171,15 @@ namespace ESafety.Account.API.Controllers
         {
             return billbll.GetSubResultModel(subresultid);
         }
+        /// <summary>
+        /// 下载数据
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("downloaddata")]
+        public ActionResult<IEnumerable<DownloadData>> DownloadData()
+        {
+            return billbll.DownloadData();
+        }
     }
 }

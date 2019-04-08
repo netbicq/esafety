@@ -114,4 +114,12 @@ namespace ESafety.Account.Model.View
         public string TaskResultMemo { get; set; }
     }
 
+    public class DownloadData : TaskBillModel
+    {
+        /// <summary>
+        /// 待检测主体集合
+        /// </summary>
+        public IEnumerable<TaskSubjectView> CheckSubs{ get; set; }
+    }
+
 }
