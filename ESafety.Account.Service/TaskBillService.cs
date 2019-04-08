@@ -442,6 +442,7 @@ namespace ESafety.Account.Service
                          let opr = opreats.FirstOrDefault(q => q.ID == sub.SubjectID)
                          select new TaskSubjectView
                          {
+                             KeyID=sub.ID,
                              BillID = bill.ID,
                              SubID = sub.SubjectID,
                              DangerLevel = lv == null ? "" : lv.DictName,
@@ -715,7 +716,8 @@ namespace ESafety.Account.Service
                          let rest=subs.FirstOrDefault(p=>p.SubjectID==sub.SubjectID)
                          select new TaskSubjectOverView
                          {
-                             SubResultID=rest.ID,
+                             KeyID = sub.ID,
+                             SubResultID =rest.ID,
                              BillID = bill.ID,
                              SubID = sub.SubjectID,
                              DangerLevel = lv == null ? "" : lv.DictName,

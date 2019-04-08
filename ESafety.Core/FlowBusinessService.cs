@@ -128,7 +128,7 @@ namespace ESafety.Core
                             throw new Exception("业务单据不存在");
                         }
 
-                        billmodel.State = (int)PublicEnum.BillFlowState.audited;
+                        billmodel.State = (int)PublicEnum.BillFlowState.approved;
                         rpsitask.Update(billmodel);
                         break;
                     case PublicEnum.EE_BusinessType.TempTask:
@@ -138,7 +138,7 @@ namespace ESafety.Core
                         {
                             throw new Exception("业务单据不存在");
                         }
-                        billmodel.State = (int)PublicEnum.BillFlowState.audited;
+                        billmodel.State = (int)PublicEnum.BillFlowState.approved;
                         rpsitep.Update(billmodel);
                         break;
                     case PublicEnum.EE_BusinessType.TaskBill: 
@@ -148,7 +148,7 @@ namespace ESafety.Core
                         {
                             throw new Exception("业务单据不存在");
                         }
-                        billmodel.State = (int)PublicEnum.BillFlowState.audited;
+                        billmodel.State = (int)PublicEnum.BillFlowState.approved;
                         rpsbill.Update(billmodel);
                         break;
                     case PublicEnum.EE_BusinessType.Apply:
@@ -158,7 +158,7 @@ namespace ESafety.Core
                         {
                             throw new Exception("业务单据不存在");
                         }
-                        billmodel.State = (int)PublicEnum.BillFlowState.audited;
+                        billmodel.State = (int)PublicEnum.BillFlowState.approved;
                         rpopbill.Update(billmodel);
                         break;
                     case PublicEnum.EE_BusinessType.TroubleControl:
@@ -168,7 +168,7 @@ namespace ESafety.Core
                         {
                             throw new Exception("业务单据不存在");
                         }
-                        billmodel.State = (int)PublicEnum.BillFlowState.audited;
+                        billmodel.State = (int)PublicEnum.BillFlowState.approved;
                         rpstrcrl.Update(billmodel);
                         break;
                     default:

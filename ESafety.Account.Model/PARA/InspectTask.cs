@@ -58,6 +58,10 @@ namespace ESafety.Account.Model.PARA
         /// 巡检任务主体明细
         /// </summary>
         public IEnumerable<InspectTaskSubjectNew> TaskSubjects { get; set; }
+        /// <summary>
+        /// 任务描述 
+        /// </summary>
+        public string TaskDescription { get; set; }
 
     }
     /// <summary>

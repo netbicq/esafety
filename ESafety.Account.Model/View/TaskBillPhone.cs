@@ -56,6 +56,10 @@ namespace ESafety.Account.Model.View
     public class TaskSubjectView
     {
         /// <summary>
+        /// 主键
+        /// </summary>
+        public Guid KeyID { get; set; }
+        /// <summary>
         /// 单据ID
         /// </summary>
         public Guid BillID { get; set; }
