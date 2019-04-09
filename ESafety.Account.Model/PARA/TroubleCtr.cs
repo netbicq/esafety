@@ -9,7 +9,10 @@ namespace ESafety.Account.Model.PARA
 {
     public class TroubleCtrNew
     {
-
+        /// <summary>
+        /// 单据ID
+        /// </summary>
+        public Guid BillID { get; set; }
         /// <summary>
         /// 管控名称
         /// </summary>
@@ -121,6 +124,7 @@ namespace ESafety.Account.Model.PARA
 
     public class TroubleCtrFlowNew
     {
+
         /// <summary>
         /// 隐患控制ID
         /// </summary>

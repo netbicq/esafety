@@ -514,7 +514,7 @@ namespace ESafety.Account.Service
                          : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Day ? t.CycleValue * 24 * 60
                          : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Houre ? t.CycleValue * 60
                          : t.CycleValue
-                         let billsub= billsubjects.FirstOrDefault(q => q.BillID == bill.ID)
+                         let billsub=bill==null?null: billsubjects.FirstOrDefault(q => q.BillID == bill.ID)
                          where bill==null|| billsub == null||(billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime)-DateTime.Now).TotalMinutes<date
                          select new InsepctTaskByEmployee
                          {
@@ -530,7 +530,8 @@ namespace ESafety.Account.Service
                              LastTime= billsub == null?"":billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime).ToString(),
                              TimeOutHours= 0,
                              CycleDateType=t.CycleDateType,
-                             CycleValue=t.CycleValue
+                             CycleValue=t.CycleValue,
+                             
 
                          };
 
@@ -581,7 +582,7 @@ namespace ESafety.Account.Service
                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Day ? t.CycleValue * 24 * 60
                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Houre ? t.CycleValue * 60
                         : t.CycleValue
-                         let billsub = billsubjects.FirstOrDefault(q => q.BillID == bill.ID)
+                         let billsub = bill == null ? null : billsubjects.FirstOrDefault(q => q.BillID == bill.ID)
                          where bill != null && billsub !=null&& (billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime) - DateTime.Now).TotalMinutes > date
                          select new InsepctTaskByEmployee
                          {

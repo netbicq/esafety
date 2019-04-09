@@ -87,7 +87,7 @@ namespace ESafety.Core
                     throw new Exception("节点不存在");
                 }
                 var usercheck = rpsPointUser.Any(q => q.PointID == pointuser.PointID && q.PointUser == pointuser.PointUser);
-                if (usercheck)
+                if (point.PointType == (int)PublicEnum.EE_FlowPointType.Multi && usercheck)
                 {
                     throw new Exception("节点已经存在用户：" + pointuser.PointUser);
                 }
@@ -98,6 +98,11 @@ namespace ESafety.Core
                     throw new Exception("节点已经存在相同的顺序");
                 }
 
+                usercheck = rpsPointUser.Any(q => q.PointID == pointuser.PointID);
+                if(point.PointType==(int)PublicEnum.EE_FlowPointType.Generic&&usercheck)
+                {
+                    throw new Exception("节点为普通审批，已存在审批人!");
+                }
                 var dbpointUser = pointuser.CopyTo<Flow_PointUsers>(new Flow_PointUsers());
 
                 rpsPointUser.Add(dbpointUser);

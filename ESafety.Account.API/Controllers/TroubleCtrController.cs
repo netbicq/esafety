@@ -49,18 +49,18 @@ namespace ESafety.Account.API.Controllers
             LogContent = "新建了管控日志模型，参数源:" + JsonConvert.SerializeObject(flowNew);
             return bll.AddTroubleCtrFlow(flowNew);
         }
-        /// <summary>
-        /// 隐患管控审核
-        /// </summary>
-        /// <param name="businessid"></param>
-        /// <returns></returns>
-        [Route("approve/{businessid:Guid}")]
-        [HttpGet]
-        public ActionResult<bool> Approve(Guid businessid)
-        {
-            LogContent = "审核了隐患管控，id:" + businessid.ToString();
-            return bll.Approve(businessid);
-        }
+        ///// <summary>
+        ///// 隐患管控审核
+        ///// </summary>
+        ///// <param name="businessid"></param>
+        ///// <returns></returns>
+        //[Route("approve/{businessid:Guid}")]
+        //[HttpGet]
+        //public ActionResult<bool> Approve(Guid businessid)
+        //{
+        //    LogContent = "审核了隐患管控，id:" + businessid.ToString();
+        //    return bll.Approve(businessid);
+        //}
         /// <summary>
         /// 改变隐患等级,根据ID
         /// </summary>
@@ -164,17 +164,17 @@ namespace ESafety.Account.API.Controllers
         {
             return bll.GetTroubleCtrs(para);
         }
-        /// <summary>
-        /// 发起流程
-        /// </summary>
-        /// <param name="billid"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("startf/{billid:Guid}")]
-        public ActionResult<bool> StartBillFlow(Guid billid)
-        {
-            LogContent = "发起审批，业务id:" + billid.ToString();
-            return bll.StartBillFlow(billid);
-        }
+        ///// <summary>
+        ///// 发起流程
+        ///// </summary>
+        ///// <param name="billid"></param>
+        ///// <returns></returns>
+        //[HttpGet]
+        //[Route("startf/{billid:Guid}")]
+        //public ActionResult<bool> StartBillFlow(Guid billid)
+        //{
+        //    LogContent = "发起审批，业务id:" + billid.ToString();
+        //    return bll.StartBillFlow(billid);
+        //}
     }
 }

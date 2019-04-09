@@ -58,5 +58,9 @@ namespace ESafety.Core.Model.DB.Account
         /// 状态
         /// </summary>
         public int State { get; set; }
+        /// <summary>
+        ///任务单据ID
+        /// </summary>
+        public Guid BillID { get; set; }
     }
 }

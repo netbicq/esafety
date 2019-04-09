@@ -198,7 +198,12 @@ namespace ESafety.Account.Service
         {
             try
             {
+               
                 var dbtb = _rpstb.GetModel(para.Query.BillID);
+                if (dbtb.State==(int)PublicEnum.BillFlowState.wait)
+                {
+                    throw new Exception("单据还未完成，请等待单据完成!");
+                }
                 var dbtbs = _rpstbs.Queryable(p => p.BillID == para.Query.BillID).ToList();
 
                 var ids = dbtbs.Select(p => p.DangerID);
@@ -387,7 +392,7 @@ namespace ESafety.Account.Service
                 //执行岗位ID
                 dbbill.PostID = task.ExecutePostID;
                 //执行人ID
-                dbbill.EmployeeID = (Guid)task.EmployeeID;
+                dbbill.EmployeeID = AppUser.EmployeeInfo.ID;
                 //风险点ID
                 dbbill.DangerID = task.DangerID;
                 //单据状态
@@ -480,7 +485,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("参数有误!");
                 }
-                var check = _rpstbs.Any(p => p.BillID == bill.BillID);
+                var check = _rpstbs.Any(p => p.BillID == bill.BillID&&p.SubjectID==bill.SubjectID);
                 if (check)
                 {
                     throw new Exception("检查结果已存在!");
@@ -820,8 +825,8 @@ namespace ESafety.Account.Service
                          let danger = dangers.FirstOrDefault(q => q.ID == tb.DangerID)
                          let csubs = _work.Repository<Bll_InspectTaskSubject>().Queryable(q => q.InspectTaskID == tb.TaskID)//当前单据检查主体
                          let osubs = _rpstbs.Queryable(p => p.BillID == tb.ID)//已查主体数
-                         let osubids = osubs.Select(s => s.BillID)
-                         let subs = csubs.Where(p => osubids.Contains(p.ID)).ToList()
+                         let osubids = osubs.Select(s => s.SubjectID)
+                         let subs = csubs.Where(p => !osubids.Contains(p.SubjectID)).ToList()//待查主体
                          let subids=subs.Select(p=>p.SubjectID)
                          let devices = _work.Repository<Basic_Facilities>().Queryable(q => subids.Contains(q.ID)).ToList()
                          let posts = _work.Repository<Basic_Post>().Queryable(q => subids.Contains(q.ID)).ToList()
