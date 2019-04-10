@@ -122,4 +122,9 @@ namespace ESafety.Account.Model.View
         public IEnumerable<TaskSubjectView> CheckSubs{ get; set; }
     }
 
+
+    public class OpreateBillByEmp
+    {
+
+    }
 }

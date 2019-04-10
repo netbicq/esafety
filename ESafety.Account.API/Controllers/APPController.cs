@@ -23,14 +23,16 @@ namespace ESafety.Account.API.Controllers
 
         private IInspectTask spectbll;
         private ITaskBillService billbll;
+        private IOpreateBill opreatebll;
 
 
-        public APPController(IInspectTask spectask, ITaskBillService taskbill)
+        public APPController(IInspectTask spectask, ITaskBillService taskbill,IOpreateBill opreatebill)
         {
 
             spectbll = spectask;
             billbll = taskbill;
-            BusinessServices = new List<object> { taskbill, spectask };            
+            opreatebll = opreatebill;
+            BusinessServices = new List<object> { taskbill, spectask,opreatebill };            
             
         }
         /// <summary>
@@ -180,6 +182,18 @@ namespace ESafety.Account.API.Controllers
         public ActionResult<IEnumerable<DownloadData>> DownloadData()
         {
             return billbll.DownloadData();
+        }
+
+        /// <summary>
+        /// 根据作业申请单ID，获取带处理节点的单据模型
+        /// </summary>
+        /// <param name="opreateid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getopreateflowmodel/{opreateid:Guid}")]
+        public ActionResult<OpreateBillFlowModel> GetBillFlowModel(Guid opreateid)
+        {
+            return opreatebll.GetBillFlowModel(opreateid);
         }
     }
 }

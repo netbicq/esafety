@@ -465,10 +465,10 @@ namespace ESafety.Account.Service
 
                     var nexpoint = points.OrderBy(o => o.PointIndex).FirstOrDefault(q => q.PointIndex > f.PointIndex);
                     var post = posts.FirstOrDefault(q => q.ID == f.PostID);
-                    var flow = flows.FirstOrDefault(q => q.OpreationFlowID == f.ID);
+                   // var flow = flows.FirstOrDefault(q => q.OpreationFlowID == f.ID);
                     var nextids = points.OrderBy(o => o.PointIndex).Where(q => q.PointIndex > f.PointIndex).Select(s => s.ID);
 
-                    var flownew = flows.OrderByDescending(q => q.FlowTime).FirstOrDefault(q => q.OpreationFlowID == f.ID);
+                    //var flownew = flows.OrderByDescending(q => q.FlowTime).FirstOrDefault(q => q.OpreationFlowID == f.ID);
 
                     var rf = new OpreateBillFlow
                     {
@@ -477,10 +477,17 @@ namespace ESafety.Account.Service
                         PointIndex = f.PointIndex,
                         PointName = f.PointName,
                         PostID = f.PostID,
-                        FlowEmployeeID = flow == null ? Guid.Empty : flow.FlowEmployeeID,
-                        FlowEmployeeName = flow == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID) == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID).CNName,
+                        detials=from flow in flows
+                                where flow.OpreationFlowID==f.ID
+                                select new OpreateBillFlowDetials
+                                {
+                                    FlowEmployeeID = flow == null ? Guid.Empty : flow.FlowEmployeeID,
+                                    FlowEmployeeName = flow == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID) == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID).CNName,
+                                    FlowMemo = flow == null ? "" : flow.FlowMemo
+                                },
+                      
                         PostName = post == null ? "" : post.Name,
-                        FlowMemo=flownew==null?"":flownew.FlowMemo
+                  
                         
                     };
                     var uemodel = new OpreateFlowUEModel();
@@ -558,6 +565,24 @@ namespace ESafety.Account.Service
             {
                 return new ActionResult<OpreateBillFlowModel>(ex);
             }
+        }
+
+        /// <summary>
+        /// APP端获取当前人的所有待完成作业申请单
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<OpreateBillByEmp>> GetCurrentList()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// APP端获取当前人的所有已完成作业申请单
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<OpreateBillByEmp>> GetOverList()
+        {
+            throw new NotImplementedException();
         }
     }
 }
