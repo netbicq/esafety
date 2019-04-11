@@ -185,7 +185,7 @@ namespace ESafety.Account.API.Controllers
         }
 
         /// <summary>
-        /// 根据作业申请单ID，获取带处理节点的单据模型
+        /// 根据作业单ID，获取带处理节点的单据模型
         /// </summary>
         /// <param name="opreateid"></param>
         /// <returns></returns>
@@ -195,5 +195,27 @@ namespace ESafety.Account.API.Controllers
         {
             return opreatebll.GetBillFlowModel(opreateid);
         }
+        /// <summary>
+        /// 获取当前人能做的作业单
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getcurrentlist")]
+        public ActionResult<IEnumerable<OpreateBillByEmp>> GetCurrentList()
+        {
+            return opreatebll.GetCurrentList();
+        }
+
+        /// <summary>
+        /// 获取当前人已做的作业单
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getoverlist")]
+        public ActionResult<IEnumerable<OpreateBillByEmp>> GetOverList()
+        {
+            return opreatebll.GetOverList();
+        }
+
     }
 }
