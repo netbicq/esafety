@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace ESafety.Account.Model.View
 {
-    public class InspectTaskView
+
+    public class InspectTempTaskView
     {
         /// <summary>
         /// id
@@ -32,7 +33,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 任务类型
         /// </summary>
-        public PublicEnum.EE_InspectTaskType TaskType { get; set; } 
+        public PublicEnum.EE_InspectTaskType TaskType { get; set; }
         /// <summary>
         /// 开始日期
         /// </summary>
@@ -41,14 +42,6 @@ namespace ESafety.Account.Model.View
         /// 结束日期
         /// </summary>
         public DateTime EndTime { get; set; }
-        /// <summary>
-        /// 频率值
-        /// </summary>
-        public int CycleValue { get; set; }
-        /// <summary>
-        /// 频率日期类型
-        /// </summary>
-        public int CycleDateType { get; set; }
         /// <summary>
         /// 执行岗位
         /// </summary>
@@ -85,7 +78,17 @@ namespace ESafety.Account.Model.View
         /// 任务描述
         /// </summary>
         public string TaskDescription { get; set; }
-
+    }
+    public class InspectTaskView:InspectTempTaskView
+    {
+        /// <summary>
+        /// 频率值
+        /// </summary>
+        public int CycleValue { get; set; }
+        /// <summary>
+        /// 频率日期类型
+        /// </summary>
+        public int CycleDateType { get; set; }
     }
     /// <summary>
     /// 任务主体明细
@@ -135,7 +138,34 @@ namespace ESafety.Account.Model.View
     /// <summary>
     /// 任务列表
     /// </summary>
-    public class InsepctTaskByEmployee
+    public class InsepctTaskByEmployee: InsepctTempTaskByEmployee
+    {
+
+        /// <summary>
+        /// 最后执行时间
+        /// </summary>
+        public string LastTime { get; set; }
+        /// <summary>
+        /// 超时小时数
+        /// </summary>
+        public int TimeOutHours { get; set; } 
+        /// <summary>
+        /// 频率值
+        /// </summary>
+        public int CycleValue { get; set; }
+        /// <summary>
+        /// 频率日期类型
+        /// </summary>
+        public int CycleDateType { get; set; }
+        /// <summary>
+        /// 执行频率
+        /// </summary>
+        public string CycleName { get; set; }
+    }
+    /// <summary>
+    /// 临时任务模型
+    /// </summary>
+    public class InsepctTempTaskByEmployee
     {
         /// <summary>
         /// 任务ID
@@ -157,11 +187,6 @@ namespace ESafety.Account.Model.View
         /// 风险点名称
         /// </summary>
         public string DangerName { get; set; }
-
-        /// <summary>
-        /// 执行频率
-        /// </summary>
-        public string CycleName { get; set; }
         /// <summary>
         /// 任务描述
         /// </summary>
@@ -170,21 +195,6 @@ namespace ESafety.Account.Model.View
         /// 任务类型名称
         /// </summary>
         public string TaskTypeName { get; set; }
-        /// <summary>
-        /// 最后执行时间
-        /// </summary>
-        public string LastTime { get; set; }
-        /// <summary>
-        /// 超时小时数
-        /// </summary>
-        public int TimeOutHours { get; set; } 
-        /// <summary>
-        /// 频率值
-        /// </summary>
-        public int CycleValue { get; set; }
-        /// <summary>
-        /// 频率日期类型
-        /// </summary>
-        public int CycleDateType { get; set; }
     }
+
 }

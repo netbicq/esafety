@@ -120,7 +120,17 @@ namespace ESafety.Account.API.Controllers
             return bll.GetTasks(qurey);
 
         }
-
+        /// <summary>
+        /// 获取临时任务列表
+        /// </summary>
+        /// <param name="qurey"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("gettemptasks")]
+        public ActionResult<Pager<InspectTempTaskView>> GetTempTasks(PagerQuery<InspectTaskQuery> qurey)
+        {
+            return bll.GetTempTasks(qurey);
+        }
         /// <summary>
         /// 根据巡检任务id获取任务主体明细集合
         /// </summary>

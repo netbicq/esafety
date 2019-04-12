@@ -109,6 +109,33 @@ namespace ESafety.Account.Service
                 return new ActionResult<bool>(ex);
             }
         }
+
+        public ActionResult<PhoneDocInstitutionModelView> GetDocInstitution(Guid id)
+        {
+            try
+            {
+                var dbins = _rpsin.GetModel(id);
+
+                var dicts = _work.Repository<Core.Model.DB.Basic_Dict>().GetModel(dbins.TypeID);
+                var re = new PhoneDocInstitutionModelView
+                         {
+                             BigCode = dbins.BigCode,
+                             InstitutionID = dbins.ID,
+                             IssueDate = dbins.IssueDate,
+                             InstitutionType =dicts.DictName,
+                             Name = dbins.Name,
+                             Content=dbins.Content
+                             
+                         };
+
+                return new ActionResult<PhoneDocInstitutionModelView>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<PhoneDocInstitutionModelView>(ex);
+            }
+        }
+
         /// <summary>
         /// 获取安全制度模型
         /// </summary>
@@ -144,6 +171,35 @@ namespace ESafety.Account.Service
             catch (Exception ex)
             {
                 return new ActionResult<Pager<DocInstitutionView>>(ex);
+            }
+        }
+        /// <summary>
+        /// App端获取所有安全制度
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<PhoneDocInstitutionView>> GetDocInstitutionsList()
+        {
+            try
+            {
+                var dbins = _rpsin.Queryable();
+                var typeids = dbins.Select(s => s.TypeID).Distinct();
+                var dicts = _work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => typeids.Contains(p.ID));
+                var re = from ins in dbins
+                         let type=dicts.FirstOrDefault(p=>p.ID==ins.TypeID)
+                         select new PhoneDocInstitutionView
+                         {
+                             BigCode=ins.BigCode,
+                             InstitutionID=ins.ID,
+                             IssueDate=ins.IssueDate,
+                             InstitutionType=type.DictName,
+                             Name=ins.Name
+                         };
+              
+                return new ActionResult<IEnumerable<PhoneDocInstitutionView>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<PhoneDocInstitutionView>>(ex);
             }
         }
     }

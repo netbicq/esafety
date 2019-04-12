@@ -49,6 +49,12 @@ namespace ESafety.Account.IService
         /// <returns></returns>
         ActionResult<Pager<InspectTaskView>> GetTasks(PagerQuery<InspectTaskQuery> qurey);
         /// <summary>
+        /// 获取临时任务列表
+        /// </summary>
+        /// <param name="qurey"></param>
+        /// <returns></returns>
+        ActionResult<Pager<InspectTempTaskView>> GetTempTasks(PagerQuery<InspectTaskQuery> qurey);
+        /// <summary>
         /// 获取指定任务id的任务主体明细集合
         /// </summary>
         /// <param name="taskid"></param>
@@ -70,6 +76,11 @@ namespace ESafety.Account.IService
         /// </summary>
         /// <returns></returns>
         ActionResult<IEnumerable<InsepctTaskByEmployee>> GetTaskListByTimeOut();
+        /// <summary>
+        /// 获取职员的临时任务列表
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<IEnumerable<InsepctTempTaskByEmployee>> GetTempTaskListByEmployee();
 
     }
 }

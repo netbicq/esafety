@@ -205,7 +205,7 @@ namespace ESafety.Account.Service
                && (qurey.Query.PostID == q.ExecutePostID || qurey.Query.PostID == Guid.Empty)
                && (qurey.Query.State == q.State || qurey.Query.State == 0)
                && (q.Name.Contains(qurey.Query.Key) || q.TaskDescription.Contains(qurey.Query.Key) || qurey.Query.Key == "")
-               );
+               &&q.TaskType==(int)PublicEnum.EE_InspectTaskType.Cycle);
                 var empids = retemp.Select(s => s.EmployeeID);//职员id
                 var dangids = retemp.Select(s => s.DangerID); //风险点id
                 var postids = retemp.Select(s => s.ExecutePostID);//岗位id
@@ -252,6 +252,67 @@ namespace ESafety.Account.Service
                 return new ActionResult<Pager<InspectTaskView>>(ex);
             }
         }
+
+        /// <summary>
+        /// 获取临时任务列表
+        /// </summary>
+        /// <param name="qurey"></param>
+        /// <returns></returns>
+        public ActionResult<Pager<InspectTempTaskView>> GetTempTasks(PagerQuery<InspectTaskQuery> qurey)
+        {
+            try
+            {
+                var retemp = rpstask.Queryable(q =>
+               (q.DangerID == qurey.Query.DangerID || qurey.Query.DangerID == Guid.Empty)
+               && (qurey.Query.PostID == q.ExecutePostID || qurey.Query.PostID == Guid.Empty)
+               && (qurey.Query.State == q.State || qurey.Query.State == 0)
+               && (q.Name.Contains(qurey.Query.Key) || q.TaskDescription.Contains(qurey.Query.Key) || qurey.Query.Key == "")
+               && q.TaskType == (int)PublicEnum.EE_InspectTaskType.Temp);
+                var empids = retemp.Select(s => s.EmployeeID);//职员id
+                var dangids = retemp.Select(s => s.DangerID); //风险点id
+                var postids = retemp.Select(s => s.ExecutePostID);//岗位id
+
+                var dangers = _work.Repository<Basic_Danger>().Queryable(q => dangids.Contains(q.ID));
+                var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q => empids.Contains(q.ID));
+                var posts = _work.Repository<Basic_Post>().Queryable(q => postids.Contains(q.ID));
+
+                var re = from t in retemp.ToList()
+                         let dange = dangers.FirstOrDefault(q => q.ID == t.DangerID)
+                         let employee = emps.FirstOrDefault(q => q.ID == t.EmployeeID)
+                         let postinfo = posts.FirstOrDefault(q => q.ID == t.ExecutePostID)
+                         select new InspectTempTaskView
+                         {
+                             Code = t.Code,
+                             CreateDate = t.CreateDate,
+                             CreateMan = t.CreateMan,
+                             DangerID = t.DangerID,
+                             DangerName = dange == null ? "" : dange.Name,
+                             Name = t.Name,
+                             ID = t.ID,
+                             EmployeeID = t.EmployeeID.GetValueOrDefault(),
+                             EmployeeName = employee == null ? "" : employee.CNName,
+                             EndTime = t.EndTime,
+                             ExecutePostID = t.ExecutePostID,
+                             ExecutePostName = postinfo == null ? "" : postinfo.Name,
+                             StartTime = t.StartTime,
+                             State = t.State,
+                             StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == t.State).Caption,
+                             TaskDescription = t.TaskDescription,
+                             TaskType = (PublicEnum.EE_InspectTaskType)t.TaskType
+                         };
+
+                var result = new Pager<InspectTempTaskView>().GetCurrentPage(re, qurey.PageSize, qurey.PageIndex);
+
+                return new ActionResult<Pager<InspectTempTaskView>>(result);
+
+
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<Pager<InspectTempTaskView>>(ex);
+            }
+        }
+
         /// <summary>
         /// 获取任务明细主体
         /// </summary>
@@ -490,7 +551,10 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("还未配置该用户!");
                 }
-                var tasks = rpstask.Queryable(q =>( q.EmployeeID ==user.ID||postids.Contains(q.ExecutePostID))&&q.State== (int)PublicEnum.BillFlowState.audited).ToList();
+                var tasks = rpstask.Queryable(q =>( q.EmployeeID ==user.ID||postids.Contains(q.ExecutePostID))
+                                                   &&q.State== (int)PublicEnum.BillFlowState.audited
+                                                   &&q.TaskType==(int)PublicEnum.EE_InspectTaskType.Cycle
+                                                   ).ToList();
 
                 //风险点
                 var dangerids = tasks.Select(s => s.DangerID).ToList();
@@ -531,8 +595,7 @@ namespace ESafety.Account.Service
                              TimeOutHours= 0,
                              CycleDateType=t.CycleDateType,
                              CycleValue=t.CycleValue,
-                             
-
+                             CycleName = Command.GetItems(typeof(PublicEnum.EE_CycleDateType)).FirstOrDefault(p => p.Value == t.CycleValue).Caption
                          };
 
                 return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(re);
@@ -558,7 +621,10 @@ namespace ESafety.Account.Service
                 var userpost = _work.Repository<Basic_PostEmployees>().Queryable(p => p.EmployeeID == user.ID);
                 var postids = userpost.Select(s => s.PostID);
 
-                var tasks = rpstask.Queryable(q => (q.EmployeeID == user.ID||postids.Contains(q.ExecutePostID)) && q.State == (int)PublicEnum.BillFlowState.audited).ToList();
+                var tasks = rpstask.Queryable(q => (q.EmployeeID == user.ID||postids.Contains(q.ExecutePostID))
+                                                   && q.State == (int)PublicEnum.BillFlowState.audited
+                                                   && q.State==(int)PublicEnum.EE_InspectTaskType.Cycle
+                                                   ).ToList();
 
                 //风险点
                 var dangerids = tasks.Select(s => s.DangerID);
@@ -596,8 +662,10 @@ namespace ESafety.Account.Service
                              TaskDescription = t.TaskDescription,
                              //最后时间和超时时间
                              LastTime = billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime).ToString(),
-                             TimeOutHours = (int)(billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime) - DateTime.Now).TotalMinutes
-
+                             TimeOutHours = (int)(billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime) - DateTime.Now).TotalMinutes,
+                             CycleDateType = t.CycleDateType,
+                             CycleValue = t.CycleValue,
+                             CycleName=Command.GetItems(typeof(PublicEnum.EE_CycleDateType)).FirstOrDefault(p=>p.Value==t.CycleValue).Caption
                          };
 
                 return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(re);
@@ -605,6 +673,52 @@ namespace ESafety.Account.Service
             catch (Exception ex)
             {
                 return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取当前用户超时任务列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<InsepctTempTaskByEmployee>> GetTempTaskListByEmployee()
+        {
+            try
+            {
+                var user = AppUser.EmployeeInfo;
+                var userpost = _work.Repository<Basic_PostEmployees>().Queryable(p => p.EmployeeID == user.ID);
+                var postids = userpost.Select(s => s.PostID);
+
+                if (user == null)
+                {
+                    throw new Exception("还未配置该用户!");
+                }
+                var tasks = rpstask.Queryable(q => (q.EmployeeID == user.ID || postids.Contains(q.ExecutePostID))
+                                                   && q.State == (int)PublicEnum.BillFlowState.audited
+                                                   && q.TaskType == (int)PublicEnum.EE_InspectTaskType.Temp
+                                                   && q.EndTime >DateTime.Now
+                                                   ).ToList();
+
+                //风险点
+                var dangerids = tasks.Select(s => s.DangerID).ToList();
+                var dangers = _work.Repository<Basic_Danger>().Queryable(q => dangerids.Contains(q.ID)).ToList();
+                var re = from t in tasks
+                         let danger = dangers.FirstOrDefault(q => q.ID == t.DangerID)
+                         select new InsepctTempTaskByEmployee
+                         {
+                             TaskID = t.ID,
+                             DangerID = t.DangerID,
+                             DangerName = danger.Name,
+                             Name = t.Name,
+                             TaskTypeID = (PublicEnum.EE_InspectTaskType)t.TaskType,
+                             TaskTypeName = Command.GetItems(typeof(PublicEnum.EE_InspectTaskType)).FirstOrDefault(p => p.Value == t.TaskType).Caption,
+                             TaskDescription = t.TaskDescription,
+                         };
+
+                return new ActionResult<IEnumerable<InsepctTempTaskByEmployee>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<InsepctTempTaskByEmployee>>(ex);
             }
         }
     }

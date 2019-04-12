@@ -24,15 +24,18 @@ namespace ESafety.Account.API.Controllers
         private IInspectTask spectbll;
         private ITaskBillService billbll;
         private IOpreateBill opreatebll;
+        private IDocInstitutionService docinsbll;
+        private IDocSolutionService docssbll;
 
-
-        public APPController(IInspectTask spectask, ITaskBillService taskbill,IOpreateBill opreatebill)
+        public APPController(IInspectTask spectask, ITaskBillService taskbill,IOpreateBill opreatebill,IDocInstitutionService docins,IDocSolutionService docss)
         {
 
             spectbll = spectask;
             billbll = taskbill;
             opreatebll = opreatebill;
-            BusinessServices = new List<object> { taskbill, spectask,opreatebill };            
+            docinsbll = docins;
+            docssbll = docss;
+            BusinessServices = new List<object> { taskbill, spectask,opreatebill, docins, docss };            
             
         }
         /// <summary>
@@ -67,6 +70,16 @@ namespace ESafety.Account.API.Controllers
         public ActionResult<IEnumerable<InsepctTaskByEmployee>> GetTimeOutTaskList()
         {
             return spectbll.GetTaskListByTimeOut();
+        }
+        /// <summary>
+        /// 获取当前用户临时任务列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("gettemptask")]
+        public ActionResult<IEnumerable<InsepctTempTaskByEmployee>> GetTempTaskListByEmployee()
+        {
+            return spectbll.GetTempTaskListByEmployee();
         }
 
         /// <summary>
@@ -149,6 +162,9 @@ namespace ESafety.Account.API.Controllers
         {
             return billbll.GetTaskSubjectsOver(taskbillid);
         }
+
+  
+
         /// <summary>
         /// 根据结果ID，删除检查结果
         /// </summary>
@@ -216,6 +232,60 @@ namespace ESafety.Account.API.Controllers
         {
             return opreatebll.GetOverList();
         }
+        /// <summary>
+        /// 处理作业单流程节点
+        /// </summary>
+        /// <param name="flow"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("billflowset")]
+        public ActionResult<bool> FlowResult(OpreateBillFlowResult flow)
+        {
+            LogContent = "处理了作业节点，参数源：" + JsonConvert.SerializeObject(flow);
+            return opreatebll.FlowResult(flow);
+        }
+        /// <summary>
+        /// 获取所有制度
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getdocinslist")]
+        public ActionResult<IEnumerable<PhoneDocInstitutionView>> GetDocInstitutionsList()
+        {
+            return docinsbll.GetDocInstitutionsList();
+        }
+        /// <summary>
+        /// 根据制度ID获取制度
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getdocins/{insid:Guid}")]
+        public ActionResult<PhoneDocInstitutionModelView> GetDocInstitution(Guid insid)
+        {
+            return docinsbll.GetDocInstitution(insid);
+        }
 
+        /// <summary>
+        /// 根据预案ID获取预案详情
+        /// </summary>
+        /// <param name="docsolutionid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getdocsolutionmodel/{docsolutionid:Guid}")]
+        public ActionResult<PhoneDocSolutionModelView> GetDocSolutionModel(Guid docsolutionid)
+        {
+            return docssbll.GetDocSolutionModel(docsolutionid);
+        }
+        /// <summary>
+        /// 根据风险等级ID获取预案列表,默认值为00000000-0000-0000-0000-000000000000
+        /// </summary>
+        /// <param name="dangerlevelid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getdocsolutionlist/{dangerlevelid:Guid}")]
+        public ActionResult<IEnumerable<PhoneDocSolutionView>> GetDocSolutionList(Guid dangerlevelid)
+        {
+            return docssbll.GetDocSolutionList(dangerlevelid);
+        }
     }
 }
