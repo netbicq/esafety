@@ -103,6 +103,25 @@ namespace ESafety.Account.Model.PARA
         public PublicEnum.BillFlowState State { get; set; }
     }
     /// <summary>
+    /// 临时任务分配执行人员
+    /// </summary>
+    public class AllotTempTaskEmp
+    {
+        /// <summary>
+        /// 临时任务ID
+        /// </summary>
+        public Guid TempTaskID { get; set; }
+        /// <summary>
+        /// 岗位ID
+        /// </summary>
+        public Guid PostID { get; set; }
+        /// <summary>
+        /// 执行人
+        /// </summary>
+        public Guid EmpID { get; set; }
+    }
+
+    /// <summary>
     /// 查询参数
     /// </summary>
     public class InspectTaskQuery
@@ -123,5 +142,47 @@ namespace ESafety.Account.Model.PARA
         /// 关键字，只支持任务名 和描述检索
         /// </summary>
         public string Key { get; set; }
+    }
+
+    public class AddTempTask
+    {
+        public AddTempTask()
+        {
+            TaskSubjects = new List<InspectTaskSubjectNew>();
+        }
+        /// <summary>
+        /// 任务名称
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// 风险点id
+        /// </summary>
+        public Guid DangerID { get; set; }
+        /// <summary>
+        /// 开始时间
+        /// </summary>
+        public DateTime StartTime { get; set; }
+        /// <summary>
+        /// 结束时间
+        /// </summary>
+        public DateTime EndTime { get; set; }
+        /// <summary>
+        /// 执行岗位id
+        /// </summary>
+        public Guid ExecutePostID { get; set; }
+        /// <summary>
+        /// 任务描述 
+        /// </summary>
+        public string TaskDescription { get; set; }
+
+        /// <summary>
+        /// 巡检任务主体明细
+        /// </summary>
+        public IEnumerable<InspectTaskSubjectNew> TaskSubjects { get; set; }
+
+        /// <summary>
+        /// 电子文档
+        /// </summary>
+        public IEnumerable<Core.Model.PARA.AttachFileNew> AttachFiles { get; set; }
     }
 }

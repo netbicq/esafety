@@ -79,7 +79,7 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string TaskDescription { get; set; }
     }
-    public class InspectTaskView:InspectTempTaskView
+    public class InspectTaskView : InspectTempTaskView
     {
         /// <summary>
         /// 频率值
@@ -127,7 +127,7 @@ namespace ESafety.Account.Model.View
     /// <summary>
     /// 巡查任务模型
     /// </summary>
-    public class InspectTaskModelView:InspectTaskView
+    public class InspectTaskModelView : InspectTaskView
     {
         /// <summary>
         /// 明细主体
@@ -138,9 +138,36 @@ namespace ESafety.Account.Model.View
     /// <summary>
     /// 任务列表
     /// </summary>
-    public class InsepctTaskByEmployee: InsepctTempTaskByEmployee
+    public class InsepctTaskByEmployee
     {
-
+        /// <summary>
+        /// 任务ID
+        /// </summary>
+        public Guid TaskID { get; set; }
+        /// <summary>
+        /// 任务名称
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// 风险点ID
+        /// </summary>
+        public Guid DangerID { get; set; }
+        /// <summary>
+        /// 任务类型
+        /// </summary>
+        public PublicEnum.EE_InspectTaskType TaskTypeID { get; set; }
+        /// <summary>
+        /// 风险点名称
+        /// </summary>
+        public string DangerName { get; set; }
+        /// <summary>
+        /// 任务描述
+        /// </summary>
+        public string TaskDescription { get; set; }
+        /// <summary>
+        /// 任务类型名称
+        /// </summary>
+        public string TaskTypeName { get; set; }
         /// <summary>
         /// 最后执行时间
         /// </summary>
@@ -148,7 +175,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 超时小时数
         /// </summary>
-        public int TimeOutHours { get; set; } 
+        public int TimeOutHours { get; set; }
         /// <summary>
         /// 频率值
         /// </summary>
@@ -195,6 +222,79 @@ namespace ESafety.Account.Model.View
         /// 任务类型名称
         /// </summary>
         public string TaskTypeName { get; set; }
+        /// <summary>
+        /// 开始日期
+        /// </summary>
+        public DateTime StartTime { get; set; }
+        /// <summary>
+        /// 结束日期
+        /// </summary>
+        public DateTime EndTime { get; set; }
+    }
+
+
+    public class TempTaskSelector
+    {
+        /// <summary>
+        /// 风险点集合
+        /// </summary>
+        public IEnumerable<Danger> Dangers { get; set; }
+        /// <summary>
+        /// 岗位集合
+        /// </summary>
+        public IEnumerable<Post> Posts { get; set; }
+        /// <summary>
+        /// 主体集合
+        /// </summary>
+        public IEnumerable<Sub> Subs { get; set; }
+    }
+    /// <summary>
+    /// 风险点集合
+    /// </summary>
+    public class Danger
+    {
+        /// <summary>
+        /// 风险点ID
+        /// </summary>
+        public Guid DangerID { get; set; }
+        /// <summary>
+        /// 风险点名字
+        /// </summary>
+        public string DangerName { get; set; }
+    }
+
+    public class Post
+    {
+        /// <summary>
+        /// 岗位ID
+        /// </summary>
+        public Guid PostID { get; set; }
+        /// <summary>
+        /// 岗位名
+        /// </summary>
+        public string PostName { get; set; }
+    }
+
+    public class Sub
+    {
+
+        public string SubTypeName { get; set; }
+
+        public IEnumerable<EntityType> Subjects { get; set; }
+    }
+
+    public class EntityType
+    {
+        public string EntityTypeName { get; set; }
+
+        public IEnumerable<Entity> Entities {get;set;}
+    }
+
+    public class Entity
+    {
+        public Guid SubjectID { get; set; }
+
+        public string SubName { set; get; }
     }
 
 }

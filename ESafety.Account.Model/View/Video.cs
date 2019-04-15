@@ -30,6 +30,10 @@ namespace ESafety.Account.Model.View
 
     }
 
+
+
+
+
     public class VideoModelView : VideoView
     {
         /// <summary>

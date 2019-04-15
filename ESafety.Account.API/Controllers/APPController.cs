@@ -26,8 +26,9 @@ namespace ESafety.Account.API.Controllers
         private IOpreateBill opreatebll;
         private IDocInstitutionService docinsbll;
         private IDocSolutionService docssbll;
+        private IVideoService videobll;
 
-        public APPController(IInspectTask spectask, ITaskBillService taskbill,IOpreateBill opreatebill,IDocInstitutionService docins,IDocSolutionService docss)
+        public APPController(IInspectTask spectask, ITaskBillService taskbill,IOpreateBill opreatebill,IDocInstitutionService docins,IDocSolutionService docss,IVideoService video)
         {
 
             spectbll = spectask;
@@ -35,7 +36,8 @@ namespace ESafety.Account.API.Controllers
             opreatebll = opreatebill;
             docinsbll = docins;
             docssbll = docss;
-            BusinessServices = new List<object> { taskbill, spectask,opreatebill, docins, docss };            
+            videobll = video;
+            BusinessServices = new List<object> { taskbill, spectask,opreatebill, docins, docss,video };            
             
         }
         /// <summary>
@@ -286,6 +288,38 @@ namespace ESafety.Account.API.Controllers
         public ActionResult<IEnumerable<PhoneDocSolutionView>> GetDocSolutionList(Guid dangerlevelid)
         {
             return docssbll.GetDocSolutionList(dangerlevelid);
+        }
+        /// <summary>
+        /// 获取摄像头列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getvideolist")]
+        public ActionResult<IEnumerable<VideoView>> GetVideoList()
+        {
+            return videobll.GetVideoList();
+        }
+        /// <summary>
+        /// 移动端新建临时任务
+        /// </summary>
+        /// <param name="temptask"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("addtemptask")]
+        public ActionResult<bool> AddTempTask(AddTempTask temptask)
+        {
+            return spectbll.AddTempTask(temptask);
+        }
+
+        /// <summary>
+        /// 获取选择器信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getselector")]
+        public ActionResult<TempTaskSelector> GetTempTaskSelector()
+        {
+            return spectbll.GetTempTaskSelector();
         }
     }
 }

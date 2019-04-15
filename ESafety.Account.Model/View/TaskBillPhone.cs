@@ -50,6 +50,10 @@ namespace ESafety.Account.Model.View
         /// 已检查主体数
         /// </summary>
         public int SubCheckedCount { get; set; }
+        /// <summary>
+        /// 任务类型
+        /// </summary>
+        public PublicEnum.EE_InspectTaskType TaskType { set; get; }
 
     }
 

@@ -81,6 +81,24 @@ namespace ESafety.Account.IService
         /// </summary>
         /// <returns></returns>
         ActionResult<IEnumerable<InsepctTempTaskByEmployee>> GetTempTaskListByEmployee();
+        /// <summary>
+        /// 分配执行人员
+        /// </summary>
+        /// <param name="emp"></param>
+        /// <returns></returns>
+        ActionResult<bool> AllotTempTaskEmp(AllotTempTaskEmp emp);
+        /// <summary>
+        /// 移动端新建临时任务
+        /// </summary>
+        /// <param name="temptask"></param>
+        /// <returns></returns>
+        ActionResult<bool> AddTempTask(AddTempTask temptask);
+
+        /// <summary>
+        /// 获取选择器
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<TempTaskSelector> GetTempTaskSelector();
 
     }
 }

@@ -628,7 +628,8 @@ namespace ESafety.Account.Service
                              State = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(p => p.Value == tb.State).Caption,
                              DangerName = danger.Name,
                              SubCheckedCount = osubcount,
-                             SubCount = subcount
+                             SubCount = subcount,
+                             TaskType = (PublicEnum.EE_InspectTaskType)task.TaskType,
                          };
                 return new ActionResult<IEnumerable<TaskBillModel>>(re);
             }
@@ -672,7 +673,8 @@ namespace ESafety.Account.Service
                              State = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(p => p.Value == tb.State).Caption,
                              DangerName = danger.Name,
                              SubCheckedCount = osubcount,
-                             SubCount = osubcount
+                             SubCount = osubcount,
+                             TaskType = (PublicEnum.EE_InspectTaskType)task.TaskType,
                          };
                 return new ActionResult<IEnumerable<TaskBillModel>>(re);
             }
@@ -842,6 +844,7 @@ namespace ESafety.Account.Service
                              DangerName = danger.Name,
                              SubCheckedCount = osubs.Count(),
                              SubCount = csubs.Count(),
+                             TaskType=(PublicEnum.EE_InspectTaskType)task.TaskType,
                              CheckSubs = from sub in subs
                                          let lv = _work.Repository<Basic_Dict>().GetModel(danger.DangerLevel)
                                          let dev = devices.FirstOrDefault(q => q.ID == sub.SubjectID)

@@ -174,6 +174,24 @@ namespace ESafety.Account.Service
             }
         }
         /// <summary>
+        /// 移动端获取摄像头信息
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<VideoView>> GetVideoList()
+        {
+            try
+            {
+                var rev = _rpsv.Queryable().ToList();
+                var re = rev.MAPTO<VideoView>();
+                return new ActionResult<IEnumerable<VideoView>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<VideoView>>(ex);
+            }
+        }
+
+        /// <summary>
         /// 分页获取摄像头信息
         /// </summary>
         /// <param name="para"></param>

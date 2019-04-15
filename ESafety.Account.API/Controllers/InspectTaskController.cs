@@ -155,5 +155,17 @@ namespace ESafety.Account.API.Controllers
             LogContent = "发起审批，业务id:" + taskid.ToString();
             return bll.StartBillFlow(taskid);
         }
+        /// <summary>
+        /// 为临时任务分配执行人员
+        /// </summary>
+        /// <param name="emp"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("allottempemp")]
+        public ActionResult<bool> AllotTempTaskEmp(AllotTempTaskEmp emp)
+        {
+            LogContent = "为临时任务分配了执行人员，参数源:" + JsonConvert.SerializeObject(emp);
+            return bll.AllotTempTaskEmp(emp);
+        }
     }
 }
