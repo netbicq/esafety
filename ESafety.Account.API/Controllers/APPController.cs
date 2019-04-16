@@ -23,14 +23,21 @@ namespace ESafety.Account.API.Controllers
 
         private IInspectTask spectbll;
         private ITaskBillService billbll;
+        private IOpreateBill opreatebll;
+        private IDocInstitutionService docinsbll;
+        private IDocSolutionService docssbll;
+        private IVideoService videobll;
 
-
-        public APPController(IInspectTask spectask, ITaskBillService taskbill)
+        public APPController(IInspectTask spectask, ITaskBillService taskbill,IOpreateBill opreatebill,IDocInstitutionService docins,IDocSolutionService docss,IVideoService video)
         {
 
             spectbll = spectask;
             billbll = taskbill;
-            BusinessServices = new List<object> { taskbill, spectask };            
+            opreatebll = opreatebill;
+            docinsbll = docins;
+            docssbll = docss;
+            videobll = video;
+            BusinessServices = new List<object> { taskbill, spectask,opreatebill, docins, docss,video };            
             
         }
         /// <summary>
@@ -65,6 +72,16 @@ namespace ESafety.Account.API.Controllers
         public ActionResult<IEnumerable<InsepctTaskByEmployee>> GetTimeOutTaskList()
         {
             return spectbll.GetTaskListByTimeOut();
+        }
+        /// <summary>
+        /// 获取当前用户临时任务列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("gettemptask")]
+        public ActionResult<IEnumerable<InsepctTempTaskByEmployee>> GetTempTaskListByEmployee()
+        {
+            return spectbll.GetTempTaskListByEmployee();
         }
 
         /// <summary>
@@ -147,6 +164,9 @@ namespace ESafety.Account.API.Controllers
         {
             return billbll.GetTaskSubjectsOver(taskbillid);
         }
+
+  
+
         /// <summary>
         /// 根据结果ID，删除检查结果
         /// </summary>
@@ -170,6 +190,136 @@ namespace ESafety.Account.API.Controllers
         public ActionResult<SubResultView> GetSubResultModel(Guid subresultid)
         {
             return billbll.GetSubResultModel(subresultid);
+        }
+        /// <summary>
+        /// 下载数据
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("downloaddata")]
+        public ActionResult<IEnumerable<DownloadData>> DownloadData()
+        {
+            return billbll.DownloadData();
+        }
+
+        /// <summary>
+        /// 根据作业单ID，获取带处理节点的单据模型
+        /// </summary>
+        /// <param name="opreateid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getopreateflowmodel/{opreateid:Guid}")]
+        public ActionResult<OpreateBillFlowModel> GetBillFlowModel(Guid opreateid)
+        {
+            return opreatebll.GetBillFlowModel(opreateid);
+        }
+        /// <summary>
+        /// 获取当前人能做的作业单
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getcurrentlist")]
+        public ActionResult<IEnumerable<OpreateBillByEmp>> GetCurrentList()
+        {
+            return opreatebll.GetCurrentList();
+        }
+
+        /// <summary>
+        /// 获取当前人已做的作业单
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getoverlist")]
+        public ActionResult<IEnumerable<OpreateBillByEmp>> GetOverList()
+        {
+            return opreatebll.GetOverList();
+        }
+        /// <summary>
+        /// 处理作业单流程节点
+        /// </summary>
+        /// <param name="flow"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("billflowset")]
+        public ActionResult<bool> FlowResult(OpreateBillFlowResult flow)
+        {
+            LogContent = "处理了作业节点，参数源：" + JsonConvert.SerializeObject(flow);
+            return opreatebll.FlowResult(flow);
+        }
+        /// <summary>
+        /// 获取所有制度
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getdocinslist")]
+        public ActionResult<IEnumerable<PhoneDocInstitutionView>> GetDocInstitutionsList()
+        {
+            return docinsbll.GetDocInstitutionsList();
+        }
+        /// <summary>
+        /// 根据制度ID获取制度
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getdocins/{insid:Guid}")]
+        public ActionResult<PhoneDocInstitutionModelView> GetDocInstitution(Guid insid)
+        {
+            return docinsbll.GetDocInstitution(insid);
+        }
+
+        /// <summary>
+        /// 根据预案ID获取预案详情
+        /// </summary>
+        /// <param name="docsolutionid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getdocsolutionmodel/{docsolutionid:Guid}")]
+        public ActionResult<PhoneDocSolutionModelView> GetDocSolutionModel(Guid docsolutionid)
+        {
+            return docssbll.GetDocSolutionModel(docsolutionid);
+        }
+        /// <summary>
+        /// 根据风险等级ID获取预案列表,默认值为00000000-0000-0000-0000-000000000000
+        /// </summary>
+        /// <param name="dangerlevelid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getdocsolutionlist/{dangerlevelid:Guid}")]
+        public ActionResult<IEnumerable<PhoneDocSolutionView>> GetDocSolutionList(Guid dangerlevelid)
+        {
+            return docssbll.GetDocSolutionList(dangerlevelid);
+        }
+        /// <summary>
+        /// 获取摄像头列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getvideolist")]
+        public ActionResult<IEnumerable<VideoView>> GetVideoList()
+        {
+            return videobll.GetVideoList();
+        }
+        /// <summary>
+        /// 移动端新建临时任务
+        /// </summary>
+        /// <param name="temptask"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("addtemptask")]
+        public ActionResult<bool> AddTempTask(AddTempTask temptask)
+        {
+            return spectbll.AddTempTask(temptask);
+        }
+
+        /// <summary>
+        /// 获取选择器信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getselector")]
+        public ActionResult<TempTaskSelector> GetTempTaskSelector()
+        {
+            return spectbll.GetTempTaskSelector();
         }
     }
 }

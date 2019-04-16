@@ -60,5 +60,17 @@ namespace ESafety.Account.IService
         /// <returns></returns>
         ActionResult<OpreateBillFlowModel> GetBillFlowModel(Guid id);
 
+        /// <summary>
+        /// APP端获取当前人的所有待完成作业申请单
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<IEnumerable<OpreateBillByEmp>> GetCurrentList();
+
+        /// <summary>
+        /// APP端获取当前人的所有已完成作业申请单
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<IEnumerable<OpreateBillByEmp>> GetOverList();
+
     }
 }

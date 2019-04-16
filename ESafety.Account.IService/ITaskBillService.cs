@@ -102,5 +102,10 @@ namespace ESafety.Account.IService
         /// <param name="billid"></param>
         /// <returns></returns>
         ActionResult<bool> TaskBillOver(Guid billid);
+        /// <summary>
+        /// 下载单据数据
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<IEnumerable<DownloadData>> DownloadData();
     }
 }

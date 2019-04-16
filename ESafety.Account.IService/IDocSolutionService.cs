@@ -19,5 +19,15 @@ namespace ESafety.Account.IService
         ActionResult<bool> EditDocSolution(DocSolutionEdit solutionEdit);
         ActionResult<DocSolutionView> GetDocSolution(Guid id);
         ActionResult<Pager<DocSolutionView>> GetDocSolutions(PagerQuery<DocSolutionQuery> para);
+        /// <summary>
+        /// APP端获取预案列表
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<IEnumerable<PhoneDocSolutionView>> GetDocSolutionList(Guid DangerLevelID);
+        /// <summary>
+        /// APP端获取预案模型
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<PhoneDocSolutionModelView> GetDocSolutionModel(Guid id);
     }
 }

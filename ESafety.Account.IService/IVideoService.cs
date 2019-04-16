@@ -20,5 +20,15 @@ namespace ESafety.Account.IService
         ActionResult<VideoModelView> GetVideo(Guid id);
         ActionResult<Pager<VideoView>> GetVideos(PagerQuery<VideoQuery> para);
         ActionResult<IEnumerable<VideoSubjectView>> GetVideoSubjects(Guid id);
+
+        /// <summary>
+        /// 移动端获取视频信息
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<IEnumerable<VideoView>> GetVideoList();
+
+
+    
+
     }
 }

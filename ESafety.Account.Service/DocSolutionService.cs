@@ -129,6 +129,69 @@ namespace ESafety.Account.Service
                 return new ActionResult<DocSolutionView>(ex);
             }
         }
+
+        public ActionResult<IEnumerable<PhoneDocSolutionView>> GetDocSolutionList(Guid DangerLevelID)
+        {
+            try
+            {
+                var dbdss = _rpsds.Queryable(p => p.DangerLevel == DangerLevelID || Guid.Empty == DangerLevelID);
+                var typeids = dbdss.Select(s => s.TypeID).Distinct();
+                var lvs = dbdss.Select(s => s.DangerLevel).Distinct();
+                var dicts = _rpsdict.Queryable(p => typeids.Contains(p.ID) || lvs.Contains(p.ID));
+
+                var revs = from s in dbdss
+                           let type=dicts.FirstOrDefault(p=>p.ID==s.TypeID)
+                           let lv=dicts.FirstOrDefault(p=>p.ID==s.DangerLevel)
+                           select new PhoneDocSolutionView
+                           {
+                               DangerLevel=lv.DictName,
+                               DocSolutionID=s.ID,
+                               IssueDate=s.IssueDate,
+                               Name=s.Name,
+                               SolutionType = type.DictName,
+                           };
+            
+                return new ActionResult<IEnumerable<PhoneDocSolutionView>>(revs);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<PhoneDocSolutionView>>(ex);
+            }
+        }
+        /// <summary>
+        /// 根据ID获取预案模型
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ActionResult<PhoneDocSolutionModelView> GetDocSolutionModel(Guid id)
+        {
+            try
+            {
+                var dbdss = _rpsds.GetModel(id);
+  
+                var dicts = _rpsdict.Queryable(p =>p.ID==dbdss.TypeID ||p.ID==dbdss.DangerLevel);
+
+                var revs = new PhoneDocSolutionModelView
+                           {
+                               DangerLevel =dicts.FirstOrDefault(p=>p.ID==dbdss.DangerLevel).DictName,
+                               DocSolutionID = dbdss.ID,
+                               IssueDate = dbdss.IssueDate,
+                               Name = dbdss.Name,
+                               SolutionType = dicts.FirstOrDefault(p => p.ID == dbdss.TypeID).DictName,
+                               Content=dbdss.Content
+                           };
+
+                return new ActionResult<PhoneDocSolutionModelView>(revs);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<PhoneDocSolutionModelView>(ex);
+            }
+        }
+
+
+
+
         /// <summary>
         /// 分页获取紧急预案
         /// </summary>
@@ -159,5 +222,7 @@ namespace ESafety.Account.Service
                 return new ActionResult<Pager<DocSolutionView>>(ex);
             }
         }
+
+
     }
 }

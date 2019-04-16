@@ -107,23 +107,29 @@ namespace ESafety.Account.Service
                 return new ActionResult<bool>(ex);
             }
         }
-
+        /// <summary>
+        /// 根据作业ID，删除作业
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult<bool> DelOpreation(Guid id)
         {
             try
             {
-                var dbemployee = _rpsopreation.Any(q => q.ID == id);
-                if (!dbemployee)
+                var dbopreation = _rpsopreation.GetModel(id);
+                if (dbopreation==null)
                 {
                     throw new Exception("该操作不存在!");
                 }
-
                 //作业务检查
-
-                _rpsopreation.Delete(p => p.ID == id);
+                var check = _work.Repository<Bll_OpreationBill>().Any(p => p.OpreationID == dbopreation.ID);
+                if (check)
+                {
+                    throw new Exception("该作业已用于作业申请单据，无法删除!");
+                }
+                _rpsopreation.Delete(dbopreation);
                 //删除自定义项
                 usedefinedService.DeleteBusinessValue(id);
-
 
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -142,12 +148,18 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbemployee =_rpsof.Any(q => q.ID == id);
-                if (!dbemployee)
+                var dbflow = _rpsof.GetModel(q => q.ID == id);
+                if (dbflow==null)
                 {
                     throw new Exception("该操作流程不存在!");
                 }
-               _rpsof.Delete(p => p.ID == id);
+                //作业业务检查
+                var check = _work.Repository<Bll_OpreationBill>().Any(p=>p.OpreationID==dbflow.OpreationID);
+                if (check)
+                {
+                    throw new Exception("该流程已用于作业申请，无法删除!");
+                }
+               _rpsof.Delete(dbflow);
                 _work.Commit();
                 return new ActionResult<bool>(true);
             }

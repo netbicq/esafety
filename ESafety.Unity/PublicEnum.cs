@@ -185,7 +185,7 @@ namespace ESafety.Unity
         public enum EE_InspectTaskType
         {
             /// <summary>
-            /// 同期任务
+            /// 周期任务
             /// </summary>
             [Description("周期任务")]
             Cycle = 1,

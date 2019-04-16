@@ -19,5 +19,15 @@ namespace ESafety.Account.IService
         ActionResult<bool> EditDocInstitution(DocInstitutionEdit institutionEdit);
         ActionResult<DocInstitutionView> GetDocInstitutionModel(Guid id);
         ActionResult<Pager<DocInstitutionView>> GetDocInstitutions(PagerQuery<DocInstitutionQuery> para);
+        /// <summary>
+        /// 移动端获取安全制度列表
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<IEnumerable<PhoneDocInstitutionView>> GetDocInstitutionsList();
+        /// <summary>
+        /// 移动端获取安全制度模型
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<PhoneDocInstitutionModelView> GetDocInstitution(Guid id);
     }
 }

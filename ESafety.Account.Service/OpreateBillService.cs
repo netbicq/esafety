@@ -121,7 +121,7 @@ namespace ESafety.Account.Service
                 var flowtask = base.StartFlow(new BusinessAprovePara
                 {
                     BusinessID = businessmodel.ID,
-                    BusinessType = PublicEnum.EE_BusinessType.InspectTask
+                    BusinessType = PublicEnum.EE_BusinessType.Apply
                 });
                 if (flowtask.state != 200)
                 {
@@ -179,7 +179,7 @@ namespace ESafety.Account.Service
                 var flowcheck = base.BusinessAprove(new BusinessAprovePara
                 {
                     BusinessID = businessid,
-                    BusinessType = PublicEnum.EE_BusinessType.InspectTask
+                    BusinessType = PublicEnum.EE_BusinessType.Apply
                 });
                 if (flowcheck.state != 200)
                 {
@@ -443,13 +443,16 @@ namespace ESafety.Account.Service
                 //节点处理
                 var flows = _work.Repository<Bll_OpreateionBillFlow>().Queryable(q => q.BillID == billmodel.ID).ToList();
 
+                
                 var postids = points.Select(s => s.PostID).ToList();
+
                 var empids = flows.Select(s => s.FlowEmployeeID);
 
-                var emps = _work.Repository<Basic_Employee>().Queryable(q => empids.Contains(q.ID)).ToList();
-                
+                var emps =empids==null?null:_work.Repository<Basic_Employee>().Queryable(q => empids.Contains(q.ID)).ToList();
+
                 //获取当前登录人的岗位ID
-                var cpostid = _work.Repository<Basic_PostEmployees>().GetModel(q=>q.EmployeeID==AppUser.EmployeeInfo.ID).PostID;
+                var cuserpost = _work.Repository<Basic_PostEmployees>().GetModel(q => q.EmployeeID == AppUser.EmployeeInfo.ID);
+                var cpostid = cuserpost == null ?Guid.Empty:cuserpost.PostID;
 
                 var posts = _work.Repository<Basic_Post>().Queryable(q => postids.Contains(q.ID)).ToList();
 
@@ -462,10 +465,10 @@ namespace ESafety.Account.Service
 
                     var nexpoint = points.OrderBy(o => o.PointIndex).FirstOrDefault(q => q.PointIndex > f.PointIndex);
                     var post = posts.FirstOrDefault(q => q.ID == f.PostID);
-                    var flow = flows.FirstOrDefault(q => q.OpreationFlowID == f.ID);
+                   // var flow = flows.FirstOrDefault(q => q.OpreationFlowID == f.ID);
                     var nextids = points.OrderBy(o => o.PointIndex).Where(q => q.PointIndex > f.PointIndex).Select(s => s.ID);
 
-                    var flownew = flows.OrderByDescending(q => q.FlowTime).FirstOrDefault(q => q.OpreationFlowID == f.ID);
+                    //var flownew = flows.OrderByDescending(q => q.FlowTime).FirstOrDefault(q => q.OpreationFlowID == f.ID);
 
                     var rf = new OpreateBillFlow
                     {
@@ -474,10 +477,17 @@ namespace ESafety.Account.Service
                         PointIndex = f.PointIndex,
                         PointName = f.PointName,
                         PostID = f.PostID,
-                        FlowEmployeeID = flow == null ? Guid.Empty : flow.FlowEmployeeID,
-                        FlowEmployeeName = flow == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID) == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID).CNName,
+                        detials=from flow in flows
+                                where flow.OpreationFlowID==f.ID
+                                select new OpreateBillFlowDetials
+                                {
+                                    FlowEmployeeID = flow == null ? Guid.Empty : flow.FlowEmployeeID,
+                                    FlowEmployeeName = flow == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID) == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID).CNName,
+                                    FlowMemo = flow == null ? "" : flow.FlowMemo
+                                },
+                      
                         PostName = post == null ? "" : post.Name,
-                        FlowMemo=flownew==null?"":flownew.FlowMemo
+                  
                         
                     };
                     var uemodel = new OpreateFlowUEModel();
@@ -554,6 +564,127 @@ namespace ESafety.Account.Service
             catch (Exception ex)
             {
                 return new ActionResult<OpreateBillFlowModel>(ex);
+            }
+        }
+
+        /// <summary>
+        /// APP端获取当前人的所有待完成作业申请单
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<OpreateBillByEmp>> GetCurrentList()
+        {
+            try
+            {
+                //当前登录人的岗位
+                var cuserpost = _work.Repository<Basic_PostEmployees>().GetModel(q => q.EmployeeID == AppUser.EmployeeInfo.ID);
+                var cpostid = cuserpost == null ? Guid.Empty : cuserpost.PostID;
+                //获取当前人能做的所有作业
+                var cflows = _work.Repository<Basic_OpreationFlow>().Queryable(p => p.PostID == cpostid);
+                var opids = cflows.Select(s => s.OpreationID).Distinct();
+
+                //获取当前人做的所有作业流程
+                var billflows = rpsBillFlow.Queryable(p => p.FlowEmployeeID == AppUser.EmployeeInfo.ID);
+                var opbillids = billflows.Select(s => s.BillID).Distinct();
+                //当前人做过的节点
+                var flowids = billflows.Select(s => s.OpreationFlowID);
+                var oflows = _work.Repository<Basic_OpreationFlow>().Queryable(p => flowids.Contains(p.ID));
+                //当前人未做的
+                var flows = _work.Repository<Basic_OpreationFlow>().Queryable(p => !flowids.Contains(p.ID));
+
+
+                //已审核单据且是当前人需要做的作业申请
+                var bills = rpsOpreateBill.Queryable(p=>p.State==(int)PublicEnum.BillFlowState.audited&&opids.Contains(p.OpreationID));
+                //需要做的所有作业
+                // var opretions = _work.Repository<Basic_Opreation>().Queryable(q => opids.Contains(q.ID));
+                //所有当前人的作业的所有流程
+                var opflows = _work.Repository<Basic_OpreationFlow>().Queryable(p => opids.Contains(p.OpreationID));
+                //作业申请负责人
+                var emps = _work.Repository<Basic_Employee>().Queryable(q => bills.Select(s => s.PrincipalEmployeeID).Contains(q.ID));
+
+                var re = from bill in bills.ToList()
+                         //let opreation = opretions.FirstOrDefault(q => q.ID == bill.OpreationID)
+                         let emp = emps.FirstOrDefault(q => q.ID == bill.PrincipalEmployeeID)
+                         let oflow=billflows.OrderBy(o=>o.FlowTime).FirstOrDefault(p=>p.BillID==bill.OpreationID)
+                         let flow =flows==null?oflow==null?null:oflows.FirstOrDefault(p=>p.ID==oflow.OpreationFlowID):flows.FirstOrDefault(p => p.OpreationID == bill.OpreationID)
+                         let allcount = opflows.Where(p => p.OpreationID == bill.OpreationID).Count()
+                         select new OpreateBillByEmp
+                         {
+                             OpreateBillID = bill.ID,
+                             OpreateBillName = bill.BillName,
+                             Principal = emp == null ? "" : emp.CNName,
+                             StartTime = bill.StartTime,
+                             EndTime = bill.EndTime,
+                             BillLong = bill.BillLong,
+                             Description = bill.Description,
+                             AllCount=allcount,
+                             CurrentIndex=flow==null?0:flow.PointIndex
+                             
+                         };
+
+                return new ActionResult<IEnumerable<OpreateBillByEmp>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<OpreateBillByEmp>>(ex);
+            }
+           
+        }
+
+        /// <summary>
+        /// APP端获取当前人的所有已完成作业申请单
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<OpreateBillByEmp>> GetOverList()
+        {
+            try
+            {
+                //当前登录人的岗位
+                var cuser =AppUser.EmployeeInfo;
+               
+                //获取当前人做的所有作业流程
+                var billflows = rpsBillFlow.Queryable(p => p.FlowEmployeeID== cuser.ID);
+                var opbillids = billflows.Select(s => s.BillID).Distinct();
+                //当前人做过的节点
+                var flowids = billflows.Select(s => s.OpreationFlowID);
+                var flows = _work.Repository<Basic_OpreationFlow>().Queryable(p=>flowids.Contains(p.ID));
+
+
+                //单据且是当前人需要做的作业申请
+                var bills = rpsOpreateBill.Queryable(p => p.State >= (int)PublicEnum.BillFlowState.stop && opbillids.Contains(p.ID));
+                var opids = bills.Select(s => s.OpreationID);
+                //需要做的所有作业
+                var opretions = _work.Repository<Basic_Opreation>().Queryable(q => opids.Contains(q.ID));
+                //所有当前人的作业的所有流程
+                var opflows = _work.Repository<Basic_OpreationFlow>().Queryable(p=>opids.Contains(p.OpreationID));
+                //作业申请负责人
+                var emps = _work.Repository<Basic_Employee>().Queryable(q => bills.Select(s => s.PrincipalEmployeeID).Contains(q.ID));
+
+                var re = from bill in bills
+                             //let opreation = opretions.FirstOrDefault(q => q.ID == bill.OpreationID)
+                         let emp = emps.FirstOrDefault(q => q.ID == bill.PrincipalEmployeeID)
+                         let cflow = billflows.OrderBy(o => o.FlowTime).FirstOrDefault(p => p.BillID == bill.ID)
+                         let flow = flows.FirstOrDefault(p => p.ID == cflow.OpreationFlowID)
+                         let allcount = opflows.Where(p => p.OpreationID == bill.OpreationID).Count()
+                         select new OpreateBillByEmp
+                         {
+                             OpreateBillID = bill.ID,
+                             OpreateBillName = bill.BillName,
+                             Principal = emp == null ? "" : emp.CNName,
+                             StartTime = bill.StartTime,
+                             EndTime = bill.EndTime,
+                             BillLong = bill.BillLong,
+                             Description = bill.Description,
+                             AllCount = allcount,
+                             CurrentIndex=flow==null?0:flow.PointIndex
+
+                         };
+
+
+                return new ActionResult<IEnumerable<OpreateBillByEmp>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<OpreateBillByEmp>>(ex);
             }
         }
     }

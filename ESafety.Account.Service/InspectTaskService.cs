@@ -29,11 +29,13 @@ namespace ESafety.Account.Service
         private IRepository<Bll_InspectTaskSubject> rpstaskSubject = null;
 
         private Core.IFlow srvFlow = null;
+        private IAttachFile srvfile = null;
 
-        public InspectTaskService(IUnitwork work, Core.IFlow flow) : base(work, flow)
+        public InspectTaskService(IUnitwork work, Core.IFlow flow,IAttachFile file) : base(work, flow)
         {
             _work = work;
             Unitwork = work;
+            srvfile = file;
             rpstask = work.Repository<Bll_InspectTask>();
             rpstaskSubject = work.Repository<Bll_InspectTaskSubject>();
             var s = AppUser;
@@ -41,6 +43,7 @@ namespace ESafety.Account.Service
             var flowser = srvFlow as FlowService;
             flowser.AppUser = AppUser;
             flowser.ACOptions = ACOptions;
+
         }
         /// <summary>
         /// 新建任务
@@ -59,7 +62,7 @@ namespace ESafety.Account.Service
                 var dbtask = task.MAPTO<Bll_InspectTask>();
                 dbtask.State = (int)PublicEnum.BillFlowState.normal;
                 dbtask.Code = Command.CreateCode();
-
+                dbtask.CreateMan = AppUser.EmployeeInfo.CNName;
                 var dbsubjects = from s in task.TaskSubjects
                                  select new Bll_InspectTaskSubject
                                  {
@@ -81,6 +84,9 @@ namespace ESafety.Account.Service
                 return new ActionResult<bool>(ex);
             }
         }
+
+
+
         /// <summary>
         /// 改变任务状态
         /// </summary>
@@ -205,7 +211,7 @@ namespace ESafety.Account.Service
                && (qurey.Query.PostID == q.ExecutePostID || qurey.Query.PostID == Guid.Empty)
                && (qurey.Query.State == q.State || qurey.Query.State == 0)
                && (q.Name.Contains(qurey.Query.Key) || q.TaskDescription.Contains(qurey.Query.Key) || qurey.Query.Key == "")
-               );
+               &&q.TaskType==(int)PublicEnum.EE_InspectTaskType.Cycle);
                 var empids = retemp.Select(s => s.EmployeeID);//职员id
                 var dangids = retemp.Select(s => s.DangerID); //风险点id
                 var postids = retemp.Select(s => s.ExecutePostID);//岗位id
@@ -252,6 +258,67 @@ namespace ESafety.Account.Service
                 return new ActionResult<Pager<InspectTaskView>>(ex);
             }
         }
+
+        /// <summary>
+        /// 获取临时任务列表
+        /// </summary>
+        /// <param name="qurey"></param>
+        /// <returns></returns>
+        public ActionResult<Pager<InspectTempTaskView>> GetTempTasks(PagerQuery<InspectTaskQuery> qurey)
+        {
+            try
+            {
+                var retemp = rpstask.Queryable(q =>
+               (q.DangerID == qurey.Query.DangerID || qurey.Query.DangerID == Guid.Empty)
+               && (qurey.Query.PostID == q.ExecutePostID || qurey.Query.PostID == Guid.Empty)
+               && (qurey.Query.State == q.State || qurey.Query.State == 0)
+               && (q.Name.Contains(qurey.Query.Key) || q.TaskDescription.Contains(qurey.Query.Key) || qurey.Query.Key == "")
+               && q.TaskType == (int)PublicEnum.EE_InspectTaskType.Temp);
+                var empids = retemp.Select(s => s.EmployeeID);//职员id
+                var dangids = retemp.Select(s => s.DangerID); //风险点id
+                var postids = retemp.Select(s => s.ExecutePostID);//岗位id
+
+                var dangers = _work.Repository<Basic_Danger>().Queryable(q => dangids.Contains(q.ID));
+                var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q => empids.Contains(q.ID));
+                var posts = _work.Repository<Basic_Post>().Queryable(q => postids.Contains(q.ID));
+
+                var re = from t in retemp.ToList()
+                         let dange = dangers.FirstOrDefault(q => q.ID == t.DangerID)
+                         let employee = emps.FirstOrDefault(q => q.ID == t.EmployeeID)
+                         let postinfo = posts.FirstOrDefault(q => q.ID == t.ExecutePostID)
+                         select new InspectTempTaskView
+                         {
+                             Code = t.Code,
+                             CreateDate = t.CreateDate,
+                             CreateMan = t.CreateMan,
+                             DangerID = t.DangerID,
+                             DangerName = dange == null ? "" : dange.Name,
+                             Name = t.Name,
+                             ID = t.ID,
+                             EmployeeID = t.EmployeeID.GetValueOrDefault(),
+                             EmployeeName = employee == null ? "" : employee.CNName,
+                             EndTime = t.EndTime,
+                             ExecutePostID = t.ExecutePostID,
+                             ExecutePostName = postinfo == null ? "" : postinfo.Name,
+                             StartTime = t.StartTime,
+                             State = t.State,
+                             StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == t.State).Caption,
+                             TaskDescription = t.TaskDescription,
+                             TaskType = (PublicEnum.EE_InspectTaskType)t.TaskType
+                         };
+
+                var result = new Pager<InspectTempTaskView>().GetCurrentPage(re, qurey.PageSize, qurey.PageIndex);
+
+                return new ActionResult<Pager<InspectTempTaskView>>(result);
+
+
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<Pager<InspectTempTaskView>>(ex);
+            }
+        }
+
         /// <summary>
         /// 获取任务明细主体
         /// </summary>
@@ -320,7 +387,7 @@ namespace ESafety.Account.Service
                 var flowcheck = base.BusinessAprove(new BusinessAprovePara
                 {
                     BusinessID = businessid,
-                    BusinessType = PublicEnum.EE_BusinessType.InspectTask
+                    BusinessType =businessmodel.TaskType==(int)PublicEnum.EE_InspectTaskType.Cycle?PublicEnum.EE_BusinessType.InspectTask:PublicEnum.EE_BusinessType.TempTask
                 });
                 if (flowcheck.state != 200)
                 {
@@ -361,11 +428,11 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("状态不支持");
                 }
-                
+
                 var flowtask = base.StartFlow(new BusinessAprovePara
                 {
                     BusinessID = businessmodel.ID,
-                    BusinessType = PublicEnum.EE_BusinessType.InspectTask
+                    BusinessType = businessmodel.TaskType == (int)PublicEnum.EE_InspectTaskType.Cycle ? PublicEnum.EE_BusinessType.InspectTask : PublicEnum.EE_BusinessType.TempTask
                 });
                 if (flowtask.state != 200)
                 {
@@ -490,7 +557,10 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("还未配置该用户!");
                 }
-                var tasks = rpstask.Queryable(q =>( q.EmployeeID ==user.ID||postids.Contains(q.ExecutePostID))&&q.State== (int)PublicEnum.BillFlowState.audited).ToList();
+                var tasks = rpstask.Queryable(q =>( q.EmployeeID ==user.ID||postids.Contains(q.ExecutePostID))
+                                                   &&q.State== (int)PublicEnum.BillFlowState.audited
+                                                   &&q.TaskType==(int)PublicEnum.EE_InspectTaskType.Cycle
+                                                   ).ToList();
 
                 //风险点
                 var dangerids = tasks.Select(s => s.DangerID).ToList();
@@ -514,7 +584,7 @@ namespace ESafety.Account.Service
                          : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Day ? t.CycleValue * 24 * 60
                          : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Houre ? t.CycleValue * 60
                          : t.CycleValue
-                         let billsub= billsubjects.FirstOrDefault(q => q.BillID == bill.ID)
+                         let billsub=bill==null?null: billsubjects.FirstOrDefault(q => q.BillID == bill.ID)
                          where bill==null|| billsub == null||(billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime)-DateTime.Now).TotalMinutes<date
                          select new InsepctTaskByEmployee
                          {
@@ -530,8 +600,8 @@ namespace ESafety.Account.Service
                              LastTime= billsub == null?"":billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime).ToString(),
                              TimeOutHours= 0,
                              CycleDateType=t.CycleDateType,
-                             CycleValue=t.CycleValue
-
+                             CycleValue=t.CycleValue,
+                             CycleName = Command.GetItems(typeof(PublicEnum.EE_CycleDateType)).FirstOrDefault(p => p.Value == t.CycleDateType).Caption,
                          };
 
                 return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(re);
@@ -557,7 +627,10 @@ namespace ESafety.Account.Service
                 var userpost = _work.Repository<Basic_PostEmployees>().Queryable(p => p.EmployeeID == user.ID);
                 var postids = userpost.Select(s => s.PostID);
 
-                var tasks = rpstask.Queryable(q => (q.EmployeeID == user.ID||postids.Contains(q.ExecutePostID)) && q.State == (int)PublicEnum.BillFlowState.audited).ToList();
+                var tasks = rpstask.Queryable(q => (q.EmployeeID == user.ID||postids.Contains(q.ExecutePostID))
+                                                   && q.State == (int)PublicEnum.BillFlowState.audited
+                                                   && q.State==(int)PublicEnum.EE_InspectTaskType.Cycle
+                                                   ).ToList();
 
                 //风险点
                 var dangerids = tasks.Select(s => s.DangerID);
@@ -581,7 +654,7 @@ namespace ESafety.Account.Service
                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Day ? t.CycleValue * 24 * 60
                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Houre ? t.CycleValue * 60
                         : t.CycleValue
-                         let billsub = billsubjects.FirstOrDefault(q => q.BillID == bill.ID)
+                         let billsub = bill == null ? null : billsubjects.FirstOrDefault(q => q.BillID == bill.ID)
                          where bill != null && billsub !=null&& (billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime) - DateTime.Now).TotalMinutes > date
                          select new InsepctTaskByEmployee
                          {
@@ -595,8 +668,10 @@ namespace ESafety.Account.Service
                              TaskDescription = t.TaskDescription,
                              //最后时间和超时时间
                              LastTime = billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime).ToString(),
-                             TimeOutHours = (int)(billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime) - DateTime.Now).TotalMinutes
-
+                             TimeOutHours = (int)(billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime) - DateTime.Now).TotalMinutes,
+                             CycleDateType = t.CycleDateType,
+                             CycleValue = t.CycleValue,
+                             CycleName=Command.GetItems(typeof(PublicEnum.EE_CycleDateType)).FirstOrDefault(p=>p.Value==t.CycleDateType).Caption
                          };
 
                 return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(re);
@@ -605,6 +680,263 @@ namespace ESafety.Account.Service
             {
                 return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(ex);
             }
+        }
+
+        /// <summary>
+        /// 获取当前用户超时任务列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<InsepctTempTaskByEmployee>> GetTempTaskListByEmployee()
+        {
+            try
+            {
+                var user = AppUser.EmployeeInfo;
+                var userpost = _work.Repository<Basic_PostEmployees>().Queryable(p => p.EmployeeID == user.ID);
+                var postids = userpost.Select(s => s.PostID);
+
+                if (user == null)
+                {
+                    throw new Exception("还未配置该用户!");
+                }
+                var tasks = rpstask.Queryable(q => (q.EmployeeID == user.ID || postids.Contains(q.ExecutePostID))
+                                                   && q.State == (int)PublicEnum.BillFlowState.audited
+                                                   && q.TaskType == (int)PublicEnum.EE_InspectTaskType.Temp
+                                                   && q.EndTime >DateTime.Now
+                                                   ).ToList();
+
+                //风险点
+                var dangerids = tasks.Select(s => s.DangerID).ToList();
+                var dangers = _work.Repository<Basic_Danger>().Queryable(q => dangerids.Contains(q.ID)).ToList();
+                var re = from t in tasks
+                         let danger = dangers.FirstOrDefault(q => q.ID == t.DangerID)
+                         select new InsepctTempTaskByEmployee
+                         {
+                             TaskID = t.ID,
+                             DangerID = t.DangerID,
+                             DangerName = danger.Name,
+                             Name = t.Name,
+                             TaskTypeID = (PublicEnum.EE_InspectTaskType)t.TaskType,
+                             TaskTypeName = Command.GetItems(typeof(PublicEnum.EE_InspectTaskType)).FirstOrDefault(p => p.Value == t.TaskType).Caption,
+                             TaskDescription = t.TaskDescription,
+                             StartTime=t.StartTime,
+                             EndTime=t.EndTime
+                         };
+
+                return new ActionResult<IEnumerable<InsepctTempTaskByEmployee>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<InsepctTempTaskByEmployee>>(ex);
+            }
+        }
+        /// <summary>
+        /// 分配任务执行岗位与人员
+        /// </summary>
+        /// <param name="emp"></param>
+        /// <returns></returns>
+        public ActionResult<bool> AllotTempTaskEmp(AllotTempTaskEmp emp)
+        {
+            try
+            {
+                if (emp.EmpID == null)
+                {
+                    throw new Exception("必须分配岗位与执行人");
+                }
+                var task = rpstask.GetModel(emp.TempTaskID);
+                if (task == null)
+                {
+                    throw new Exception("未找到该任务!");
+                }
+                if (task.State != (int)PublicEnum.BillFlowState.audited)
+                {
+                    throw new Exception("单据状态不允许!");
+                }
+                task.EmployeeID = emp.EmpID;
+                task.ExecutePostID = emp.PostID;
+
+                Bll_TaskBill taskBill = new Bll_TaskBill
+                {
+                    BillCode = Command.CreateCode(),
+                    DangerID = task.DangerID,
+                    PostID = emp.PostID,
+                    EmployeeID = emp.EmpID,
+                    TaskID = emp.TempTaskID,
+                    StartTime = DateTime.Now,
+                    State = (int)PublicEnum.BillFlowState.wait,
+                    EndTime = task.EndTime,
+                    ID = Guid.NewGuid()
+                };
+
+                rpstask.Update(task);
+                _work.Repository<Bll_TaskBill>().Add(taskBill);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+        /// <summary>
+        /// 移动端新建临时任务
+        /// </summary>
+        /// <param name="temptask"></param>
+        /// <returns></returns>
+        public ActionResult<bool> AddTempTask(AddTempTask temptask)
+        {
+            try
+            {
+                if (temptask == null)
+                {
+                    throw new Exception("参数有误");
+                }
+                var dbtask = temptask.MAPTO<Bll_InspectTask>();
+                dbtask.State = (int)PublicEnum.BillFlowState.normal;
+                dbtask.Code = Command.CreateCode();
+                dbtask.CreateMan = AppUser.EmployeeInfo.CNName;
+                dbtask.TaskType = (int)PublicEnum.EE_InspectTaskType.Temp;
+
+                var dbsubjects = from s in temptask.TaskSubjects
+                                 select new Bll_InspectTaskSubject
+                                 {
+                                     ID = Guid.NewGuid(),
+                                     InspectTaskID = dbtask.ID,
+                                     SubjectID = s.SubjectID,
+                                     SubjectType = (int)s.SubjectType
+                                 };
+                //电子文档
+                var files = new AttachFileSave
+                {
+                    BusinessID = dbtask.ID,
+                    files = from f in temptask.AttachFiles
+                            select new AttachFileNew
+                            {
+                                FileTitle = f.FileTitle,
+                                FileType = f.FileType,
+                                FileUrl = f.FileUrl
+                            }
+                };
+
+                var fre = srvfile.SaveFiles(files);
+                if (fre.state != 200)
+                {
+                    throw new Exception(fre.msg);
+                }
+
+
+                rpstask.Add(dbtask);
+                rpstaskSubject.Add(dbsubjects);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+            
+        }
+        /// <summary>
+        /// 获取临时选择器
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<TempTaskSelector> GetTempTaskSelector()
+        {
+            try
+            {
+                var dgs = _work.Repository<Basic_Danger>().Queryable();
+                var dangers = from dg in dgs
+                              select new Danger
+                              {
+                                  DangerID = dg.ID,
+                                  DangerName = dg.Name
+                              };
+                var posts = _work.Repository<Basic_Post>().Queryable();
+                var exposts = from p in posts
+                              select new Post
+                              {
+                                  PostID = p.ID,
+                                  PostName = p.Name
+                              };
+
+
+
+                var devices = _work.Repository<Basic_Facilities>().Queryable();
+                var sorts = _work.Repository<Basic_FacilitiesSort>().Queryable();
+
+                var opreats = _work.Repository<Basic_Opreation>().Queryable();
+
+                var subtypes = Command.GetItems(typeof(PublicEnum.EE_SubjectType));
+
+                List<Sub> subs = new List<Sub>();
+                foreach (var item in subtypes)
+                {
+                    Sub sub = new Sub();
+                    sub.SubTypeName = item.Caption;
+                    dynamic type = null;
+                    if (item.Value ==(int)PublicEnum.EE_SubjectType.Device)
+                    {
+                        type = from sort in sorts
+                                select new EntityType
+                                {
+                                    EntityTypeName=sort.SortName,
+                                    Entities=from dev in devices
+                                             where dev.SortID==sort.ID
+                                             select new Entity
+                                             {
+                                                 SubjectID=dev.ID,
+                                                 SubName=dev.Name,
+                                             } 
+
+                                };
+                    }
+                    else if(item.Value == (int)PublicEnum.EE_SubjectType.Opreate)
+                    {
+                        type = new List<EntityType>();
+                        var ent = new EntityType();
+                        ent.EntityTypeName = "";
+                        ent.Entities = from op in opreats
+                                        select new Entity
+                                        {
+                                            SubjectID = op.ID,
+                                            SubName = op.Name
+                                        };
+                        type.Add(ent);
+
+                    }
+                    else if (item.Value == (int)PublicEnum.EE_SubjectType.Post)
+                    {
+                        type = new List<EntityType>();
+                        var ent = new EntityType();
+                        ent.EntityTypeName = "";
+                        ent.Entities = from op in posts
+                                        select new Entity
+                                        {
+                                            SubjectID = op.ID,
+                                            SubName = op.Name
+                                        };
+                        type.Add(ent);
+                    }
+
+
+                    sub.Subjects = type;
+                    subs.Add(sub);
+ 
+                }
+
+
+                var re = new TempTaskSelector
+                {
+                    Dangers = dangers,
+                    Posts=exposts,
+                    Subs=subs
+                };
+                return new ActionResult<TempTaskSelector>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<TempTaskSelector>(ex);
+            }
+            throw new NotImplementedException();
         }
     }
 }

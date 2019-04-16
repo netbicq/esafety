@@ -180,17 +180,22 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var SafetyStandardIds = _rpsdssd.Queryable(p => p.DangerID == dangerid);
-                var re = from s in SafetyStandardIds.ToList()
-                         let o = _rpssafetystandard.GetModel(s.SafetyStandardID)
+                var SafetyStandardIds = _rpsdssd.Queryable(p => p.DangerID == dangerid).Select(s=>s.SafetyStandardID);
+                var ss = _rpssafetystandard.Queryable(p => SafetyStandardIds.Contains(p.ID));
+                var danger = _work.Repository<Basic_Danger>().GetModel(dangerid);
+                var ds = _rpsdangersort.GetModel(p => p.ID == danger.DangerSortID);
+          
+                var re = from o in ss
                          select new SafetyStandardView
                          {
                              ID = o.ID,
                              Code = o.Code,
                              Controls = o.Controls,
-                             DangerSort = _rpsdangersort.GetModel(o.DangerSortID).SortName,
+                             DangerSort = ds.SortName,
                              DangerSortID = o.DangerSortID,
-                             Name = o.Name
+                             Name = o.Name,
+                             DangerName=danger.Name
+
                          };
                 return new ActionResult<IEnumerable<SafetyStandardView>>(re);
             }

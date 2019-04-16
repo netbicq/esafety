@@ -37,5 +37,6 @@ namespace ESafety.Core.Model.DB.Account
         /// ¿‡–Õ
         /// </summary>
         public int FlowType { get; set; }
+
     }
 }

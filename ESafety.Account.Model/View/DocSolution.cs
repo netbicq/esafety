@@ -37,4 +37,38 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string DangerLevelName { get; set; }
     }
+
+    public class PhoneDocSolutionView
+    {
+        /// <summary>
+        /// 预案ID
+        /// </summary>
+        public Guid DocSolutionID { get; set; }
+        /// <summary>
+        /// 预案名称
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// 预案类型
+        /// </summary>
+        public string SolutionType { get; set; }
+        /// <summary>
+        /// 发布日期
+        /// </summary>
+        public DateTime IssueDate { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public string DangerLevel { get; set; }
+
+    }
+
+    public class PhoneDocSolutionModelView:PhoneDocSolutionView
+    {
+        /// <summary>
+        /// 预案内容
+        /// </summary>
+        public string Content { get; set; }
+  
+    }
 }

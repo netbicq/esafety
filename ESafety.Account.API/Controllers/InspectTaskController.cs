@@ -120,7 +120,17 @@ namespace ESafety.Account.API.Controllers
             return bll.GetTasks(qurey);
 
         }
-
+        /// <summary>
+        /// 获取临时任务列表
+        /// </summary>
+        /// <param name="qurey"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("gettemptasks")]
+        public ActionResult<Pager<InspectTempTaskView>> GetTempTasks(PagerQuery<InspectTaskQuery> qurey)
+        {
+            return bll.GetTempTasks(qurey);
+        }
         /// <summary>
         /// 根据巡检任务id获取任务主体明细集合
         /// </summary>
@@ -144,6 +154,18 @@ namespace ESafety.Account.API.Controllers
         {
             LogContent = "发起审批，业务id:" + taskid.ToString();
             return bll.StartBillFlow(taskid);
+        }
+        /// <summary>
+        /// 为临时任务分配执行人员
+        /// </summary>
+        /// <param name="emp"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("allottempemp")]
+        public ActionResult<bool> AllotTempTaskEmp(AllotTempTaskEmp emp)
+        {
+            LogContent = "为临时任务分配了执行人员，参数源:" + JsonConvert.SerializeObject(emp);
+            return bll.AllotTempTaskEmp(emp);
         }
     }
 }

@@ -125,6 +125,19 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public int PointIndex { get; set; }
         /// <summary>
+        /// 节点交互模型
+        /// </summary>
+        public OpreateFlowUEModel FlowUEModel { get; set; }
+        /// <summary>
+        /// 流程详情
+        /// </summary>
+        public IEnumerable<OpreateBillFlowDetials> detials { set; get; }
+
+    }
+
+    public class OpreateBillFlowDetials
+    {
+        /// <summary>
         /// 执行人ID        /// 
         /// </summary>
         public Guid FlowEmployeeID { get; set; }
@@ -133,14 +146,12 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string FlowEmployeeName { get; set; }
         /// <summary>
-        /// 节点交互模型
-        /// </summary>
-        public OpreateFlowUEModel FlowUEModel { get; set; }
-        /// <summary>
         /// 流程描述
         /// </summary>
         public string FlowMemo { get; set; }
     }
+
+
     /// <summary>
     /// 作业申请单流程节点
     /// </summary>

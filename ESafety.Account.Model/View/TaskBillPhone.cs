@@ -50,11 +50,19 @@ namespace ESafety.Account.Model.View
         /// 已检查主体数
         /// </summary>
         public int SubCheckedCount { get; set; }
+        /// <summary>
+        /// 任务类型
+        /// </summary>
+        public PublicEnum.EE_InspectTaskType TaskType { set; get; }
 
     }
 
     public class TaskSubjectView
     {
+        /// <summary>
+        /// 主键
+        /// </summary>
+        public Guid KeyID { get; set; }
         /// <summary>
         /// 单据ID
         /// </summary>
@@ -110,4 +118,52 @@ namespace ESafety.Account.Model.View
         public string TaskResultMemo { get; set; }
     }
 
+    public class DownloadData : TaskBillModel
+    {
+        /// <summary>
+        /// 待检测主体集合
+        /// </summary>
+        public IEnumerable<TaskSubjectView> CheckSubs{ get; set; }
+    }
+
+
+    public class OpreateBillByEmp
+    {
+        /// <summary>
+        /// 作业ID
+        /// </summary>
+        public Guid OpreateBillID { get; set; }
+        /// <summary>
+        /// 作业名称
+        /// </summary>
+        public string OpreateBillName { get; set; }
+        /// <summary>
+        /// 开始时间
+        /// </summary>
+        public DateTime StartTime { get; set; }
+        /// <summary>
+        /// 结束时间
+        /// </summary>
+        public DateTime EndTime { get; set; }
+        /// <summary>
+        /// 负责人
+        /// </summary>
+        public string Principal { get; set; }
+        /// <summary>
+        /// 作业时长
+        /// </summary>
+        public int BillLong { get; set; }
+        /// <summary>
+        /// 作业描述
+        /// </summary>
+        public string Description { get; set; }
+        /// <summary>
+        /// 当前节点位置
+        /// </summary>
+        public int CurrentIndex { get; set; }
+        /// <summary>
+        /// 总小标数
+        /// </summary>
+        public int AllCount { get; set; }
+    }
 }
