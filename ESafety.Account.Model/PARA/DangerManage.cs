@@ -63,6 +63,10 @@ namespace ESafety.Account.Model.PARA
     /// </summary>
     public class DangerSortTree : TreeBase<ModelBaseTree>
     {
+        public DangerSortTree()
+        {
+            Children = new List<ModelBaseTree>();
+        }
         /// <summary>
         /// 级次
         /// </summary>

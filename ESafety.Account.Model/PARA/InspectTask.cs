@@ -129,7 +129,7 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 状态
         /// </summary>
-        public int State { get; set; }
+        public int? State { get; set; }
         /// <summary>
         /// 岗位id
         /// </summary>

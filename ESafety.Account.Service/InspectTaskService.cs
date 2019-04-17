@@ -209,7 +209,7 @@ namespace ESafety.Account.Service
                 var retemp = rpstask.Queryable(q =>
                (q.DangerID == qurey.Query.DangerID || qurey.Query.DangerID == Guid.Empty)
                && (qurey.Query.PostID == q.ExecutePostID || qurey.Query.PostID == Guid.Empty)
-               && (qurey.Query.State == q.State || qurey.Query.State == 0)
+               && (qurey.Query.State.HasValue==false?true:qurey.Query.State==q.State)
                && (q.Name.Contains(qurey.Query.Key) || q.TaskDescription.Contains(qurey.Query.Key) || qurey.Query.Key == "")
                &&q.TaskType==(int)PublicEnum.EE_InspectTaskType.Cycle);
                 var empids = retemp.Select(s => s.EmployeeID);//职员id
