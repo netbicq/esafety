@@ -244,7 +244,7 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public IEnumerable<Post> Posts { get; set; }
         /// <summary>
-        /// 主体集合
+        /// 主体明细集合
         /// </summary>
         public IEnumerable<Sub> Subs { get; set; }
     }
@@ -277,23 +277,37 @@ namespace ESafety.Account.Model.View
 
     public class Sub
     {
-
+        /// <summary>
+        /// 主体类型
+        /// </summary>
         public string SubTypeName { get; set; }
-
+        /// <summary>
+        /// 包含主体类别的主体集合
+        /// </summary>
         public IEnumerable<EntityType> Subjects { get; set; }
     }
 
     public class EntityType
     {
+        /// <summary>
+        /// 主体类别
+        /// </summary>
         public string EntityTypeName { get; set; }
-
+        /// <summary>
+        /// 主体集合
+        /// </summary>
         public IEnumerable<Entity> Entities {get;set;}
     }
 
     public class Entity
     {
+        /// <summary>
+        /// 主体ID
+        /// </summary>
         public Guid SubjectID { get; set; }
-
+        /// <summary>
+        /// 主体名
+        /// </summary>
         public string SubName { set; get; }
     }
 

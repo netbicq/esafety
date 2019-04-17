@@ -871,13 +871,14 @@ namespace ESafety.Account.Service
                 foreach (var item in subtypes)
                 {
                     Sub sub = new Sub();
-                    sub.SubTypeName = item.Caption;
                     dynamic type = null;
                     if (item.Value ==(int)PublicEnum.EE_SubjectType.Device)
                     {
+                        //设备设施，此类别下有设备的才要
                         type = from sort in sorts
-                                select new EntityType
-                                {
+                               where devices.Any(p=>p.SortID==sort.ID)==true
+                               select new EntityType
+                               {
                                     EntityTypeName=sort.SortName,
                                     Entities=from dev in devices
                                              where dev.SortID==sort.ID
@@ -888,9 +889,14 @@ namespace ESafety.Account.Service
                                              } 
 
                                 };
+                        if (type!=null)
+                        {
+                            sub.SubTypeName = item.Caption;
+                        }
                     }
                     else if(item.Value == (int)PublicEnum.EE_SubjectType.Opreate)
                     {
+                        //操作流程
                         type = new List<EntityType>();
                         var ent = new EntityType();
                         ent.EntityTypeName = "";
@@ -900,11 +906,16 @@ namespace ESafety.Account.Service
                                             SubjectID = op.ID,
                                             SubName = op.Name
                                         };
-                        type.Add(ent);
+                        if (ent.Entities.Count() > 0)
+                        {
+                            type.Add(ent);//有具体的流程才添加
+                            sub.SubTypeName = item.Caption;
+                        }
 
                     }
                     else if (item.Value == (int)PublicEnum.EE_SubjectType.Post)
                     {
+                        //岗位
                         type = new List<EntityType>();
                         var ent = new EntityType();
                         ent.EntityTypeName = "";
@@ -914,9 +925,13 @@ namespace ESafety.Account.Service
                                             SubjectID = op.ID,
                                             SubName = op.Name
                                         };
-                        type.Add(ent);
+                        if (ent.Entities.Count()>0)
+                        {
+                            type.Add(ent);//有具体岗位才添加
+                            sub.SubTypeName = item.Caption;
+                        }
+                        
                     }
-
 
                     sub.Subjects = type;
                     subs.Add(sub);
