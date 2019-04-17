@@ -228,7 +228,6 @@ namespace ESafety.Core
 
 
                             //审批的最后节点，直接实例化，不使用注入
-
                             
                             var bservice = new FlowBusinessService(Unitwork, this);
                             bservice.AppUser = AppUser;
