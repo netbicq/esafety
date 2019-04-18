@@ -70,10 +70,7 @@ namespace ESafety.Account.Model.View
 
     public class TaskBillModelView: TaskSubjectBillView
     {
-        /// <summary>
-        /// 主体名
-        /// </summary>
-        public string SubName { get; set; }
+
         /// <summary>
         /// 能否处理
         /// </summary>
@@ -94,6 +91,12 @@ namespace ESafety.Account.Model.View
         /// 主体类型
         /// </summary>
         public int SubjectType { get; set; }
+
+        /// <summary>
+        /// 主体名
+        /// </summary>
+        public string SubName { get; set; }
+
         /// <summary>
         /// 主体id
         /// </summary>
