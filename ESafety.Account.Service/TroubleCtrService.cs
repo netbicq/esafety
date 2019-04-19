@@ -66,6 +66,7 @@ namespace ESafety.Account.Service
                 var dbtc = ctrNew.MAPTO<Bll_TroubleControl>();
                 dbtc.Code = Command.CreateCode();
                 dbtc.State = (int)PublicEnum.EE_TroubleState.pending;
+                dbtc.CreateDate = DateTime.Now;
                 var dbtcd = (from d in ctrNew.BillSubjectsIDs
                              select new Bll_TroubleControlDetails
                              {
@@ -129,6 +130,7 @@ namespace ESafety.Account.Service
                 }
                 if (dbtask.State == (int)PublicEnum.EE_TroubleState.history)
                 {
+                    //状态有待协商
                     throw new Exception("当前状态不允许");
                 }
                 if (dbtask.State == (int)state.State)

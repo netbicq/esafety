@@ -78,6 +78,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到提交的单据的具体详情");
                 }
+                //当前单据若是已经有管控项则不能处理
                 var check = _work.Repository<Bll_TroubleControlDetails>().Any(p => p.BillSubjectsID == dbtbs.BillID);
                 if (check)
                 {
@@ -142,7 +143,7 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbtb = _rpstb.Queryable(q => (q.PostID == para.Query.PostID || para.Query.PostID == Guid.Empty) && (q.State == para.Query.TaskState || para.Query.TaskState == 1) && (q.BillCode.Contains(para.Query.Key) || q.BillCode == string.Empty)).ToList();
+                var dbtb = _rpstb.Queryable(q => (q.PostID == para.Query.PostID || para.Query.PostID == Guid.Empty) && (para.Query.TaskState.HasValue==false?true:q.State==para.Query.TaskState.Value)).ToList();
                 var tbid = dbtb.Select(s => s.ID);
 
                 var popstid = dbtb.Select(s => s.PostID).ToList();
@@ -163,6 +164,7 @@ namespace ESafety.Account.Service
                           let ts = dbts.FirstOrDefault(p => p.ID == s.TaskID)
                           let tbs = dbtbs.Where(p => p.BillID == s.ID).ToList()
                           let post = posts.FirstOrDefault(p => p.ID == s.PostID)
+                          where s.BillCode.Contains(para.Query.Key)||ts.Name.Contains(para.Query.Key)||para.Query.Key==string.Empty
                           select new TaskBillView
                           {
                               ID = s.ID,
