@@ -64,16 +64,17 @@ namespace ESafety.Account.Model.View
         /// 任务结果
         /// </summary>
         public string TaskResult { get; set; }
+        /// <summary>
+        /// 任务结果值
+        /// </summary>
+        public int TaskResultValue { get; set; }
 
 
     }
 
     public class TaskBillModelView: TaskSubjectBillView
     {
-        /// <summary>
-        /// 主体名
-        /// </summary>
-        public string SubName { get; set; }
+
         /// <summary>
         /// 能否处理
         /// </summary>
@@ -94,6 +95,12 @@ namespace ESafety.Account.Model.View
         /// 主体类型
         /// </summary>
         public int SubjectType { get; set; }
+
+        /// <summary>
+        /// 主体名
+        /// </summary>
+        public string SubName { get; set; }
+
         /// <summary>
         /// 主体id
         /// </summary>

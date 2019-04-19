@@ -42,10 +42,6 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public int TroubleLevel { get; set; }
         /// <summary>
-        /// 发现日期
-        /// </summary>
-        public DateTime CreateDate { get; set; }
-        /// <summary>
         /// 隐患控制明细
         /// </summary>
         public IEnumerable<Guid> BillSubjectsIDs { get; set; }

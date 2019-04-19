@@ -13,7 +13,7 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 任务状态
         /// </summary>
-        public int TaskState { get; set; }
+        public int? TaskState { get; set; }
         /// <summary>
         /// 执行岗位
         /// </summary>

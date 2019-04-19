@@ -121,6 +121,10 @@ namespace ESafety.Account.Model.View
     public class DownloadData : TaskBillModel
     {
         /// <summary>
+        /// 超时任务个数
+        /// </summary>
+        public int OverTimeTaskCount { get; set; }
+        /// <summary>
         /// 待检测主体集合
         /// </summary>
         public IEnumerable<TaskSubjectView> CheckSubs{ get; set; }

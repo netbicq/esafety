@@ -70,6 +70,10 @@ namespace ESafety.Account.Model.View
     /// </summary>
     public class FacilitiesSortTree : TreeBase<ModelBaseTree>
     {
+        public FacilitiesSortTree()
+        {
+            Children = new List<ModelBaseTree>();
+        }
         /// <summary>
         /// 级次
         /// </summary>

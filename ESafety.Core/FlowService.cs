@@ -442,6 +442,8 @@ namespace ESafety.Core
                 var dbresult = new Model.DB.Flow_Result()
                 {
                     ID = Guid.NewGuid(),
+                    BusinessCode=dbtask.BusinessCode,
+                    BusinessDate=DateTime.Now,
                     ApplyUser = AppUser.UserInfo.Login,
                     BusinessID = recall.BusinessID,
                     BusinessType = dbtask.BusinessType,

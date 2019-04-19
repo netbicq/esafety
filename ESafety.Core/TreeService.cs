@@ -94,8 +94,8 @@ namespace ESafety.Core
             List<T> re = new List<T>();
             var rps = _work.Repository<B>();
 
-            var orgall = from org in rps.Queryable(q => q.ParentID  == id)
-                         select org;
+            var orgall = (from org in rps.Queryable(q => q.ParentID  == id)
+                         select org);
 
             foreach (var org in orgall)
             {

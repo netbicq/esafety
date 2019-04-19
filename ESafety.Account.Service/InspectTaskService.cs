@@ -209,7 +209,7 @@ namespace ESafety.Account.Service
                 var retemp = rpstask.Queryable(q =>
                (q.DangerID == qurey.Query.DangerID || qurey.Query.DangerID == Guid.Empty)
                && (qurey.Query.PostID == q.ExecutePostID || qurey.Query.PostID == Guid.Empty)
-               && (qurey.Query.State == q.State || qurey.Query.State == 0)
+               && (qurey.Query.State.HasValue==false?true:qurey.Query.State==q.State)
                && (q.Name.Contains(qurey.Query.Key) || q.TaskDescription.Contains(qurey.Query.Key) || qurey.Query.Key == "")
                &&q.TaskType==(int)PublicEnum.EE_InspectTaskType.Cycle);
                 var empids = retemp.Select(s => s.EmployeeID);//职员id
@@ -574,35 +574,37 @@ namespace ESafety.Account.Service
                 var billids = bills.Select(s => s.ID);
                 var billsubjects = _work.Repository<Bll_TaskBillSubjects>().Queryable(q=>billids.Contains(q.BillID)).ToList();
 
-           
                 var re = from t in tasks
-                         let danger = dangers.FirstOrDefault(q => q.ID== t.DangerID)
-                         let bill=bills.FirstOrDefault(q=>q.TaskID==t.ID)
-                         let date=t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Year?t.CycleValue*365*24*60
-                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Month ?t.CycleValue*30*24*60
-                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Week ? t.CycleValue * 7 * 24 * 60
-                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Day ? t.CycleValue * 24 * 60
-                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Houre ? t.CycleValue * 60
-                         : t.CycleValue
-                         let billsub=bill==null?null: billsubjects.FirstOrDefault(q => q.BillID == bill.ID)
-                         where bill==null|| billsub == null||(billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime)-DateTime.Now).TotalMinutes<date
+                         let danger = dangers.FirstOrDefault(q => q.ID == t.DangerID)
+                         let tbills = bills.Where(q => q.TaskID == t.ID)
+                        // let bill = tbills == null ? null : tbills.OrderByDescending(o => o.StartTime).FirstOrDefault()
+                         let date = t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Year ? t.CycleValue * 365 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Month ? t.CycleValue * 30 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Week ? t.CycleValue * 7 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Day ? t.CycleValue * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Houre ? t.CycleValue * 60
+                        : t.CycleValue
+                         let billsub = tbills == null ? null : billsubjects.OrderByDescending(o => o.TaskTime).FirstOrDefault(q => tbills.Select(s => s.ID).Contains(q.BillID))
+                         let ctime = tbills == null ? (DateTime.Now - t.StartTime).TotalMinutes : billsub == null ? (DateTime.Now - t.StartTime).TotalMinutes : (DateTime.Now-billsub.TaskTime).TotalMinutes
+                         where ctime < date
                          select new InsepctTaskByEmployee
                          {
-                             
+
                              TaskID = t.ID,
                              DangerID = t.DangerID,
                              DangerName = danger.Name,
                              Name = t.Name,
                              TaskTypeID = (PublicEnum.EE_InspectTaskType)t.TaskType,
                              TaskTypeName = Command.GetItems(typeof(PublicEnum.EE_InspectTaskType)).FirstOrDefault(p => p.Value == t.TaskType).Caption,
-                             TaskDescription=t.TaskDescription,
+                             TaskDescription = t.TaskDescription,
                              //最后时间和超时时间
-                             LastTime= billsub == null?"":billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime).ToString(),
-                             TimeOutHours= 0,
-                             CycleDateType=t.CycleDateType,
-                             CycleValue=t.CycleValue,
-                             CycleName = Command.GetItems(typeof(PublicEnum.EE_CycleDateType)).FirstOrDefault(p => p.Value == t.CycleDateType).Caption,
+                             LastTime = billsubjects.OrderByDescending(o => o.TaskTime).FirstOrDefault(q => tbills.Select(s => s.ID).Contains(q.BillID)).TaskTime.ToString(),
+                             TimeOutHours = 0,
+                             CycleDateType = t.CycleDateType,
+                             CycleValue = t.CycleValue,
+                             CycleName = Command.GetItems(typeof(PublicEnum.EE_CycleDateType)).FirstOrDefault(p => p.Value == t.CycleDateType).Caption
                          };
+
 
                 return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(re);
             }
@@ -617,6 +619,12 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<IEnumerable<InsepctTaskByEmployee>> GetTaskListByTimeOut()
         {
+            /*
+             *超时计算，任务的所有单据，
+             * 根据单据获取任务的所有检查明细
+             * 如果没有检查详情，则超时时长=当前时间-任务创建时间-执行频率换算的时长
+             * 如果有检查详情，则超时时长=当前时间-最后检查的时间-执行频率换算的时长
+             */
             try
             {
                 var user = AppUser.EmployeeInfo;
@@ -629,7 +637,7 @@ namespace ESafety.Account.Service
 
                 var tasks = rpstask.Queryable(q => (q.EmployeeID == user.ID||postids.Contains(q.ExecutePostID))
                                                    && q.State == (int)PublicEnum.BillFlowState.audited
-                                                   && q.State==(int)PublicEnum.EE_InspectTaskType.Cycle
+                                                   && q.TaskType==(int)PublicEnum.EE_InspectTaskType.Cycle
                                                    ).ToList();
 
                 //风险点
@@ -647,15 +655,17 @@ namespace ESafety.Account.Service
 
                 var re = from t in tasks
                          let danger = dangers.FirstOrDefault(q => q.ID == t.DangerID)
-                         let bill = bills.FirstOrDefault(q => q.TaskID == t.ID)
+                         let tbills = bills.Where(q => q.TaskID == t.ID)
+                         //let bill=tbills==null?null:tbills.OrderByDescending(o=>o.StartTime).FirstOrDefault()
                          let date = t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Year ? t.CycleValue * 365 * 24 * 60
                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Month ? t.CycleValue * 30 * 24 * 60
                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Week ? t.CycleValue * 7 * 24 * 60
                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Day ? t.CycleValue * 24 * 60
                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Houre ? t.CycleValue * 60
                         : t.CycleValue
-                         let billsub = bill == null ? null : billsubjects.FirstOrDefault(q => q.BillID == bill.ID)
-                         where bill != null && billsub !=null&& (billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime) - DateTime.Now).TotalMinutes > date
+                         let billsub = tbills == null ? null : billsubjects.OrderByDescending(o => o.TaskTime).FirstOrDefault(q => tbills.Select(s => s.ID).Contains(q.BillID))
+                         let ctime=tbills==null?(DateTime.Now-t.StartTime).TotalMinutes: billsub == null ? (DateTime.Now - t.StartTime).TotalMinutes : (DateTime.Now-billsub.TaskTime).TotalMinutes
+                         where ctime> date
                          select new InsepctTaskByEmployee
                          {
 
@@ -667,8 +677,8 @@ namespace ESafety.Account.Service
                              TaskTypeName = Command.GetItems(typeof(PublicEnum.EE_InspectTaskType)).FirstOrDefault(p => p.Value == t.TaskType).Caption,
                              TaskDescription = t.TaskDescription,
                              //最后时间和超时时间
-                             LastTime = billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime).ToString(),
-                             TimeOutHours = (int)(billsubjects.Where(q => q.BillID == bill.ID).Max(s => s.TaskTime) - DateTime.Now).TotalMinutes,
+                             LastTime = billsubjects.OrderByDescending(o=>o.TaskTime).FirstOrDefault(q => tbills.Select(s => s.ID).Contains(q.BillID)).TaskTime.ToString(),
+                             TimeOutHours = (int)ctime-date,
                              CycleDateType = t.CycleDateType,
                              CycleValue = t.CycleValue,
                              CycleName=Command.GetItems(typeof(PublicEnum.EE_CycleDateType)).FirstOrDefault(p=>p.Value==t.CycleDateType).Caption
@@ -871,13 +881,14 @@ namespace ESafety.Account.Service
                 foreach (var item in subtypes)
                 {
                     Sub sub = new Sub();
-                    sub.SubTypeName = item.Caption;
                     dynamic type = null;
                     if (item.Value ==(int)PublicEnum.EE_SubjectType.Device)
                     {
+                        //设备设施，此类别下有设备的才要
                         type = from sort in sorts
-                                select new EntityType
-                                {
+                               where devices.Any(p=>p.SortID==sort.ID)==true
+                               select new EntityType
+                               {
                                     EntityTypeName=sort.SortName,
                                     Entities=from dev in devices
                                              where dev.SortID==sort.ID
@@ -888,9 +899,14 @@ namespace ESafety.Account.Service
                                              } 
 
                                 };
+                        if (type!=null)
+                        {
+                            sub.SubTypeName = item.Caption;
+                        }
                     }
                     else if(item.Value == (int)PublicEnum.EE_SubjectType.Opreate)
                     {
+                        //操作流程
                         type = new List<EntityType>();
                         var ent = new EntityType();
                         ent.EntityTypeName = "";
@@ -900,11 +916,16 @@ namespace ESafety.Account.Service
                                             SubjectID = op.ID,
                                             SubName = op.Name
                                         };
-                        type.Add(ent);
+                        if (ent.Entities.Count() > 0)
+                        {
+                            type.Add(ent);//有具体的流程才添加
+                            sub.SubTypeName = item.Caption;
+                        }
 
                     }
                     else if (item.Value == (int)PublicEnum.EE_SubjectType.Post)
                     {
+                        //岗位
                         type = new List<EntityType>();
                         var ent = new EntityType();
                         ent.EntityTypeName = "";
@@ -914,9 +935,13 @@ namespace ESafety.Account.Service
                                             SubjectID = op.ID,
                                             SubName = op.Name
                                         };
-                        type.Add(ent);
+                        if (ent.Entities.Count()>0)
+                        {
+                            type.Add(ent);//有具体岗位才添加
+                            sub.SubTypeName = item.Caption;
+                        }
+                        
                     }
-
 
                     sub.Subjects = type;
                     subs.Add(sub);
