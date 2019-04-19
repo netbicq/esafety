@@ -53,8 +53,8 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到该单据!");
                 }
-                else if (bill.State!=(int)PublicEnum.BillFlowState.approved)
-                {
+                else if (bill.State!=(int)PublicEnum.BillFlowState.normal)
+                {//状态有待协商
                     throw new Exception("当前单据状态不允许进行管控!");
                 }
 

@@ -64,6 +64,10 @@ namespace ESafety.Account.Model.View
         /// 任务结果
         /// </summary>
         public string TaskResult { get; set; }
+        /// <summary>
+        /// 任务结果值
+        /// </summary>
+        public int TaskResultValue { get; set; }
 
 
     }

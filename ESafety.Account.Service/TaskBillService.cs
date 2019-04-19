@@ -181,6 +181,7 @@ namespace ESafety.Account.Service
                               PostName = post.Name,
                               TaskName = ts.Name,
                               TaskResult = tbs.Count() == 0 ? "" : (int)tbs.Max(s => s.TroubleLevel) == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == (int)tbs.Max(s => s.TroubleLevel)).Caption,
+                              TaskResultValue= tbs.Count() == 0 ? 0 : (int)tbs.Max(s => s.TroubleLevel) 
                           };
                 var re = new Pager<TaskBillView>().GetCurrentPage(rev, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<TaskBillView>>(re);
