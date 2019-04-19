@@ -100,6 +100,7 @@ namespace ESafety.Core
             foreach (var org in orgall)
             {
                 var orgtree = org.MAPTO<T>();
+                
                 orgtree.Children.AddRange(GetTree<B,T>(org.ID));
                 re.Add(orgtree);
             }

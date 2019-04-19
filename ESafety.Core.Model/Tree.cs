@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace ESafety.Core.Model
 {
 
+    
     /// <summary>
     /// 树形结构基类
     /// </summary>
