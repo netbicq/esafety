@@ -921,6 +921,10 @@ namespace ESafety.Account.Service
                             type.Add(ent);//有具体的流程才添加
                             sub.SubTypeName = item.Caption;
                         }
+                        else
+                        {
+                            sub.SubTypeName = "";
+                        }
 
                     }
                     else if (item.Value == (int)PublicEnum.EE_SubjectType.Post)
@@ -939,6 +943,10 @@ namespace ESafety.Account.Service
                         {
                             type.Add(ent);//有具体岗位才添加
                             sub.SubTypeName = item.Caption;
+                        }
+                        else
+                        {
+                            sub.SubTypeName = "";
                         }
                         
                     }

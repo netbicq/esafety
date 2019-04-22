@@ -55,7 +55,7 @@ namespace ESafety.Core
         public ActionResult<Model.View.CreateDBResult> CreateDB(Guid accountid)
         {
             var account = _work.Repository<AccountInfo>().GetModel(q => q.ID == accountid);
-            string dbname = "MES_" + account.AccountCode;
+            string dbname = "ESF_" + account.AccountCode;
 
             if (account == null)
             {
