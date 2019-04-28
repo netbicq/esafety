@@ -134,7 +134,7 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string TroubleLevelName { get; set; }
         /// <summary>
-        /// 风险点ID
+        /// 风险控项ID
         /// </summary>
         public Guid DangerID { get; set; }
     }

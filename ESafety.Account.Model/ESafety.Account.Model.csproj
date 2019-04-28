@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PARA\DangerManage.cs" />
+    <Compile Include="PARA\DangerPoint.cs" />
     <Compile Include="PARA\DangerSet.cs" />
     <Compile Include="PARA\DocCertificate.cs" />
     <Compile Include="PARA\DocInstitution.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="PARA\Video.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="View\DangerManage.cs" />
+    <Compile Include="View\DangerPoint.cs" />
     <Compile Include="View\DangerSet.cs" />
     <Compile Include="View\DocCertificate.cs" />
     <Compile Include="View\DocInstitution.cs" />

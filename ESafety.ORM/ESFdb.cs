@@ -63,7 +63,8 @@ namespace ESafety.ORM
 
         #region "account"
 
-
+        public virtual DbSet<Basic_DangerPoint> Basic_DangerPoint { get; set; }
+        public virtual DbSet<Basic_DangerPointRelation> Basic_DangerPointRelation { get; set; }
         public virtual DbSet<Doc_Certificate> Doc_Certificate { get; set; }
         public virtual DbSet<Doc_Institution> Doc_Institution { get; set; }
         public virtual DbSet<Doc_Meeting> Doc_Meeting { get; set; }

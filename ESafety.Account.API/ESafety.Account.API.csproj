@@ -208,6 +208,7 @@
     <Compile Include="Controllers\AttachFileController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\DangerManageController.cs" />
+    <Compile Include="Controllers\DangerPointController.cs" />
     <Compile Include="Controllers\DangerRelationController.cs" />
     <Compile Include="Controllers\DictController.cs" />
     <Compile Include="Controllers\DocCertificateController.cs" />

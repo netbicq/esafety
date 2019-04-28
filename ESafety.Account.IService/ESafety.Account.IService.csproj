@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IDangerManageService.cs" />
+    <Compile Include="IDangerPointService.cs" />
     <Compile Include="IDangerSetService.cs" />
     <Compile Include="IDocCertificateService.cs" />
     <Compile Include="IDocInstitutionService.cs" />

@@ -68,6 +68,7 @@ namespace ESafety.Account.Service
                                  {
                                      ID = Guid.NewGuid(),
                                      InspectTaskID = dbtask.ID,
+                                     DangerID=s.DangerID,
                                      SubjectID = s.SubjectID,
                                      SubjectType = (int)s.SubjectType
                                  };
@@ -181,6 +182,7 @@ namespace ESafety.Account.Service
                                  {
                                      ID = Guid.NewGuid(),
                                      InspectTaskID = dbtask.ID,
+                                     DangerID=s.DangerID,
                                      SubjectID = s.SubjectID,
                                      SubjectType = (int)s.SubjectType
                                  };
@@ -207,21 +209,23 @@ namespace ESafety.Account.Service
             try
             {
                 var retemp = rpstask.Queryable(q =>
-               (q.DangerID == qurey.Query.DangerID || qurey.Query.DangerID == Guid.Empty)
+               (q.DangerPointID == qurey.Query.DangerPointID || qurey.Query.DangerPointID == Guid.Empty)
                && (qurey.Query.PostID == q.ExecutePostID || qurey.Query.PostID == Guid.Empty)
                && (qurey.Query.State.HasValue==false?true:qurey.Query.State==q.State)
                && (q.Name.Contains(qurey.Query.Key) || q.TaskDescription.Contains(qurey.Query.Key) || qurey.Query.Key == "")
                &&q.TaskType==(int)PublicEnum.EE_InspectTaskType.Cycle);
+
+
                 var empids = retemp.Select(s => s.EmployeeID);//职员id
-                var dangids = retemp.Select(s => s.DangerID); //风险点id
+                var dpids = retemp.Select(s => s.DangerPointID); //风险点id
                 var postids = retemp.Select(s => s.ExecutePostID);//岗位id
 
-                var dangers = _work.Repository<Basic_Danger>().Queryable(q => dangids.Contains(q.ID));
+                var dangerpoints = _work.Repository<Basic_DangerPoint>().Queryable(q => dpids.Contains(q.ID));
                 var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q => empids.Contains(q.ID));
                 var posts = _work.Repository<Basic_Post>().Queryable(q => postids.Contains(q.ID));
 
                 var re = from t in retemp.ToList()
-                         let dange = dangers.FirstOrDefault(q => q.ID == t.DangerID)
+                         let dangepoint = dangerpoints.FirstOrDefault(q => q.ID == t.DangerPointID)
                          let employee = emps.FirstOrDefault(q => q.ID == t.EmployeeID)
                          let postinfo = posts.FirstOrDefault(q => q.ID == t.ExecutePostID)
                          select new InspectTaskView
@@ -231,8 +235,8 @@ namespace ESafety.Account.Service
                              CreateMan = t.CreateMan,
                              CycleDateType = t.CycleDateType,
                              CycleValue = t.CycleValue,
-                             DangerID = t.DangerID,
-                             DangerName = dange == null ? "" : dange.Name,
+                             DangerPointID = t.DangerPointID,
+                             DangerPointName = dangepoint == null ? "" : dangepoint.Name,
                              Name = t.Name,
                              ID = t.ID,
                              EmployeeID = t.EmployeeID.GetValueOrDefault(),
@@ -269,21 +273,21 @@ namespace ESafety.Account.Service
             try
             {
                 var retemp = rpstask.Queryable(q =>
-               (q.DangerID == qurey.Query.DangerID || qurey.Query.DangerID == Guid.Empty)
+               (q.DangerPointID == qurey.Query.DangerPointID || qurey.Query.DangerPointID == Guid.Empty)
                && (qurey.Query.PostID == q.ExecutePostID || qurey.Query.PostID == Guid.Empty)
                && (qurey.Query.State == q.State || qurey.Query.State == 0)
                && (q.Name.Contains(qurey.Query.Key) || q.TaskDescription.Contains(qurey.Query.Key) || qurey.Query.Key == "")
                && q.TaskType == (int)PublicEnum.EE_InspectTaskType.Temp);
                 var empids = retemp.Select(s => s.EmployeeID);//职员id
-                var dangids = retemp.Select(s => s.DangerID); //风险点id
+                var dangids = retemp.Select(s => s.DangerPointID); //风险点id
                 var postids = retemp.Select(s => s.ExecutePostID);//岗位id
 
-                var dangers = _work.Repository<Basic_Danger>().Queryable(q => dangids.Contains(q.ID));
+                var dangerpoints = _work.Repository<Basic_DangerPoint>().Queryable(q => dangids.Contains(q.ID));
                 var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q => empids.Contains(q.ID));
                 var posts = _work.Repository<Basic_Post>().Queryable(q => postids.Contains(q.ID));
 
                 var re = from t in retemp.ToList()
-                         let dange = dangers.FirstOrDefault(q => q.ID == t.DangerID)
+                         let dangepoint = dangerpoints.FirstOrDefault(q => q.ID == t.DangerPointID)
                          let employee = emps.FirstOrDefault(q => q.ID == t.EmployeeID)
                          let postinfo = posts.FirstOrDefault(q => q.ID == t.ExecutePostID)
                          select new InspectTempTaskView
@@ -291,8 +295,8 @@ namespace ESafety.Account.Service
                              Code = t.Code,
                              CreateDate = t.CreateDate,
                              CreateMan = t.CreateMan,
-                             DangerID = t.DangerID,
-                             DangerName = dange == null ? "" : dange.Name,
+                             DangerPointID = t.DangerPointID,
+                             DangerPointName = dangepoint == null ? "" : dangepoint.Name,
                              Name = t.Name,
                              ID = t.ID,
                              EmployeeID = t.EmployeeID.GetValueOrDefault(),
@@ -328,31 +332,34 @@ namespace ESafety.Account.Service
         {
             try
             {
+                //当前任务所有主体ID
                 var retemp = rpstaskSubject.Queryable(q => q.InspectTaskID == taskid);
                 var subids = retemp.Select(s => s.SubjectID);
-
+                //当前任务
                 var rt = rpstask.GetModel(taskid);
+                //当前任务的所有主体信息
+                var subs = _work.Repository<Basic_DangerPointRelation>().Queryable(p=>p.DangerPointID==rt.DangerPointID&&subids.Contains(p.SubjectID));
 
-                var devices = _work.Repository<Basic_Facilities>().Queryable(q => subids.Contains(q.ID)).ToList();
-                var posts = _work.Repository<Basic_Post>().Queryable(q => subids.Contains(q.ID)).ToList();
-                var opreats = _work.Repository<Basic_Opreation>().Queryable(q => subids.Contains(q.ID)).ToList();
-
-                var danger = _work.Repository<Basic_Danger>().GetModel(rt.DangerID);
-                var lv = _work.Repository<Basic_Dict>().GetModel(danger.DangerLevel);
+                //当前任务所风控项
+                var dangers = retemp.Select(s => s.DangerID);
+                var danger = _work.Repository<Basic_Danger>().Queryable(p=>dangers.Contains(p.ID));
+                //当前任务所有风控项的所有风险等级
+                var lvids = danger.Select(s => s.DangerLevel);
+                var lvs = _work.Repository<Basic_Dict>().Queryable(p=>lvids.Contains(p.ID));
 
                 var re = from s in retemp.ToList()
-                         let subinfo =
-                         (PublicEnum.EE_SubjectType)s.SubjectType == PublicEnum.EE_SubjectType.Device ? devices.FirstOrDefault(q => q.ID == s.SubjectID).Name :
-                         (PublicEnum.EE_SubjectType)s.SubjectType == PublicEnum.EE_SubjectType.Opreate ? opreats.FirstOrDefault(q => q.ID == s.SubjectID).Name :
-                         (PublicEnum.EE_SubjectType)s.SubjectType == PublicEnum.EE_SubjectType.Post ? posts.FirstOrDefault(q => q.ID == s.SubjectID).Name : ""
+                         let sub=subs.FirstOrDefault(p=>p.SubjectID==s.SubjectID)
+                         let dg=danger.FirstOrDefault(p=>p.ID==s.DangerID)
+                         let lv=lvs.FirstOrDefault(p=>p.ID==dg.DangerLevel)
                          select new InspectTaskSubjectView
                          {
                              ID = s.ID,
                              InspectTaskID = s.InspectTaskID,
                              SubjectID = s.SubjectID,
-                             SubjectName = subinfo,
+                             SubjectName = sub.SubjectName,
                              SubjectType = s.SubjectType,
                              SubjectTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == s.SubjectType).Caption,
+                             DangerName=dg.Name,
                              DangerLevel=lv==null?"":lv.DictName
                          };
 
@@ -487,26 +494,33 @@ namespace ESafety.Account.Service
                     throw new Exception("任务未找到");
                 }
                 var remodel = dbmodel.MAPTO<InspectTaskModelView>();
-                var dangmodel = _work.Repository<Basic_Danger>().GetModel(q => q.ID == remodel.DangerID);
+                var dangmodel = _work.Repository<Basic_DangerPoint>().GetModel(q => q.ID == remodel.DangerPointID);
                 var emp = _work.Repository<Basic_Employee>().GetModel(q => q.ID == remodel.EmployeeID);
                 var post = _work.Repository<Basic_Post>().GetModel(q => q.ID == remodel.ExecutePostID);
 
-                remodel.DangerName = dangmodel == null ? default(string) : dangmodel.Name;
+                remodel.DangerPointName= dangmodel == null ? default(string) : dangmodel.Name;
                 remodel.EmployeeName = emp == null ? default(string) : emp.CNName;
                 remodel.StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == remodel.State).Caption;
                 remodel.ExecutePostName = post == null ? default(string) : post.Name;
 
-                var subs = rpstaskSubject.Queryable(q => q.InspectTaskID == remodel.ID).ToList();
-                var subids = subs.Select(s => s.SubjectID);
 
-                var devs = _work.Repository<Basic_Facilities>().Queryable(q => subids.Contains(q.ID)).ToList();
-                var posts = _work.Repository<Basic_Post>().Queryable(q => subids.Contains(q.ID)).ToList();
-                var opres = _work.Repository<Basic_Opreation>().Queryable(q => subids.Contains(q.ID)).ToList();
+                var tsubs = rpstaskSubject.Queryable(q => q.InspectTaskID == remodel.ID).ToList();
+                var subids = tsubs.Select(s => s.SubjectID);
 
-                remodel.Subjects = from s in subs
-                                   let dev = devs.FirstOrDefault(q => q.ID == s.SubjectID)
-                                   let ppst = posts.FirstOrDefault(q => q.ID == s.SubjectID)
-                                   let opr = opres.FirstOrDefault(q => q.ID == s.SubjectID)
+                //当前任务的所有主体信息
+                var subs = _work.Repository<Basic_DangerPointRelation>().Queryable(p => p.DangerPointID == dbmodel.DangerPointID && subids.Contains(p.SubjectID));
+
+                //当前任务所风控项
+                var dangers = tsubs.Select(s => s.DangerID);
+                var danger = _work.Repository<Basic_Danger>().Queryable(p => dangers.Contains(p.ID));
+                //当前任务所有风控项的所有风险等级
+                var lvids = danger.Select(s => s.DangerLevel);
+                var lvs = _work.Repository<Basic_Dict>().Queryable(p => lvids.Contains(p.ID));
+
+                remodel.Subjects = from s in tsubs
+                                   let sub = subs.FirstOrDefault(p => p.SubjectID == s.SubjectID)
+                                   let dg = danger.FirstOrDefault(p => p.ID == s.DangerID)
+                                   let lv = lvs.FirstOrDefault(p => p.ID == dg.DangerLevel)
                                    select new InspectTaskSubjectView
                                    {
                                        ID = s.ID,
@@ -514,8 +528,7 @@ namespace ESafety.Account.Service
                                        SubjectID = s.SubjectID,
                                        SubjectType = s.SubjectType,
                                        SubjectTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == s.SubjectType).Caption,
-                                       SubjectName =
-                                          dev != null ? dev.Name : ppst != null ? ppst.Name : opr != null ? opr.Name : default(string)
+                                       SubjectName =sub.SubjectName
                                    };
                 return new ActionResult<InspectTaskModelView>(remodel);
             }
@@ -563,8 +576,8 @@ namespace ESafety.Account.Service
                                                    ).ToList();
 
                 //风险点
-                var dangerids = tasks.Select(s => s.DangerID).ToList();
-                var dangers = _work.Repository<Basic_Danger>().Queryable(q=>dangerids.Contains(q.ID)).ToList();
+                var dangerids = tasks.Select(s => s.DangerPointID).ToList();
+                var dangers = _work.Repository<Basic_DangerPoint>().Queryable(q=>dangerids.Contains(q.ID)).ToList();
 
                 //任务单据
                 var taskids = tasks.Select(s => s.ID);
@@ -575,7 +588,7 @@ namespace ESafety.Account.Service
                 var billsubjects = _work.Repository<Bll_TaskBillSubjects>().Queryable(q=>billids.Contains(q.BillID)).ToList();
 
                 var re = from t in tasks
-                         let danger = dangers.FirstOrDefault(q => q.ID == t.DangerID)
+                         let danger = dangers.FirstOrDefault(q => q.ID == t.DangerPointID)
                          let tbills = bills.Where(q => q.TaskID == t.ID)
                         // let bill = tbills == null ? null : tbills.OrderByDescending(o => o.StartTime).FirstOrDefault()
                          let date = t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Year ? t.CycleValue * 365 * 24 * 60
@@ -591,7 +604,7 @@ namespace ESafety.Account.Service
                          {
 
                              TaskID = t.ID,
-                             DangerID = t.DangerID,
+                             DangerPointID = t.DangerPointID,
                              DangerName = danger.Name,
                              Name = t.Name,
                              TaskTypeID = (PublicEnum.EE_InspectTaskType)t.TaskType,
@@ -641,7 +654,7 @@ namespace ESafety.Account.Service
                                                    ).ToList();
 
                 //风险点
-                var dangerids = tasks.Select(s => s.DangerID);
+                var dangerids = tasks.Select(s => s.DangerPointID);
                 var dangers = _work.Repository<Basic_Danger>().Queryable(q => dangerids.Contains(q.ID)).ToList();
 
                 //任务单据
@@ -654,7 +667,7 @@ namespace ESafety.Account.Service
 
 
                 var re = from t in tasks
-                         let danger = dangers.FirstOrDefault(q => q.ID == t.DangerID)
+                         let danger = dangers.FirstOrDefault(q => q.ID == t.DangerPointID)
                          let tbills = bills.Where(q => q.TaskID == t.ID)
                          //let bill=tbills==null?null:tbills.OrderByDescending(o=>o.StartTime).FirstOrDefault()
                          let date = t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Year ? t.CycleValue * 365 * 24 * 60
@@ -670,7 +683,7 @@ namespace ESafety.Account.Service
                          {
 
                              TaskID = t.ID,
-                             DangerID = t.DangerID,
+                             DangerPointID = t.DangerPointID,
                              DangerName = danger.Name,
                              Name = t.Name,
                              TaskTypeID = (PublicEnum.EE_InspectTaskType)t.TaskType,
@@ -715,14 +728,14 @@ namespace ESafety.Account.Service
                                                    ).ToList();
 
                 //风险点
-                var dangerids = tasks.Select(s => s.DangerID).ToList();
+                var dangerids = tasks.Select(s => s.DangerPointID).ToList();
                 var dangers = _work.Repository<Basic_Danger>().Queryable(q => dangerids.Contains(q.ID)).ToList();
                 var re = from t in tasks
-                         let danger = dangers.FirstOrDefault(q => q.ID == t.DangerID)
+                         let danger = dangers.FirstOrDefault(q => q.ID == t.DangerPointID)
                          select new InsepctTempTaskByEmployee
                          {
                              TaskID = t.ID,
-                             DangerID = t.DangerID,
+                             DangerID = t.DangerPointID,
                              DangerName = danger.Name,
                              Name = t.Name,
                              TaskTypeID = (PublicEnum.EE_InspectTaskType)t.TaskType,
@@ -767,7 +780,7 @@ namespace ESafety.Account.Service
                 Bll_TaskBill taskBill = new Bll_TaskBill
                 {
                     BillCode = Command.CreateCode(),
-                    DangerID = task.DangerID,
+                    DangerPointID = task.DangerPointID,
                     PostID = emp.PostID,
                     EmployeeID = emp.EmpID,
                     TaskID = emp.TempTaskID,
@@ -811,6 +824,7 @@ namespace ESafety.Account.Service
                                  {
                                      ID = Guid.NewGuid(),
                                      InspectTaskID = dbtask.ID,
+                                     DangerID=s.DangerID,
                                      SubjectID = s.SubjectID,
                                      SubjectType = (int)s.SubjectType
                                  };
@@ -853,12 +867,12 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dgs = _work.Repository<Basic_Danger>().Queryable();
-                var dangers = from dg in dgs
-                              select new Danger
+                var dps = _work.Repository<Basic_DangerPoint>().Queryable();
+                var dangerpoints = from dg in dps
+                              select new DangerPoint
                               {
-                                  DangerID = dg.ID,
-                                  DangerName = dg.Name
+                                  DangerPointID = dg.ID,
+                                  DangerPointName = dg.Name
                               };
                 var posts = _work.Repository<Basic_Post>().Queryable();
                 var exposts = from p in posts
@@ -868,100 +882,18 @@ namespace ESafety.Account.Service
                                   PostName = p.Name
                               };
 
-
-
-                var devices = _work.Repository<Basic_Facilities>().Queryable();
-                var sorts = _work.Repository<Basic_FacilitiesSort>().Queryable();
-
-                var opreats = _work.Repository<Basic_Opreation>().Queryable();
-
                 var subtypes = Command.GetItems(typeof(PublicEnum.EE_SubjectType));
-
-                List<Sub> subs = new List<Sub>();
-                foreach (var item in subtypes)
-                {
-                    Sub sub = new Sub();
-                    dynamic type = null;
-                    if (item.Value ==(int)PublicEnum.EE_SubjectType.Device)
-                    {
-                        //设备设施，此类别下有设备的才要
-                        type = from sort in sorts
-                               where devices.Any(p=>p.SortID==sort.ID)==true
-                               select new EntityType
-                               {
-                                    EntityTypeName=sort.SortName,
-                                    Entities=from dev in devices
-                                             where dev.SortID==sort.ID
-                                             select new Entity
-                                             {
-                                                 SubjectID=dev.ID,
-                                                 SubName=dev.Name,
-                                             } 
-
-                                };
-                        if (type!=null)
-                        {
-                            sub.SubTypeName = item.Caption;
-                        }
-                    }
-                    else if(item.Value == (int)PublicEnum.EE_SubjectType.Opreate)
-                    {
-                        //操作流程
-                        type = new List<EntityType>();
-                        var ent = new EntityType();
-                        ent.EntityTypeName = "";
-                        ent.Entities = from op in opreats
-                                        select new Entity
-                                        {
-                                            SubjectID = op.ID,
-                                            SubName = op.Name
-                                        };
-                        if (ent.Entities.Count() > 0)
-                        {
-                            type.Add(ent);//有具体的流程才添加
-                            sub.SubTypeName = item.Caption;
-                        }
-                        else
-                        {
-                            sub.SubTypeName = "";
-                        }
-
-                    }
-                    else if (item.Value == (int)PublicEnum.EE_SubjectType.Post)
-                    {
-                        //岗位
-                        type = new List<EntityType>();
-                        var ent = new EntityType();
-                        ent.EntityTypeName = "";
-                        ent.Entities = from op in posts
-                                        select new Entity
-                                        {
-                                            SubjectID = op.ID,
-                                            SubName = op.Name
-                                        };
-                        if (ent.Entities.Count()>0)
-                        {
-                            type.Add(ent);//有具体岗位才添加
-                            sub.SubTypeName = item.Caption;
-                        }
-                        else
-                        {
-                            sub.SubTypeName = "";
-                        }
-                        
-                    }
-
-                    sub.Subjects = type;
-                    subs.Add(sub);
- 
-                }
-
-
+                var subtps = from st in subtypes
+                             select new SubType
+                             {
+                                 SubjectType=(PublicEnum.EE_SubjectType)st.Value,
+                                 SubTypeName=st.Caption
+                             };
                 var re = new TempTaskSelector
                 {
-                    Dangers = dangers,
+                    DangerPoints = dangerpoints,
                     Posts=exposts,
-                    Subs=subs
+                    SubTypes=subtps
                 };
                 return new ActionResult<TempTaskSelector>(re);
             }
@@ -969,7 +901,55 @@ namespace ESafety.Account.Service
             {
                 return new ActionResult<TempTaskSelector>(ex);
             }
-            throw new NotImplementedException();
+           
         }
+
+        /// <summary>
+        /// 临时任务风控项选择器
+        /// </summary>
+        /// <param name="select"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Sub>> GetTempTaskDangerSelector(TempTaskDangerSelect select)
+        {
+            try
+            {
+                
+                var subs = _work.Repository<Basic_DangerPointRelation>().Queryable(p => p.DangerPointID == select.DangerPointID && p.SubjectType == select.SubType);
+
+                var subids = subs.Select(s => s.SubjectID);
+
+                var drs = _work.Repository<Basic_DangerRelation>().Queryable(p=>subids.Contains(p.SubjectID));
+
+                var dangerids = drs.Select(s => s.DangerID);
+
+                var dangers = _work.Repository<Basic_Danger>().Queryable(p=>dangerids.Contains(p.ID));
+
+                var resubs = from sb in subs
+                         select new Sub
+                         {
+                             SubID = sb.SubjectID,
+                             SubName = sb.SubjectName,
+                             Dangers=from d in drs
+                                     let dg=dangers.FirstOrDefault(p=>p.ID==d.DangerID)
+                                     where d.SubjectID==sb.SubjectID
+                                     select new Danger
+                                     {
+                                         DangerID=d.DangerID,
+                                         DangerName=dg.Name
+                                     }
+                         };
+
+               
+                return new ActionResult<IEnumerable<Sub>>(resubs);
+
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Sub>>(ex);
+            }
+           
+        }
+
+
     }
 }

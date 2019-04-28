@@ -23,7 +23,7 @@ namespace ESafety.Core.Model.DB.Account
         /// </summary>
         public Guid SubjectID { get; set; }
         /// <summary>
-        /// 风险点id
+        /// 风险控项
         /// </summary>
         public Guid DangerID { get; set; }
         /// <summary>

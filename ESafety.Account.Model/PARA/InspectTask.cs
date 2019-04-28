@@ -87,6 +87,10 @@ namespace ESafety.Account.Model.PARA
         /// 主体ID
         /// </summary>
         public Guid SubjectID { get; set; }
+        /// <summary>
+        /// 风控项ID
+        /// </summary>
+        public Guid DangerID { get; set; }
     }
     /// <summary>
     /// 改变任务状态
@@ -137,7 +141,7 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 风险点
         /// </summary>
-        public Guid DangerID { get; set; }
+        public Guid DangerPointID { get; set; }
         /// <summary>
         /// 关键字，只支持任务名 和描述检索
         /// </summary>
@@ -157,7 +161,7 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 风险点id
         /// </summary>
-        public Guid DangerID { get; set; }
+        public Guid DangerPointID { get; set; }
         /// <summary>
         /// 开始时间
         /// </summary>
@@ -184,5 +188,19 @@ namespace ESafety.Account.Model.PARA
         /// 电子文档
         /// </summary>
         public IEnumerable<Core.Model.PARA.AttachFileNew> AttachFiles { get; set; }
+    }
+    /// <summary>
+    /// 临时任务风控项选择器参数
+    /// </summary>
+    public class TempTaskDangerSelect
+    {
+        /// <summary>
+        /// 风险点ID
+        /// </summary>
+        public Guid DangerPointID { get; set; }
+        /// <summary>
+        /// 主体类型
+        /// </summary>
+        public int SubType { get; set; }
     }
 }

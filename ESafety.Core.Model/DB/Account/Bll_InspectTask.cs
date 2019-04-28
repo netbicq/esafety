@@ -27,7 +27,7 @@ namespace ESafety.Core.Model.DB.Account
         /// <summary>
         /// 风险点id
         /// </summary>
-        public Guid DangerID { get; set; }
+        public Guid DangerPointID { get; set; }
         /// <summary>
         /// 任务类型
         /// </summary>

@@ -57,6 +57,8 @@
     <Compile Include="ActionResult.cs" />
     <Compile Include="AppUser.cs" />
     <Compile Include="DB\Account\Basic_Danger.cs" />
+    <Compile Include="DB\Account\Basic_DangerPoint.cs" />
+    <Compile Include="DB\Account\Basic_DangerPointRelation.cs" />
     <Compile Include="DB\Account\Basic_DangerRelation.cs" />
     <Compile Include="DB\Account\Basic_DangerSafetyStandards.cs" />
     <Compile Include="DB\Account\Basic_DangerSort.cs" />

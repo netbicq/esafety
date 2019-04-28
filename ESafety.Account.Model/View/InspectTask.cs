@@ -25,11 +25,11 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 风险点id
         /// </summary>
-        public Guid DangerID { get; set; }
+        public Guid DangerPointID { get; set; }
         /// <summary>
         /// 风险点名称
         /// </summary>
-        public string DangerName { get; set; }
+        public string DangerPointName { get; set; }
         /// <summary>
         /// 任务类型
         /// </summary>
@@ -120,6 +120,10 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string SubjectName { get; set; }
         /// <summary>
+        /// 风控项
+        /// </summary>
+        public string DangerName { get; set; }
+        /// <summary>
         /// 风险等级
         /// </summary>
         public string DangerLevel { get; set; }
@@ -151,7 +155,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 风险点ID
         /// </summary>
-        public Guid DangerID { get; set; }
+        public Guid DangerPointID { get; set; }
         /// <summary>
         /// 任务类型
         /// </summary>
@@ -232,13 +236,15 @@ namespace ESafety.Account.Model.View
         public DateTime EndTime { get; set; }
     }
 
-
+    /// <summary>
+    /// 临时任务选择器参数
+    /// </summary>
     public class TempTaskSelector
     {
         /// <summary>
         /// 风险点集合
         /// </summary>
-        public IEnumerable<Danger> Dangers { get; set; }
+        public IEnumerable<DangerPoint> DangerPoints { get; set; }
         /// <summary>
         /// 岗位集合
         /// </summary>
@@ -246,23 +252,27 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 主体明细集合
         /// </summary>
-        public IEnumerable<Sub> Subs { get; set; }
+        public IEnumerable<SubType> SubTypes { get; set; }
     }
+
+
     /// <summary>
     /// 风险点集合
     /// </summary>
-    public class Danger
+    public class DangerPoint
     {
         /// <summary>
         /// 风险点ID
         /// </summary>
-        public Guid DangerID { get; set; }
+        public Guid DangerPointID { get; set; }
         /// <summary>
         /// 风险点名字
         /// </summary>
-        public string DangerName { get; set; }
+        public string DangerPointName { get; set; }
     }
-
+    /// <summary>
+    /// 岗位
+    /// </summary>
     public class Post
     {
         /// <summary>
@@ -274,41 +284,52 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string PostName { get; set; }
     }
-
-    public class Sub
+    /// <summary>
+    /// 主体类型
+    /// </summary>
+    public class SubType
     {
         /// <summary>
         /// 主体类型
         /// </summary>
         public string SubTypeName { get; set; }
         /// <summary>
-        /// 包含主体类别的主体集合
+        /// 主体类型
         /// </summary>
-        public IEnumerable<EntityType> Subjects { get; set; }
+        public PublicEnum.EE_SubjectType SubjectType { get; set; }
     }
-
-    public class EntityType
+    /// <summary>
+    /// 主体
+    /// </summary>
+    public class Sub
     {
         /// <summary>
-        /// 主体类别
+        /// 主体名称
         /// </summary>
-        public string EntityTypeName { get; set; }
-        /// <summary>
-        /// 主体集合
-        /// </summary>
-        public IEnumerable<Entity> Entities {get;set;}
-    }
-
-    public class Entity
-    {
+        public string SubName { get; set; }
         /// <summary>
         /// 主体ID
         /// </summary>
-        public Guid SubjectID { get; set; }
+        public Guid SubID { get; set; }
         /// <summary>
-        /// 主体名
+        /// 风控项集合
         /// </summary>
-        public string SubName { set; get; }
+        public IEnumerable<Danger> Dangers{ get; set; }
+    }
+
+    /// <summary>
+    /// 风控项
+    /// </summary>
+    public class Danger
+    {
+        /// <summary>
+        ///风控项ID
+        /// </summary>
+        public Guid DangerID { get; set; }
+        /// <summary>
+        /// 风控项名
+        /// </summary>
+        public string DangerName { set; get; }
     }
 
 }

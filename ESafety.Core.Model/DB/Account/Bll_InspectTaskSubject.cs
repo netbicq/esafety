@@ -22,5 +22,9 @@ namespace ESafety.Core.Model.DB.Account
         /// 任务主体id
         /// </summary>
         public Guid SubjectID { get; set; }
+        /// <summary>
+        ///风控项
+        /// </summary>
+        public Guid DangerID { get; set; }
     }
 }

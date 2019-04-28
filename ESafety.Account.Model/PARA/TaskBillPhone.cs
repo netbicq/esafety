@@ -53,6 +53,10 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public string TaskResultMemo { get; set; }
         /// <summary>
+        /// 风控项ID
+        /// </summary>
+        public Guid DangerID { get; set; }
+        /// <summary>
         /// 附件集合
         /// </summary>
         public IEnumerable<AttachFileNew> AttachFiles { get; set; }

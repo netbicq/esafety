@@ -40,7 +40,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 风险点名
         /// </summary>
-        public string DangerName { get; set; }
+        public string DangerPointName { get; set; }
 
         /// <summary>
         /// 检查主体总数
@@ -95,6 +95,10 @@ namespace ESafety.Account.Model.View
         /// 主体类型名称
         /// </summary>
         public string SubTypeName { get; set; }
+        /// <summary>
+        /// 风控项
+        /// </summary>
+        public string DangerName { get; set; }
     }
 
     public class TaskSubjectOverView: TaskSubjectView

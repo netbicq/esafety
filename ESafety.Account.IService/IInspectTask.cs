@@ -99,6 +99,11 @@ namespace ESafety.Account.IService
         /// </summary>
         /// <returns></returns>
         ActionResult<TempTaskSelector> GetTempTaskSelector();
+        /// <summary>
+        /// 获取风控项选择器
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<IEnumerable<Sub>> GetTempTaskDangerSelector(TempTaskDangerSelect select);
 
     }
 }

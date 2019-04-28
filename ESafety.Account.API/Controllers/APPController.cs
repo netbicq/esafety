@@ -321,5 +321,15 @@ namespace ESafety.Account.API.Controllers
         {
             return spectbll.GetTempTaskSelector();
         }
+        /// <summary>
+        /// 获取风控项选择器信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("getdangerselector")]
+        public ActionResult<IEnumerable<Sub>> GetTempTaskDangerSelector(TempTaskDangerSelect select)
+        {
+            return spectbll.GetTempTaskDangerSelector(select);
+        }
     }
 }
