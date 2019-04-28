@@ -611,7 +611,7 @@ namespace ESafety.Account.Service
                              TaskTypeName = Command.GetItems(typeof(PublicEnum.EE_InspectTaskType)).FirstOrDefault(p => p.Value == t.TaskType).Caption,
                              TaskDescription = t.TaskDescription,
                              //最后时间和超时时间
-                             LastTime = billsubjects.OrderByDescending(o => o.TaskTime).FirstOrDefault(q => tbills.Select(s => s.ID).Contains(q.BillID)).TaskTime.ToString(),
+                             LastTime = billsub==null?"":billsub.TaskTime.ToString(),
                              TimeOutHours = 0,
                              CycleDateType = t.CycleDateType,
                              CycleValue = t.CycleValue,
@@ -690,7 +690,7 @@ namespace ESafety.Account.Service
                              TaskTypeName = Command.GetItems(typeof(PublicEnum.EE_InspectTaskType)).FirstOrDefault(p => p.Value == t.TaskType).Caption,
                              TaskDescription = t.TaskDescription,
                              //最后时间和超时时间
-                             LastTime = billsubjects.OrderByDescending(o=>o.TaskTime).FirstOrDefault(q => tbills.Select(s => s.ID).Contains(q.BillID)).TaskTime.ToString(),
+                             LastTime = billsub==null?"":billsub.TaskTime.ToString(),
                              TimeOutHours = (int)ctime-date,
                              CycleDateType = t.CycleDateType,
                              CycleValue = t.CycleValue,
@@ -812,6 +812,11 @@ namespace ESafety.Account.Service
                 if (temptask == null)
                 {
                     throw new Exception("参数有误");
+                }
+                var check = rpstask.Any(p=>p.Name==temptask.Name);
+                if (check)
+                {
+                    throw new Exception("任务名已存在!");
                 }
                 var dbtask = temptask.MAPTO<Bll_InspectTask>();
                 dbtask.State = (int)PublicEnum.BillFlowState.normal;

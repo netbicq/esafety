@@ -99,6 +99,10 @@ namespace ESafety.Account.Model.View
         /// 风控项
         /// </summary>
         public string DangerName { get; set; }
+        /// <summary>
+        /// 风控项ID
+        /// </summary>
+        public Guid DangerID { get; set; }
     }
 
     public class TaskSubjectOverView: TaskSubjectView

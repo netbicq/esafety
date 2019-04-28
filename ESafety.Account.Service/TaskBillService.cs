@@ -445,14 +445,15 @@ namespace ESafety.Account.Service
                 //获取已经执行了的主体
                 var subs = _rpstbs.Queryable(p => p.BillID == taskbillid);
                 var osubid = subs.Select(s => s.SubjectID);
+                var odangerid = subs.Select(s => s.DangerID);
 
                 //获取任务主体中未执行的主体
-                var tasksubs = _work.Repository<Bll_InspectTaskSubject>().Queryable(q => q.InspectTaskID == bill.TaskID && !osubid.Contains(q.SubjectID)).ToList();
+                var tasksubs = _work.Repository<Bll_InspectTaskSubject>().Queryable(q => q.InspectTaskID == bill.TaskID && (!osubid.Contains(q.SubjectID)||!odangerid.Contains(q.DangerID))).ToList();
                 var subids = tasksubs.Select(s => s.SubjectID);
 
 
                 //获取任务主体中未执行的主体信息
-                var csubs = _work.Repository<Basic_DangerPointRelation>().Queryable(p => p.DangerPointID == bill.DangerPointID && subids.Contains(p.SubjectID));
+                var csubs = _work.Repository<Basic_DangerPointRelation>().Queryable(p => p.DangerPointID == bill.DangerPointID && subids.Contains(p.SubjectID)).Distinct();
 
                 //当前任务所风控项
                 var dangers = tasksubs.Select(s => s.DangerID);
@@ -476,7 +477,10 @@ namespace ESafety.Account.Service
                              SubTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == sub.SubjectType).Caption,
                              SubName =sb.SubjectName,
                              Principal =sb.SubjectPrincipal,
-                             PrincipalTel =sb.SubjectPrincipalTel
+                             PrincipalTel =sb.SubjectPrincipalTel,
+                             DangerName=dg.Name,
+                             DangerID=dg.ID
+                            
                          };
                 return new ActionResult<IEnumerable<TaskSubjectView>>(re);
             }
@@ -502,14 +506,14 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("参数有误!");
                 }
-                var check = _rpstbs.Any(p => p.BillID == bill.BillID&&p.SubjectID==bill.SubjectID);
+                var check = _rpstbs.Any(p => p.BillID == bill.BillID&&p.DangerID==bill.DangerID&&p.SubjectID==bill.SubjectID);
                 if (check)
                 {
                     throw new Exception("检查结果已存在!");
                 }
                 var dbsub = bill.MAPTO<Bll_TaskBillSubjects>();
                 dbsub.TaskTime = DateTime.Now;
-
+               
                 //电子文档
                 var files = new AttachFileSave
                 {
@@ -558,7 +562,8 @@ namespace ESafety.Account.Service
                 }
                 var resubs = _work.Repository<Bll_TaskBillSubjects>().Queryable(p => p.BillID == billid);
                 var subids = resubs.Select(s => s.SubjectID);
-                var check = _work.Repository<Bll_InspectTaskSubject>().Any(p => p.InspectTaskID == dbbill.TaskID && !subids.Contains(p.SubjectID));
+                var dangerids = resubs.Select(s => s.DangerID);
+                var check = _work.Repository<Bll_InspectTaskSubject>().Any(p => p.InspectTaskID == dbbill.TaskID && !subids.Contains(p.SubjectID)&&!dangerids.Contains(p.DangerID));
                 if (check)
                 {
                     throw new Exception("存在未检查的项，无法提交完成单据!");
@@ -717,13 +722,14 @@ namespace ESafety.Account.Service
                 //获取已经执行了的主体
                 var subs = _rpstbs.Queryable(p => p.BillID == taskbillid).ToList();
                 var osubid = subs.Select(s => s.SubjectID);
+                var odangerids = subs.Select(s => s.DangerID);
 
-                //获取任务主体中未执行的主体
-                var tasksubs = _work.Repository<Bll_InspectTaskSubject>().Queryable(q => q.InspectTaskID == bill.TaskID && osubid.Contains(q.SubjectID)).ToList();
+                //获取任务主体中已执行的主体
+                var tasksubs = _work.Repository<Bll_InspectTaskSubject>().Queryable(q => q.InspectTaskID == bill.TaskID && osubid.Contains(q.SubjectID)&&odangerids.Contains(q.DangerID)).ToList();
                 var subids = tasksubs.Select(s => s.SubjectID);
 
                 //获取任务主体中未执行的主体信息
-                var csubs = _work.Repository<Basic_DangerPointRelation>().Queryable(p => p.DangerPointID == bill.DangerPointID && subids.Contains(p.SubjectID));
+                var csubs = _work.Repository<Basic_DangerPointRelation>().Queryable(p => p.DangerPointID == bill.DangerPointID && subids.Contains(p.SubjectID)).Distinct();
 
                 //当前任务所风控项
                 var dangers = tasksubs.Select(s => s.DangerID);
@@ -737,7 +743,7 @@ namespace ESafety.Account.Service
                          let sb = csubs.FirstOrDefault(p => p.SubjectID == sub.SubjectID)
                          let dg = danger.FirstOrDefault(p => p.ID == sub.DangerID)
                          let lv = lvs.FirstOrDefault(p => p.ID == dg.DangerLevel)
-                         let rest = subs.FirstOrDefault(p => p.SubjectID == sub.SubjectID)
+                         let rest = subs.FirstOrDefault(p => p.SubjectID == sub.SubjectID&&p.DangerID==sub.DangerID)
                          select new TaskSubjectOverView
                          {
                              KeyID = sub.ID,
@@ -749,7 +755,9 @@ namespace ESafety.Account.Service
                              SubTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == sub.SubjectType).Caption,
                              SubName =sb.SubjectName,
                              Principal =sb.SubjectPrincipal,
-                             PrincipalTel =sb.SubjectPrincipalTel
+                             PrincipalTel =sb.SubjectPrincipalTel,
+                             DangerID =dg.ID,
+                             DangerName=dg.Name
                          };
                 return new ActionResult<IEnumerable<TaskSubjectOverView>>(re);
             }
@@ -847,7 +855,7 @@ namespace ESafety.Account.Service
                          let osubids = osubs.Select(s => s.SubjectID)
                          let subs = csubs.Where(p => !osubids.Contains(p.SubjectID)).ToList()//待查主体
                          let subids=subs.Select(p=>p.SubjectID)
-                         let sbs=_work.Repository<Basic_DangerPointRelation>().Queryable(p=>subids.Contains(p.SubjectID))
+                         let sbs=_work.Repository<Basic_DangerPointRelation>().Queryable(p=>subids.Contains(p.SubjectID)).ToList()
                          select new DownloadData
                          {
                              OverTimeTaskCount=overtimetaskcount,
@@ -864,7 +872,7 @@ namespace ESafety.Account.Service
                              CheckSubs = from sub in subs
                                          let dg=_work.Repository<Basic_Danger>().GetModel(sub.DangerID)
                                          let lv = _work.Repository<Basic_Dict>().GetModel(dg.DangerLevel)
-                                         let sb = sbs.FirstOrDefault(q => q.ID == sub.SubjectID)
+                                         let sb = sbs.FirstOrDefault(q => q.SubjectID == sub.SubjectID)
                                          select new TaskSubjectView
                                          {
                                              KeyID = sub.ID,
@@ -875,8 +883,10 @@ namespace ESafety.Account.Service
                                              SubTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == sub.SubjectType).Caption,
                                              SubName =sb.SubjectName,
                                              Principal =sb.SubjectPrincipal,
-                                             PrincipalTel =sb.SubjectPrincipalTel
-                                                
+                                             PrincipalTel =sb.SubjectPrincipalTel,
+                                             DangerName=dg.Name,
+                                             DangerID=dg.ID
+                                             
                                          }
                          };
                 return new ActionResult<IEnumerable<DownloadData>>(re);
