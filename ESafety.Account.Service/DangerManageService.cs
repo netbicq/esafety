@@ -25,7 +25,7 @@ namespace ESafety.Account.Service
         private IRepository<Basic_DangerRelation> _rpsdr = null;
         private ITree srvTree = null;
 
-        public DangerManageService(IUnitwork work,ITree tree)
+        public DangerManageService(IUnitwork work, ITree tree)
         {
             _work = work;
             Unitwork = work;
@@ -65,7 +65,7 @@ namespace ESafety.Account.Service
 
                 return new ActionResult<bool>(ex);
             }
-           
+
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace ESafety.Account.Service
         {
             try
             {
-                if (safetyStandards.SafetyStandardID==Guid.Empty)
+                if (safetyStandards.SafetyStandardID == Guid.Empty)
                 {
                     throw new Exception("参数有误");
                 }
@@ -101,7 +101,7 @@ namespace ESafety.Account.Service
 
                 return new ActionResult<bool>(ex);
             }
-           
+
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace ESafety.Account.Service
 
                 return new ActionResult<bool>(ex);
             }
-           
+
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("该风险点已配置安全标准，无法删除！");
                 }
-                check = _rpsdr.Any(p=>p.DangerID==id);
+                check = _rpsdr.Any(p => p.DangerID == id);
                 if (check)
                 {
                     throw new Exception("已存在风险点配置，无法删除！");
@@ -194,7 +194,7 @@ namespace ESafety.Account.Service
 
                 return new ActionResult<bool>(ex);
             }
-           
+
         }
 
         /// <summary>
@@ -230,9 +230,9 @@ namespace ESafety.Account.Service
 
                 return new ActionResult<bool>(ex);
             }
-          
+
         }
- 
+
         /// <summary>
         /// 修改风险信息
         /// </summary>
@@ -261,7 +261,7 @@ namespace ESafety.Account.Service
 
                 return new ActionResult<bool>(ex);
             }
-           
+
         }
 
         /// <summary>
@@ -281,7 +281,7 @@ namespace ESafety.Account.Service
                 var re = dbdanger.MAPTO<DangerView>();
                 re.DangerSortName = _rpsdangersort.GetModel(dbdanger.DangerSortID).SortName;
                 var dict = _work.Repository<Core.Model.DB.Basic_Dict>().GetModel(dbdanger.DangerLevel);
-                re.DangerLevelName =dict==null?"":dict.DictName;
+                re.DangerLevelName = dict == null ? "" : dict.DictName;
                 return new ActionResult<DangerView>(re);
             }
             catch (Exception ex)
@@ -289,7 +289,7 @@ namespace ESafety.Account.Service
 
                 return new ActionResult<DangerView>(ex);
             }
-           
+
         }
         /// <summary>
         /// 根据风险类别获取风险信息
@@ -304,15 +304,15 @@ namespace ESafety.Account.Service
                 var lvids = dbdangers.Select(s => s.DangerLevel);
                 var dicts = _work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => lvids.Contains(p.ID));
                 var dangers = from danger in dbdangers.ToList()
-                              let d=dicts.FirstOrDefault(p=>p.ID==danger.DangerLevel)
+                              let d = dicts.FirstOrDefault(p => p.ID == danger.DangerLevel)
                               select new DangerView
                               {
                                   Code = danger.Code,
                                   DangerSortID = danger.DangerSortID,
                                   Name = danger.Name,
                                   ID = danger.ID,
-                                  DangerLevel=danger.DangerLevel,
-                                  DangerLevelName=d==null?"":d.DictName,
+                                  DangerLevel = danger.DangerLevel,
+                                  DangerLevelName = d == null ? "" : d.DictName,
                                   DangerSortName = _rpsdangersort.GetModel(p => p.ID == danger.DangerSortID || p.ID == dangersortid).SortName
                               };
                 return new ActionResult<IEnumerable<DangerView>>(dangers);
@@ -323,6 +323,33 @@ namespace ESafety.Account.Service
                 return new ActionResult<IEnumerable<DangerView>>(ex);
             }
         }
+
+        /// <summary>
+        /// 根据主体ID获取风控项选择器
+        /// </summary>
+        /// <param name="subjectID"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<DangerSelector>> GetDangerSelectBySubjectId(Guid subjectID)
+        {
+            try
+            {
+                var dbdrs = _rpsdr.Queryable(p=>p.SubjectID==subjectID);
+                var dids = dbdrs.Select(s => s.DangerID);
+                var dangers = _rpsdanger.Queryable(p=>dids.Contains(p.ID));
+                var re = from danger in dangers
+                         select new DangerSelector
+                         {
+                             ID = danger.ID,
+                             Name = danger.Name
+                         };
+                return new ActionResult<IEnumerable<DangerSelector>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<DangerSelector>>(ex);
+            }
+        }
+
         /// <summary>
         /// 获取风险点集合
         /// </summary>
@@ -333,18 +360,18 @@ namespace ESafety.Account.Service
             {
                 var dbdangers = _rpsdanger.Queryable();
                 var lvids = dbdangers.Select(s => s.DangerLevel);
-                var dicts = _work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p=>lvids.Contains(p.ID));
+                var dicts = _work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => lvids.Contains(p.ID));
                 var dangers = from danger in dbdangers.ToList()
                               let o = _rpsdangersort.GetModel(danger.DangerSortID)
-                              let d=dicts.FirstOrDefault(p=>p.ID==danger.DangerLevel)
+                              let d = dicts.FirstOrDefault(p => p.ID == danger.DangerLevel)
                               select new DangerView
                               {
                                   Code = danger.Code,
                                   DangerSortID = danger.DangerSortID,
                                   Name = danger.Name,
                                   ID = danger.ID,
-                                  DangerSortName = o==null?"":o.SortName,
-                                  DangerLevel=danger.DangerLevel,
+                                  DangerSortName = o == null ? "" : o.SortName,
+                                  DangerLevel = danger.DangerLevel,
                                   DangerLevelName = d == null ? "" : d.DictName
 
                               };
@@ -402,7 +429,7 @@ namespace ESafety.Account.Service
             {
                 return new ActionResult<IEnumerable<DangerSortView>>(ex);
             }
-           
+
         }
         /// <summary>
         /// 获取风险点类型Tree
@@ -433,7 +460,7 @@ namespace ESafety.Account.Service
             try
             {
                 (srvTree as TreeService).AppUser = AppUser;
-                var re =srvTree.GetParents<Basic_DangerSort>(id);
+                var re = srvTree.GetParents<Basic_DangerSort>(id);
                 return new ActionResult<IEnumerable<Basic_DangerSort>>(re);
             }
             catch (Exception ex)

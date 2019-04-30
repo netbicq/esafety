@@ -110,6 +110,7 @@ namespace ESafety.Account.Model.View
         public Guid SubResultID { get; set; }
     }
 
+
     public class SubResultView
     {
         /// <summary>
@@ -126,12 +127,23 @@ namespace ESafety.Account.Model.View
         public string TaskResultMemo { get; set; }
     }
 
-    public class DownloadData : TaskBillModel
+
+    public class DownloadData
     {
         /// <summary>
         /// 超时任务个数
         /// </summary>
         public int OverTimeTaskCount { get; set; }
+        /// <summary>
+        /// 任务单据
+        /// </summary>
+        public IEnumerable<BillData> BillDatas { get; set; }
+    }
+    /// <summary>
+    /// 任务单据
+    /// </summary>
+    public class BillData : TaskBillModel
+    {
         /// <summary>
         /// 待检测主体集合
         /// </summary>

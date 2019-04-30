@@ -120,6 +120,10 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string SubjectName { get; set; }
         /// <summary>
+        /// 风控项ID
+        /// </summary>
+        public Guid DangerID { get; set; }
+        /// <summary>
         /// 风控项
         /// </summary>
         public string DangerName { get; set; }

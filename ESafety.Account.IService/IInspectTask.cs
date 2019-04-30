@@ -105,5 +105,18 @@ namespace ESafety.Account.IService
         /// <returns></returns>
         ActionResult<IEnumerable<Sub>> GetTempTaskDangerSelector(TempTaskDangerSelect select);
 
+        /// <summary>
+        /// 通过风险点ID获取当前人员的任务
+        /// </summary>
+        /// <param name="dangerPoint"></param>
+        /// <returns></returns>
+        ActionResult<IEnumerable<InsepctTaskByEmployee>> GetEmpTaskByQRCoder(Guid dangerPoint);
+        /// <summary>
+        /// 通过风险点ID获取当前人员的任务
+        /// </summary>
+        /// <param name="dangerPoint"></param>
+        /// <returns></returns>
+        ActionResult<IEnumerable<InsepctTaskByEmployee>> GetEmpTimeOutTaskByQRCoder(Guid dangerPoint);
+
     }
 }

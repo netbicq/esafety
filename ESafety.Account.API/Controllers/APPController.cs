@@ -197,7 +197,7 @@ namespace ESafety.Account.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("downloaddata")]
-        public ActionResult<IEnumerable<DownloadData>> DownloadData()
+        public ActionResult<DownloadData> DownloadData()
         {
             return billbll.DownloadData();
         }
@@ -330,6 +330,40 @@ namespace ESafety.Account.API.Controllers
         public ActionResult<IEnumerable<Sub>> GetTempTaskDangerSelector(TempTaskDangerSelect select)
         {
             return spectbll.GetTempTaskDangerSelector(select);
+        }
+
+        /// <summary>
+        /// 根据二维码获取任务
+        /// </summary>
+        /// <param name="dangerPointID"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getEmpTaskByQRCoder/{dangerPointID:Guid}")]
+        public ActionResult<IEnumerable<InsepctTaskByEmployee>> GetEmpTaskByQRCoder(Guid dangerPointID)
+        {
+            return spectbll.GetEmpTaskByQRCoder(dangerPointID);
+        }
+        /// <summary>
+        /// 根据二维码获取超时任务
+        /// </summary>
+        /// <param name="dangerPointID"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getEmpTaskTimeOutByQRCoder/{dangerPointID:Guid}")]
+        public ActionResult<IEnumerable<InsepctTaskByEmployee>> GetEmpTimeOutTaskByQRCoder(Guid dangerPointID)
+        {
+            return spectbll.GetEmpTimeOutTaskByQRCoder(dangerPointID);
+        }
+        /// <summary>
+        /// 根据二维码获取历史
+        /// </summary>
+        /// <param name="pointID"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getTaskBillMastersOverByQRCoder/{pointID:Guid}")]
+        public ActionResult<IEnumerable<TaskBillModel>> GetTaskBillMastersOverByQRCoder(Guid pointID)
+        {
+            return billbll.GetTaskBillMastersOverByQRCoder(pointID);
         }
     }
 }

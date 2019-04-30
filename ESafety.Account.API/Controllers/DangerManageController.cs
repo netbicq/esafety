@@ -194,5 +194,15 @@ namespace ESafety.Account.API.Controllers
         {
             return bll.GetDangerSortTree(id);
         }
+        /// <summary>
+        /// 根据主体ID获取风控项选择器
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getDangerSelectBySubjectId/{subjectId:Guid}")]
+        public ActionResult<IEnumerable<DangerSelector>> GetDangerSelectBySubjectId(Guid subjectID)
+        {
+            return bll.GetDangerSelectBySubjectId(subjectID);
+        }
     }
 }

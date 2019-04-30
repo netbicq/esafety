@@ -827,7 +827,7 @@ namespace ESafety.Account.Service
         /// 同步当前人单据数据
         /// </summary>
         /// <returns></returns>
-        public ActionResult<IEnumerable<DownloadData>> DownloadData()
+        public ActionResult<DownloadData> DownloadData()
         {
             try
             {
@@ -844,6 +844,8 @@ namespace ESafety.Account.Service
                 var dangerids = tbs.Select(s => s.DangerPointID);
                 var dangers = _work.Repository<Basic_DangerPoint>().Queryable(p => dangerids.Contains(p.ID));
 
+               
+
                 var overtimetaskcount = srvTask.GetTaskListByTimeOut().data.Count();
 
 
@@ -856,9 +858,8 @@ namespace ESafety.Account.Service
                          let subs = csubs.Where(p => !osubids.Contains(p.SubjectID)).ToList()//待查主体
                          let subids=subs.Select(p=>p.SubjectID)
                          let sbs=_work.Repository<Basic_DangerPointRelation>().Queryable(p=>subids.Contains(p.SubjectID)).ToList()
-                         select new DownloadData
+                         select new BillData
                          {
-                             OverTimeTaskCount=overtimetaskcount,
                              BillID = tb.ID,
                              StartTime = tb.StartTime,
                              EndTime = (DateTime)tb.EndTime,
@@ -889,12 +890,67 @@ namespace ESafety.Account.Service
                                              
                                          }
                          };
-                return new ActionResult<IEnumerable<DownloadData>>(re);
+                DownloadData data = new DownloadData
+                {
+                    BillDatas = re,
+                    OverTimeTaskCount = overtimetaskcount
+                };
+                return new ActionResult<DownloadData>(data);
 
             }
             catch (Exception ex)
             {
-                return new ActionResult<IEnumerable<DownloadData>>(ex);
+                return new ActionResult<DownloadData>(ex);
+            }
+        }
+
+        /// <summary>
+        /// 根据二维码获取历史任务单据
+        /// </summary>
+        /// <param name="pointID"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<TaskBillModel>> GetTaskBillMastersOverByQRCoder(Guid pointID)
+        {
+           // throw new NotImplementedException();
+            try
+            {
+      
+                //当风险点的所有已完成单据
+                var tbs = _rpstb.Queryable(q =>q.DangerPointID==pointID && q.State >= (int)PublicEnum.BillFlowState.normal).ToList();
+
+                var empids = tbs.Select(s => s.EmployeeID);
+                //当前人所有单据对应的任务
+                var taskids = tbs.Select(s => s.TaskID);
+                var tasks = _work.Repository<Bll_InspectTask>().Queryable(p => taskids.Contains(p.ID));
+
+                var emps = _work.Repository<Basic_Employee>().Queryable(p=>empids.Contains(p.ID));
+
+                //单据的风险点
+                var dangerids = tbs.Select(s => s.DangerPointID);
+                var dangers = _work.Repository<Basic_DangerPoint>().Queryable(p => dangerids.Contains(p.ID));
+                var re = from tb in tbs
+                         let task = tasks.FirstOrDefault(q => q.ID == tb.TaskID)
+                         let danger = dangers.FirstOrDefault(q => q.ID == tb.DangerPointID)
+                         let osubcount = _rpstbs.Queryable(p => p.BillID == tb.ID).Count()//已查主体数
+                         let user=emps.FirstOrDefault(p=>p.ID==tb.EmployeeID)
+                         select new TaskBillModel
+                         {
+                             BillID = tb.ID,
+                             StartTime = tb.StartTime,
+                             EndTime = (DateTime)tb.EndTime,
+                             EmployeeName = user.CNName,
+                             TaskName = task.Name,
+                             State = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(p => p.Value == tb.State).Caption,
+                             DangerPointName = danger.Name,
+                             SubCheckedCount = osubcount,
+                             SubCount = osubcount,
+                             TaskType = (PublicEnum.EE_InspectTaskType)task.TaskType,
+                         };
+                return new ActionResult<IEnumerable<TaskBillModel>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<TaskBillModel>>(ex);
             }
         }
     }

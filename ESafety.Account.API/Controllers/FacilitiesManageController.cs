@@ -155,5 +155,16 @@ namespace ESafety.Account.API.Controllers
         {
             return bll.GetSortTree(id);
         }
+        /// <summary>
+        /// 获取指定ID的树
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getFacilitiesList")]
+        public ActionResult<IEnumerable<FacilityView>> GetFacilitiesList()
+        {
+            return bll.GetFacilitiesList();
+        }
     }
 }

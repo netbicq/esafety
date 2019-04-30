@@ -58,4 +58,19 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public Guid DangerLevel { get; set; }
     }
+
+    /// <summary>
+    /// 风控项选择器模型
+    /// </summary>
+    public class DangerSelector
+    {
+        /// <summary>
+        /// 风控项ID
+        /// </summary>
+        public Guid ID { get; set; }
+        /// <summary>
+        /// 风控项名
+        /// </summary>
+        public string Name { get; set; }
+    }
 }

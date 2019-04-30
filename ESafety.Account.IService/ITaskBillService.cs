@@ -106,6 +106,12 @@ namespace ESafety.Account.IService
         /// 下载单据数据
         /// </summary>
         /// <returns></returns>
-        ActionResult<IEnumerable<DownloadData>> DownloadData();
+        ActionResult<DownloadData> DownloadData();
+        /// <summary>
+        /// 根据二位码获取已经完成的单据数据
+        /// </summary>
+        /// <param name="pointID"></param>
+        /// <returns></returns>
+        ActionResult<IEnumerable<TaskBillModel>> GetTaskBillMastersOverByQRCoder(Guid pointID); 
     }
 }

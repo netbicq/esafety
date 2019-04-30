@@ -16,6 +16,10 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public Guid ID { get; set; }
         /// <summary>
+        /// 编号
+        /// </summary>
+        public string Code { get; set; }
+        /// <summary>
         /// 风险点名
         /// </summary>
         public string Name { get; set; }

@@ -40,5 +40,11 @@ namespace ESafety.Account.IService
 
         ActionResult<IEnumerable<DangerSortTree>> GetDangerSortTree(Guid id);
 
+        /// <summary>
+        /// 获取风控项选择器根据主体ID
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<IEnumerable<DangerSelector>> GetDangerSelectBySubjectId(Guid subjectID);
+
     }
 }

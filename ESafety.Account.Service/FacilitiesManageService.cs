@@ -334,5 +334,34 @@ namespace ESafety.Account.Service
                 return new ActionResult<IEnumerable<FacilitiesSortTree>>(ex);
             }
         }
+        /// <summary>
+        /// 获取所有设备设施
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<FacilityView>> GetFacilitiesList()
+        {
+            try
+            {
+                var dbfacilities = _rpsfacilities.Queryable();
+                var sort = _rpsfacilitiessort.Queryable();
+                var refclty = from f in dbfacilities
+                              let s=sort.FirstOrDefault(p=>p.ID==f.SortID)
+                              select new FacilityView
+                              {
+                                  ID = f.ID,
+                                  Code = f.Code,
+                                  Name = f.Name,
+                                  Principal = f.Principal,
+                                  PrincipalTel = f.PrincipalTel,
+                                  SortID = f.SortID,
+                                  SortName =s.SortName
+                              };
+                return new ActionResult<IEnumerable<FacilityView>>(refclty);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<FacilityView>>(ex);
+            }
+        }
     }
 }

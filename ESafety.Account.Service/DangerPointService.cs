@@ -45,6 +45,7 @@ namespace ESafety.Account.Service
                     throw new Exception("该风险点已存在");
                 }
                 var dbdp = pointNew.MAPTO<Basic_DangerPoint>();
+                dbdp.Code = Command.CreateCode();
                 dbdp.QRCoderUrl =CreateQRCoder(dbdp.ID);
                 rpsdp.Add(dbdp);
                 work.Commit();
@@ -76,7 +77,8 @@ namespace ESafety.Account.Service
             //纠错等级
             endocder.QRCodeErrorCorrect = QRCodeEncoder.ERROR_CORRECTION.M;
             //将json串做成二维码
-            Bitmap bitmap = endocder.Encode(JsonConvert.SerializeObject(pointID), System.Text.Encoding.UTF8);
+            //  Bitmap bitmap = endocder.Encode(JsonConvert.SerializeObject(pointID), System.Text.Encoding.UTF8);
+            Bitmap bitmap = endocder.Encode(pointID.ToString(), System.Text.Encoding.UTF8);
             string strSaveDir = HttpContext.Current.Server.MapPath("/QRCoder/");
             if (!Directory.Exists(strSaveDir))
             {
@@ -102,7 +104,7 @@ namespace ESafety.Account.Service
             try
             {
                 var check = rpsdp.Any(q => q.ID== relationNew.DangerPointID);
-                if (check)
+                if (!check)
                 {
                     throw new Exception("未找到该风险点");
                 }
@@ -201,7 +203,7 @@ namespace ESafety.Account.Service
                     throw new Exception("该风险点名已存在!");
                 }
                 dbdp =pointEdit.CopyTo<Basic_DangerPoint>(dbdp);
-                rpsdp.Add(dbdp);
+                rpsdp.Update(dbdp);
                 work.Commit();
                 return new ActionResult<bool>(true);
             }
@@ -262,20 +264,12 @@ namespace ESafety.Account.Service
             try
             {
                 var page = rpsdpr.Queryable(p => p.DangerPointID==pointID.Query);
-                var subids = page.Select(s => s.SubjectID);
-                var devs = work.Repository<Basic_Facilities>().Queryable(q => subids.Contains(q.ID));
-                var posts = work.Repository<Basic_Post>().Queryable(q => subids.Contains(q.ID));
-                var opres = work.Repository<Basic_Opreation>().Queryable(q => subids.Contains(q.ID));
-
-                var retemp = from pg in page
-                             let dev = devs.FirstOrDefault(q => q.ID == pg.SubjectID)
-                             let ppst = posts.FirstOrDefault(q => q.ID == pg.SubjectID)
-                             let opr = opres.FirstOrDefault(q => q.ID == pg.SubjectID)
+                var retemp = from pg in page.ToList()
                              select new DangerPointRelationView
                              {
                                  ID=pg.ID,
                                  SubjectType=Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(p=>p.Value==pg.SubjectType).Caption,
-                                 SubjectName= dev != null ? dev.Name : ppst != null ? ppst.Name : opr != null ? opr.Name : default(string)
+                                 SubjectName=pg.SubjectName
                              };
                 var re = new Pager<DangerPointRelationView>().GetCurrentPage(retemp, pointID.PageSize, pointID.PageIndex);
                 return new ActionResult<Pager<DangerPointRelationView>>(re);

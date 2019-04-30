@@ -360,7 +360,8 @@ namespace ESafety.Account.Service
                              SubjectType = s.SubjectType,
                              SubjectTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == s.SubjectType).Caption,
                              DangerName=dg.Name,
-                             DangerLevel=lv==null?"":lv.DictName
+                             DangerLevel=lv==null?"":lv.DictName,
+                             DangerID=dg.ID
                          };
 
                 return new ActionResult<IEnumerable<InspectTaskSubjectView>>(re);
@@ -528,7 +529,7 @@ namespace ESafety.Account.Service
                                        SubjectID = s.SubjectID,
                                        SubjectType = s.SubjectType,
                                        SubjectTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == s.SubjectType).Caption,
-                                       SubjectName =sub.SubjectName
+                                       SubjectName =sub.SubjectName,
                                    };
                 return new ActionResult<InspectTaskModelView>(remodel);
             }
@@ -655,7 +656,7 @@ namespace ESafety.Account.Service
 
                 //风险点
                 var dangerids = tasks.Select(s => s.DangerPointID);
-                var dangers = _work.Repository<Basic_Danger>().Queryable(q => dangerids.Contains(q.ID)).ToList();
+                var dangers = _work.Repository<Basic_DangerPoint>().Queryable(q => dangerids.Contains(q.ID)).ToList();
 
                 //任务单据
                 var taskids = tasks.Select(s => s.ID);
@@ -706,7 +707,7 @@ namespace ESafety.Account.Service
         }
 
         /// <summary>
-        /// 获取当前用户超时任务列表
+        /// 获取当前临时任务列表
         /// </summary>
         /// <returns></returns>
         public ActionResult<IEnumerable<InsepctTempTaskByEmployee>> GetTempTaskListByEmployee()
@@ -954,7 +955,157 @@ namespace ESafety.Account.Service
             }
            
         }
+        /// <summary>
+        /// 根据二维码获取任务
+        /// </summary>
+        /// <param name="dangerPoint"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<InsepctTaskByEmployee>> GetEmpTaskByQRCoder(Guid dangerPoint)
+        {
+            try
+            {
+                var user = AppUser.EmployeeInfo;
+                if (user == null)
+                {
+                    throw new Exception("还未配置该用户!");
+                }
+                var userpost = _work.Repository<Basic_PostEmployees>().Queryable(p => p.EmployeeID == user.ID);
+                var postids = userpost.Select(s => s.PostID);
+
+                var tasks = rpstask.Queryable(q => (q.EmployeeID == user.ID || postids.Contains(q.ExecutePostID))
+                                                 && q.DangerPointID==dangerPoint
+                                                 && q.State == (int)PublicEnum.BillFlowState.audited
+                                                 && q.TaskType == (int)PublicEnum.EE_InspectTaskType.Cycle
+                                                 ).ToList();
+
+                //风险点
+                var danger = _work.Repository<Basic_DangerPoint>().GetModel(q =>q.ID==dangerPoint);
+
+                //任务单据
+                var taskids = tasks.Select(s => s.ID);
+                var bills = _work.Repository<Bll_TaskBill>().Queryable(q => taskids.Contains(q.TaskID)).ToList();
+
+                //任务主体
+                var billids = bills.Select(s => s.ID);
+                var billsubjects = _work.Repository<Bll_TaskBillSubjects>().Queryable(q => billids.Contains(q.BillID)).ToList();
+
+                var re = from t in tasks
+                         let tbills = bills.Where(q => q.TaskID == t.ID)
+                         // let bill = tbills == null ? null : tbills.OrderByDescending(o => o.StartTime).FirstOrDefault()
+                         let date = t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Year ? t.CycleValue * 365 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Month ? t.CycleValue * 30 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Week ? t.CycleValue * 7 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Day ? t.CycleValue * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Houre ? t.CycleValue * 60
+                        : t.CycleValue
+                         let billsub = tbills == null ? null : billsubjects.OrderByDescending(o => o.TaskTime).FirstOrDefault(q => tbills.Select(s => s.ID).Contains(q.BillID))
+                         let ctime = tbills == null ? (DateTime.Now - t.StartTime).TotalMinutes : billsub == null ? (DateTime.Now - t.StartTime).TotalMinutes : (DateTime.Now - billsub.TaskTime).TotalMinutes
+                         where ctime < date
+                         select new InsepctTaskByEmployee
+                         {
+
+                             TaskID = t.ID,
+                             DangerPointID = t.DangerPointID,
+                             DangerName = danger.Name,
+                             Name = t.Name,
+                             TaskTypeID = (PublicEnum.EE_InspectTaskType)t.TaskType,
+                             TaskTypeName = Command.GetItems(typeof(PublicEnum.EE_InspectTaskType)).FirstOrDefault(p => p.Value == t.TaskType).Caption,
+                             TaskDescription = t.TaskDescription,
+                             //最后时间和超时时间
+                             LastTime = billsub == null ? "" : billsub.TaskTime.ToString(),
+                             TimeOutHours = 0,
+                             CycleDateType = t.CycleDateType,
+                             CycleValue = t.CycleValue,
+                             CycleName = Command.GetItems(typeof(PublicEnum.EE_CycleDateType)).FirstOrDefault(p => p.Value == t.CycleDateType).Caption
+                         };
 
 
+                return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(ex);
+            }
+
+
+        }
+
+        /// <summary>
+        /// 获取超时的任务根据二维码
+        /// </summary>
+        /// <param name="dangerPoint"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<InsepctTaskByEmployee>> GetEmpTimeOutTaskByQRCoder(Guid dangerPoint)
+        {
+            /*
+           *超时计算，任务的所有单据，
+           * 根据单据获取任务的所有检查明细
+           * 如果没有检查详情，则超时时长=当前时间-任务创建时间-执行频率换算的时长
+           * 如果有检查详情，则超时时长=当前时间-最后检查的时间-执行频率换算的时长
+           */
+            try
+            {
+                var user = AppUser.EmployeeInfo;
+                if (user == null)
+                {
+                    throw new Exception("还未配置该用户!");
+                }
+                var userpost = _work.Repository<Basic_PostEmployees>().Queryable(p => p.EmployeeID == user.ID);
+                var postids = userpost.Select(s => s.PostID);
+
+                var tasks = rpstask.Queryable(q => (q.EmployeeID == user.ID || postids.Contains(q.ExecutePostID))
+                                                   && q.State == (int)PublicEnum.BillFlowState.audited
+                                                   && q.TaskType == (int)PublicEnum.EE_InspectTaskType.Cycle
+                                                   ).ToList();
+
+                //风险点
+
+                var danger = _work.Repository<Basic_DangerPoint>().GetModel(dangerPoint);
+                //任务单据
+                var taskids = tasks.Select(s => s.ID);
+                var bills = _work.Repository<Bll_TaskBill>().Queryable(q => taskids.Contains(q.TaskID)).ToList();
+
+                //任务主体
+                var billids = bills.Select(s => s.ID);
+                var billsubjects = _work.Repository<Bll_TaskBillSubjects>().Queryable(q => billids.Contains(q.BillID)).ToList();
+
+
+                var re = from t in tasks
+                         let tbills = bills.Where(q => q.TaskID == t.ID)
+                         //let bill=tbills==null?null:tbills.OrderByDescending(o=>o.StartTime).FirstOrDefault()
+                         let date = t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Year ? t.CycleValue * 365 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Month ? t.CycleValue * 30 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Week ? t.CycleValue * 7 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Day ? t.CycleValue * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Houre ? t.CycleValue * 60
+                        : t.CycleValue
+                         let billsub = tbills == null ? null : billsubjects.OrderByDescending(o => o.TaskTime).FirstOrDefault(q => tbills.Select(s => s.ID).Contains(q.BillID))
+                         let ctime = tbills == null ? (DateTime.Now - t.StartTime).TotalMinutes : billsub == null ? (DateTime.Now - t.StartTime).TotalMinutes : (DateTime.Now - billsub.TaskTime).TotalMinutes
+                         where ctime > date
+                         select new InsepctTaskByEmployee
+                         {
+
+                             TaskID = t.ID,
+                             DangerPointID = t.DangerPointID,
+                             DangerName = danger.Name,
+                             Name = t.Name,
+                             TaskTypeID = (PublicEnum.EE_InspectTaskType)t.TaskType,
+                             TaskTypeName = Command.GetItems(typeof(PublicEnum.EE_InspectTaskType)).FirstOrDefault(p => p.Value == t.TaskType).Caption,
+                             TaskDescription = t.TaskDescription,
+                             //最后时间和超时时间
+                             LastTime = billsub == null ? "" : billsub.TaskTime.ToString(),
+                             TimeOutHours = (int)ctime - date,
+                             CycleDateType = t.CycleDateType,
+                             CycleValue = t.CycleValue,
+                             CycleName = Command.GetItems(typeof(PublicEnum.EE_CycleDateType)).FirstOrDefault(p => p.Value == t.CycleDateType).Caption
+                         };
+
+                return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(ex);
+            }
+        }
     }
 }

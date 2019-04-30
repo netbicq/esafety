@@ -32,7 +32,7 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 风险点ID
         /// </summary>
-        public Guid DangerID { get; set; }
+        public Guid DangerPointID { get; set; }
         /// <summary>
         /// 任务类型
         /// </summary>
