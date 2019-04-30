@@ -89,6 +89,7 @@ namespace ESafety.Account.Service
                 var dict = _work.Repository<Core.Model.DB.Basic_Dict>();
                 var dbdanger = _work.Repository<Basic_Danger>().GetModel(dbtbs.DangerID);
                 var dbdpr = _work.Repository<Basic_DangerPointRelation>().GetModel(p => p.DangerPointID == dbtb.DangerPointID && p.SubjectID == dbtbs.SubjectID);
+                var lv = dict.GetModel(dbdanger.DangerLevel);
 
                 var re = new TaskBillModelView
                 {
@@ -121,7 +122,8 @@ namespace ESafety.Account.Service
 
                     Eval_YXFW = dbtbs.Eval_YXFW,
                     YXFWDic = dbtbs.Eval_YXFW == Guid.Empty ? string.Empty : dict.GetModel(dbtbs.Eval_YXFW).DictName,
-                    IsControl = dbtbs.IsControl
+                    IsControl = dbtbs.IsControl,
+                    DangerLevel=lv.DictName
 
                 };
                 return new ActionResult<TaskBillModelView>(re);
@@ -144,6 +146,7 @@ namespace ESafety.Account.Service
             {
                 var dbtb = _rpstb.Queryable(q => (q.PostID == para.Query.PostID || para.Query.PostID == Guid.Empty) && (para.Query.TaskState.HasValue==false?true:q.State==para.Query.TaskState.Value)).ToList();
                 var tbid = dbtb.Select(s => s.ID);
+                var dpids = dbtb.Select(s => s.DangerPointID);
 
                 var popstid = dbtb.Select(s => s.PostID).ToList();
                 var taskid = dbtb.Select(s => s.TaskID).ToList();
@@ -157,12 +160,14 @@ namespace ESafety.Account.Service
 
                 var posts = _work.Repository<Basic_Post>().Queryable(q => popstid.Contains(q.ID)).ToList();
 
+                var dps = _work.Repository<Basic_DangerPoint>().Queryable(p=>dpids.Contains(p.ID));
 
                 var rev = from s in dbtb
                           let emp = emps.FirstOrDefault(p => p.ID == s.EmployeeID)
                           let ts = dbts.FirstOrDefault(p => p.ID == s.TaskID)
                           let tbs = dbtbs.Where(p => p.BillID == s.ID).ToList()
                           let post = posts.FirstOrDefault(p => p.ID == s.PostID)
+                          let dp=dps.FirstOrDefault(p=>p.ID==s.DangerPointID)
                           where s.BillCode.Contains(para.Query.Key)||ts.Name.Contains(para.Query.Key)||para.Query.Key==string.Empty
                           select new TaskBillView
                           {
@@ -172,6 +177,7 @@ namespace ESafety.Account.Service
                               TaskID = s.TaskID,
                               EmployeeID = s.EmployeeID,
                               DangerPointID = s.DangerPointID,
+                              DangerPointName=dp.Name,
                               State = s.State,
                               StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == s.State).Caption,
                               EndTime = s.EndTime,
@@ -225,13 +231,13 @@ namespace ESafety.Account.Service
                 var dangers = dbtbs.Select(s => s.DangerID);
                 var danger = _work.Repository<Basic_Danger>().Queryable(p => dangers.Contains(p.ID));
                 ////当前任务所有风控项的所有风险等级
-                //var lvids = danger.Select(s => s.DangerLevel);
-                //var lvs = _work.Repository<Basic_Dict>().Queryable(p => lvids.Contains(p.ID));
+                var lvids = danger.Select(s => s.DangerLevel);
+                var lvs = _work.Repository<Basic_Dict>().Queryable(p => lvids.Contains(p.ID));
 
                 var rev = from tbd in dbtbs
                           let sub = subs.FirstOrDefault(p => p.SubjectID == tbd.SubjectID)
                           let dg = danger.FirstOrDefault(p => p.ID == tbd.DangerID)
-                          //let lv = lvs.FirstOrDefault(p => p.ID == dg.DangerLevel)
+                          let lv = lvs.FirstOrDefault(p => p.ID == dg.DangerLevel)
                           select new TaskSubjectBillView
                           {
                               ID = tbd.ID,
@@ -263,7 +269,9 @@ namespace ESafety.Account.Service
                               YXFWDic = tbd.Eval_YXFW == Guid.Empty ? string.Empty : dict.GetModel(tbd.Eval_YXFW).DictName,
                               SubjectID = tbd.SubjectID,
                               SubjectType = tbd.SubjectType,
-                              IsControl = tbd.IsControl
+                              IsControl = tbd.IsControl,
+                              DangerLevel=lv.DictName
+                           
                           };
                 var re = new Pager<TaskSubjectBillView>().GetCurrentPage(rev, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<TaskSubjectBillView>>(re);

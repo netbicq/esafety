@@ -29,6 +29,10 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public Guid DangerPointID { get; set; }
         /// <summary>
+        /// 风险点名
+        /// </summary>
+        public string DangerPointName { get; set; }
+        /// <summary>
         /// 开始时间
         /// </summary>
         public DateTime StartTime { get; set; }
@@ -113,6 +117,10 @@ namespace ESafety.Account.Model.View
         ///风控项名称 
         /// </summary>
         public string DangerName { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public string DangerLevel { get; set; }
         /// <summary>
         /// 任务结果
         /// </summary>

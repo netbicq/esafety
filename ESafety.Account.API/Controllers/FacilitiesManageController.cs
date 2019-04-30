@@ -156,7 +156,7 @@ namespace ESafety.Account.API.Controllers
             return bll.GetSortTree(id);
         }
         /// <summary>
-        /// 获取指定ID的树
+        ///获取设备设施列表
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
