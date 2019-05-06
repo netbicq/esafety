@@ -325,7 +325,7 @@ namespace ESafety.Core
                         ID = Guid.NewGuid(),
                         
                     };
-                    switch ((PublicEnum.EE_UserDefinedDataType)dbudv.DefinedType)
+                    switch ((PublicEnum.EE_UserDefinedDataType)definedmodel.DataType)
                     {
                         case PublicEnum.EE_UserDefinedDataType.Dict:
                             if (definedmodel.IsMulti)

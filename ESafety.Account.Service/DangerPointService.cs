@@ -20,8 +20,8 @@ namespace ESafety.Account.Service
 {
     public class DangerPointService : ServiceBase, IDangerPointService
     {
-        private IUnitwork work=null;
-        private IRepository<Basic_DangerPoint> rpsdp=null;
+        private IUnitwork work = null;
+        private IRepository<Basic_DangerPoint> rpsdp = null;
         private IRepository<Basic_DangerPointRelation> rpsdpr = null;
         public DangerPointService(IUnitwork _work)
         {
@@ -39,14 +39,15 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var check = rpsdp.Any(q=>q.Name==pointNew.Name);
+                var check = rpsdp.Any(q => q.Name == pointNew.Name);
                 if (check)
                 {
                     throw new Exception("该风险点已存在");
                 }
                 var dbdp = pointNew.MAPTO<Basic_DangerPoint>();
+                dbdp.WXYSJson = JsonConvert.SerializeObject(pointNew.WXYSDictIDs);
                 dbdp.Code = Command.CreateCode();
-                dbdp.QRCoderUrl =CreateQRCoder(dbdp.ID);
+                dbdp.QRCoderUrl = CreateQRCoder(dbdp.ID);
                 rpsdp.Add(dbdp);
                 work.Commit();
                 return new ActionResult<bool>(true);
@@ -64,7 +65,7 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         private string CreateQRCoder(Guid pointID)
         {
-           
+
             QRCodeEncoder endocder = new QRCodeEncoder();
             //二维码背景颜色
             endocder.QRCodeBackgroundColor = System.Drawing.Color.White;
@@ -84,13 +85,13 @@ namespace ESafety.Account.Service
             {
                 Directory.CreateDirectory(strSaveDir);
             }
-            string strSavePath = Path.Combine(strSaveDir,pointID+ ".png");
+            string strSavePath = Path.Combine(strSaveDir, pointID + ".png");
             if (!System.IO.File.Exists(strSavePath))
             {
                 bitmap.Save(strSavePath);
             }
             return "~/QRCoder/" + pointID + ".png";
-          
+
         }
 
 
@@ -103,8 +104,8 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var check = rpsdp.Any(q => q.ID== relationNew.DangerPointID);
-                if (!check)
+                var dbdp = rpsdp.GetModel(q => q.ID == relationNew.DangerPointID);
+                if (dbdp == null)
                 {
                     throw new Exception("未找到该风险点");
                 }
@@ -112,12 +113,30 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("主体与主体类型不能为空!");
                 }
-                check = rpsdpr.Any(p=>p.SubjectID==relationNew.SubjectID&&p.DangerPointID==relationNew.DangerPointID);
+                var check = rpsdpr.Any(p => p.SubjectID == relationNew.SubjectID && p.DangerPointID == relationNew.DangerPointID);
                 if (check)
                 {
-                    throw new Exception("该风险点下已存在, 主体"+relationNew.SubjectName);
+                    throw new Exception("该风险点下已存在, 主体" + relationNew.SubjectName);
                 }
+                check = work.Repository<Basic_DangerRelation>().Any(p => p.SubjectID == relationNew.SubjectID);
+                if (!check)
+                {
+                    throw new Exception("该主体下没有风空项!");
+                }
+                //所有风空项ID
+                var dangerids = work.Repository<Basic_DangerRelation>().Queryable(p => p.SubjectID == relationNew.SubjectID).Select(s => s.DangerID);
+                //所有风险等级ID
+                var lvids = work.Repository<Basic_Danger>().Queryable(p => dangerids.Contains(p.ID)).Select(s => s.DangerLevel);
+                //最大的风险等级具体项
+                var lv = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => lvids.Contains(p.ID)).OrderByDescending(o => o.MinValue).FirstOrDefault();
 
+                var dplv = work.Repository<Core.Model.DB.Basic_Dict>().GetModel(p => p.ID == dbdp.DangerLevel);
+                if (dplv.MinValue < lv.MinValue)
+                {
+                    //如果主体的风空项的风险等级大于预设的风险点的风险等级则更新预设的风险等级
+                    dbdp.DangerLevel = lv.ID;
+                    rpsdp.Update(dbdp);
+                }
                 var dbdpr = relationNew.MAPTO<Basic_DangerPointRelation>();
                 rpsdpr.Add(dbdpr);
                 work.Commit();
@@ -143,7 +162,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到改风险点");
                 }
-                var check = work.Repository<Basic_DangerPointRelation>().Any(p=>p.DangerPointID==pointID);
+                var check = work.Repository<Basic_DangerPointRelation>().Any(p => p.DangerPointID == pointID);
                 if (check)
                 {
                     throw new Exception("该风险点已配置,无法删除!");
@@ -198,16 +217,16 @@ namespace ESafety.Account.Service
             try
             {
                 var dbdp = rpsdp.GetModel(pointEdit.ID);
-                if(dbdp==null)
+                if (dbdp == null)
                 {
                     throw new Exception("未找到所需修改的风险点!");
                 }
-                var check = rpsdp.Any(p => p.Name == pointEdit.Name&&p.ID!=pointEdit.ID);
+                var check = rpsdp.Any(p => p.Name == pointEdit.Name && p.ID != pointEdit.ID);
                 if (check)
                 {
                     throw new Exception("该风险点名已存在!");
                 }
-                dbdp =pointEdit.CopyTo<Basic_DangerPoint>(dbdp);
+                dbdp = pointEdit.CopyTo<Basic_DangerPoint>(dbdp);
                 rpsdp.Update(dbdp);
                 work.Commit();
                 return new ActionResult<bool>(true);
@@ -249,9 +268,39 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var page = rpsdp.Queryable(p=>pointName.Query.Contains(p.Name)||pointName.Query==string.Empty);
-                var retemp = page.MAPTO<DangerPointView>();
-                var re = new Pager<DangerPointView>().GetCurrentPage(retemp,pointName.PageSize,pointName.PageIndex);
+                var page = rpsdp.Queryable(p => pointName.Query.Contains(p.Name) || pointName.Query == string.Empty);
+                //风险等级
+                var lvids = page.Select(s => s.DangerLevel);
+                var lvs = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => lvids.Contains(p.ID));
+                //负责人员
+                var empids = page.Select(s => s.Principal);
+                var emps = work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p => empids.Contains(p.ID));
+
+
+                var retemp = from p in page
+                             let lv = lvs.FirstOrDefault(q => q.ID == p.DangerLevel)
+                             let emp = emps.FirstOrDefault(q => q.ID == p.Principal)
+                             //let WXYSIDs = JsonConvert.DeserializeObject(p.WXYSJson)
+                             //let WXYSs = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => WXYSIDs.Contains(p.ID))
+                             select new DangerPointView
+                             {
+                                 ID = p.ID,
+                                 DangerLevel = p.DangerLevel,
+                                 QRCoderUrl = p.QRCoderUrl,
+                                 Principal = p.Principal,
+                                 Name = p.Name,
+                                 Memo = p.Memo,
+                                 EmergencyMeasure = p.EmergencyMeasure,
+                                 ControlMeasure = p.ControlMeasure,
+                                 Code = p.Code,
+                                 DangerLevelName = lv.DictName,
+                                 PrincipalName = emp.CNName,
+
+                                // WXYSDicts
+
+
+                             };
+                var re = new Pager<DangerPointView>().GetCurrentPage(retemp, pointName.PageSize, pointName.PageIndex);
                 return new ActionResult<Pager<DangerPointView>>(re);
             }
             catch (Exception ex)
@@ -268,13 +317,13 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var page = rpsdpr.Queryable(p => p.DangerPointID==pointID.Query);
+                var page = rpsdpr.Queryable(p => p.DangerPointID == pointID.Query);
                 var retemp = from pg in page.ToList()
                              select new DangerPointRelationView
                              {
-                                 ID=pg.ID,
-                                 SubjectType=Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(p=>p.Value==pg.SubjectType).Caption,
-                                 SubjectName=pg.SubjectName
+                                 ID = pg.ID,
+                                 SubjectType = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(p => p.Value == pg.SubjectType).Caption,
+                                 SubjectName = pg.SubjectName
                              };
                 var re = new Pager<DangerPointRelationView>().GetCurrentPage(retemp, pointID.PageSize, pointID.PageIndex);
                 return new ActionResult<Pager<DangerPointRelationView>>(re);
@@ -293,14 +342,14 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var page = rpsdpr.Queryable(p => p.DangerPointID == select.DangerPointID&&p.SubjectType==select.SubjectType);
-                var re= from pg in page
-                             select new DangerPointRelationSelector
-                             {
-                                 SubjectID= pg.SubjectID,
-                                 SubjectName =pg.SubjectName
-                             };
- 
+                var page = rpsdpr.Queryable(p => p.DangerPointID == select.DangerPointID && p.SubjectType == select.SubjectType);
+                var re = from pg in page
+                         select new DangerPointRelationSelector
+                         {
+                             SubjectID = pg.SubjectID,
+                             SubjectName = pg.SubjectName
+                         };
+
                 return new ActionResult<IEnumerable<DangerPointRelationSelector>>(re);
             }
             catch (Exception ex)
@@ -321,8 +370,8 @@ namespace ESafety.Account.Service
                          select new DangerPointSelector
                          {
                              ID = pg.ID,
-                             Name=pg.Name
-                         }; 
+                             Name = pg.Name
+                         };
                 return new ActionResult<IEnumerable<DangerPointSelector>>(re);
             }
             catch (Exception ex)
@@ -339,7 +388,7 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbdps = rpsdp.Queryable(p=>pointIds.Contains(p.ID));
+                var dbdps = rpsdp.Queryable(p => pointIds.Contains(p.ID));
                 var re = from code in dbdps
                          select new QRCoder
                          {

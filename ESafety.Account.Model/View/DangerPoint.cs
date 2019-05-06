@@ -31,7 +31,51 @@ namespace ESafety.Account.Model.View
         /// 二维码路径
         /// </summary>
         public string QRCoderUrl { get; set; }
+        /// <summary>
+        /// 管控措施
+        /// </summary>
+        public string ControlMeasure { get; set; }
+        /// <summary>
+        /// 应急处理措施
+        /// </summary>
+        public string EmergencyMeasure { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public Guid DangerLevel { get; set; }
+        /// <summary>
+        /// 风险等级名
+        /// </summary>
+        public string DangerLevelName { get; set; }
+        /// <summary>
+        /// 危险因素词典ID
+        /// </summary>
+        public IEnumerable<WXYS> WXYSDicts { get; set; }
+        /// <summary>
+        /// 负责人ID
+        /// </summary>
+        public Guid Principal { get; set; }
+        /// <summary>
+        /// 负责人名
+        /// </summary>
+        public string PrincipalName { get; set; }
+
     }
+    /// <summary>
+    /// 危险因素
+    /// </summary>
+    public class WXYS
+    {
+        /// <summary>
+        /// 危险因素ID
+        /// </summary>
+        public Guid ID { get; set; }
+        /// <summary>
+        /// 危险因素项
+        /// </summary>
+        public string WXYSDict { get; set; }
+    }
+
     /// <summary>
     /// 风险点选择器
     /// </summary>
