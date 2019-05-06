@@ -72,28 +72,86 @@ namespace ESafety.Core.Model.PARA
         /// </summary>
         public bool IsLevel { get; set; }
         /// <summary>
-        /// 操作用户
+        /// 工号
         /// </summary>
-        public string Login { get; set; }
+        public string Jobno { get; set; }
         /// <summary>
         /// 头像IMG
         /// </summary>
         public string HeadIMG { get; set; }
-        //组织ID
+        /// <summary>
+        /// 组织ID
+        /// </summary>
         public Guid OrgId { get; set; }
         /// <summary>
         /// 自定义类项
         /// </summary>
         public IEnumerable<UserDefinedValue> UserDefineds { get; set; }
+
+        /// <summary>
+        /// 电话
+        /// </summary>
+        public string Tel { get; set; }
+
+        /// <summary>
+        /// 是否创建登陆用户
+        /// </summary>
+        public bool IsCreate { get; set; }
+        /// <summary>
+        /// 角色ID集合
+        /// </summary>
+        public IEnumerable<Guid> RoleIDs { get; set; }
     }
 
 
-    public class EmployeeEdit:EmployeeNew
+    public class EmployeeEdit
     {
         /// <summary>
         /// id
         /// </summary>
         public Guid ID { get; set; }
+        /// <summary>
+        /// 姓名
+        /// </summary>
+        public string CNName { get; set; }
+        /// <summary>
+        /// 性别
+        /// </summary>
+        public string Gender { get; set; }
+        /// <summary>
+        /// Leader
+        /// </summary>
+        public bool IsLeader { get; set; }
+        /// <summary>
+        /// 接受平级
+        /// </summary>
+        public bool IsLevel { get; set; }
+        /// <summary>
+        /// 工号
+        /// </summary>
+        public string Jobno { get; set; }
+        /// <summary>
+        /// 头像IMG
+        /// </summary>
+        public string HeadIMG { get; set; }
+        /// <summary>
+        /// 组织ID
+        /// </summary>
+        public Guid OrgId { get; set; }
+        /// <summary>
+        /// 自定义类项
+        /// </summary>
+        public IEnumerable<UserDefinedValue> UserDefineds { get; set; }
+
+        /// <summary>
+        /// 电话
+        /// </summary>
+        public string Tel { get; set; }
+
+        /// <summary>
+        /// 角色ID集合
+        /// </summary>
+        public IEnumerable<Guid> RoleIDs { get; set; }
     }
 
     public class EmployeeQuery
@@ -102,5 +160,17 @@ namespace ESafety.Core.Model.PARA
         /// 组织ID
         /// </summary>
         public Guid ID { get; set; }
+    }
+
+    public class EmployeeQuit
+    {
+        /// <summary>
+        /// 人员ID
+        /// </summary>
+        public Guid ID { get; set; }
+        /// <summary>
+        /// 离职日期
+        /// </summary>
+        public DateTime QuitDate { get; set; }
     }
 }

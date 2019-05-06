@@ -21,9 +21,13 @@ namespace ESafety.Core
         private IUnitwork _work = null;
         private IRepository<Model.DB.Basic_Org> _rpsorg = null;
         private IRepository<Basic_Employee> _rpsemployee = null;
+        private IRepository<Auth_User> rpsUser = null;
+        private IRepository<Auth_UserProfile> rpsUserProfile = null;
+
 
         private IUserDefined usedefinedService = null;
         private ITree srvTree = null;
+        
         public OrgEmployeeService(IUnitwork work, IUserDefined udf,ITree tree)
         {
             _work = work;
@@ -32,6 +36,8 @@ namespace ESafety.Core
             _rpsemployee = work.Repository<Basic_Employee>();
             usedefinedService = udf;
             srvTree = tree;
+            rpsUser = work.Repository<Auth_User>();
+            rpsUserProfile = work.Repository<Auth_UserProfile>();
 
         }
 
@@ -48,10 +54,10 @@ namespace ESafety.Core
                 {
                     throw new Exception("参数有误");
                 }
-                var check = _rpsemployee.Any(q => q.Login == employee.Login);
+                var check = _rpsemployee.Any(q => q.Jobno == employee.Jobno);
                 if (check)
                 {
-                    throw new Exception("已经存在相同的用户 ：" + employee.Login);
+                    throw new Exception("已存在用户工号 ：" + employee.Jobno);
                 }
                 var _employee = employee.MAPTO<Basic_Employee>();
                 var definedvalue = new UserDefinedBusinessValue
@@ -64,8 +70,53 @@ namespace ESafety.Core
                 {
                     throw new Exception(defined.msg);
                 }
+                //新建账号
+                if (employee.IsCreate)
+                {
+                    check = rpsUser.Any(p=>p.Login==employee.Jobno);
+                    if (check)
+                    {
+                        throw new Exception("已存在用户："+employee.Jobno);
+                    }
+                    //登录账号
+                    var dbuser = new Model.DB.Auth_User()
+                    {
+                        Login = employee.Jobno,
+                        OtherEdit = true,
+                        OtherView = true,
+                        Pwd = "123456",
+                        TokenValidTime = DateTime.Now,
+                        State = 1,
+                        Token = "",
+                    };
+                    //个人资料
+                    var profile = new Model.DB.Auth_UserProfile()
+                    {
+                        CNName = employee.CNName,
+                        Login = employee.Jobno,
+                        HeadIMG = "",
+                        Tel = employee.Tel
+                    };
+                    //角色
+                    var userrole = _work.Repository<Model.DB.Auth_UserRole>();
+                    var dbroles = new List<Model.DB.Auth_UserRole>();
+                    foreach (var role in employee.RoleIDs)
+                    {
+                        var urole = new Model.DB.Auth_UserRole
+                        {
+                            Login = employee.Jobno,
+                            RoleID = role,
+                            ID = Guid.NewGuid()
+                        };
+                        dbroles.Add(urole);
+                    };
+                    userrole.Add(dbroles);
+                    rpsUser.Add(dbuser);
+                    rpsUserProfile.Add(profile);
+                }
+                _employee.Login = employee.Jobno;
+                _employee.IsQuit = false;
                 _rpsemployee.Add(_employee);
-
                 _work.Commit();
                 return new ActionResult<bool>(true);
             }
@@ -103,13 +154,27 @@ namespace ESafety.Core
         {
             try
             {
-                var dbemployee = _rpsemployee.Any(q => q.ID == id);
-                if (!dbemployee)
+                var dbemployee = _rpsemployee.GetModel(id);
+                if (dbemployee==null)
                 {
                     throw new Exception("该人员不存在!");
                 }
-
                 //作业务检查
+                var check = _work.Repository<Core.Model.DB.Account.Bll_InspectTask>().Any(p => p.EmployeeID == id);
+                if (check)
+                {
+                    throw new Exception("该人员已分配任务，无法删除!");
+                }
+                check= _work.Repository<Core.Model.DB.Account.Bll_TaskBill>().Any(p => p.EmployeeID == id);
+                if (check)
+                {
+                    throw new Exception("该人员已存在任务单据，无法删除!");
+                }
+                check = _work.Repository<Core.Model.DB.Account.Bll_OpreateionBillFlow>().Any(p => p.FlowEmployeeID == id);
+                if (check)
+                {
+                    throw new Exception("该人员已存在作业流程单，无法删除!");
+                }
 
                 _rpsemployee.Delete(p => p.ID == id);
                 //删除自定义项
@@ -177,20 +242,40 @@ namespace ESafety.Core
                 {
                     throw new Exception("未找到该人员信息");
                 }
-                var check = _rpsemployee.Any(p => p.ID != employee.ID && p.Login == employee.Login);
+                var check = _rpsemployee.Any(p => p.ID != employee.ID && p.Jobno == employee.Jobno);
                 if (check)
                 {
-                    throw new Exception("已经存在相同的用户：" + employee.Login);
+                    throw new Exception("已经存在相同的工号：" + employee.Jobno);
                 }
                 dbemployee = employee.CopyTo<Basic_Employee>(dbemployee);
 
+                //角色
+                var userrole = _work.Repository<Model.DB.Auth_UserRole>();
+                var dbroles = new List<Model.DB.Auth_UserRole>();
+                foreach (var role in employee.RoleIDs)
+                {
+                    var urole = new Model.DB.Auth_UserRole
+                    {
+                        Login = dbemployee.Login,
+                        RoleID = role,
+                        ID = Guid.NewGuid()
+                    };
+                    dbroles.Add(urole);
+                };
+                userrole.Delete(p=>p.Login==dbemployee.Login);
+                userrole.Add(dbroles);
+
+                //自定义项
                 var definevalue = new UserDefinedBusinessValue
                 {
                     BusinessID = dbemployee.ID,
                     Values = employee.UserDefineds
                 };
-                usedefinedService.SaveBuisnessValue(definevalue);
-
+                var defined=usedefinedService.SaveBuisnessValue(definevalue);
+                if (defined.state != 200)
+                {
+                    throw new Exception(defined.msg);
+                }
                 _rpsemployee.Update(dbemployee);
 
 
@@ -312,9 +397,9 @@ namespace ESafety.Core
         /// <returns></returns>
         public ActionResult<IEnumerable<EmployeeView>> GetEmployeelist(Guid orgid)
         {
-            var emps = _rpsemployee.Queryable(q => q.OrgID == orgid||Guid.Empty==orgid);
-            var reemps = from em in emps.ToList()
-                         let or = _rpsorg.GetModel(em.OrgID)
+            var emps = _rpsemployee.Queryable(q => q.OrgID == orgid&&q.IsQuit==false);
+            var org = _rpsorg.GetModel(orgid);
+            var reemps = from em in emps
                          select new EmployeeView
                          {
                              ID = em.ID,
@@ -325,7 +410,7 @@ namespace ESafety.Core
                              HeadIMG = em.HeadIMG,
                              Login = em.Login,
                              OrgID = em.OrgID,
-                             OrgName=or.OrgName
+                             OrgName=org.OrgName
                          };
             return new ActionResult<IEnumerable<EmployeeView>>(reemps);
         }
@@ -488,6 +573,35 @@ namespace ESafety.Core
             catch (Exception ex)
             {
                 return new ActionResult<IEnumerable<Guid>>(ex);
+            }
+        }
+        /// <summary>
+        /// 人员离职
+        /// </summary>
+        /// <param name="employeeQuit"></param>
+        /// <returns></returns>
+        public ActionResult<bool> EmployeeQuit(EmployeeQuit employeeQuit)
+        {
+            try
+            {
+                if (employeeQuit == null)
+                {
+                    throw new Exception("参数错误!");
+                }
+                var dbemp = _rpsemployee.GetModel(employeeQuit.ID);
+                if (dbemp == null)
+                {
+                    throw new Exception("未找到该人员!");
+                }
+                dbemp.QuitDate = employeeQuit.QuitDate;
+                dbemp.IsQuit = true;
+                _rpsemployee.Update(dbemp);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
             }
         }
     }

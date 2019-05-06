@@ -56,6 +56,14 @@ namespace ESafety.Account.Model.PARA
         /// 自定义类项
         /// </summary>
         public IEnumerable<UserDefinedValue> UserDefineds { get; set; }
+        /// <summary>
+        /// 组织架构ID
+        /// </summary>
+        public Guid OrgID { get; set; }
+        /// <summary>
+        /// 文件列表
+        /// </summary>
+        public IEnumerable<AttachFileNew> fileNews { get; set; }
     }
 
     public class FacilityEdit:FacilityNew

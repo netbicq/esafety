@@ -23,8 +23,9 @@ namespace ESafety.Account.Service
 
         private IUserDefined usedefinedService = null;
         public ITree srvTree = null;
+        private IAttachFile srvFile = null;
 
-        public FacilitiesManageService(IUnitwork work, IUserDefined usf,ITree tree)
+        public FacilitiesManageService(IUnitwork work, IUserDefined usf,ITree tree,IAttachFile file)
         {
             _work = work;
             Unitwork = work;
@@ -32,6 +33,7 @@ namespace ESafety.Account.Service
             _rpsfacilities = work.Repository<Basic_Facilities>();
             usedefinedService = usf;
             srvTree = tree;
+            srvFile = file;
 
         }
         /// <summary>
@@ -92,7 +94,17 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception(defined.msg);
                 }
-
+                //文件
+                var files = new AttachFileSave
+                {
+                    BusinessID=dbfacility.ID,
+                    files=facility.fileNews
+                };
+                var file = srvFile.SaveFiles(files);
+                if (file.state != 200)
+                {
+                    throw new Exception(file.msg);
+                }
                 _rpsfacilities.Add(dbfacility);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -185,6 +197,17 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception(defined.msg);
                 }
+                var files = new AttachFileSave
+                {
+                    BusinessID = _dbfacility.ID,
+                    files = facility.fileNews
+                };
+                var file = srvFile.SaveFiles(files);
+                if (file.state != 200)
+                {
+                    throw new Exception(file.msg);
+                }
+
                 _rpsfacilities.Update(_dbfacility);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -207,7 +230,11 @@ namespace ESafety.Account.Service
                
                 var dbfacilities = _rpsfacilities.Queryable(p => p.SortID == para.Query.ID && (p.Name.Contains(para.KeyWord) || p.Code.Contains(para.KeyWord) || string.IsNullOrEmpty(para.KeyWord)));
                 var sortname = _rpsfacilitiessort.GetModel(p => p.ID == para.Query.ID).SortName;
+                var orgids = dbfacilities.Select(s => s.OrgID);
+
+                var orgs = _work.Repository<Core.Model.DB.Basic_Org>().Queryable(p=>orgids.Contains(p.ID));
                 var refclty = from f in dbfacilities
+                              let org = orgs.FirstOrDefault(p=>p.ID==f.OrgID)
                               select new FacilityView
                               {
                                   ID = f.ID,
@@ -216,7 +243,10 @@ namespace ESafety.Account.Service
                                   Principal = f.Principal,
                                   PrincipalTel = f.PrincipalTel,
                                   SortID = f.SortID,
-                                  SortName = sortname
+                                  SortName = sortname,
+                                  OrgName=org.OrgName,
+                                  OrgID=f.OrgID
+
                               };
                 var re = new Pager<FacilityView>().GetCurrentPage(refclty, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<FacilityView>>(re);

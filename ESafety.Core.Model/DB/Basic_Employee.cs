@@ -45,5 +45,21 @@ namespace ESafety.Core.Model.DB
         /// 组织ID
         /// </summary>
         public Guid OrgID { get; set; }
+        /// <summary>
+        /// 电话
+        /// </summary>
+        public string Tel { get; set; }
+        /// <summary>
+        /// 工号
+        /// </summary>
+        public string Jobno { get; set; }
+        /// <summary>
+        /// 是否离职
+        /// </summary>
+        public bool IsQuit { get; set; }
+        /// <summary>
+        /// 离职日期
+        /// </summary>
+        public DateTime? QuitDate { get; set; }
     }
 }

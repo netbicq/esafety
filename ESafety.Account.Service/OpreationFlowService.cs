@@ -194,8 +194,11 @@ namespace ESafety.Account.Service
                     BusinessID = dbopreation.ID,
                     Values = opreation.UserDefineds
                 };
-                usedefinedService.SaveBuisnessValue(definevalue);
-
+                var defined= usedefinedService.SaveBuisnessValue(definevalue);
+                if (defined.state != 200)
+                {
+                    throw new Exception(defined.msg);
+                }
                 _rpsopreation.Update(dbopreation);
 
 

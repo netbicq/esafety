@@ -38,5 +38,9 @@ namespace ESafety.Core.Model.DB.Account
         /// 设备定位
         /// </summary>
         public string Location { get; set; }
+       /// <summary>
+       /// 组织ID
+       /// </summary>
+        public Guid OrgID { get; set; }
     }
 }

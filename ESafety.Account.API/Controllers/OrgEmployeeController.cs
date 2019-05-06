@@ -183,5 +183,16 @@ namespace ESafety.Account.API.Controllers
         {
             return bll.GetOrgChildren(id);
         }
+        /// <summary>
+        /// 人员离职
+        /// </summary>
+        /// <param name="employeeQuit"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("employeeQuit")]
+        public ActionResult<bool> EmployeeQuit(EmployeeQuit employeeQuit)
+        {
+            return bll.EmployeeQuit(employeeQuit);
+        }
     }
 }

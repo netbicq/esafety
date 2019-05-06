@@ -345,7 +345,51 @@ namespace ESafety.Core
                         case PublicEnum.EE_UserDefinedDataType.Bool:
                             dbudv.DefinedValue = v.DefinedValue == null ? false.ToString() : v.DefinedValue.ToString();
                             break;
-
+                        case PublicEnum.EE_UserDefinedDataType.Number:
+                            double temp;
+                            if (v.DefinedValue == null)
+                            {
+                                dbudv.DefinedValue = "0.00";
+                            }
+                            if(double.TryParse(v.DefinedValue.ToString(),out temp))
+                            {
+                                dbudv.DefinedValue = temp.ToString();
+                            }
+                            else
+                            {
+                                throw new Exception("输入值："+v.DefinedValue+" 数据类型错误，应输入数字类型数据!");
+                            }
+                            break;
+                        case PublicEnum.EE_UserDefinedDataType.Int:
+                            int tempnum;
+                            if (v.DefinedValue == null)
+                            {
+                                dbudv.DefinedValue = "0";
+                            }
+                            if (int.TryParse(v.DefinedValue.ToString(), out tempnum))
+                            {
+                                dbudv.DefinedValue = tempnum.ToString();
+                            }
+                            else
+                            {
+                                throw new Exception("输入值：" + v.DefinedValue + " 数据类型错误，应输入整数类型数据!");
+                            }
+                            break;
+                        case PublicEnum.EE_UserDefinedDataType.Date:
+                            DateTime tempdate;
+                            if (v.DefinedValue == null)
+                            {
+                                dbudv.DefinedValue = "";
+                            }
+                            if (DateTime.TryParse(v.DefinedValue.ToString(), out tempdate))
+                            {
+                                dbudv.DefinedValue = tempdate.ToString();
+                            }
+                            else
+                            {
+                                throw new Exception("输入值：" + v.DefinedValue + " 数据类型错误，应输入日期类型数据!");
+                            }
+                            break;
                         default:
                             dbudv.DefinedValue=v.DefinedValue==null?string.Empty:v.DefinedValue.ToString();
                             break;

@@ -64,6 +64,14 @@ namespace ESafety.Account.Model.View
         /// 定位
         /// </summary>
         public string Location { get; set; }
+        /// <summary>
+        /// 使用单位
+        /// </summary>
+        public string OrgName { get; set; }
+        /// <summary>
+        /// 使用单位ID
+        /// </summary>
+        public Guid OrgID { get; set; }
     }
     /// <summary>
     /// 设备类别树
