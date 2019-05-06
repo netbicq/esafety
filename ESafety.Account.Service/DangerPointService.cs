@@ -112,6 +112,11 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("主体与主体类型不能为空!");
                 }
+                check = rpsdpr.Any(p=>p.SubjectID==relationNew.SubjectID&&p.DangerPointID==relationNew.DangerPointID);
+                if (check)
+                {
+                    throw new Exception("该风险点下已存在, 主体"+relationNew.SubjectName);
+                }
 
                 var dbdpr = relationNew.MAPTO<Basic_DangerPointRelation>();
                 rpsdpr.Add(dbdpr);
