@@ -40,6 +40,10 @@ namespace ESafety.Account.Model.View
         /// 负责人电话
         /// </summary>
         public string PrincipalTel { get; set; }
+        /// <summary>
+        /// 作业所属岗位
+        /// </summary>
+        public string PostName { get; set; }
     }
     public class OpreationFlowView
     {

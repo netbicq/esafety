@@ -36,5 +36,9 @@ namespace ESafety.Core.Model.DB.Account
         /// 描述
         /// </summary>
         public string Memo { get; set; }
+        /// <summary>
+        /// 作业所属岗位
+        /// </summary>
+        public Guid PostID { get; set; }
     }
 }

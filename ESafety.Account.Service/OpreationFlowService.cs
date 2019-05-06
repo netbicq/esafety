@@ -218,8 +218,11 @@ namespace ESafety.Account.Service
         public ActionResult<Pager<OpreationView>> GetOpreationPage(PagerQuery<OpreationQuery> para)
         {
             var opreations = _rpsopreation.Queryable(q => q.Name.Contains(para.Query.Name) || q.Code.Contains(para.Query.Code) || string.IsNullOrEmpty(para.Query.Name) || string.IsNullOrEmpty(para.Query.Code));
+            var pids = opreations.Select(s => s.PostID);
 
+            var posts = _rpspost.Queryable(p=>pids.Contains(p.ID));
             var reops = from ac in opreations
+                         let post=posts.FirstOrDefault(p=>p.ID==ac.PostID)
                          orderby ac.Code descending
                          select new OpreationView
                          {
@@ -227,9 +230,9 @@ namespace ESafety.Account.Service
                              ID = ac.ID,
                              Name = ac.Name,
                              IsBackReturn=ac.IsBackReturn,
-                             Memo=ac.Memo
+                             Memo=ac.Memo,
+                             PostName=post.Name
                          };
-
             var re = new Pager<OpreationView>().GetCurrentPage(reops, para.PageSize, para.PageIndex);
 
             return new ActionResult<Pager<OpreationView>>(re);
@@ -282,6 +285,8 @@ namespace ESafety.Account.Service
                     throw new Exception("未找到该操作模型");
                 }
                 var re = dbopreation.MAPTO<OpreationView>();
+                var post = _rpspost.GetModel(dbopreation.PostID);
+                re.PostName = post==null?"":post.Name;
                 return new ActionResult<OpreationView>(re);
 
             }

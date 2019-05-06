@@ -26,6 +26,10 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public bool IsBackReturn { get; set; }
         /// <summary>
+        /// 作业所属岗位
+        /// </summary>
+        public Guid PostID { get; set; }
+        /// <summary>
         /// 负责人
         /// </summary>
         public string Principal { get; set; }
