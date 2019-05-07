@@ -35,6 +35,14 @@ namespace ESafety.Core.Model.PARA
         /// 备注
         /// </summary>
         public string Memo { get; set; }
+        /// <summary>
+        /// 最小值
+        /// </summary>
+        public int MinValue { get; set; }
+        /// <summary>
+        /// 最大值
+        /// </summary>
+        public int MaxValue { get; set; }
     }
     /// <summary>
     /// 修改词典

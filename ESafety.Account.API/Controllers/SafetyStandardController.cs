@@ -96,5 +96,17 @@ namespace ESafety.Account.API.Controllers
         {
             return bll.GetSafetyStandards(id);
         }
+
+        /// <summary>
+        /// 根据风控项类别获取执行标准
+        /// </summary>
+        /// <param name="dangersortid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getsfttysdsByDangerSortId/{dangersortid:Guid}")]
+        public ActionResult<IEnumerable<SafetyStandardView>> GetSafetyStandardsByDangerSort(Guid dangersortid)
+        {
+            return bll.GetSafetyStandardsByDangerSort(dangersortid);
+        }
     }
 }

@@ -28,5 +28,17 @@ namespace ESafety.Core.Model.DB.Account
         /// 管控措施
         /// </summary>
         public string Controls { get; set; }
+        /// <summary>
+        /// 工程措施
+        /// </summary>
+        public string Engineering { get; set; }
+        /// <summary>
+        /// 事故措施
+        /// </summary>
+        public string Accident { get; set; }
+        /// <summary>
+        /// 个体措施
+        /// </summary>
+        public string Individual { get; set; }
     }
 }

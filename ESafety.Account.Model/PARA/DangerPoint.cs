@@ -1,4 +1,5 @@
-﻿using ESafety.Unity;
+﻿using ESafety.Core.Model.PARA;
+using ESafety.Unity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +41,10 @@ namespace ESafety.Account.Model.PARA
         /// 负责人
         /// </summary>
         public Guid Principal { get; set; }
+        /// <summary>
+        /// 文件列表
+        /// </summary>
+        public IEnumerable<AttachFileNew> fileNews { get; set; }
     }
     /// <summary>
     /// 修改风险点

@@ -1,8 +1,10 @@
 ﻿using ESafety.Account.IService;
 using ESafety.Account.Model.PARA;
 using ESafety.Account.Model.View;
+using ESafety.Core;
 using ESafety.Core.Model;
 using ESafety.Core.Model.DB.Account;
+using ESafety.Core.Model.PARA;
 using ESafety.ORM;
 using ESafety.Unity;
 using Newtonsoft.Json;
@@ -23,12 +25,14 @@ namespace ESafety.Account.Service
         private IUnitwork work = null;
         private IRepository<Basic_DangerPoint> rpsdp = null;
         private IRepository<Basic_DangerPointRelation> rpsdpr = null;
-        public DangerPointService(IUnitwork _work)
+        private IAttachFile srvFile = null;
+        public DangerPointService(IUnitwork _work,IAttachFile file)
         {
             work = _work;
             Unitwork = _work;
             rpsdp = work.Repository<Basic_DangerPoint>();
             rpsdpr = work.Repository<Basic_DangerPointRelation>();
+            srvFile = file;
         }
         /// <summary>
         /// 新建风险点
@@ -52,6 +56,17 @@ namespace ESafety.Account.Service
                 dbdp.WXYSJson = JsonConvert.SerializeObject(pointNew.WXYSDictIDs);
                 dbdp.Code = Command.CreateCode();
                 dbdp.QRCoderUrl = CreateQRCoder(dbdp.ID);
+                //文件
+                var files = new AttachFileSave
+                {
+                    BusinessID = dbdp.ID,
+                    files = pointNew.fileNews
+                };
+                var file = srvFile.SaveFiles(files);
+                if (file.state != 200)
+                {
+                    throw new Exception(file.msg);
+                }
                 rpsdp.Add(dbdp);
                 work.Commit();
                 return new ActionResult<bool>(true);
@@ -125,9 +140,9 @@ namespace ESafety.Account.Service
                 check = work.Repository<Basic_DangerRelation>().Any(p => p.SubjectID == relationNew.SubjectID);
                 if (!check)
                 {
-                    throw new Exception("该主体下没有风空项!");
+                    throw new Exception("该主体下没有风控项!");
                 }
-                //所有风空项ID
+                //所有风控项ID
                 var dangerids = work.Repository<Basic_DangerRelation>().Queryable(p => p.SubjectID == relationNew.SubjectID).Select(s => s.DangerID);
                 //所有风险等级ID
                 var lvids = work.Repository<Basic_Danger>().Queryable(p => dangerids.Contains(p.ID)).Select(s => s.DangerLevel);
@@ -177,6 +192,9 @@ namespace ESafety.Account.Service
                 {
                     File.Delete(filepath);
                 }
+                //文件
+                var file = srvFile.DelFileByBusinessId(pointID);
+               
                 rpsdp.Delete(dbdp);
                 work.Commit();
                 return new ActionResult<bool>(true);
@@ -231,6 +249,18 @@ namespace ESafety.Account.Service
                     throw new Exception("该风险点名已存在!");
                 }
                 dbdp = pointEdit.CopyTo<Basic_DangerPoint>(dbdp);
+                //文件
+                srvFile.DelFileByBusinessId(pointEdit.ID);
+                var files = new AttachFileSave
+                {
+                    BusinessID = dbdp.ID,
+                    files = pointEdit.fileNews
+                };
+                var file = srvFile.SaveFiles(files);
+                if (file.state != 200)
+                {
+                    throw new Exception(file.msg);
+                }
                 rpsdp.Update(dbdp);
                 work.Commit();
                 return new ActionResult<bool>(true);

@@ -20,6 +20,7 @@ namespace ESafety.Account.API.Controllers
     public class DangerPointController : ESFAPI 
     {
         private IDangerPointService bll;
+        
         public DangerPointController(IDangerPointService pointService)
         {
             bll = pointService;

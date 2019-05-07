@@ -40,6 +40,10 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("参数有误");
                 }
+                if (safetystandard.DangerSortID==Guid.Empty)
+                {
+                    throw new Exception("请选择则风控项类别！");
+                }
                 var check = _rpssafetystandard.Any(p => p.DangerSortID == safetystandard.DangerSortID && p.Code == safetystandard.Code);
                 if (check)
                 {
@@ -171,6 +175,9 @@ namespace ESafety.Account.Service
             }
             
         }
+
+
+        
         /// <summary>
         /// 根据风险类别ID获取所有安全准则
         /// </summary>
@@ -205,6 +212,36 @@ namespace ESafety.Account.Service
                 return new ActionResult<IEnumerable<SafetyStandardView>>(ex);
             }
            
+        }
+        /// <summary>
+        /// 根据风控项类别获取执行标准
+        /// </summary>
+        /// <param name="dangersortid"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<SafetyStandardView>> GetSafetyStandardsByDangerSort(Guid dangersortid)
+        {
+            try
+            {
+                var SafetyStandards = _rpssafetystandard.Queryable(p=>p.DangerSortID==dangersortid);
+                var re = from s in SafetyStandards
+                         select new SafetyStandardView
+                         {
+                             ID = s.ID,
+                             Code = s.Code,
+                             Controls = s.Controls,
+                             DangerSort = _rpsdangersort.GetModel(s.DangerSortID).SortName,
+                             DangerSortID = s.DangerSortID,
+                             Name = s.Name
+                         };
+
+                return new ActionResult<IEnumerable<SafetyStandardView>>(re);
+            }
+            catch (Exception ex)
+            {
+
+                return new ActionResult<IEnumerable<SafetyStandardView>>(ex);
+            }
+
         }
     }
 }
