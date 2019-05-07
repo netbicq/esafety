@@ -24,8 +24,10 @@ namespace ESafety.Account.Service
         private IRepository<Core.Model.DB.Basic_Employee> _rpsemp = null;
         private IRepository<Core.Model.DB.Basic_Org> _rpsorg = null;
         private IUserDefined usedefinedService = null;
+        private IAttachFile srvFile = null;
 
-        public PostManageService(IUnitwork work,IUserDefined udf)
+
+        public PostManageService(IUnitwork work,IUserDefined udf,IAttachFile file)
         {
             _work = work;
             Unitwork = work;
@@ -34,6 +36,7 @@ namespace ESafety.Account.Service
             _rpsemp = work.Repository<Core.Model.DB.Basic_Employee>();
             _rpsorg = work.Repository<Core.Model.DB.Basic_Org>();
             usedefinedService = udf;
+            srvFile = file;
         }
         /// <summary>
         /// 添加岗位
@@ -56,6 +59,7 @@ namespace ESafety.Account.Service
                     throw new Exception("该岗位已存在");
                 }
                 var dbpost = post.MAPTO<Basic_Post>();
+                //自定义项
                 var definedvalue = new UserDefinedBusinessValue
                 {
                     BusinessID = dbpost.ID,
@@ -65,6 +69,17 @@ namespace ESafety.Account.Service
                 if (defined.state != 200)
                 {
                     throw new Exception(defined.msg);
+                }
+                //文件
+                var files = new AttachFileSave
+                {
+                    BusinessID =dbpost.ID,
+                    files = post.fileNews
+                };
+                var file = srvFile.SaveFiles(files);
+                if (file.state != 200)
+                {
+                    throw new Exception(file.msg);
                 }
                 _rpspost.Add(dbpost);
                 _work.Commit();
@@ -125,7 +140,10 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("该岗位已分配人员，无法删除");
                 }
-                
+                //删除自定义项
+                usedefinedService.DeleteBusinessValue(id);
+                //删除文件
+                srvFile.DelFileByBusinessId(id);
                 _rpspost.Delete(dbpost);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -181,6 +199,8 @@ namespace ESafety.Account.Service
                 }
                 var _dbpost = post.CopyTo<Basic_Post>(dbpost);
 
+                //自定义项
+                usedefinedService.DeleteBusinessValue(_dbpost.ID);
                 var definedvalue = new UserDefinedBusinessValue
                 {
                     BusinessID = _dbpost.ID,
@@ -190,6 +210,19 @@ namespace ESafety.Account.Service
                 if (defined.state != 200)
                 {
                     throw new Exception(defined.msg);
+                }
+                //文件
+                srvFile.DelFileByBusinessId(_dbpost.ID);
+                var files = new AttachFileSave
+                {
+                    BusinessID = _dbpost.ID,
+                    files = post.fileNews
+                };
+                
+                var file = srvFile.SaveFiles(files);
+                if (file.state != 200)
+                {
+                    throw new Exception(file.msg);
                 }
                 _rpspost.Update(_dbpost);
                 _work.Commit();

@@ -305,9 +305,22 @@ namespace ESafety.Account.Service
             
             try
             {
-                var dbopreation = _rpsopreation.GetList();
-                var re = dbopreation.MAPTO<OpreationView>();
-                return new ActionResult<IEnumerable<OpreationView>>(re);
+                var opreations = _rpsopreation.Queryable();
+                var pids = opreations.Select(s => s.PostID);
+
+                var posts = _rpspost.Queryable(p => pids.Contains(p.ID));
+                var reops = from ac in opreations
+                            let post = posts.FirstOrDefault(p => p.ID == ac.PostID)
+                            select new OpreationView
+                            {
+                                Code = ac.Code,
+                                ID = ac.ID,
+                                Name = ac.Name,
+                                IsBackReturn = ac.IsBackReturn,
+                                Memo = ac.Memo,
+                                PostName = post.Name
+                            };
+                return new ActionResult<IEnumerable<OpreationView>>(reops);
             }
             catch (Exception ex)
             {

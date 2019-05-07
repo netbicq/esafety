@@ -162,6 +162,8 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("该设备设施不存在");
                 }
+                usedefinedService.DeleteBusinessValue(id);
+                srvFile.DelFileByBusinessId(id);
                 _rpsfacilities.Delete(p=>p.ID==id);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -186,7 +188,8 @@ namespace ESafety.Account.Service
                     throw new Exception("未找到所需修改的设备设施项");
                 }
                 var _dbfacility = facility.CopyTo<Basic_Facilities>(dbfacility);
-
+                //自定义项
+                usedefinedService.DeleteBusinessValue(_dbfacility.ID);
                 var definedvalue = new UserDefinedBusinessValue
                 {
                     BusinessID = _dbfacility.ID,
@@ -197,6 +200,8 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception(defined.msg);
                 }
+                //文件
+                srvFile.DelFileByBusinessId(_dbfacility.ID);
                 var files = new AttachFileSave
                 {
                     BusinessID = _dbfacility.ID,
