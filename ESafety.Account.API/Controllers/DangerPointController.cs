@@ -93,7 +93,7 @@ namespace ESafety.Account.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("getDangerPointModel/{pointID:Guid}")]
-        public ActionResult<DangerPointView> GetDangerPointModel(Guid pointID)
+        public ActionResult<DangerPointModel> GetDangerPointModel(Guid pointID)
         {
             return bll.GetDangerPointModel(pointID);
         }
@@ -149,6 +149,18 @@ namespace ESafety.Account.API.Controllers
         public ActionResult<IEnumerable<QRCoder>> GetQRCoders(IEnumerable<Guid> pointIds)
         {
             return bll.GetQRCoders(pointIds);
+        }
+
+        /// <summary>
+        /// 根据风险点ID获取危险因素
+        /// </summary>
+        /// <param name="pointID"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getWXYSSelector/{pointID:Guid}")]
+        public ActionResult<IEnumerable<WXYSSelector>> GetWXYSSelectorByDangerPointId(Guid pointID)
+        {
+            return bll.GetWXYSSelectorByDangerPointId(pointID);
         }
     }
 }

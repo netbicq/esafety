@@ -40,42 +40,74 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string EmergencyMeasure { get; set; }
         /// <summary>
-        /// 风险等级
-        /// </summary>
-        public Guid DangerLevel { get; set; }
-        /// <summary>
         /// 风险等级名
         /// </summary>
         public string DangerLevelName { get; set; }
-        /// <summary>
-        /// 危险因素词典ID
-        /// </summary>
-        public IEnumerable<WXYS> WXYSDicts { get; set; }
-        /// <summary>
-        /// 负责人ID
-        /// </summary>
-        public Guid Principal { get; set; }
         /// <summary>
         /// 负责人名
         /// </summary>
         public string PrincipalName { get; set; }
 
     }
+
+    public class DangerPointModel
+    {
+        /// <summary>
+        /// 风险点ID
+        /// </summary>
+        public Guid ID { get; set; }
+        /// <summary>
+        /// 编号
+        /// </summary>
+        public string Code { get; set; }
+        /// <summary>
+        /// 风险点名
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        ///备注
+        /// </summary>
+        public string Memo { get; set; }
+        /// <summary>
+        /// 二维码路径
+        /// </summary>
+        public string QRCoderUrl { get; set; }
+        /// <summary>
+        /// 管控措施
+        /// </summary>
+        public string ControlMeasure { get; set; }
+        /// <summary>
+        /// 应急处理措施
+        /// </summary>
+        public string EmergencyMeasure { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public Guid DangerLevel { get; set; }
+        /// <summary>
+        /// 负责人ID
+        /// </summary>
+        public Guid Principal { get; set; }
+        /// <summary>
+        /// 危险因素ID集合
+        /// </summary>
+        public IEnumerable<Guid> WXYSIDs { get; set; }
+    }
+
     /// <summary>
-    /// 危险因素
+    /// 危险因素选择器
     /// </summary>
-    public class WXYS
+    public class WXYSSelector
     {
         /// <summary>
         /// 危险因素ID
         /// </summary>
         public Guid ID { get; set; }
         /// <summary>
-        /// 危险因素项
+        /// 危险因素名
         /// </summary>
-        public string WXYSDict { get; set; }
+        public string WXYSDictName { get; set; }
     }
-
     /// <summary>
     /// 风险点选择器
     /// </summary>

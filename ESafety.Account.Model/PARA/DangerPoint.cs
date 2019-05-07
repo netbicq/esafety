@@ -91,5 +91,7 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public int SubjectType { get; set; }
     }
+
+   
   
 }

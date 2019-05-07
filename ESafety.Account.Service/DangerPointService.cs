@@ -44,6 +44,10 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("该风险点已存在");
                 }
+                if (pointNew.WXYSDictIDs == null)
+                {
+                    throw new Exception("请选择危险因素!");
+                }
                 var dbdp = pointNew.MAPTO<Basic_DangerPoint>();
                 dbdp.WXYSJson = JsonConvert.SerializeObject(pointNew.WXYSDictIDs);
                 dbdp.Code = Command.CreateCode();
@@ -241,7 +245,7 @@ namespace ESafety.Account.Service
         /// </summary>
         /// <param name="pointID"></param>
         /// <returns></returns>
-        public ActionResult<DangerPointView> GetDangerPointModel(Guid pointID)
+        public ActionResult<DangerPointModel> GetDangerPointModel(Guid pointID)
         {
             try
             {
@@ -250,12 +254,13 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到该风险点模型!");
                 }
-                var re = dbdp.MAPTO<DangerPointView>();
-                return new ActionResult<DangerPointView>(re);
+                var re = dbdp.MAPTO<DangerPointModel>();
+                re.WXYSIDs = JsonConvert.DeserializeObject<IEnumerable<Guid>>(dbdp.WXYSJson);
+                return new ActionResult<DangerPointModel>(re);
             }
             catch (Exception ex)
             {
-                return new ActionResult<DangerPointView>(ex);
+                return new ActionResult<DangerPointModel>(ex);
             }
         }
 
@@ -280,14 +285,10 @@ namespace ESafety.Account.Service
                 var retemp = from p in page
                              let lv = lvs.FirstOrDefault(q => q.ID == p.DangerLevel)
                              let emp = emps.FirstOrDefault(q => q.ID == p.Principal)
-                             //let WXYSIDs = JsonConvert.DeserializeObject(p.WXYSJson)
-                             //let WXYSs = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => WXYSIDs.Contains(p.ID))
                              select new DangerPointView
                              {
                                  ID = p.ID,
-                                 DangerLevel = p.DangerLevel,
                                  QRCoderUrl = p.QRCoderUrl,
-                                 Principal = p.Principal,
                                  Name = p.Name,
                                  Memo = p.Memo,
                                  EmergencyMeasure = p.EmergencyMeasure,
@@ -295,10 +296,7 @@ namespace ESafety.Account.Service
                                  Code = p.Code,
                                  DangerLevelName = lv.DictName,
                                  PrincipalName = emp.CNName,
-
-                                // WXYSDicts
-
-
+                           
                              };
                 var re = new Pager<DangerPointView>().GetCurrentPage(retemp, pointName.PageSize, pointName.PageIndex);
                 return new ActionResult<Pager<DangerPointView>>(re);
@@ -402,6 +400,36 @@ namespace ESafety.Account.Service
             catch (Exception ex)
             {
                 return new ActionResult<IEnumerable<QRCoder>>(ex);
+            }
+        }
+        /// <summary>
+        /// 根据风险点ID获取危险因素
+        /// </summary>
+        /// <param name="pointID"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<WXYSSelector>> GetWXYSSelectorByDangerPointId(Guid pointID)
+        {
+            try
+            {
+                var dp = rpsdp.GetModel(pointID);
+                if (dp == null)
+                {
+                    throw new Exception("未找到该风险点!");
+                }
+                List<Guid> WXYSIds = JsonConvert.DeserializeObject<List<Guid>>(dp.WXYSJson);
+                var retemp = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => WXYSIds.Contains(p.ID));
+                var re = from wxys in retemp
+                         select new WXYSSelector
+                         {
+                             ID=wxys.ID,
+                             WXYSDictName=wxys.DictName
+                         };
+                return new ActionResult<IEnumerable<WXYSSelector>>(re);
+
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<WXYSSelector>>(ex);
             }
         }
     }

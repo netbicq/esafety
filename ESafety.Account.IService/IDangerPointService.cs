@@ -48,7 +48,7 @@ namespace ESafety.Account.IService
         /// </summary>
         /// <param name="pointID"></param>
         /// <returns></returns>
-        ActionResult<DangerPointView> GetDangerPointModel(Guid pointID);
+        ActionResult<DangerPointModel> GetDangerPointModel(Guid pointID);
         /// <summary>
         /// 分页获取风险点
         /// </summary>
@@ -76,6 +76,12 @@ namespace ESafety.Account.IService
         /// </summary>
         /// <returns></returns>
         ActionResult<IEnumerable<QRCoder>> GetQRCoders(IEnumerable<Guid> pointIds);
+        /// <summary>
+        /// 根据风险点ID,获取危险因素选择器
+        /// </summary>
+        /// <param name="pointID"></param>
+        /// <returns></returns>
+        ActionResult<IEnumerable<WXYSSelector>> GetWXYSSelectorByDangerPointId(Guid pointID);
 
     }
 }
