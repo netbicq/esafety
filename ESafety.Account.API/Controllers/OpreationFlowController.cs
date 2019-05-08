@@ -94,7 +94,7 @@ namespace ESafety.Account.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("getopreation/{id:Guid}")]
-        public ActionResult<OpreationView> GetOpreation(Guid id)
+        public ActionResult<OpreationModel> GetOpreation(Guid id)
         {
             return bll.GetOpreation(id);
         }
@@ -130,6 +130,16 @@ namespace ESafety.Account.API.Controllers
         public ActionResult<IEnumerable<OpreationView>> GetOpreations()
         {
             return bll.GetOpreations();
+        }
+        /// <summary>
+        /// 根据登陆的人获取操作列表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getOpreationSelectorByUser")]
+        public ActionResult<IEnumerable<OpreationSelector>> GetOpreationSelectorByPost()
+        {
+            return bll.GetOpreationSelectorByPost();
         }
     }
 }

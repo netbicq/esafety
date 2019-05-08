@@ -15,9 +15,11 @@ namespace ESafety.Account.IService
         ActionResult<bool> DelOpreation(Guid id);
         ActionResult<bool> EditOpreation(OpreationEdit opreation);
         ActionResult<IEnumerable<OpreationView>> GetOpreations();
+
+        ActionResult<IEnumerable<OpreationSelector>> GetOpreationSelectorByPost();
         ActionResult<Pager<OpreationView>> GetOpreationPage(PagerQuery<OpreationQuery> para);
 
-        ActionResult<OpreationView> GetOpreation(Guid id);
+        ActionResult<OpreationModel> GetOpreation(Guid id);
  
         ActionResult<bool> AddOpreationFlow(OpreationFlowNew flowNew);
 

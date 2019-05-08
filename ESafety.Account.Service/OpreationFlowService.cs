@@ -275,7 +275,7 @@ namespace ESafety.Account.Service
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult<OpreationView> GetOpreation(Guid id)
+        public ActionResult<OpreationModel> GetOpreation(Guid id)
         {
             try
             {
@@ -284,16 +284,16 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到该操作模型");
                 }
-                var re = dbopreation.MAPTO<OpreationView>();
+                var re = dbopreation.MAPTO<OpreationModel>();
                 var post = _rpspost.GetModel(dbopreation.PostID);
-                re.PostName = post==null?"":post.Name;
-                return new ActionResult<OpreationView>(re);
+                
+                return new ActionResult<OpreationModel>(re);
 
             }
             catch (Exception ex)
             {
 
-                return new ActionResult<OpreationView>(ex);
+                return new ActionResult<OpreationModel>(ex);
             }
         }
         /// <summary>
@@ -326,6 +326,33 @@ namespace ESafety.Account.Service
             {
                 return new ActionResult<IEnumerable<OpreationView>>(ex);
             }
+        }
+        /// <summary>
+        /// 根据登陆人岗位ID获取流程
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<OpreationSelector>> GetOpreationSelectorByPost()
+        {
+            try
+            {
+                var user = AppUser.EmployeeInfo;
+                var post = _work.Repository<Basic_PostEmployees>().GetModel(user.ID);
+                var opreations = _rpsopreation.Queryable(p=>p.PostID==post.PostID);
+                var re = from o in opreations
+                         select new OpreationSelector
+                         {
+                             ID = o.ID,
+                             Name = o.Name
+                         };
+                return new ActionResult<IEnumerable<OpreationSelector>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<OpreationSelector>>(ex);
+               
+            }
+           
+
         }
     }
 }
