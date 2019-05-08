@@ -223,14 +223,15 @@ namespace ESafety.Account.Service
             try
             {
                 var SafetyStandards = _rpssafetystandard.Queryable(p=>p.DangerSortID==dangersortid);
+                var sort = _rpsdangersort.GetModel(dangersortid);
                 var re = from s in SafetyStandards
                          select new SafetyStandardView
                          {
                              ID = s.ID,
                              Code = s.Code,
                              Controls = s.Controls,
-                             DangerSort = _rpsdangersort.GetModel(s.DangerSortID).SortName,
-                             DangerSortID = s.DangerSortID,
+                             DangerSort =sort.SortName,
+                             DangerSortID = sort.ID,
                              Name = s.Name
                          };
 

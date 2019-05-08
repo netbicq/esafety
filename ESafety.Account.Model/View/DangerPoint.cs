@@ -85,6 +85,10 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public Guid DangerLevel { get; set; }
         /// <summary>
+        /// 组织架构ID
+        /// </summary>
+        public Guid OrgID { get; set; }
+        /// <summary>
         /// 负责人ID
         /// </summary>
         public Guid Principal { get; set; }

@@ -37,5 +37,18 @@ namespace ESafety.Account.Model.View
         /// 风险点名称
         /// </summary>
         public string DangerName { get; set; }
+
+        /// <summary>
+        /// 工程措施
+        /// </summary>
+        public string Engineering { get; set; }
+        /// <summary>
+        /// 事故措施
+        /// </summary>
+        public string Accident { get; set; }
+        /// <summary>
+        /// 个体措施
+        /// </summary>
+        public string Individual { get; set; }
     }
 }

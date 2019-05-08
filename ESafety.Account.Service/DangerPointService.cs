@@ -285,6 +285,8 @@ namespace ESafety.Account.Service
                     throw new Exception("未找到该风险点模型!");
                 }
                 var re = dbdp.MAPTO<DangerPointModel>();
+                var user = work.Repository<Core.Model.DB.Basic_Employee>().GetModel(dbdp.Principal);
+                re.OrgID = user.OrgID;
                 re.WXYSIDs = JsonConvert.DeserializeObject<IEnumerable<Guid>>(dbdp.WXYSJson);
                 return new ActionResult<DangerPointModel>(re);
             }
