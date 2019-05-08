@@ -249,6 +249,7 @@ namespace ESafety.Account.Service
                     throw new Exception("该风险点名已存在!");
                 }
                 dbdp = pointEdit.CopyTo<Basic_DangerPoint>(dbdp);
+                dbdp.WXYSJson = JsonConvert.SerializeObject(pointEdit.WXYSDictIDs);
                 //文件
                 srvFile.DelFileByBusinessId(pointEdit.ID);
                 var files = new AttachFileSave

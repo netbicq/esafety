@@ -189,6 +189,7 @@ namespace ESafety.Account.Service
                 }
                 dbopreation =opreation.CopyTo<Basic_Opreation>(dbopreation);
 
+                usedefinedService.DeleteBusinessValue(dbopreation.ID);
                 var definevalue = new UserDefinedBusinessValue
                 {
                     BusinessID = dbopreation.ID,
