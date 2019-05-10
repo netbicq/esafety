@@ -337,8 +337,9 @@ namespace ESafety.Account.Service
             try
             {
                 var user = AppUser.EmployeeInfo;
-                var post = _work.Repository<Basic_PostEmployees>().GetModel(user.ID);
-                var opreations = _rpsopreation.Queryable(p=>p.PostID==post.PostID);
+                var post = _work.Repository<Basic_PostEmployees>().Queryable(p=>p.EmployeeID==user.ID);
+                var postids = post.Select(s => s.PostID);
+                var opreations = _rpsopreation.Queryable(p=>postids.Contains(p.PostID));
                 var re = from o in opreations
                          select new OpreationSelector
                          {

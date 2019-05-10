@@ -64,9 +64,12 @@ namespace ESafety.Account.Service
                     throw new Exception("该隐患管控已存在!");
                 }
                 var dbtc = ctrNew.MAPTO<Bll_TroubleControl>();
+
                 dbtc.Code = Command.CreateCode();
                 dbtc.State = (int)PublicEnum.EE_TroubleState.pending;
                 dbtc.CreateDate = DateTime.Now;
+                var lv = _work.Repository<Bll_TaskBillSubjects>().Queryable(p => ctrNew.BillSubjectsIDs.Contains(p.ID) && p.BillID == ctrNew.BillID).ToList();
+                dbtc.TroubleLevel = lv.Count()==0?0:(int)lv.Max(m=>m.TroubleLevel);
                 var dbtcd = (from d in ctrNew.BillSubjectsIDs
                              select new Bll_TroubleControlDetails
                              {
@@ -499,7 +502,7 @@ namespace ESafety.Account.Service
                                    FinishTime = tc.FinishTime,
                                    PrincipalTEL = tc.PrincipalTEL,
                                    TroubleLevel = tc.TroubleLevel,
-                                   TroubleLevelDesc = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p => p.Value == tc.TroubleLevel).Caption,
+                                   TroubleLevelDesc =tc.TroubleLevel==0?"":Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p => p.Value == tc.TroubleLevel).Caption,
 
                                    FlowEmp = emp == null ? "" : emp.CNName,
                                    FlowTime = tcf==null?null:(DateTime?)tcf.FlowDate,

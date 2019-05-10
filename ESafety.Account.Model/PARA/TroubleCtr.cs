@@ -40,7 +40,7 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 隐患级别
         /// </summary>
-        public int TroubleLevel { get; set; }
+        //public int TroubleLevel { get; set; }
         /// <summary>
         /// 隐患控制明细
         /// </summary>
