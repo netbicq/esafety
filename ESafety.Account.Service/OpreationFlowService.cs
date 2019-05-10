@@ -339,7 +339,7 @@ namespace ESafety.Account.Service
                 var user = AppUser.EmployeeInfo;
                 var post = _work.Repository<Basic_PostEmployees>().Queryable(p=>p.EmployeeID==user.ID);
                 var postids = post.Select(s => s.PostID);
-                var opreations = _rpsopreation.Queryable(p=>postids.Contains(p.PostID));
+                var opreations = AppUser.UserInfo.Login == "admin" ? _rpsopreation.Queryable(): _rpsopreation.Queryable(p=>postids.Contains(p.PostID));
                 var re = from o in opreations
                          select new OpreationSelector
                          {
