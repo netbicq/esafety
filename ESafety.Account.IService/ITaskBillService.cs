@@ -13,7 +13,7 @@ namespace ESafety.Account.IService
     /// <summary>
     /// 巡查任务
     /// </summary>
-    public interface ITaskBillService : IBusinessFlowBase
+    public interface ITaskBillService 
     {
         /// <summary>
         /// 获取任务单模型
@@ -33,12 +33,12 @@ namespace ESafety.Account.IService
         /// <param name="para"></param>
         /// <returns></returns>
         ActionResult<Pager<TaskBillView>> GetTaskBillPage(PagerQuery<TaskBillQuery> para);
-        /// <summary>
-        /// 修改任务单
-        /// </summary>
-        /// <param name="subjectBillEdit"></param>
-        /// <returns></returns>
-        ActionResult<bool> EditTaskBillSubjects(TaskBillEval subjectBillEdit);
+        ///// <summary>
+        ///// 修改任务单
+        ///// </summary>
+        ///// <param name="subjectBillEdit"></param>
+        ///// <returns></returns>
+        //ActionResult<bool> EditTaskBillSubjects(TaskBillEval subjectBillEdit);
         /// <summary>
         /// 新建任务单据
         /// </summary>

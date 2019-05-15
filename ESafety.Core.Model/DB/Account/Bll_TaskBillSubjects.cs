@@ -67,5 +67,9 @@ namespace ESafety.Core.Model.DB.Account
         /// 是否管控
         /// </summary>
         public bool IsControl { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public Guid DangerLevel { get; set; }
     }
 }

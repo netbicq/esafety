@@ -61,6 +61,10 @@ namespace ESafety.Core.Model.DB.Account
         /// 任务描述 
         /// </summary>
         [StringLength(4000)]
-        public string TaskDescription { get; set; } 
+        public string TaskDescription { get; set; }
+        /// <summary>
+        /// 流程MasterID
+        /// </summary>
+        public Guid MasterID { get; set; }
     }
 }

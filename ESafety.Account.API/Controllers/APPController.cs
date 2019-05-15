@@ -27,8 +27,9 @@ namespace ESafety.Account.API.Controllers
         private IDocInstitutionService docinsbll;
         private IDocSolutionService docssbll;
         private IVideoService videobll;
+        private ITroubleCtrService ctrbll;
 
-        public APPController(IInspectTask spectask, ITaskBillService taskbill,IOpreateBill opreatebill,IDocInstitutionService docins,IDocSolutionService docss,IVideoService video)
+        public APPController(IInspectTask spectask, ITaskBillService taskbill,IOpreateBill opreatebill,IDocInstitutionService docins,IDocSolutionService docss,IVideoService video,ITroubleCtrService ctrService)
         {
 
             spectbll = spectask;
@@ -37,7 +38,8 @@ namespace ESafety.Account.API.Controllers
             docinsbll = docins;
             docssbll = docss;
             videobll = video;
-            BusinessServices = new List<object> { taskbill, spectask,opreatebill, docins, docss,video };            
+            ctrbll = ctrService;
+            BusinessServices = new List<object> { taskbill, spectask,opreatebill, docins, docss,video,ctrService};            
             
         }
         /// <summary>
@@ -364,6 +366,114 @@ namespace ESafety.Account.API.Controllers
         public ActionResult<IEnumerable<TaskBillModel>> GetTaskBillMastersOverByQRCoder(Guid pointID)
         {
             return billbll.GetTaskBillMastersOverByQRCoder(pointID);
+        }
+        /// <summary>
+        /// 获取管控信息详情
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getTroubleCtr")]
+        public ActionResult<IEnumerable<APPTroubleCtrView>> GetTroubleCtr()
+        {
+            return ctrbll.GetTroubleCtr();
+        }
+
+        /// <summary>
+        /// 延长管控完成时间
+        /// </summary>
+        /// <param name="finishTime"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("delayFinishTime")]
+        public ActionResult<bool> DelayFinishTime(DelayFinishTime finishTime)
+        {
+            return ctrbll.DelayFinishTime(finishTime);
+        }
+        /// <summary>
+        /// 改变隐患等级
+        /// </summary>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("changeLevel")]
+        public ActionResult<bool> ChangeLevel(ChangeLevel level)
+        {
+            LogContent = "改变隐患等级，参数源:" + JsonConvert.SerializeObject(level);
+            return ctrbll.ChangeLevel(level);
+        }
+        /// <summary>
+        /// 改变风险等级
+        /// </summary>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("changeDangerLevel")]
+        public ActionResult<bool> ChangeDangerLevel(ChangeDangerLevel level)
+        {
+            LogContent = "改变风险等级，参数源:" + JsonConvert.SerializeObject(level);
+            return ctrbll.ChangeDangerLevel(level);
+        }
+        /// <summary>
+        /// 新建申请/验收
+        /// </summary>
+        /// <param name="flowNew"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("addTroubleCtrFlow")]
+        public ActionResult<bool> AddTroubleCtrFlow(TroubleCtrFlowNew flowNew)
+        {
+            LogContent = "新建了验收/申请，参数源:" + JsonConvert.SerializeObject(flowNew);
+            return ctrbll.AddTroubleCtrFlow(flowNew);
+        }
+        /// <summary>
+        ///  归档
+        /// </summary>
+        /// <param name="ctrID"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("filed/{ctrID:Guid}")]
+        public ActionResult<bool> Filed(Guid ctrID)
+        {
+            LogContent = "隐患管控归档，参数源:" + JsonConvert.SerializeObject(ctrID);
+            return ctrbll.Filed(ctrID);
+        }
+
+        /// <summary>
+        /// 处理管控项
+        /// </summary>
+        /// <param name="handleTrouble"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("handleCtr")]
+        public ActionResult<bool> HandleCtr(HandleTroubleCtr handleTrouble)
+        {
+            LogContent = "处理管控项，参数源:" + JsonConvert.SerializeObject(handleTrouble);
+            return ctrbll.HandleCtr(handleTrouble);
+        }
+
+        /// <summary>
+        /// 转让责任人
+        /// </summary>
+        /// <param name="transferTrouble"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("transferPrincipal")]
+        public ActionResult<bool> TransferPrincipal(TransferTroublePrincipal transferTrouble)
+        {
+            LogContent = "转让责任人，参数源:" + JsonConvert.SerializeObject(transferTrouble);
+            return ctrbll.TransferPrincipal(transferTrouble);
+        }
+        /// <summary>
+        /// 快速处理
+        /// </summary>
+        /// <param name="quickHandleTrouble"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("quickHandleCtr")]
+        public ActionResult<bool> QuickHandleCtr(QuickHandleTroubleCtr quickHandleTrouble)
+        {
+            LogContent = "快速处理，参数源:" + JsonConvert.SerializeObject(quickHandleTrouble);
+            return ctrbll.QuickHandleCtr(quickHandleTrouble);
         }
     }
 }

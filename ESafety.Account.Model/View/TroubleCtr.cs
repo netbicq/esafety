@@ -15,15 +15,11 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 隐患管控ID
         /// </summary>
-        public Guid ID { get; set; }
-        /// <summary>
-        /// 管控名称
-        /// </summary>
-        public string ControlName { get; set; }
+        public Guid CtrID { get; set; }
         /// <summary>
         /// 完成时间
         /// </summary>
-        public DateTime FinishTime { get; set; }
+        public DateTime? FinishTime { get; set; }
         /// <summary>
         /// 责任人id
         /// </summary>
@@ -36,10 +32,6 @@ namespace ESafety.Account.Model.View
         /// 巡检人名
         /// </summary>
         public string BillEmpName { get; set; }
-        /// <summary>
-        /// 责任人电话
-        /// </summary>
-        public string PrincipalTEL { get; set; }
         /// <summary>
         /// 责任部门id
         /// </summary>

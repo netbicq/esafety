@@ -248,7 +248,10 @@ namespace ESafety.Account.Service
                              State = t.State,
                              StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == t.State).Caption,
                              TaskDescription = t.TaskDescription,
-                             TaskType = (PublicEnum.EE_InspectTaskType)t.TaskType
+                             TaskType = (PublicEnum.EE_InspectTaskType)t.TaskType,
+                             MasterID=t.MasterID
+                             
+
                          };
 
                 var result = new Pager<InspectTaskView>().GetCurrentPage(re, qurey.PageSize, qurey.PageIndex);
@@ -308,7 +311,8 @@ namespace ESafety.Account.Service
                              State = t.State,
                              StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == t.State).Caption,
                              TaskDescription = t.TaskDescription,
-                             TaskType = (PublicEnum.EE_InspectTaskType)t.TaskType
+                             TaskType = (PublicEnum.EE_InspectTaskType)t.TaskType,
+                             MasterID=t.MasterID
                          };
 
                 var result = new Pager<InspectTempTaskView>().GetCurrentPage(re, qurey.PageSize, qurey.PageIndex);
@@ -395,6 +399,7 @@ namespace ESafety.Account.Service
                 var flowcheck = base.BusinessAprove(new BusinessAprovePara
                 {
                     BusinessID = businessid,
+                    MasterID=businessmodel.MasterID,
                     BusinessType =businessmodel.TaskType==(int)PublicEnum.EE_InspectTaskType.Cycle?PublicEnum.EE_BusinessType.InspectTask:PublicEnum.EE_BusinessType.TempTask
                 });
                 if (flowcheck.state != 200)
@@ -439,6 +444,7 @@ namespace ESafety.Account.Service
 
                 var flowtask = base.StartFlow(new BusinessAprovePara
                 {
+                    MasterID=businessmodel.MasterID,
                     BusinessID = businessmodel.ID,
                     BusinessType = businessmodel.TaskType == (int)PublicEnum.EE_InspectTaskType.Cycle ? PublicEnum.EE_BusinessType.InspectTask : PublicEnum.EE_BusinessType.TempTask
                 });

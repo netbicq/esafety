@@ -8,6 +8,38 @@ using System.Threading.Tasks;
 namespace ESafety.Core.Model.View
 {
    
+    public class FlowMasterView
+    {
+        /// <summary>
+        /// 名字
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// 业务类型
+        /// </summary>
+        public int BusinessType { get; set; }
+        /// <summary>
+        /// 类型名
+        /// </summary>
+        public string TypeName { get; set; }
+        /// <summary>
+        /// MasterID
+        /// </summary>
+        public Guid MasterID { get; set; }
+    }
+
+    public class FlowMasterSelector
+    {
+        /// <summary>
+        /// MasterID
+        /// </summary>
+        public Guid MasterID { get; set; }
+        /// <summary>
+        /// 名字
+        /// </summary>
+        public string Name { get; set; }
+    }
+
     /// <summary>
     /// 审批节点
     /// </summary>

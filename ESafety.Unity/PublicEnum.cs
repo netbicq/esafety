@@ -211,10 +211,10 @@ namespace ESafety.Unity
             [Description("异常")]
             abnormal = 2,
             /// <summary>
-            /// 处理中
+            /// 管控中
             /// </summary>
             [Description("处理中")]
-            pend = 3,
+            pending = 3,
             /// <summary>
             /// 处理后正常
             /// </summary>
@@ -234,8 +234,8 @@ namespace ESafety.Unity
             /// <summary>
             /// 申请验收
             /// </summary>
-            [Description("申请验收")]
-            apply = 2,
+            [Description("验收中")]
+            applying = 2,
             /// <summary>
             /// 已验收
             /// </summary>
@@ -246,6 +246,22 @@ namespace ESafety.Unity
             /// </summary>
             [Description("已归档")]
             history = 4
+        }
+        /// <summary>
+        ///管控流程状态
+        /// </summary>
+        public enum EE_TroubleFlowState
+        {
+            /// <summary>
+            /// 管控验收申请
+            /// </summary>
+            [Description("申请")]
+            TroubleApply = 1,
+            /// <summary>
+            /// 管控验收
+            /// </summary>
+            [Description("验收")]
+            TroubleR = 2
         }
         /// <summary>
         /// 评测方法
@@ -375,16 +391,7 @@ namespace ESafety.Unity
             /// </summary>
             [Description("临时任务")]
             TempTask = 5,
-            /// <summary>
-            /// 管控验收申请
-            /// </summary>
-            [Description("管控验收申请")]
-            TroubleApply=6,
-            /// <summary>
-            /// 管控验收
-            /// </summary>
-            [Description("管控验收")]
-            TroubleR=7
+
         }
         /// <summary>
         /// 检查主体类型

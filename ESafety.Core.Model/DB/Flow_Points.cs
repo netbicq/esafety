@@ -29,5 +29,9 @@ namespace ESafety.Core.Model.DB
         /// 节点顺序
         /// </summary>
         public int PointIndex { get; set; }
+        /// <summary>
+        /// 流程控制ID
+        /// </summary>
+        public Guid MasterID { get; set; }
     }
 }

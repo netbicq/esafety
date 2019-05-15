@@ -55,5 +55,9 @@ namespace ESafety.Core.Model.DB
         /// 业务日期
         /// </summary>
         public DateTime BusinessDate { get; set; }
+        /// <summary>
+        /// 流程控制ID
+        /// </summary>
+        public Guid MasterID { get; set; }
     }
 }

@@ -41,6 +41,10 @@ namespace ESafety.Account.Model.PARA
         /// 任务描述
         /// </summary>
         public string Description { get; set; }
+        /// <summary>
+        /// MasterID
+        /// </summary>
+        public Guid MasterID { get; set; }
 
     }
     /// <summary>

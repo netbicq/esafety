@@ -25,21 +25,19 @@ namespace ESafety.Core.Model.DB.Account
         /// <summary>
         /// 完成时间
         /// </summary>
-        public DateTime FinishTime { get; set; }
+        public DateTime? FinishTime { get; set; }
         /// <summary>
         /// 责任人id
         /// </summary>
         public Guid PrincipalID { get; set; }
         /// <summary>
-        /// 责任人电话
+        ///隐患管控执行人
         /// </summary>
-        [Required]
-        [StringLength(50)]
-        public string PrincipalTEL { get; set; }
+        public Guid? ExecutorID { get; set; }
         /// <summary>
-        /// 责任部门id
+        /// 隐患管控验收人
         /// </summary>
-        public Guid OrgID { get; set; }
+        public Guid? AcceptorID { get; set; }
         /// <summary>
         /// 管控描述
         /// </summary>
@@ -62,5 +60,9 @@ namespace ESafety.Core.Model.DB.Account
         ///任务单据ID
         /// </summary>
         public Guid BillID { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public Guid DangerLevel { get; set; }
     }
 }

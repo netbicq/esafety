@@ -14,6 +14,36 @@ namespace ESafety.Core
     public interface IFlow
     {
         /// <summary>
+        /// 新建流程Mastor
+        /// </summary>
+        /// <param name="flowMasterNew"></param>
+        /// <returns></returns>
+        ActionResult<bool> AddFlowMaster(FlowMasterNew flowMasterNew);
+        /// <summary>
+        /// 修改流程Mastor
+        /// </summary>
+        /// <param name="flowMasterEdit"></param>
+        /// <returns></returns>
+        ActionResult<bool> EditFlowMaster(FlowMasterEdit flowMasterEdit);
+        /// <summary>
+        /// 删除流程Mastor
+        /// </summary>
+        /// <param name="masterID"></param>
+        /// <returns></returns>
+        ActionResult<bool> DelFlowMaster(Guid masterID);
+        /// <summary>
+        /// 分页获取流程Mastor 根据业务类型
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        ActionResult<Pager<FlowMasterView>> GetFlowMastersPage(PagerQuery<int> query);
+        /// <summary>
+        /// 根据业务类型获取Master选择器
+        /// </summary>
+        /// <param name="businessType"></param>
+        /// <returns></returns>
+        ActionResult<IEnumerable<FlowMasterSelector>> GetFlowMasterSelector(PublicEnum.EE_BusinessType businessType);
+        /// <summary>
         /// 新建审批节点
         /// </summary>
         /// <param name="point"></param>
@@ -49,19 +79,17 @@ namespace ESafety.Core
         /// <param name="pointuser"></param>
         /// <returns></returns>
         ActionResult<bool> EditPointUser(Flow_PointUserEdit pointuser);
-
-
         /// <summary>
         /// 获取业务单据类型集合
         /// </summary>
         /// <returns></returns>
         ActionResult<IEnumerable<EnumItem>> GetBusinessTypes();
         /// <summary>
-        /// 根据业务类型获取审批节点集合
+        /// 根据业务类型获取和MasterID，分页获取审批节点集合
         /// </summary>
-        /// <param name="buisnesstype"></param>
+        /// <param name="query"></param>
         /// <returns></returns>
-        ActionResult<IEnumerable<Flow_PointView>> GetPointsByBusinessType(PublicEnum.EE_BusinessType buisnesstype);
+        ActionResult<Pager<Flow_PointView>> GetPointsByBusinessType(PagerQuery<FlowPointQuery> query);
         /// <summary>
         /// 根据id获取审批节点
         /// </summary>
@@ -90,9 +118,9 @@ namespace ESafety.Core
         /// <summary>
         /// 检查业务是否需要审批流程
         /// </summary>
-        /// <param name="businesstype"></param>
+        /// <param name="masterID"></param>
         /// <returns></returns>
-        ActionResult<bool> CheckBusinessFlow(PublicEnum.EE_BusinessType businesstype);
+        ActionResult<bool> CheckBusinessFlow(Guid masterID);
         /// <summary>
         /// 审批任务审批
         /// </summary>

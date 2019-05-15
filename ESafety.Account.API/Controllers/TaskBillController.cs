@@ -26,31 +26,31 @@ namespace ESafety.Account.API.Controllers
             BusinessServices =new List<object>() { tb };
         }
 
-        /// <summary>
-        /// 巡检任务审核
-        /// </summary>
-        /// <param name="businessid"></param>
-        /// <returns></returns>
-        [Route("approve/{businessid:Guid}")]
-        [HttpGet]
-        public ActionResult<bool> Approve(Guid businessid)
-        {
-            LogContent = "审核了隐患管控，id:" + businessid.ToString();
-            return bll.Approve(businessid);
-        }
+        ///// <summary>
+        ///// 巡检任务审核
+        ///// </summary>
+        ///// <param name="businessid"></param>
+        ///// <returns></returns>
+        //[Route("approve/{businessid:Guid}")]
+        //[HttpGet]
+        //public ActionResult<bool> Approve(Guid businessid)
+        //{
+        //    LogContent = "审核了隐患管控，id:" + businessid.ToString();
+        //    return bll.Approve(businessid);
+        //}
 
-        /// <summary>
-        /// 处理任务单据
-        /// </summary>
-        /// <param name="subjectBillEdit"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("edittbs")]
-        public ActionResult<bool> EditTaskBillSubjects(TaskBillEval subjectBillEdit)
-        {
-            LogContent = "更新任务明细,参数源：" + JsonConvert.SerializeObject(subjectBillEdit);
-            return bll.EditTaskBillSubjects(subjectBillEdit);
-        }
+        ///// <summary>
+        ///// 处理任务单据
+        ///// </summary>
+        ///// <param name="subjectBillEdit"></param>
+        ///// <returns></returns>
+        //[HttpPost]
+        //[Route("edittbs")]
+        //public ActionResult<bool> EditTaskBillSubjects(TaskBillEval subjectBillEdit)
+        //{
+        //    LogContent = "更新任务明细,参数源：" + JsonConvert.SerializeObject(subjectBillEdit);
+        //    return bll.EditTaskBillSubjects(subjectBillEdit);
+        //}
         /// <summary>
         /// 获取任务主体模型
         /// </summary>
@@ -85,17 +85,17 @@ namespace ESafety.Account.API.Controllers
             return bll.GetTaskBillSubjects(para);
         }
 
-        /// <summary>
-        /// 发起流程
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("startflow/{id:Guid}")]
-        public ActionResult<bool> StartFlow(Guid id)
-        {
-            LogContent = "发起审批，业务id:" + id.ToString();
-            return bll.StartBillFlow(id);
-        }
+        ///// <summary>
+        ///// 发起流程
+        ///// </summary>
+        ///// <param name="id"></param>
+        ///// <returns></returns>
+        //[HttpGet]
+        //[Route("startflow/{id:Guid}")]
+        //public ActionResult<bool> StartFlow(Guid id)
+        //{
+        //    LogContent = "发起审批，业务id:" + id.ToString();
+        //    return bll.StartBillFlow(id);
+        //}
     }
 }

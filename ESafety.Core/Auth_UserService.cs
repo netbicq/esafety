@@ -689,7 +689,7 @@ namespace ESafety.Core
             return new ActionResult<UserView>(new UserView
             {
                 UserInfo = user,
-                UserProfile = profile
+                UserProfile = profile,
             });
 
 

@@ -60,6 +60,39 @@ namespace ESafety.Account.Model.PARA
         /// 附件集合
         /// </summary>
         public IEnumerable<AttachFileNew> AttachFiles { get; set; }
+        /// <summary>
+        /// 危害因素
+        /// </summary>
+        public Guid Eval_WHYS { get; set; }
+        /// <summary>
+        /// 事故类型
+        /// </summary>
+        public Guid Eval_SGLX { get; set; }
+        /// <summary>
+        /// 事故后果
+        /// </summary>
+        public Guid Eval_SGJG { get; set; }
+        /// <summary>
+        /// 影响范围
+        /// </summary>
+        public Guid Eval_YXFW { get; set; }
+        /// <summary>
+        /// 评测方法
+        /// </summary>
+        public int Eval_Method { get; set; }
+        /// <summary>
+        /// 隐患等级
+        /// </summary>
+        public int TroubleLevel { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public Guid DangerLevel { get; set; }
+
+        /// <summary>
+        /// 管控责任人ID
+        /// </summary>
+        public Guid PrincipalID { get; set; }
     }
 
 }

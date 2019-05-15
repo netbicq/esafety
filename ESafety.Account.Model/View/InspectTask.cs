@@ -78,6 +78,10 @@ namespace ESafety.Account.Model.View
         /// 任务描述
         /// </summary>
         public string TaskDescription { get; set; }
+        /// <summary>
+        /// MasterID
+        /// </summary>
+        public Guid MasterID { get; set; }
     }
     public class InspectTaskView : InspectTempTaskView
     {

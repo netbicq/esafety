@@ -55,6 +55,8 @@ namespace ESafety.ORM
         public virtual DbSet<Basic_Org> Basic_Org { get; set; }
         public virtual DbSet<Basic_UserDefined> Basic_UserDefined { get; set; }
         public virtual DbSet<Basic_UserDefinedValue> Basic_UserDefinedValue { get; set; }
+
+        public virtual DbSet<Flow_Master> Flow_Masters { get; set; }
         public virtual DbSet<Flow_Points> Flow_Points { get; set; }
         public virtual DbSet<Flow_PointUsers> Flow_PointUsers { get; set; }
         public virtual DbSet<Flow_Result> Flow_Result { get; set; }

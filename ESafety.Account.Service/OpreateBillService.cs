@@ -121,6 +121,7 @@ namespace ESafety.Account.Service
                 var flowtask = base.StartFlow(new BusinessAprovePara
                 {
                     BusinessID = businessmodel.ID,
+                    MasterID=businessmodel.MasterID,
                     BusinessType = PublicEnum.EE_BusinessType.Apply
                 });
                 if (flowtask.state != 200)
@@ -132,7 +133,7 @@ namespace ESafety.Account.Service
                 {
                     //没有流程，直接为审批通过
                     businessmodel.State = (int)PublicEnum.BillFlowState.approved;
-
+                    
                     rpsOpreateBill.Update(businessmodel);
                     _work.Commit();
                 }
@@ -145,7 +146,7 @@ namespace ESafety.Account.Service
                     //写入审批流程起始任务
                     taskmodel.BusinessCode = businessmodel.BillCode;
                     taskmodel.BusinessDate = businessmodel.CreateDate;
-
+                    taskmodel.MasterID = businessmodel.MasterID;
                     _work.Repository<Flow_Task>().Add(taskmodel);
 
                     _work.Commit();
@@ -178,6 +179,7 @@ namespace ESafety.Account.Service
                 //检查审批流程状态
                 var flowcheck = base.BusinessAprove(new BusinessAprovePara
                 {
+                    MasterID=businessmodel.MasterID,
                     BusinessID = businessid,
                     BusinessType = PublicEnum.EE_BusinessType.Apply
                 });

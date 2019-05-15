@@ -39,56 +39,56 @@ namespace ESafety.Account.Service
             //flowser.ACOptions = ACOptions;
 
         }
-        /// <summary>
-        /// 新建隐患管控
-        /// </summary>
-        /// <param name="ctrNew"></param>
-        /// <returns></returns>
-        public ActionResult<bool> AddTroubleCtr(TroubleCtrNew ctrNew)
-        {
-            try
-            {
-                var bill= _work.Repository<Bll_TaskBill>().GetModel(ctrNew.BillID);
-                if (bill==null)
-                {
-                    throw new Exception("未找到该单据!");
-                }
-                else if (bill.State!=(int)PublicEnum.BillFlowState.normal)
-                {//状态有待协商
-                    throw new Exception("当前单据状态不允许进行管控!");
-                }
+        ///// <summary>
+        ///// 新建隐患管控
+        ///// </summary>
+        ///// <param name="ctrNew"></param>
+        ///// <returns></returns>
+        //public ActionResult<bool> AddTroubleCtr(TroubleCtrNew ctrNew)
+        //{
+        //    try
+        //    {
+        //        var bill= _work.Repository<Bll_TaskBill>().GetModel(ctrNew.BillID);
+        //        if (bill==null)
+        //        {
+        //            throw new Exception("未找到该单据!");
+        //        }
+        //        else if (bill.State!=(int)PublicEnum.BillFlowState.normal)
+        //        {//状态有待协商
+        //            throw new Exception("当前单据状态不允许进行管控!");
+        //        }
 
-                var check = _rpstc.Any(p=>p.ControlName==ctrNew.ControlName);
-                if (check)
-                {
-                    throw new Exception("该隐患管控已存在!");
-                }
-                var dbtc = ctrNew.MAPTO<Bll_TroubleControl>();
+        //        var check = _rpstc.Any(p=>p.ControlName==ctrNew.ControlName);
+        //        if (check)
+        //        {
+        //            throw new Exception("该隐患管控已存在!");
+        //        }
+        //        var dbtc = ctrNew.MAPTO<Bll_TroubleControl>();
 
-                dbtc.Code = Command.CreateCode();
-                dbtc.State = (int)PublicEnum.EE_TroubleState.pending;
-                dbtc.CreateDate = DateTime.Now;
-                var lv = _work.Repository<Bll_TaskBillSubjects>().Queryable(p => ctrNew.BillSubjectsIDs.Contains(p.ID) && p.BillID == ctrNew.BillID).ToList();
-                dbtc.TroubleLevel = lv.Count()==0?0:(int)lv.Max(m=>m.TroubleLevel);
-                var dbtcd = (from d in ctrNew.BillSubjectsIDs
-                             select new Bll_TroubleControlDetails
-                             {
-                                 ID = Guid.NewGuid(),
-                                 TroubleControlID=dbtc.ID,
-                                 BillSubjectsID=d
-                             }
-                           ).ToList();
+        //        dbtc.Code = Command.CreateCode();
+        //        dbtc.State = (int)PublicEnum.EE_TroubleState.pending;
+        //        dbtc.CreateDate = DateTime.Now;
+        //        var lv = _work.Repository<Bll_TaskBillSubjects>().Queryable(p => ctrNew.BillSubjectsIDs.Contains(p.ID) && p.BillID == ctrNew.BillID).ToList();
+        //        dbtc.TroubleLevel = lv.Count()==0?0:(int)lv.Max(m=>m.TroubleLevel);
+        //        var dbtcd = (from d in ctrNew.BillSubjectsIDs
+        //                     select new Bll_TroubleControlDetails
+        //                     {
+        //                         ID = Guid.NewGuid(),
+        //                         TroubleControlID=dbtc.ID,
+        //                         BillSubjectsID=d
+        //                     }
+        //                   ).ToList();
 
-                _rpstc.Add(dbtc);
-                _rpstcd.Add(dbtcd);
-                _work.Commit();
-                return new ActionResult<bool>(true);
-            }
-            catch (Exception ex)
-            {
-                return new ActionResult<bool>(ex);
-            }
-        }
+        //        _rpstc.Add(dbtc);
+        //        _rpstcd.Add(dbtcd);
+        //        _work.Commit();
+        //        return new ActionResult<bool>(true);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new ActionResult<bool>(ex);
+        //    }
+        //}
         /// <summary>
         /// 新建管控验收申请日志
         /// </summary>
@@ -102,8 +102,38 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("参数有误!");
                 }
+                var tc = _rpstc.GetModel(flowNew.ControlID);
                 var dbf = flowNew.MAPTO<Bll_TroubleControlFlows>();
                 dbf.FlowEmployeeID = AppUser.EmployeeInfo.ID;
+                if (dbf.FlowType==(int)PublicEnum.EE_TroubleFlowState.TroubleApply&&tc.State!=(int)PublicEnum.EE_TroubleState.pending)
+                {
+                    throw new Exception("当前状态不允许申请验收!");
+                }
+                if (dbf.FlowType == (int)PublicEnum.EE_TroubleFlowState.TroubleR && tc.State != (int)PublicEnum.EE_TroubleState.applying)
+                {
+                    throw new Exception("当前状态不允许验收!");
+                }
+
+                if (dbf.FlowType == (int)PublicEnum.EE_TroubleFlowState.TroubleApply)
+                {
+                    tc.State = (int)PublicEnum.EE_TroubleState.applying;
+                }
+                else
+                {
+                    if (dbf.FlowResult == 1)
+                    {
+                        tc.State = (int)PublicEnum.EE_TroubleState.over;
+                    }
+                    else if (dbf.FlowResult == 2)
+                    {
+                        tc.State = (int)PublicEnum.EE_TroubleState.pending;
+                    }
+                    else
+                    {
+                        throw new Exception("请选择真确的验收结果！");
+                    }
+                }
+                _rpstc.Update(tc);
                 _rpstcf.Add(dbf);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -114,34 +144,24 @@ namespace ESafety.Account.Service
             }
         }
         /// <summary>
-        /// 改变状态
+        /// 归档
         /// </summary>
-        /// <param name="state"></param>
+        /// <param name="ctrID"></param>
         /// <returns></returns>
-        public ActionResult<bool> ChangeState(TroubleCtrChangeState state)
+        public ActionResult<bool> Filed(Guid ctrID)
         {
             try
             {
-                if (state == null)
-                {
-                    throw new Exception("参数有误");
-                }
-                var dbtask = _rpstc.GetModel(state.ID);
+                var dbtask = _rpstc.GetModel(ctrID);
                 if (dbtask == null)
                 {
                     throw new Exception("管控项不存在");
                 }
-                if (dbtask.State == (int)PublicEnum.EE_TroubleState.history)
+                if (dbtask.State != (int)PublicEnum.EE_TroubleState.over)
                 {
-                    //状态有待协商
                     throw new Exception("当前状态不允许");
                 }
-                if (dbtask.State == (int)state.State)
-                {
-                    throw new Exception("状态有误");
-                }
-                dbtask.State = (int)state.State;
-
+                dbtask.State = (int)PublicEnum.EE_TroubleState.history;
                 _rpstc.Update(dbtask);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -152,40 +172,40 @@ namespace ESafety.Account.Service
             }
         }
 
-        /// <summary>
-        /// 删除隐患管控
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public ActionResult<bool> DelTroubleCtr(Guid id)
-        {
-            try
-            {
-                var tc = _rpstc.GetModel(id);
-                if (tc == null)
-                {
-                    throw new Exception("未找到所需删除的隐患管控!");
-                }
-                if (tc.State != (int)PublicEnum.EE_TroubleState.pending)
-                {
-                    throw new Exception("隐患管控当前状态不允许删除!");
-                }
-                var check = _rpstcf.Any(p=>p.ControlID==id);
-                if (check)
-                {
-                    throw new Exception("该隐患管控存在管控验收申请日志,无法删除!");
-                }
+        ///// <summary>
+        ///// 删除隐患管控
+        ///// </summary>
+        ///// <param name="id"></param>
+        ///// <returns></returns>
+        //public ActionResult<bool> DelTroubleCtr(Guid id)
+        //{
+        //    try
+        //    {
+        //        var tc = _rpstc.GetModel(id);
+        //        if (tc == null)
+        //        {
+        //            throw new Exception("未找到所需删除的隐患管控!");
+        //        }
+        //        if (tc.State != (int)PublicEnum.EE_TroubleState.pending)
+        //        {
+        //            throw new Exception("隐患管控当前状态不允许删除!");
+        //        }
+        //        var check = _rpstcf.Any(p=>p.ControlID==id);
+        //        if (check)
+        //        {
+        //            throw new Exception("该隐患管控存在管控验收申请日志,无法删除!");
+        //        }
 
-                _rpstc.Delete(tc);
-                _rpstcd.Delete(p=>p.TroubleControlID==id);
-                _work.Commit();
-                return new ActionResult<bool>(true);
-            }
-            catch (Exception ex)
-            {
-                return new ActionResult<bool>(ex);
-            }
-        }
+        //        _rpstc.Delete(tc);
+        //        _rpstcd.Delete(p=>p.TroubleControlID==id);
+        //        _work.Commit();
+        //        return new ActionResult<bool>(true);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new ActionResult<bool>(ex);
+        //    }
+        //}
 
         /// <summary>
         /// 获取隐患管控模型
@@ -200,7 +220,7 @@ namespace ESafety.Account.Service
 
                 var pemp = _work.Repository<Core.Model.DB.Basic_Employee>().GetModel(dbtc.PrincipalID);
 
-                var porg = _work.Repository<Core.Model.DB.Basic_Org>().GetModel(dbtc.OrgID);
+                var porg = _work.Repository<Core.Model.DB.Basic_Org>().GetModel(pemp.OrgID);
 
 
                 var tcf = _rpstcf.GetModel(p => p.ControlID == id&&p.FlowResult==(int)PublicEnum.EE_FlowResult.Pass);
@@ -213,19 +233,17 @@ namespace ESafety.Account.Service
                 var retc = new TroubleCtrView
                 {
                     Code=dbtc.Code,
-                    ID = dbtc.ID,
+                    CtrID = dbtc.ID,
                     State = (PublicEnum.EE_TroubleState)dbtc.State,
                     StateName =  Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(p => p.Value == dbtc.State).Caption,
 
                     CreateDate = dbtc.CreateDate,
-                    ControlName = dbtc.ControlName,
                     ControlDescription = dbtc.ControlDescription,
                     PrincipalID = dbtc.PrincipalID,
                     PrincipalName = pemp.CNName,
-                    OrgID = dbtc.OrgID,
+                    OrgID = pemp.OrgID,
                     OrgName = porg.OrgName,
                     FinishTime = dbtc.FinishTime,
-                    PrincipalTEL = dbtc.PrincipalTEL,
                     TroubleLevel = dbtc.TroubleLevel,
                     TroubleLevelDesc = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p => p.Value == dbtc.TroubleLevel).Caption,
                     
@@ -407,7 +425,7 @@ namespace ESafety.Account.Service
                     var pempids = dbtc.Select(s => s.PrincipalID);
                     var pemps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q=>pempids.Contains(q.ID));
                     //管控负责人部门
-                    var porgids = dbtc.Select(s => s.OrgID);
+                    var porgids = pemps.Select(s => s.OrgID);
                     var porgs = _work.Repository<Core.Model.DB.Basic_Org>().Queryable(q => porgids.Contains(q.ID));
 
                     var tcids = dbtc.Select(s => s.ID);
@@ -422,7 +440,7 @@ namespace ESafety.Account.Service
 
                     var retc = from tc in dbtc.ToList()
                                let pemp = pemps.FirstOrDefault(q => q.ID == tc.PrincipalID)
-                               let porg = porgs.FirstOrDefault(q => q.ID == tc.OrgID)
+                               let porg = porgs.FirstOrDefault(q => q.ID == pemp.OrgID)
                                let tcf = tcfs.FirstOrDefault(q => q.ControlID == tc.ID)
                                let emp = tcf == null ? null : emps.FirstOrDefault(q => q.ID == tcf.FlowEmployeeID)
                                let bempid= _work.Repository<Bll_TaskBill>().GetModel(tc.BillID).EmployeeID   //巡检人员
@@ -430,19 +448,17 @@ namespace ESafety.Account.Service
                                select new TroubleCtrView
                                {
                                    Code = tc.Code,
-                                   ID = tc.ID,
+                                   CtrID = tc.ID,
                                    State = (PublicEnum.EE_TroubleState)tc.State,
                                    StateName =Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(p => p.Value == tc.State).Caption,
 
                                    CreateDate = tc.CreateDate,
-                                   ControlName = tc.ControlName,
                                    ControlDescription = tc.ControlDescription,
                                    PrincipalID = tc.PrincipalID,
                                    PrincipalName = pemp.CNName,
-                                   OrgID = tc.OrgID,
+                                   OrgID = pemp.OrgID,
                                    OrgName = porg.OrgName,
                                    FinishTime = tc.FinishTime,
-                                   PrincipalTEL = tc.PrincipalTEL,
                                    TroubleLevel = tc.TroubleLevel,
                                    TroubleLevelDesc = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p => p.Value == tc.TroubleLevel).Caption,
 
@@ -468,7 +484,7 @@ namespace ESafety.Account.Service
                     var pempids = dbtc.Select(s => s.PrincipalID);
                     var pemps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q => pempids.Contains(q.ID));
 
-                    var porgids = dbtc.Select(s => s.OrgID);
+                    var porgids = pemps.Select(s => s.OrgID);
                     var porgs = _work.Repository<Core.Model.DB.Basic_Org>().Queryable(q => porgids.Contains(q.ID));
 
                     var tcids = dbtc.Select(s => s.ID);
@@ -480,7 +496,7 @@ namespace ESafety.Account.Service
 
                     var retc = from tc in dbtc.ToList()
                                let pemp = pemps.FirstOrDefault(q => q.ID == tc.PrincipalID)
-                               let porg = porgs.FirstOrDefault(q => q.ID == tc.OrgID)
+                               let porg = porgs.FirstOrDefault(q => q.ID == pemp.OrgID)
                                let tcf = tcfs.FirstOrDefault(q => q.ControlID == tc.ID)
                                let emp = tcf == null ? null : emps.FirstOrDefault(q => q.ID == tcf.FlowEmployeeID)
                                let bempid = _work.Repository<Bll_TaskBill>().GetModel(tc.BillID).EmployeeID   //巡检人员
@@ -488,19 +504,17 @@ namespace ESafety.Account.Service
                                select new TroubleCtrView
                                {
                                    Code=tc.Code,
-                                   ID = tc.ID,
+                                   CtrID = tc.ID,
                                    State = (PublicEnum.EE_TroubleState)tc.State,
                                    StateName=tc.State==0?"":Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(p=>p.Value==tc.State).Caption,
 
                                    CreateDate = tc.CreateDate,
-                                   ControlName = tc.ControlName,
                                    ControlDescription = tc.ControlDescription,
                                    PrincipalID = tc.PrincipalID,
                                    PrincipalName = pemp.CNName,
-                                   OrgID = tc.OrgID,
+                                   OrgID = pemp.OrgID,
                                    OrgName = porg.OrgName,
                                    FinishTime = tc.FinishTime,
-                                   PrincipalTEL = tc.PrincipalTEL,
                                    TroubleLevel = tc.TroubleLevel,
                                    TroubleLevelDesc =tc.TroubleLevel==0?"":Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p => p.Value == tc.TroubleLevel).Caption,
 
@@ -676,12 +690,176 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("任务不存在");
                 }
+                var user = AppUser.EmployeeInfo;
+                if (user.ID != dbtask.PrincipalID)
+                {
+                    throw new Exception("没有权限!");
+                }
                 dbtask.TroubleLevel= (int)level.TroubleLevel;
                 _rpstc.Update(dbtask);
                 _work.Commit();
                 return new ActionResult<bool>(true);
             }
             catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// APP端获取隐患管控项
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<APPTroubleCtrView>> GetTroubleCtr()
+        {
+            try
+            {
+                var user = AppUser.EmployeeInfo;
+                var ctrs = _rpstc.Queryable(p => p.PrincipalID == user.ID || p.AcceptorID == user.ID || p.ExecutorID == user.ID);
+                var emps = _work.Repository<Basic_Employee>().Queryable();
+                var re = from c in ctrs
+                         let aemp = emps.FirstOrDefault(p => p.ID == c.AcceptorID)
+                         let eemp = emps.FirstOrDefault(p => p.ID == c.ExecutorID)
+                         let pemp = emps.FirstOrDefault(p => p.ID == c.PrincipalID)
+                         let tcd = _rpstcd.GetModel(q => q.TroubleControlID == c.ID)
+                         let checkresult = _work.Repository<Bll_TaskBillSubjects>().GetModel(tcd.BillSubjectsID)
+                         let bill = _work.Repository<Bll_TaskBill>().GetModel(checkresult.BillID)
+                         let point = _work.Repository<Basic_DangerPoint>().GetModel(bill.DangerPointID)
+                         let sub = _work.Repository<Basic_DangerPointRelation>().Queryable(p => p.SubjectID == checkresult.SubjectID).First()
+                         let danger = _work.Repository<Basic_Danger>().GetModel(p => p.ID == checkresult.DangerID)
+                         let lv = _work.Repository<Basic_Dict>().GetModel(c.DangerLevel)
+                         select new APPTroubleCtrView
+                         {
+                             KeyID=c.ID,
+                             Acceptor = aemp == null ? "" : aemp.CNName,
+                             Executor = eemp == null ? "" : eemp.CNName,
+                             Principal = pemp.CNName,
+                             State = (PublicEnum.EE_TroubleState)c.State,
+                             CDangerLevel = c.DangerLevel,
+                             TroubleLevel = (PublicEnum.EE_TroubleLevel)c.TroubleLevel,
+                             CtrTarget = c.ControlDescription,
+                             EstimatedDate = c.FinishTime,
+                             TroubleDetails = checkresult.TaskResultMemo,
+                             DangerName = danger.Name,
+                             SubName = sub.SubjectName,
+                             CDangerLevelName = lv.DictName,
+                             DangerPoint = point.Name,
+                             Cuser = user.ID == c.PrincipalID ? 1 : user.ID == c.ExecutorID ? 2 : user.ID == c.AcceptorID ? 3 : 0
+                         };
+                return new ActionResult<IEnumerable<APPTroubleCtrView>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<APPTroubleCtrView>>(ex);
+            }
+        }
+        /// <summary>
+        /// 调整风险等级
+        /// </summary>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        public ActionResult<bool> ChangeDangerLevel(ChangeDangerLevel level)
+        {
+            try
+            {
+              
+                if (level == null)
+                {
+                    throw new Exception("参数有误");
+                }
+                var dbtask = _rpstc.GetModel(level.ID);
+                if (dbtask == null)
+                {
+                    throw new Exception("任务不存在");
+                }
+                var user = AppUser.EmployeeInfo;
+                if (user.ID!=dbtask.PrincipalID)
+                {
+                    throw new Exception("没有权限!");
+                }
+                dbtask.DangerLevel = level.DangerLevel;
+                _rpstc.Update(dbtask);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+        /// <summary>
+        /// 处理管控项
+        /// </summary>
+        /// <param name="handleTrouble"></param>
+        /// <returns></returns>
+        public ActionResult<bool> HandleCtr(HandleTroubleCtr handleTrouble)
+        {
+            try
+            {
+                var user = AppUser.EmployeeInfo;
+                var ctr = _rpstc.GetModel(handleTrouble.CtrID);
+                if (user.ID != ctr.PrincipalID)
+                {
+                    throw new Exception("没有权限!");
+                }
+                if (handleTrouble.AcceptorID == Guid.Empty || handleTrouble.ExecutorID == Guid.Empty)
+                {
+                    throw new Exception("执行人或验收人不能为空!");
+                }
+                if (handleTrouble.FinishTime<DateTime.Now)
+                {
+                    throw new Exception("请填写正确的预估完成时间!");
+                }
+                ctr.AcceptorID = handleTrouble.AcceptorID;
+                ctr.ExecutorID = handleTrouble.ExecutorID;
+                ctr.FinishTime = handleTrouble.FinishTime;
+                ctr.ControlDescription = handleTrouble.ControlDescription;
+                _rpstc.Update(ctr);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+        /// <summary>
+        /// 快速处理
+        /// </summary>
+        /// <param name="quickHandleTrouble"></param>
+        /// <returns></returns>
+        public ActionResult<bool> QuickHandleCtr(QuickHandleTroubleCtr quickHandleTrouble)
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
+        /// 转让责任人
+        /// </summary>
+        /// <param name="transferTrouble"></param>
+        /// <returns></returns>
+        public ActionResult<bool> TransferPrincipal(TransferTroublePrincipal transferTrouble)
+        {
+            try
+            {
+                var user = AppUser.EmployeeInfo;
+                var ctr = _rpstc.GetModel(transferTrouble.CtrID);
+                if (user.ID != ctr.PrincipalID)
+                {
+                    throw new Exception("没有权限!");
+                }
+                if (transferTrouble.PrincipalID == Guid.Empty)
+                {
+                    throw new Exception("请选择责任人！");
+                }
+                ctr.PrincipalID = transferTrouble.PrincipalID;
+                _rpstc.Update(ctr);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex) 
             {
                 return new ActionResult<bool>(ex);
             }

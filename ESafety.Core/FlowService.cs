@@ -19,6 +19,7 @@ namespace ESafety.Core
     {
         private IUnitwork _work = null;
 
+        private IRepository<Flow_Master> rpsFlowMaster = null;
         private IRepository<Flow_Points> rpsPoint = null;
         private IRepository<Flow_PointUsers> rpsPointUser = null;
         private IRepository<Flow_Task> rpsTask = null;
@@ -39,9 +40,39 @@ namespace ESafety.Core
             rpsTask = _work.Repository<Flow_Task>();
             rpsResult = _work.Repository<Model.DB.Flow_Result>();
             rpsEmployee = _work.Repository<Basic_Employee>();
+            rpsFlowMaster = _work.Repository<Flow_Master>();
  
 
         }
+        /// <summary>
+        /// 新建流程Master
+        /// </summary>
+        /// <param name="flowMasterNew"></param>
+        /// <returns></returns>
+        public ActionResult<bool> AddFlowMaster(FlowMasterNew flowMasterNew)
+        {
+            try
+            {
+                if (flowMasterNew == null)
+                {
+                    throw new Exception("参数错误!");
+                }
+                var check = rpsFlowMaster.Any(p=>p.Name==flowMasterNew.Name&&p.BusinessType==(int)flowMasterNew.BusinessType);
+                if (check)
+                {
+                    throw new Exception("该业务类型下，已存在名："+flowMasterNew.Name+"的Master!");
+                }
+                var flowMaster = flowMasterNew.MAPTO<Flow_Master>();
+                rpsFlowMaster.Add(flowMaster);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+
         /// <summary>
         /// 新建审批节点
         /// </summary>
@@ -51,15 +82,15 @@ namespace ESafety.Core
         {
             try
             {
-                var checkpoint = rpsPoint.Any(q => q.BusinessType == (int)point.BusinessType && q.PointName == point.PointName);
+                var checkpoint = rpsPoint.Any(q => q.MasterID ==point.MasterID && q.PointName == point.PointName);
                 if (checkpoint)
                 {
-                    throw new Exception("同一业务类型的节点名称:" + point.PointName + "已经存在");
+                    throw new Exception("同一流程Master下存在节点名称:" + point.PointName + "已经存在");
                 }
-                var checkindex = rpsPoint.Any(q => q.BusinessType == (int)point.BusinessType && q.PointIndex == point.PointIndex);
+                var checkindex = rpsPoint.Any(q => q.MasterID == point.MasterID && q.PointIndex == point.PointIndex);
                 if (checkindex)
                 {
-                    throw new Exception("同一业和类型存在一样的节点顺序：" + point.PointIndex.ToString());
+                    throw new Exception("同一流程Master下存在一样的节点顺序：" + point.PointIndex.ToString());
                 }
 
                 var dbpoint = point.CopyTo<Flow_Points>(new Flow_Points());
@@ -268,14 +299,43 @@ namespace ESafety.Core
         /// <summary>
         /// 检查业务是否需要审批流程
         /// </summary>
-        /// <param name="businesstype"></param>
+        /// <param name="masterID"></param>
         /// <returns></returns>
-        public ActionResult<bool> CheckBusinessFlow(PublicEnum.EE_BusinessType businesstype)
+        public ActionResult<bool> CheckBusinessFlow(Guid masterID)
         {
             try
             {
-                var check = rpsPoint.Any(q => q.BusinessType == (int)businesstype);
+                var check = rpsPoint.Any(q => q.MasterID == masterID);
                 return new ActionResult<bool>(check);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+        /// <summary>
+        /// 删除流程Master
+        /// </summary>
+        /// <param name="masterID"></param>
+        /// <returns></returns>
+        public ActionResult<bool> DelFlowMaster(Guid masterID)
+        {
+            try
+            {
+                var dbFlowMaster = rpsFlowMaster.GetModel(masterID);
+                if (dbFlowMaster == null)
+                {
+                    throw new Exception("流程Master不存在！");
+                }
+                var check = rpsPoint.Any(p=>p.MasterID==masterID);
+                if (check)
+                {
+                    throw new Exception("流程Master下,存在节点无法删除!");
+                }
+
+                rpsFlowMaster.Delete(dbFlowMaster);
+                _work.Commit();
+                return new ActionResult<bool>(true);
             }
             catch (Exception ex)
             {
@@ -347,6 +407,36 @@ namespace ESafety.Core
                 return new ActionResult<bool>(ex);
             }
         }
+        /// <summary>
+        /// 修改流程Master
+        /// </summary>
+        /// <param name="flowMasterEdit"></param>
+        /// <returns></returns>
+        public ActionResult<bool> EditFlowMaster(FlowMasterEdit flowMasterEdit)
+        {
+            try
+            {
+                var dbFlowMaster = rpsFlowMaster.GetModel(flowMasterEdit.MasterID);
+                if (dbFlowMaster == null)
+                {
+                    throw new Exception("未找到所需修改项!");
+                }
+                var check = rpsFlowMaster.Any(p => p.Name == flowMasterEdit.Name && p.BusinessType == (int)dbFlowMaster.BusinessType&&p.ID!=flowMasterEdit.MasterID);
+                if (check)
+                {
+                    throw new Exception("该业务类型下，已存在名：" + flowMasterEdit.Name + "的Master!");
+                }
+                dbFlowMaster.Name = flowMasterEdit.Name;
+                rpsFlowMaster.Update(dbFlowMaster);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
+
         /// <summary>
         /// 修改审批节点
         /// </summary>
@@ -550,6 +640,57 @@ namespace ESafety.Core
                 return new ActionResult<IEnumerable<FlowLogView>>(ex);
             }
         }
+        /// <summary>
+        /// 根据业务类型获取Master选择器
+        /// </summary>
+        /// <param name="businessType"></param>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<FlowMasterSelector>> GetFlowMasterSelector(PublicEnum.EE_BusinessType businessType)
+        {
+            try
+            {
+                var masters = rpsFlowMaster.Queryable(p => p.BusinessType == (int)businessType);
+                var re = from m in masters
+                         select new FlowMasterSelector
+                         {
+                             MasterID = m.ID,
+                             Name = m.Name
+                         };
+                return new ActionResult<IEnumerable<FlowMasterSelector>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<FlowMasterSelector>>(ex);
+            }
+        }
+
+        /// <summary>
+        /// 根据业务类型分页获取Master
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public ActionResult<Pager<FlowMasterView>> GetFlowMastersPage(PagerQuery<int> query)
+        {
+            try
+            {
+                var masters = rpsFlowMaster.Queryable(p=>p.BusinessType==query.Query||query.Query==0);
+                var retemp = from m in masters.ToList()
+                             select new FlowMasterView
+                             {
+                                 MasterID = m.ID,
+                                 BusinessType = m.BusinessType,
+                                 Name = m.Name,
+                                 TypeName = Command.GetItems(typeof(PublicEnum.EE_BusinessType)).FirstOrDefault(v => v.Value == m.BusinessType).Caption
+                             };
+                var re = new Pager<FlowMasterView>().GetCurrentPage(retemp, query.PageSize, query.PageIndex);
+                return new ActionResult<Pager<FlowMasterView>>(re);
+
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<Pager<FlowMasterView>>(ex);
+            }
+        }
 
         /// <summary>
         /// 获取我的审批
@@ -702,19 +843,19 @@ namespace ESafety.Core
             }
         }
         /// <summary>
-        /// 根所业务类型获取审批节点集合
+        /// 根据业务类型获取和MasterID，分页获取审批节点集合
         /// </summary>
-        /// <param name="buisnesstype"></param>
+        /// <param name="query"></param>
         /// <returns></returns>
-        public ActionResult<IEnumerable<Flow_PointView>> GetPointsByBusinessType(PublicEnum.EE_BusinessType buisnesstype)
+        public ActionResult<Pager<Flow_PointView>> GetPointsByBusinessType(PagerQuery<FlowPointQuery> query)
         {
             try
             {
-                var points = rpsPoint.Queryable(q => q.BusinessType == (int)buisnesstype);
+                var points = rpsPoint.Queryable(q => q.BusinessType ==(int)query.Query.BusinessType&&q.MasterID==query.Query.MasterID);
                 var typenames = Command.GetItems(typeof(PublicEnum.EE_BusinessType));
                 var ptypenames = Command.GetItems(typeof(PublicEnum.EE_FlowPointType));
 
-                var re = from p in points.ToList()
+                var retemp = from p in points.ToList()
                          select new Flow_PointView
                          {
                              BusinessType = (PublicEnum.EE_BusinessType)p.BusinessType,
@@ -725,12 +866,12 @@ namespace ESafety.Core
                              PointType = (PublicEnum.EE_FlowPointType)p.PointType,
                              PointTypeName = ptypenames.FirstOrDefault(q => q.Value == p.PointType).Caption
                          };
-
-                return new ActionResult<IEnumerable<Flow_PointView>>(re);
+                var re = new Pager<Flow_PointView>().GetCurrentPage(retemp,query.PageSize,query.PageIndex);
+                return new ActionResult<Pager<Flow_PointView>>(re);
             }
             catch (Exception ex)
             {
-                return new ActionResult<IEnumerable<Flow_PointView>>(ex);
+                return new ActionResult<Pager<Flow_PointView>>(ex);
             }
         }
         /// <summary>
@@ -797,7 +938,7 @@ namespace ESafety.Core
         {
             try
             {
-                var point = rpsPoint.Queryable(q => q.BusinessType == (int)task.BusinessType).OrderBy(o => o.PointIndex).FirstOrDefault();
+                var point = rpsPoint.Queryable(q => q.MasterID == task.MasterID).OrderBy(o => o.PointIndex).FirstOrDefault();
                 if (point == null)
                 {
                     var result = new ActionResult<Flow_Task>();
@@ -812,6 +953,7 @@ namespace ESafety.Core
                     {
                         ApplyUser = AppUser.UserInfo.Login,
                         BusinessID = task.BusinessID,
+                        MasterID=task.MasterID,
                         BusinessType = point.BusinessType,
                         PointID = point.ID,
                         TaskDate = DateTime.Now
@@ -821,10 +963,18 @@ namespace ESafety.Core
                     {
                         case PublicEnum.EE_FlowPointType.Generic: //普通节点
                             user = rpsPointUser.GetModel(q => q.PointID == point.ID);
+                            if (user==null)
+                            {
+                                throw new Exception("请配置审批节点的用户!");
+                            }
                             ptask.TaskUser = user.PointUser;
                             break;
                         case PublicEnum.EE_FlowPointType.Multi: //会审节点
                             user = rpsPointUser.Queryable(q => q.PointID == point.ID).OrderBy(o => o.UserIndex).FirstOrDefault();
+                            if (user == null)
+                            {
+                                throw new Exception("请配置审批节点的用户!");
+                            }
                             ptask.TaskUser = user.PointUser;
                             break;
                         default:

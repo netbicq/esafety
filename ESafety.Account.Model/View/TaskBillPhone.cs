@@ -103,6 +103,10 @@ namespace ESafety.Account.Model.View
         /// 风控项ID
         /// </summary>
         public Guid DangerID { get; set; }
+        /// <summary>
+        /// 是否管控中，只有不是管控中的时候，才能调整检查的检查结果
+        /// </summary>
+        public bool IsControl { get; set; }
     }
 
     public class TaskSubjectOverView: TaskSubjectView
@@ -127,7 +131,9 @@ namespace ESafety.Account.Model.View
         public string TaskResultMemo { get; set; }
     }
 
-
+    /// <summary>
+    /// 数据下载
+    /// </summary>
     public class DownloadData
     {
         /// <summary>
@@ -135,10 +141,79 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public int OverTimeTaskCount { get; set; }
         /// <summary>
+        /// 事故类型
+        /// </summary>
+        public IEnumerable<Dict> SGLXDicts { get; set; }
+        /// <summary>
+        /// 事故后果
+        /// </summary>
+        public IEnumerable<Dict> SGHGDicts { get; set; }
+        /// <summary>
+        /// 影响范围
+        /// </summary>
+        public IEnumerable<Dict> YXFWDicts { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public IEnumerable<Dict> DangerLevels { get; set; }
+        /// <summary>
+        /// 评测方法
+        /// </summary>
+        public IEnumerable<EnumItem> EvaluateMethod { get; set; }
+        /// <summary>
+        /// 隐患等级
+        /// </summary>
+        public IEnumerable<EnumItem> TroubleLevels { get; set; }
+        /// <summary>
         /// 任务单据
         /// </summary>
         public IEnumerable<BillData> BillDatas { get; set; }
+        /// <summary>
+        /// 人员表
+        /// </summary>
+        public IEnumerable<Emp> Emps { get; set; }
+        /// <summary>
+        /// 部门表
+        /// </summary>
+        public IEnumerable<Org> Orgs { get; set; }
     }
+    /// <summary>
+    /// 人员
+    /// </summary>
+    public class Emp
+    {
+        /// <summary>
+        /// 主键
+        /// </summary>
+        public Guid KeyID { get; set; }
+        /// <summary>
+        /// 姓名
+        /// </summary>
+        public string CNName { get; set; }
+        /// <summary>
+        /// 部门
+        /// </summary>
+        public Guid OrgID { get; set; }
+    }
+    /// <summary>
+    /// 部门
+    /// </summary>
+    public class Org
+    {
+        /// <summary>
+        /// 主键
+        /// </summary>
+        public Guid KeyID { get; set; }
+        /// <summary>
+        /// 部门名
+        /// </summary>
+        public string OrgName { get; set; }
+        /// <summary>
+        /// 父ID
+        /// </summary>
+        public Guid ParentID { get; set; }
+    }
+
     /// <summary>
     /// 任务单据
     /// </summary>
@@ -148,6 +223,33 @@ namespace ESafety.Account.Model.View
         /// 待检测主体集合
         /// </summary>
         public IEnumerable<TaskSubjectView> CheckSubs{ get; set; }
+        /// <summary>
+        /// 危害因素
+        /// </summary>
+        public IEnumerable<Dict> WHYSDicts { get; set; }
+
+    }
+    /// <summary>
+    /// 词典
+    /// </summary>
+    public class Dict
+    {
+        /// <summary>
+        /// 主键
+        /// </summary>
+        public Guid KeyID { get; set; }
+        /// <summary>
+        /// 词典名称
+        /// </summary>
+        public string DictName { get; set; }
+        /// <summary>
+        /// 最小值
+        /// </summary>
+        public int MinValue { get; set; }
+        /// <summary>
+        /// 最大值
+        /// </summary>
+        public int MaxValue { get; set; }
     }
 
 

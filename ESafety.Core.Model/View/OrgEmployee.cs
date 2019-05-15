@@ -47,6 +47,10 @@ namespace ESafety.Core.Model.View
         /// 组织名
         /// </summary>
         public string OrgName { get; set; }
+        /// <summary>
+        /// 电话
+        /// </summary>
+        public string Tel { get; set; }
 
     }
 

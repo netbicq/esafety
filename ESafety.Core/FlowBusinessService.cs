@@ -51,7 +51,7 @@ namespace ESafety.Core
                 //检查审批结果
                
                 //是否需要审批
-                var isflowcheck = srvFlow.CheckBusinessFlow(para.BusinessType);
+                var isflowcheck = srvFlow.CheckBusinessFlow(para.MasterID);
                 if (isflowcheck.state != 200)
                 {
                     throw new Exception(isflowcheck.msg);
@@ -85,6 +85,7 @@ namespace ESafety.Core
             {
                 var initpara = new InitTask
                 {
+                    MasterID=para.MasterID,
                     BusinessID = para.BusinessID,
                     BusinessType = para.BusinessType
                 };

@@ -94,6 +94,7 @@
     <Compile Include="DB\Basic_UserDefined.cs" />
     <Compile Include="DB\Basic_UserDefinedValue.cs" />
     <Compile Include="DB\Bll_AttachFile.cs" />
+    <Compile Include="DB\Flow_Master.cs" />
     <Compile Include="DB\Flow_Points.cs" />
     <Compile Include="DB\Flow_PointUsers.cs" />
     <Compile Include="DB\Flow_Result.cs" />

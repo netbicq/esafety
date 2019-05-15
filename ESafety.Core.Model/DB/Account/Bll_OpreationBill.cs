@@ -61,5 +61,9 @@ namespace ESafety.Core.Model.DB.Account
         /// 流程JSON
         /// </summary>
         public string OpreationJSON { get; set; }
+        /// <summary>
+        /// 流程MasterID
+        /// </summary>
+        public Guid MasterID { get; set; }
     }
 }

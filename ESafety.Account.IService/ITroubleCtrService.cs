@@ -12,12 +12,12 @@ namespace ESafety.Account.IService
 {
     public interface ITroubleCtrService/*:IBusinessFlowBase*/
     {
-        /// <summary>
-        /// 新建管控项
-        /// </summary>
-        /// <param name="ctrNew"></param>
-        /// <returns></returns>
-        ActionResult<bool> AddTroubleCtr(TroubleCtrNew ctrNew);
+        ///// <summary>
+        ///// 新建管控项
+        ///// </summary>
+        ///// <param name="ctrNew"></param>
+        ///// <returns></returns>
+        //ActionResult<bool> AddTroubleCtr(TroubleCtrNew ctrNew);
         /// <summary>
         /// 延长验收时间
         /// </summary>
@@ -31,11 +31,17 @@ namespace ESafety.Account.IService
         /// <returns></returns>
         ActionResult<bool> ChangeLevel(ChangeLevel level);
         /// <summary>
-        /// 删除管控项
+        /// 改变风险等级
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="level"></param>
         /// <returns></returns>
-        ActionResult<bool> DelTroubleCtr(Guid id);
+        ActionResult<bool> ChangeDangerLevel(ChangeDangerLevel level);
+        ///// <summary>
+        ///// 删除管控项
+        ///// </summary>
+        ///// <param name="id"></param>
+        ///// <returns></returns>
+        //ActionResult<bool> DelTroubleCtr(Guid id);
         /// <summary>
         /// 根据ID获取管控模型
         /// </summary>
@@ -74,12 +80,31 @@ namespace ESafety.Account.IService
         ActionResult<TroubleCtrDetailView> GetTroubleCtrDetailModel(Guid id);
 
         /// <summary>
-        /// 改变状态
+        /// 归档
         /// </summary>
-        /// <param name="state"></param>
+        /// <param name="ctrID"></param>
         /// <returns></returns>
-        ActionResult<bool> ChangeState(TroubleCtrChangeState state);
-
+        ActionResult<bool> Filed(Guid ctrID);
+        /// <summary>
+        /// 手机端获取管控信息
+        /// </summary>
+        ActionResult<IEnumerable<APPTroubleCtrView>> GetTroubleCtr();
+        /// <summary>
+        /// 处理管控项
+        /// </summary>
+        /// <param name="handleTrouble"></param>
+        /// <returns></returns>
+        ActionResult<bool> HandleCtr(HandleTroubleCtr handleTrouble);
+        /// <summary>
+        /// 快速处理管控项
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<bool> QuickHandleCtr(QuickHandleTroubleCtr quickHandleTrouble);
+        /// <summary>
+        /// 转让责任人
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<bool> TransferPrincipal(TransferTroublePrincipal transferTrouble);
 
     }
 }

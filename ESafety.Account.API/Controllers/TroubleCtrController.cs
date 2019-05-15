@@ -25,18 +25,18 @@ namespace ESafety.Account.API.Controllers
             bll = ctr;
             BusinessServices =new List<object>() { ctr };
         }
-        /// <summary>
-        /// 新建隐患管控模型
-        /// </summary>
-        /// <param name="ctrNew"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("addtc")]
-        public ActionResult<bool> AddTroubleCtr(TroubleCtrNew ctrNew)
-        {
-            LogContent = "新建了管控模型，参数源：" + JsonConvert.SerializeObject(ctrNew);
-            return bll.AddTroubleCtr(ctrNew);
-        }
+        ///// <summary>
+        ///// 新建隐患管控模型
+        ///// </summary>
+        ///// <param name="ctrNew"></param>
+        ///// <returns></returns>
+        //[HttpPost]
+        //[Route("addtc")]
+        //public ActionResult<bool> AddTroubleCtr(TroubleCtrNew ctrNew)
+        //{
+        //    LogContent = "新建了管控模型，参数源：" + JsonConvert.SerializeObject(ctrNew);
+        //    return bll.AddTroubleCtr(ctrNew);
+        //}
         /// <summary>
         /// 新建隐患管控日志模型
         /// </summary>
@@ -74,16 +74,16 @@ namespace ESafety.Account.API.Controllers
             return bll.ChangeLevel(level);
         }
         /// <summary>
-        /// 改变隐患管控状态,根据ID
+        ///  归档
         /// </summary>
-        /// <param name="state"></param>
+        /// <param name="ctrID"></param>
         /// <returns></returns>
-        [HttpPost]
-        [Route("changestate")]
-        public ActionResult<bool> ChangeState(TroubleCtrChangeState state)
+        [HttpGet]
+        [Route("filed/{ctrID:Guid}")]
+        public ActionResult<bool> Filed(Guid ctrID)
         {
-            LogContent = "修改了隐患管控的隐患状态，参数源:" + JsonConvert.SerializeObject(state);
-            return bll.ChangeState(state);
+            LogContent = "隐患管控归档，参数源:" + JsonConvert.SerializeObject(ctrID);
+            return bll.Filed(ctrID);
         }
         /// <summary>
         /// 延长隐患管控的完成时间
@@ -97,18 +97,18 @@ namespace ESafety.Account.API.Controllers
             LogContent = "延长了隐患管控的完成时间，参数源:" + JsonConvert.SerializeObject(finishTime);
             return bll.DelayFinishTime(finishTime);
         }
-        /// <summary>
-        /// 删除隐患管控模型
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("deltc/{id:Guid}")]
-        public ActionResult<bool> DelTroubleCtr(Guid id)
-        {
-            LogContent = "删除了隐患管控模型，ID为：" + id.ToString();
-            return bll.DelTroubleCtr(id);
-        }
+        ///// <summary>
+        ///// 删除隐患管控模型
+        ///// </summary>
+        ///// <param name="id"></param>
+        ///// <returns></returns>
+        //[HttpGet]
+        //[Route("deltc/{id:Guid}")]
+        //public ActionResult<bool> DelTroubleCtr(Guid id)
+        //{
+        //    LogContent = "删除了隐患管控模型，ID为：" + id.ToString();
+        //    return bll.DelTroubleCtr(id);
+        //}
         /// <summary>
         /// 获取隐患管控模型
         /// </summary>

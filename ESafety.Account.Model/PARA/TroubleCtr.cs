@@ -7,45 +7,6 @@ using System.Threading.Tasks;
 
 namespace ESafety.Account.Model.PARA
 {
-    public class TroubleCtrNew
-    {
-        /// <summary>
-        /// 单据ID
-        /// </summary>
-        public Guid BillID { get; set; }
-        /// <summary>
-        /// 管控名称
-        /// </summary>
-        public string ControlName { get; set; }
-        /// <summary>
-        /// 完成时间
-        /// </summary>
-        public DateTime FinishTime { get; set; }
-        /// <summary>
-        /// 责任人id
-        /// </summary>
-        public Guid PrincipalID { get; set; }
-        /// <summary>
-        /// 责任人电话
-        /// </summary>
-        public string PrincipalTEL { get; set; }
-        /// <summary>
-        /// 责任部门id
-        /// </summary>
-        public Guid OrgID { get; set; }
-        /// <summary>
-        /// 管控描述
-        /// </summary>
-        public string ControlDescription { get; set; }
-        /// <summary>
-        /// 隐患级别
-        /// </summary>
-        //public int TroubleLevel { get; set; }
-        /// <summary>
-        /// 隐患控制明细
-        /// </summary>
-        public IEnumerable<Guid> BillSubjectsIDs { get; set; }
-    }
 
     public class DelayFinishTime
     {
@@ -60,7 +21,9 @@ namespace ESafety.Account.Model.PARA
 
     }
 
-
+    /// <summary>
+    /// 修改隐患等级
+    /// </summary>
     public class ChangeLevel
     {
         /// <summary>
@@ -72,7 +35,20 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public int TroubleLevel { get; set; }
     }
-
+    /// <summary>
+    /// 调整风险等级
+    /// </summary>
+    public class ChangeDangerLevel
+    {
+        /// <summary>
+        /// ID
+        /// </summary>
+        public Guid ID { get; set; }
+        /// <summary>
+        /// 隐患级别
+        /// </summary>
+        public Guid DangerLevel { get; set; }
+    }
 
     public class TroubleCtrQuery
     {
@@ -106,18 +82,6 @@ namespace ESafety.Account.Model.PARA
         public Guid TroubleControlID { get; set; }
     }
 
-    public class TroubleCtrChangeState
-    {
-        /// <summary>
-        /// ID
-        /// </summary>
-        public Guid ID { get; set; }
-        /// <summary>
-        /// 状态
-        /// </summary>
-        public PublicEnum.EE_TroubleState State { get; set; }
-    }
-
     public class TroubleCtrFlowNew
     {
 
@@ -126,19 +90,15 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public Guid ControlID { get; set; }
         /// <summary>
-        /// 日期
-        /// </summary>
-        public DateTime FlowDate { get; set; }
-        /// <summary>
         /// 备注
         /// </summary>
         public string FlowMemo { get; set; }
         /// <summary>
         /// 类型
         /// </summary>
-        public int FlowType { get; set; }
+        public PublicEnum.EE_TroubleFlowState FlowType { get; set; }
         /// <summary>
-        /// 是否通过验收(0:当前为状态为管控状态时，1通过、2拒绝)
+        /// 是否通过验收(0:默认，1通过、2拒绝)
         /// </summary>
         public int FlowResult { get; set; }
     }

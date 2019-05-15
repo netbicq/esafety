@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PARA\APPTroubleCtr.cs" />
     <Compile Include="PARA\DangerManage.cs" />
     <Compile Include="PARA\DangerPoint.cs" />
     <Compile Include="PARA\DangerSet.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="View\TaskBill.cs" />
     <Compile Include="View\TaskBillPhone.cs" />
     <Compile Include="View\TroubleCtr.cs" />
+    <Compile Include="View\TroubleCtrPhone.cs" />
     <Compile Include="View\Video.cs" />
   </ItemGroup>
   <ItemGroup>

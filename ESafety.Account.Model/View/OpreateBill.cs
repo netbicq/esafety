@@ -78,6 +78,10 @@ namespace ESafety.Account.Model.View
         /// 作业描述
         /// </summary>
         public string Description { get; set; }
+        /// <summary>
+        /// MasterID
+        /// </summary>
+        public Guid MasterID { get; set; }
 
     }
     /// <summary>

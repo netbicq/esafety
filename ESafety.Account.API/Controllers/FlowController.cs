@@ -199,15 +199,15 @@ namespace ESafety.Account.API.Controllers
 
         }
         /// <summary>
-        /// 根据业务类型获取审批节点集合
+        /// 根据业务类型获取和MasterID，分页获取审批节点集合
         /// </summary>
-        /// <param name="buisnesstype"></param>
+        /// <param name="query"></param>
         /// <returns></returns>
-        [HttpGet]
-        [Route("getpoints/{buisnesstype:Int}")]
-        public ActionResult<IEnumerable<Flow_PointView>> GetPointsByBusinessType(PublicEnum.EE_BusinessType buisnesstype)
+        [HttpPost]
+        [Route("getpoints")]
+        public ActionResult<Pager<Flow_PointView>> GetPointsByBusinessType(PagerQuery<FlowPointQuery> query)
         {
-            return bll.GetPointsByBusinessType(buisnesstype);
+            return bll.GetPointsByBusinessType(query);
         }
         /// <summary>
         /// 获取指定id的审批用户模型
@@ -232,6 +232,63 @@ namespace ESafety.Account.API.Controllers
         {
             return bll.GetPointUsers(pointid);
         }
-         
+        /// <summary>
+        /// 新建流程Master
+        /// </summary>
+        /// <param name="flowMasterNew"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("addFlowMaster")]
+        public ActionResult<bool> AddFlowMaster(FlowMasterNew flowMasterNew)
+        {
+            LogContent = "新建Master，参数源:" + JsonConvert.SerializeObject(flowMasterNew);
+            return bll.AddFlowMaster(flowMasterNew);
+        }
+        /// <summary>
+        /// 修改流程Master
+        /// </summary>
+        /// <param name="flowMasterEdit"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("editFlowMaster")]
+        public ActionResult<bool> EditFlowMaster(FlowMasterEdit flowMasterEdit)
+        {
+            LogContent = "修改Master，参数源:" + JsonConvert.SerializeObject(flowMasterEdit);
+            return bll.EditFlowMaster(flowMasterEdit);
+        }
+        /// <summary>
+        /// 删除流程Master
+        /// </summary>
+        /// <param name="masterID"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("delFlowMaster/{masterID:Guid}")]
+        public ActionResult<bool> DelFlowMaster(Guid masterID)
+        {
+            LogContent = "删除了Master，ID:" + JsonConvert.SerializeObject(masterID);
+            return bll.DelFlowMaster(masterID);
+        }
+        /// <summary>
+        /// 根据业务类型分页获取Master,默认为0
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("getFlowMastersPage")]
+        public ActionResult<Pager<FlowMasterView>> GetFlowMastersPage(PagerQuery<int> query)
+        {
+            return bll.GetFlowMastersPage(query);
+        }
+        /// <summary>
+        /// 根据业务类型获取Master选择器
+        /// </summary>
+        /// <param name="businessType"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getFlowMasterSelector/{businessType:Int}")]
+        public ActionResult<IEnumerable<FlowMasterSelector>> GetFlowMasterSelector(PublicEnum.EE_BusinessType businessType)
+        {
+            return bll.GetFlowMasterSelector(businessType);
+        }
     }
 }

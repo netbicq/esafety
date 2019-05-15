@@ -8,10 +8,43 @@ using System.Threading.Tasks;
 namespace ESafety.Core.Model.PARA
 {
     /// <summary>
+    /// 流程Master
+    /// </summary>
+    public class FlowMasterNew
+    {
+        /// <summary>
+        /// 控制名
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// 任务类型
+        /// </summary>
+        public PublicEnum.EE_BusinessType BusinessType { get; set; }
+    }
+    /// <summary>
+    ///  修改流程Master
+    /// </summary>
+    public class FlowMasterEdit
+    {
+        /// <summary>
+        /// MasterID
+        /// </summary>
+        public Guid MasterID { get; set; }
+        /// <summary>
+        /// 控制名
+        /// </summary>
+        public string Name { get; set; }
+    }
+
+    /// <summary>
     /// 新建审批节点
     /// </summary>
     public class Flow_PointsNew
     {
+        /// <summary>
+        /// 流程MasterID
+        /// </summary>
+        public Guid MasterID { get; set; }
         /// <summary>
         /// 业务类型
         /// </summary>
@@ -29,6 +62,7 @@ namespace ESafety.Core.Model.PARA
         /// </summary>
         public int PointIndex { get; set; }
     }
+
     /// <summary>
     /// 修改审批节点
     /// </summary>
@@ -68,10 +102,28 @@ namespace ESafety.Core.Model.PARA
         public Guid ID { get; set; }
     }
     /// <summary>
+    /// 流程节点查询条件
+    /// </summary>
+    public class FlowPointQuery
+    {
+        /// <summary>
+        /// MasterID
+        /// </summary>
+        public Guid MasterID { get; set; }
+        /// <summary>
+        /// 业务类型
+        /// </summary>
+        public PublicEnum.EE_BusinessType BusinessType{ get; set; }
+    }
+    /// <summary>
     /// 审批初始任务参数
     /// </summary>
     public class InitTask
     {
+        /// <summary>
+        /// 流程MasterID
+        /// </summary>
+        public Guid MasterID { get; set; }
         /// <summary>
         /// 业务类型
         /// </summary>
@@ -119,6 +171,10 @@ namespace ESafety.Core.Model.PARA
     /// </summary>
     public class BusinessAprovePara
     {
+        /// <summary>
+        /// 流程MasterID
+        /// </summary>
+        public Guid MasterID { get; set; }
         /// <summary>
         /// 业务类型
         /// </summary>

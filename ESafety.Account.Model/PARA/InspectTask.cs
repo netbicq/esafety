@@ -63,6 +63,11 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public string TaskDescription { get; set; }
 
+        /// <summary>
+        /// 流程MasterID
+        /// </summary>
+        public Guid MasterID { get; set; }
+
     }
     /// <summary>
     /// 修改任务
