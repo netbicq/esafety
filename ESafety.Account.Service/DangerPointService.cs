@@ -48,7 +48,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("该风险点已存在");
                 }
-                if (pointNew.WXYSDictIDs == null)
+                if (pointNew.WXYSDictIDs.Count() == 0)
                 {
                     throw new Exception("请选择危险因素!");
                 }
