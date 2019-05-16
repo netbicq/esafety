@@ -345,17 +345,17 @@ namespace ESafety.Account.API.Controllers
         {
             return spectbll.GetEmpTaskByQRCoder(dangerPointID);
         }
-        /// <summary>
-        /// 根据二维码获取超时任务
-        /// </summary>
-        /// <param name="dangerPointID"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("getEmpTaskTimeOutByQRCoder/{dangerPointID:Guid}")]
-        public ActionResult<IEnumerable<InsepctTaskByEmployee>> GetEmpTimeOutTaskByQRCoder(Guid dangerPointID)
-        {
-            return spectbll.GetEmpTimeOutTaskByQRCoder(dangerPointID);
-        }
+        ///// <summary>
+        ///// 根据二维码获取超时任务
+        ///// </summary>
+        ///// <param name="dangerPointID"></param>
+        ///// <returns></returns>
+        //[HttpGet]
+        //[Route("getEmpTaskTimeOutByQRCoder/{dangerPointID:Guid}")]
+        //public ActionResult<IEnumerable<InsepctTaskByEmployee>> GetEmpTimeOutTaskByQRCoder(Guid dangerPointID)
+        //{
+        //    return spectbll.GetEmpTimeOutTaskByQRCoder(dangerPointID);
+        //}
         /// <summary>
         /// 根据二维码获取历史
         /// </summary>

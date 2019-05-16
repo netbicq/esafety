@@ -8,6 +8,7 @@ using ESafety.Core.Model.DB.Account;
 using ESafety.Core.Model.PARA;
 using ESafety.ORM;
 using ESafety.Unity;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -905,7 +906,8 @@ namespace ESafety.Account.Service
                          let subs = csubs.Where(p => !osubids.Contains(p.SubjectID)).ToList()//待查主体
                          let subids = subs.Select(p => p.SubjectID)
                          let sbs = _work.Repository<Basic_DangerPointRelation>().Queryable(p => subids.Contains(p.SubjectID)).ToList()
-                         let dicts = rpsDict.Queryable(p => p.ParentID == OptionConst.Eval_WHYS)
+                         let whysids=JsonConvert.DeserializeObject<IEnumerable<Guid>>(danger.WXYSJson)
+                         let dicts = rpsDict.Queryable(p=>whysids.Contains(p.ID))
                          select new BillData
                          {
                              BillID = tb.ID,

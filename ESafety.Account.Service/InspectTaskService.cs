@@ -1006,7 +1006,8 @@ namespace ESafety.Account.Service
                         : t.CycleValue
                          let billsub = tbills == null ? null : billsubjects.OrderByDescending(o => o.TaskTime).FirstOrDefault(q => tbills.Select(s => s.ID).Contains(q.BillID))
                          let ctime = tbills == null ? (DateTime.Now - t.StartTime).TotalMinutes : billsub == null ? (DateTime.Now - t.StartTime).TotalMinutes : (DateTime.Now - billsub.TaskTime).TotalMinutes
-                         where ctime < date
+                         //where ctime < date
+                         orderby (ctime-date) descending
                          select new InsepctTaskByEmployee
                          {
 
@@ -1019,7 +1020,7 @@ namespace ESafety.Account.Service
                              TaskDescription = t.TaskDescription,
                              //最后时间和超时时间
                              LastTime = billsub == null ? "" : billsub.TaskTime.ToString(),
-                             TimeOutHours = 0,
+                             TimeOutHours = ctime < date?0:(int)(ctime-date),
                              CycleDateType = t.CycleDateType,
                              CycleValue = t.CycleValue,
                              CycleName = Command.GetItems(typeof(PublicEnum.EE_CycleDateType)).FirstOrDefault(p => p.Value == t.CycleDateType).Caption
