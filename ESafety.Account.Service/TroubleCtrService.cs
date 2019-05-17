@@ -720,7 +720,7 @@ namespace ESafety.Account.Service
                 var user = AppUser.EmployeeInfo;
                 var ctrs = _rpstc.Queryable(p => p.PrincipalID == user.ID || p.AcceptorID == user.ID || p.ExecutorID == user.ID);
                 var emps = _work.Repository<Basic_Employee>().Queryable();
-                var re = from c in ctrs
+                var re = from c in ctrs.ToList()
                          let aemp = emps.FirstOrDefault(p => p.ID == c.AcceptorID)
                          let eemp = emps.FirstOrDefault(p => p.ID == c.ExecutorID)
                          let pemp = emps.FirstOrDefault(p => p.ID == c.PrincipalID)

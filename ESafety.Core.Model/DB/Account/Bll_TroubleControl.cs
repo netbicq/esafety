@@ -19,8 +19,6 @@ namespace ESafety.Core.Model.DB.Account
         /// <summary>
         /// 管控名称
         /// </summary>
-        [Required]
-        [StringLength(500)]
         public string ControlName { get; set; }
         /// <summary>
         /// 完成时间
@@ -41,8 +39,6 @@ namespace ESafety.Core.Model.DB.Account
         /// <summary>
         /// 管控描述
         /// </summary>
-        [Required]
-        [StringLength(4000)]
         public string ControlDescription { get; set; }
         /// <summary>
         /// 隐患级别

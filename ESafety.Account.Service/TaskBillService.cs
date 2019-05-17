@@ -564,6 +564,8 @@ namespace ESafety.Account.Service
                         DangerLevel = dbsub.DangerLevel,
                         TroubleLevel = dbsub.TroubleLevel,
                         PrincipalID = bill.PrincipalID,
+                        ControlDescription="",
+                        ControlName=""
                     };
                     var ctrDetail = new Bll_TroubleControlDetails
                     {

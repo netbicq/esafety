@@ -129,6 +129,8 @@ namespace ESafety.Account.Model.View
         /// 检查描述
         /// </summary>
         public string TaskResultMemo { get; set; }
+
+        public string MyProperty { get; set; }
     }
 
     /// <summary>
