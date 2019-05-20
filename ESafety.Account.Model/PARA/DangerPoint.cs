@@ -45,6 +45,22 @@ namespace ESafety.Account.Model.PARA
         /// 文件列表
         /// </summary>
         public IEnumerable<AttachFileNew> fileNews { get; set; }
+        /// <summary>
+        /// 组织架构ID
+        /// </summary>
+        public Guid OrgID { get; set; }
+        /// <summary>
+        /// 警示牌
+        /// </summary>
+        public string WarningSign { get; set; }
+        /// <summary>
+        /// 风险点图片
+        /// </summary>
+        public string DangerPointImg { get; set; }
+        /// <summary>
+        /// 后果
+        /// </summary>
+        public string Consequence { get; set; }
     }
     /// <summary>
     /// 修改风险点

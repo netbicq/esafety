@@ -26,13 +26,15 @@ namespace ESafety.Account.Service
         private IRepository<Basic_DangerPoint> rpsdp = null;
         private IRepository<Basic_DangerPointRelation> rpsdpr = null;
         private IAttachFile srvFile = null;
-        public DangerPointService(IUnitwork _work,IAttachFile file)
+        private ITree srvTree;
+        public DangerPointService(IUnitwork _work, IAttachFile file, ITree orgTree)
         {
             work = _work;
             Unitwork = _work;
             rpsdp = work.Repository<Basic_DangerPoint>();
             rpsdpr = work.Repository<Basic_DangerPointRelation>();
             srvFile = file;
+            srvTree = orgTree;
         }
         /// <summary>
         /// 新建风险点
@@ -51,6 +53,14 @@ namespace ESafety.Account.Service
                 if (pointNew.WXYSDictIDs.Count() == 0)
                 {
                     throw new Exception("请选择危险因素!");
+                }
+                if (pointNew.OrgID == Guid.Empty)
+                {
+                    throw new Exception("请选责任部门!");
+                }
+                if (pointNew.Principal == Guid.Empty)
+                {
+                    throw new Exception("请选责任人!");
                 }
                 var dbdp = pointNew.MAPTO<Basic_DangerPoint>();
                 dbdp.WXYSJson = JsonConvert.SerializeObject(pointNew.WXYSDictIDs);
@@ -192,9 +202,23 @@ namespace ESafety.Account.Service
                 {
                     File.Delete(filepath);
                 }
+                //风险点图片
+                var dImgPath = HttpContext.Current.Server.MapPath(dbdp.DangerPointImg);
+                if (File.Exists(dImgPath))
+                {
+                    File.Delete(dImgPath);
+                }
+                //警示牌
+                var wImgPath = HttpContext.Current.Server.MapPath(dbdp.WarningSign);
+                if (File.Exists(wImgPath))
+                {
+                    File.Delete(wImgPath);
+                }
+
+
                 //文件
                 var file = srvFile.DelFileByBusinessId(pointID);
-               
+
                 rpsdp.Delete(dbdp);
                 work.Commit();
                 return new ActionResult<bool>(true);
@@ -250,6 +274,24 @@ namespace ESafety.Account.Service
                 }
                 dbdp = pointEdit.CopyTo<Basic_DangerPoint>(dbdp);
                 dbdp.WXYSJson = JsonConvert.SerializeObject(pointEdit.WXYSDictIDs);
+                //风险点图片
+                if (!string.Equals(pointEdit.DangerPointImg, dbdp.DangerPointImg))
+                {
+                    var dPointImg = HttpContext.Current.Server.MapPath(dbdp.DangerPointImg);
+                    if (File.Exists(dPointImg))
+                    {
+                        File.Delete(dPointImg);
+                    }
+                }
+                //警示图标
+                if (!string.Equals(pointEdit.WarningSign, dbdp.WarningSign))
+                {
+                    var wPointImg = HttpContext.Current.Server.MapPath(dbdp.WarningSign);
+                    if (File.Exists(wPointImg))
+                    {
+                        File.Delete(wPointImg);
+                    }
+                }
                 //文件
                 srvFile.DelFileByBusinessId(pointEdit.ID);
                 var files = new AttachFileSave
@@ -314,10 +356,13 @@ namespace ESafety.Account.Service
                 var empids = page.Select(s => s.Principal);
                 var emps = work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p => empids.Contains(p.ID));
 
+                var org = work.Repository<Core.Model.DB.Basic_Org>().Queryable();
 
                 var retemp = from p in page
                              let lv = lvs.FirstOrDefault(q => q.ID == p.DangerLevel)
                              let emp = emps.FirstOrDefault(q => q.ID == p.Principal)
+                             let porg = org.FirstOrDefault(p => p.ID == emp.OrgID)
+                             orderby p.Code ascending
                              select new DangerPointView
                              {
                                  ID = p.ID,
@@ -329,7 +374,10 @@ namespace ESafety.Account.Service
                                  Code = p.Code,
                                  DangerLevelName = lv.DictName,
                                  PrincipalName = emp.CNName,
-                           
+                                 WarningSign = p.WarningSign,
+                                 DangerPointImg = p.DangerPointImg,
+                                 Consequence = p.Consequence,
+                                 OrgName = porg.OrgName
                              };
                 var re = new Pager<DangerPointView>().GetCurrentPage(retemp, pointName.PageSize, pointName.PageIndex);
                 return new ActionResult<Pager<DangerPointView>>(re);
@@ -454,8 +502,8 @@ namespace ESafety.Account.Service
                 var re = from wxys in retemp
                          select new WXYSSelector
                          {
-                             ID=wxys.ID,
-                             WXYSDictName=wxys.DictName
+                             ID = wxys.ID,
+                             WXYSDictName = wxys.DictName
                          };
                 return new ActionResult<IEnumerable<WXYSSelector>>(re);
 
@@ -463,6 +511,73 @@ namespace ESafety.Account.Service
             catch (Exception ex)
             {
                 return new ActionResult<IEnumerable<WXYSSelector>>(ex);
+            }
+        }
+
+        /// <summary>
+        /// APP 端获取风险等级
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<DangerLevel>> GetDangerLevels()
+        {
+            try
+            {
+                var user = AppUser.EmployeeInfo;
+                (srvTree as TreeService).AppUser = AppUser;
+                var orgIDs = srvTree.GetChildrenIds<Core.Model.DB.Basic_Org>(user.OrgID);
+                var dangerPoints = rpsdp.Queryable(p => orgIDs.Contains(p.OrgID));
+                var dlvs = dangerPoints.Select(s => s.DangerLevel).Distinct();
+                var dicts = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => dlvs.Contains(p.ID));
+                var re = from lv in dicts
+                         let count = dangerPoints.Count(p => p.DangerLevel == lv.ID)
+                         select new DangerLevel
+                         {
+                             LevelID = lv.ID,
+                             Count = count,
+                             LevelName = lv.DictName
+                         };
+                return new ActionResult<IEnumerable<DangerLevel>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<DangerLevel>>(ex);
+            }
+        }
+        /// <summary>
+        /// APP 根据风险点ID 端获取风险点
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public ActionResult<Pager<APPDangerPointView>> GetDangerPointsPage(PagerQuery<Guid> query)
+        {
+            try
+            {
+                var user = AppUser.EmployeeInfo;
+                (srvTree as TreeService).AppUser = AppUser;
+                var orgIDs = srvTree.GetChildrenIds<Core.Model.DB.Basic_Org>(user.OrgID);
+                var dangerPoints = rpsdp.Queryable(p => orgIDs.Contains(p.OrgID));
+                var dlvs = dangerPoints.Select(s => s.DangerLevel).Distinct();
+                var dicts = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => dlvs.Contains(p.ID));
+
+                var empids = dangerPoints.Select(s => s.Principal).Distinct();
+                var emps = work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p=>empids.Contains(p.ID));
+
+
+                var retemp = from dp in dangerPoints
+                             let lv=dicts.FirstOrDefault(p=>p.ID==dp.ID)
+                             let emp=emps.FirstOrDefault(p=>p.ID==dp.Principal)
+                             select new APPDangerPointView
+                             {
+                                 DangerLevel=lv.DictName,
+                                 DangerPoint=dp.Name,
+                                 Principal=emp.CNName
+                             };
+                var re = new Pager<APPDangerPointView>().GetCurrentPage(retemp, query.PageSize, query.PageIndex);
+                return new ActionResult<Pager<APPDangerPointView>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<Pager<APPDangerPointView>>(ex);
             }
         }
     }

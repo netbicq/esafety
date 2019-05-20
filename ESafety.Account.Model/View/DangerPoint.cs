@@ -47,6 +47,22 @@ namespace ESafety.Account.Model.View
         /// 负责人名
         /// </summary>
         public string PrincipalName { get; set; }
+        /// <summary>
+        /// 部门
+        /// </summary>
+        public string OrgName { get; set; }
+        /// <summary>
+        /// 警示牌
+        /// </summary>
+        public string WarningSign { get; set; }
+        /// <summary>
+        /// 风险点图片
+        /// </summary>
+        public string DangerPointImg { get; set; }
+        /// <summary>
+        /// 后果
+        /// </summary>
+        public string Consequence { get; set; }
 
     }
 
@@ -178,5 +194,41 @@ namespace ESafety.Account.Model.View
         /// 主体名
         /// </summary>
         public string SubjectName { get; set; }
+    }
+    /// <summary>
+    /// APP 统计风险等级
+    /// </summary>
+    public class DangerLevel
+    {
+        /// <summary>
+        /// 等级ID
+        /// </summary>
+        public Guid LevelID { get; set; }
+        /// <summary>
+        /// 等级名
+        /// </summary>
+        public string LevelName { get; set; }
+        /// <summary>
+        /// 风险点计数
+        /// </summary>
+        public int Count { get; set; }
+    }
+    /// <summary>
+    /// 风险点
+    /// </summary>
+    public class APPDangerPointView
+    {
+        /// <summary>
+        /// 风险点
+        /// </summary>
+        public string DangerPoint { get; set; }
+        /// <summary>
+        /// 责任人
+        /// </summary>
+        public string Principal { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public string DangerLevel { get; set; }
     }
 }

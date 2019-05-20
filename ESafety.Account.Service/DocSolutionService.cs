@@ -204,6 +204,7 @@ namespace ESafety.Account.Service
                 var dbdss = _rpsds.Queryable(p => p.TypeID == para.Query.TypeID && (p.Name.Contains(para.Query.Name) || string.IsNullOrEmpty(para.Query.Name))&&(p.DangerLevel==para.Query.DangerLevel||Guid.Empty==para.Query.DangerLevel));
                 var revs = from s in dbdss.ToList()
                            let dict= _rpsdict.GetModel(s.DangerLevel)
+                           orderby s.IssueDate descending
                            select new DocSolutionView
                            {
                                Content = s.Content,

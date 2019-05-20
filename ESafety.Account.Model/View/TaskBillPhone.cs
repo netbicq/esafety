@@ -129,8 +129,38 @@ namespace ESafety.Account.Model.View
         /// 检查描述
         /// </summary>
         public string TaskResultMemo { get; set; }
-
-        public string MyProperty { get; set; }
+        /// <summary>
+        /// 危害因素
+        /// </summary>
+        public string WHYSDict{ get; set; }
+        /// <summary>
+        /// 事故类型
+        /// </summary>
+        public string SGLXDict { get; set; }
+        /// <summary>
+        /// 事故后果
+        /// </summary>
+        public string SGJGDict { get; set; }
+        /// <summary>
+        /// 影响范围
+        /// </summary>
+        public string YXFWDict { get; set; }
+        /// <summary>
+        /// 评估方法
+        /// </summary>
+        public string Method { get; set; }
+        /// <summary>
+        /// 隐患等级
+        /// </summary>
+        public string TLevel { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public string DLevel { get; set; }
+        /// <summary>
+        /// 管控负责人
+        /// </summary>
+        public string CtrPrincipal { get; set; }
     }
 
     /// <summary>

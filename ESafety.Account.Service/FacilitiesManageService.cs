@@ -240,6 +240,7 @@ namespace ESafety.Account.Service
                 var orgs = _work.Repository<Core.Model.DB.Basic_Org>().Queryable(p=>orgids.Contains(p.ID));
                 var refclty = from f in dbfacilities
                               let org = orgs.FirstOrDefault(p=>p.ID==f.OrgID)
+                              orderby f.Code ascending
                               select new FacilityView
                               {
                                   ID = f.ID,

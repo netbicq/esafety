@@ -69,7 +69,7 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public int TroubleLevel { get; set; }
         /// <summary>
-        /// 关键字
+        /// 关键字(发现人、负责人、负责部门、编号所包含的值)
         /// </summary>
         public string Key { get; set; }
     }

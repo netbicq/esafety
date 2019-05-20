@@ -175,6 +175,7 @@ namespace ESafety.Account.Service
             {
                 var dbdcs = _rpsdc.Queryable(p =>p.TypeID==para.Query.TypeID&&(p.Name.Contains(para.Query.Name)||string.IsNullOrEmpty(para.Query.Name)));
                 var redcs = from s in dbdcs
+                            orderby s.Name
                             select new DocCertificateView
                             {
                                 ID = s.ID,

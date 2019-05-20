@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESafety.Unity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,10 +22,6 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public DateTime? FinishTime { get; set; }
         /// <summary>
-        /// 责任人id
-        /// </summary>
-        public Guid PrincipalID { get; set; }
-        /// <summary>
         /// 负责人名
         /// </summary>
         public string  PrincipalName { get; set; }
@@ -32,10 +29,6 @@ namespace ESafety.Account.Model.View
         /// 巡检人名
         /// </summary>
         public string BillEmpName { get; set; }
-        /// <summary>
-        /// 责任部门id
-        /// </summary>
-        public Guid OrgID { get; set; }
         /// <summary>
         /// 负责人部门名
         /// </summary>
@@ -45,10 +38,6 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string ControlDescription { get; set; }
         /// <summary>
-        /// 隐患级别
-        /// </summary>
-        public int TroubleLevel { get; set; }
-        /// <summary>
         /// 隐患等级描述
         /// </summary>
         public string TroubleLevelDesc { get; set; }
@@ -56,24 +45,70 @@ namespace ESafety.Account.Model.View
         /// 发现日期
         /// </summary>
         public DateTime CreateDate { get; set; }
-        /// <summary>
-        /// 状态
-        /// </summary>
-        public Unity.PublicEnum.EE_TroubleState State { get; set; }
+
         /// <summary>
         /// 状态名
         /// </summary>
         public string StateName { get; set; }
-
         /// <summary>
-        /// 验收人
+        /// 隐患管控验收人
         /// </summary>
-        public string FlowEmp { get; set; }
+        public string Acceptor { get; set; }
         /// <summary>
         /// 验收时间
         /// </summary>
         public DateTime? FlowTime { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public string DangerLevel { get; set; }
+        /// <summary>
+        /// 当前人 1负责人 2执行人 3验收人 4负责人与执行人 5负责人与验收人
+        /// </summary>
+        public int Cuser { get; set; }
     }
+    /// <summary>
+    /// 管控模型
+    /// </summary>
+    public class TroubleCtrModel
+    {
+        /// <summary>
+        ///隐患管控编号
+        /// </summary>
+        public string Code { get; set; }
+        /// <summary>
+        /// 巡检人名
+        /// </summary>
+        public string BillEmpName { get; set; }
+        /// <summary>
+        /// 发现日期
+        /// </summary>
+        public DateTime CreateDate { get; set; }
+        /// <summary>
+        /// 完成时间
+        /// </summary>
+        public DateTime? FinishTime { get; set; }
+        /// <summary>
+        /// 隐患等级
+        /// </summary>
+        public PublicEnum.EE_TroubleLevel TroubleLevel{ get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public Guid DangerLevel { get; set; }
+        /// <summary>
+        /// 管控描述
+        /// </summary>
+        public string ControlDescription { get; set; }
+        /// <summary>
+        /// 状态
+        /// </summary>
+        public Unity.PublicEnum.EE_TroubleState State { get; set; }
+
+    }
+
+
+
 
     public class TroubleCtrDetailView
     {

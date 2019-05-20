@@ -82,6 +82,17 @@ namespace ESafety.Account.IService
         /// <param name="pointID"></param>
         /// <returns></returns>
         ActionResult<IEnumerable<WXYSSelector>> GetWXYSSelectorByDangerPointId(Guid pointID);
+        /// <summary>
+        /// APP 端获取风险等级与对应等级的风险点的个数
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<IEnumerable<DangerLevel>> GetDangerLevels();
+        /// <summary>
+        /// APP 根据风险点ID 端获取风险点
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        ActionResult<Pager<APPDangerPointView>> GetDangerPointsPage(PagerQuery<Guid> query);
 
     }
 }

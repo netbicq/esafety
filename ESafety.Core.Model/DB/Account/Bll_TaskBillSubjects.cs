@@ -71,5 +71,9 @@ namespace ESafety.Core.Model.DB.Account
         /// 风险等级
         /// </summary>
         public Guid DangerLevel { get; set; }
+        /// <summary>
+        /// 管控负责人
+        /// </summary>
+        public Guid CtrPrincipal { get; set; }
     }
 }

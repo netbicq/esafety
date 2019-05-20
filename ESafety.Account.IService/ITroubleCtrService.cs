@@ -47,7 +47,7 @@ namespace ESafety.Account.IService
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        ActionResult<TroubleCtrView> GetTroubleCtr(Guid id);
+        ActionResult<TroubleCtrModel> GetTroubleCtr(Guid id);
         /// <summary>
         /// 分页获取管控模型
         /// </summary>

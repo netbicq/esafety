@@ -116,7 +116,7 @@ namespace ESafety.Account.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("gettc/{id:Guid}")]
-        public ActionResult<TroubleCtrView> GetTroubleCtr(Guid id)
+        public ActionResult<TroubleCtrModel> GetTroubleCtr(Guid id)
         {
             return bll.GetTroubleCtr(id);
         }
@@ -176,5 +176,44 @@ namespace ESafety.Account.API.Controllers
         //    LogContent = "发起审批，业务id:" + billid.ToString();
         //    return bll.StartBillFlow(billid);
         //}
+        /// <summary>
+        /// 处理管控项
+        /// </summary>
+        /// <param name="handleTrouble"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("handleCtr")]
+        public ActionResult<bool> HandleCtr(HandleTroubleCtr handleTrouble)
+        {
+            LogContent = "处理管控项，参数源:" + JsonConvert.SerializeObject(handleTrouble);
+            return bll.HandleCtr(handleTrouble);
+        }
+
+        /// <summary>
+        /// 转让责任人
+        /// </summary>
+        /// <param name="transferTrouble"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("transferPrincipal")]
+        public ActionResult<bool> TransferPrincipal(TransferTroublePrincipal transferTrouble)
+        {
+            LogContent = "转让责任人，参数源:" + JsonConvert.SerializeObject(transferTrouble);
+            return bll.TransferPrincipal(transferTrouble);
+        }
+
+        /// <summary>
+        /// 改变风险等级
+        /// </summary>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("changeDangerLevel")]
+        public ActionResult<bool> ChangeDangerLevel(ChangeDangerLevel level)
+        {
+            LogContent = "改变风险等级，参数源:" + JsonConvert.SerializeObject(level);
+            return bll.ChangeDangerLevel(level);
+        }
+
     }
 }

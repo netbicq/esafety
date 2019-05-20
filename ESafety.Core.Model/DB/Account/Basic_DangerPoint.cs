@@ -44,5 +44,21 @@ namespace ESafety.Core.Model.DB.Account
         /// 负责人
         /// </summary>
         public Guid Principal { get; set; }
+        /// <summary>
+        /// 组织架构ID
+        /// </summary>
+        public Guid OrgID { get; set; }
+        /// <summary>
+        /// 警示牌
+        /// </summary>
+        public string WarningSign { get; set; }
+        /// <summary>
+        /// 风险点图片
+        /// </summary>
+        public string DangerPointImg { get; set; }
+        /// <summary>
+        /// 后果
+        /// </summary>
+        public string Consequence { get; set; }
     }
 }

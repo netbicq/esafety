@@ -185,6 +185,7 @@ namespace ESafety.Account.Service
             {
                 var dbdms = _rpsdm.Queryable(p => p.Motif.Contains(para.Query.Motif) || string.IsNullOrEmpty(para.Query.Motif));
                 var redms = from s in dbdms
+                            orderby s.MeetingDate descending
                             select new DocMeetingView
                             {
                                 ID = s.ID,

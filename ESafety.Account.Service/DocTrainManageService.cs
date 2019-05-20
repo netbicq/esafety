@@ -247,6 +247,7 @@ namespace ESafety.Account.Service
                 var dbdtemps = _rpsdtemp.Queryable(p=>p.TrainID==para.Query.TrainID);
                 var reemps = from s in dbdtemps.ToList()
                          let emp= _rpsemp.GetModel(s.EmployeeID)
+                         orderby emp.CNName ascending
                          select new DocTrainEmpoyeesView
                          {
                              ID=s.ID,
@@ -293,6 +294,7 @@ namespace ESafety.Account.Service
             {
                 var dbdts = _rpsdt.Queryable(p => p.Motif.Contains(para.Query.Motif)||string.IsNullOrEmpty(para.Query.Motif));
                 var redts = from s in dbdts
+                            orderby s.TrainDate descending
                             select new DocTrainingView
                             {
                                 ID = s.ID,

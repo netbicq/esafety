@@ -547,34 +547,42 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception(fileresult.msg);
                 }
-                //新建管控项
                 if (dbsub.TaskResult == (int)PublicEnum.EE_TaskResultType.abnormal)
                 {
+                    if (bill.Eval_WHYS == Guid.Empty)
+                    {
+                        throw new Exception("请选择危害因素！");
+                    }
+                    if (bill.Eval_SGLX == Guid.Empty)
+                    {
+                        throw new Exception("请选择事故类型！");
+                    }
+                    if (bill.Eval_YXFW == Guid.Empty)
+                    {
+                        throw new Exception("请选择影响范围！");
+                    }
+                    if (bill.Eval_SGJG == Guid.Empty)
+                    {
+                        throw new Exception("请选择事故后果！");
+                    }
+                    if (bill.Eval_Method == 0)
+                    {
+                        throw new Exception("请选择评估方法！");
+                    }
+                    if (bill.DangerLevel == Guid.Empty)
+                    {
+                        throw new Exception("请选择风险等级！");
+                    }
+                    if (bill.TroubleLevel == 0)
+                    {
+                        throw new Exception("请选择隐患等级！");
+                    }
+                    if (bill.PrincipalID == Guid.Empty)
+                    {
+                        throw new Exception("请分配管控责任人！");
+                    }
                     dbsub.IsControl = true;
-                    //检查时为异常状态时直接新建管控项
-                    var rpsCtr = _work.Repository<Bll_TroubleControl>();
-                    var rpsCtrDetail = _work.Repository<Bll_TroubleControlDetails>();
-                    var ctr = new Bll_TroubleControl
-                    {
-                        ID = Guid.NewGuid(),
-                        BillID = dbsub.BillID,
-                        Code = Command.CreateCode(),
-                        CreateDate = DateTime.Now,
-                        State = (int)PublicEnum.EE_TroubleState.pending,
-                        DangerLevel = dbsub.DangerLevel,
-                        TroubleLevel = dbsub.TroubleLevel,
-                        PrincipalID = bill.PrincipalID,
-                        ControlDescription="",
-                        ControlName=""
-                    };
-                    var ctrDetail = new Bll_TroubleControlDetails
-                    {
-                        ID = Guid.NewGuid(),
-                        BillSubjectsID = dbsub.ID,
-                        TroubleControlID = ctr.ID
-                    };
-                    rpsCtr.Add(ctr);
-                    rpsCtrDetail.Add(ctrDetail);
+                    dbsub.CtrPrincipal = bill.PrincipalID;
                 }
                 _rpstbs.Add(dbsub);
                 _work.Commit();
@@ -612,6 +620,39 @@ namespace ESafety.Account.Service
                 if (check)
                 {
                     throw new Exception("存在未检查的项，无法提交完成单据!");
+                }
+                var bills = _rpstbs.Queryable(p => p.BillID == dbbill.ID).ToList();
+                foreach (var bill in bills)
+                {
+                    //新建管控项
+                    if (bill.TaskResult == (int)PublicEnum.EE_TaskResultType.abnormal)
+                    {
+                       
+                        //检查时为异常状态时直接新建管控项
+                        var rpsCtr = _work.Repository<Bll_TroubleControl>();
+                        var rpsCtrDetail = _work.Repository<Bll_TroubleControlDetails>();
+                        var ctr = new Bll_TroubleControl
+                        {
+                            ID = Guid.NewGuid(),
+                            BillID = bill.BillID,
+                            Code = Command.CreateCode(),
+                            CreateDate = DateTime.Now,
+                            State = (int)PublicEnum.EE_TroubleState.pending,
+                            DangerLevel = bill.DangerLevel,
+                            TroubleLevel = bill.TroubleLevel,
+                            PrincipalID = bill.CtrPrincipal,
+                            ControlDescription = "",
+                            ControlName = ""
+                        };
+                        var ctrDetail = new Bll_TroubleControlDetails
+                        {
+                            ID = Guid.NewGuid(),
+                            BillSubjectsID = bill.ID,
+                            TroubleControlID = ctr.ID
+                        };
+                        rpsCtr.Add(ctr);
+                        rpsCtrDetail.Add(ctrDetail);
+                    }
                 }
                 dbbill.State = (int)PublicEnum.BillFlowState.normal;
                 _rpstb.Update(dbbill);
@@ -855,6 +896,7 @@ namespace ESafety.Account.Service
             try
             {
                 var subresult = _rpstbs.GetModel(subresultid);
+                var dict = _work.Repository<Basic_Dict>();
                 if (subresult == null)
                 {
                     throw new Exception("未找到检查结果");
@@ -863,7 +905,15 @@ namespace ESafety.Account.Service
                 {
                     ResultTime = subresult.TaskTime,
                     TaskResult = (PublicEnum.EE_TaskResultType)subresult.TaskResult,
-                    TaskResultMemo = subresult.TaskResultMemo
+                    TaskResultMemo = subresult.TaskResultMemo,
+                    DLevel=subresult.DangerLevel==Guid.Empty?"":dict.GetModel(subresult.DangerLevel).DictName,
+                    WHYSDict = subresult.Eval_WHYS == Guid.Empty ? "" : dict.GetModel(subresult.DangerLevel).DictName,
+                    SGLXDict = subresult.Eval_SGLX == Guid.Empty ? "" : dict.GetModel(subresult.DangerLevel).DictName,
+                    SGJGDict = subresult.Eval_SGJG == Guid.Empty ? "" : dict.GetModel(subresult.DangerLevel).DictName,
+                    YXFWDict = subresult.Eval_YXFW == Guid.Empty ? "" : dict.GetModel(subresult.DangerLevel).DictName,
+                    Method = subresult.Eval_Method == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(v=>v.Value==subresult.Eval_Method).Caption,
+                    TLevel = subresult.TroubleLevel == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(v => v.Value == subresult.TroubleLevel).Caption,
+                    CtrPrincipal=subresult.CtrPrincipal==Guid.Empty?"":_work.Repository<Basic_Employee>().GetModel(p=>p.ID==subresult.CtrPrincipal).CNName
                 };
                 return new ActionResult<SubResultView>(re);
             }

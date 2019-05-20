@@ -90,6 +90,7 @@ namespace ESafety.Account.Service
                 var dbdangerrelation = _rpsdangerrelation.Queryable(p=>p.SubjectID==para.Query.SubjectID);
                 var redr = from s in dbdangerrelation.ToList()
                            let o = _rpsdanger.GetModel(p=>p.ID==s.DangerID)
+                           orderby o.Code ascending
                            select new DangerRelationView
                            {
                                Code = o.Code,

@@ -24,9 +24,17 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string Executor { get; set; }
         /// <summary>
+        ///隐患管控执行人
+        /// </summary>
+        public Guid? ExecutorID { get; set; }
+        /// <summary>
         /// 隐患管控验收人
         /// </summary>
         public string Acceptor { get; set; }
+        /// <summary>
+        /// 隐患管控验收人
+        /// </summary>
+        public Guid? AcceptorID { get; set; }
         /// <summary>
         /// 主体名
         /// </summary>
@@ -42,11 +50,15 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 预计完成时间
         /// </summary>
-        public DateTime? EstimatedDate { get; set; }
+        public string EstimatedDate { get; set; }
         /// <summary>
         /// 隐患级别
         /// </summary>
         public Unity.PublicEnum.EE_TroubleLevel TroubleLevel { get; set; }
+        /// <summary>
+        /// 隐患级别
+        /// </summary>
+        public string TroubleLevelName { get; set; }
         /// <summary>
         /// 风险等级ID
         /// </summary>
@@ -68,7 +80,7 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string DangerPoint { get; set; }
         /// <summary>
-        /// 当前人 1负责人 2执行人 3验收人 
+        /// 当前人 1负责人 2执行人 3验收人 4负责人与执行人 5负责人与验收人
         /// </summary>
         public int Cuser { get; set; }
     }

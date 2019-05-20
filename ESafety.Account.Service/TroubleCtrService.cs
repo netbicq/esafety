@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace ESafety.Account.Service
 {
-    public class TroubleCtrService :ServiceBase, ITroubleCtrService
+    public class TroubleCtrService : ServiceBase, ITroubleCtrService
     {
         private IUnitwork _work = null;
         private IRepository<Bll_TroubleControl> _rpstc = null;
@@ -104,8 +104,9 @@ namespace ESafety.Account.Service
                 }
                 var tc = _rpstc.GetModel(flowNew.ControlID);
                 var dbf = flowNew.MAPTO<Bll_TroubleControlFlows>();
+                dbf.FlowDate = DateTime.Now;
                 dbf.FlowEmployeeID = AppUser.EmployeeInfo.ID;
-                if (dbf.FlowType==(int)PublicEnum.EE_TroubleFlowState.TroubleApply&&tc.State!=(int)PublicEnum.EE_TroubleState.pending)
+                if (dbf.FlowType == (int)PublicEnum.EE_TroubleFlowState.TroubleApply && tc.State != (int)PublicEnum.EE_TroubleState.pending)
                 {
                     throw new Exception("当前状态不允许申请验收!");
                 }
@@ -130,7 +131,7 @@ namespace ESafety.Account.Service
                     }
                     else
                     {
-                        throw new Exception("请选择真确的验收结果！");
+                        throw new Exception("请选择正确的验收结果！");
                     }
                 }
                 _rpstc.Update(tc);
@@ -212,7 +213,7 @@ namespace ESafety.Account.Service
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult<TroubleCtrView> GetTroubleCtr(Guid id)
+        public ActionResult<TroubleCtrModel> GetTroubleCtr(Guid id)
         {
             try
             {
@@ -222,44 +223,26 @@ namespace ESafety.Account.Service
 
                 var porg = _work.Repository<Core.Model.DB.Basic_Org>().GetModel(pemp.OrgID);
 
-
-                var tcf = _rpstcf.GetModel(p => p.ControlID == id&&p.FlowResult==(int)PublicEnum.EE_FlowResult.Pass);
-                
-                var emps = _work.Repository<Core.Model.DB.Basic_Employee>().GetModel(p =>p.ID==tcf.FlowEmployeeID);
-
                 var billempid = _work.Repository<Bll_TaskBill>().GetModel(dbtc.BillID).EmployeeID;
-                var bemp= _work.Repository<Core.Model.DB.Basic_Employee>().GetModel(billempid);
+                var bemp = _work.Repository<Core.Model.DB.Basic_Employee>().GetModel(billempid);
 
-                var retc = new TroubleCtrView
+                var retc = new TroubleCtrModel
                 {
-                    Code=dbtc.Code,
-                    CtrID = dbtc.ID,
-                    State = (PublicEnum.EE_TroubleState)dbtc.State,
-                    StateName =  Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(p => p.Value == dbtc.State).Caption,
-
-                    CreateDate = dbtc.CreateDate,
-                    ControlDescription = dbtc.ControlDescription,
-                    PrincipalID = dbtc.PrincipalID,
-                    PrincipalName = pemp.CNName,
-                    OrgID = pemp.OrgID,
-                    OrgName = porg.OrgName,
-                    FinishTime = dbtc.FinishTime,
-                    TroubleLevel = dbtc.TroubleLevel,
-                    TroubleLevelDesc = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p => p.Value == dbtc.TroubleLevel).Caption,
-                    
-                    FlowEmp=emps==null?"":emps.CNName,
-                    FlowTime=tcf?.FlowDate,
-                    
-                    BillEmpName= bemp.CNName
-                    
-
+                   Code=dbtc.Code,
+                   BillEmpName=bemp.CNName,
+                   CreateDate=dbtc.CreateDate,
+                   TroubleLevel=(PublicEnum.EE_TroubleLevel)dbtc.TroubleLevel,
+                   DangerLevel=dbtc.DangerLevel,
+                   ControlDescription=dbtc.ControlDescription,
+                   FinishTime=dbtc.FinishTime,
+                   State=(PublicEnum.EE_TroubleState)dbtc.State
                 };
 
-                return new ActionResult<TroubleCtrView>(retc);
+                return new ActionResult<TroubleCtrModel>(retc);
             }
             catch (Exception ex)
             {
-                return new ActionResult<TroubleCtrView>(ex);
+                return new ActionResult<TroubleCtrModel>(ex);
             }
         }
 
@@ -272,7 +255,7 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbtcd= _rpstcd.GetModel(id);
+                var dbtcd = _rpstcd.GetModel(id);
 
                 var sub = _work.Repository<Bll_TaskBillSubjects>().GetModel(dbtcd.BillSubjectsID);
 
@@ -285,22 +268,22 @@ namespace ESafety.Account.Service
                 var post = _work.Repository<Basic_Post>().GetModel(sub.SubjectID);
                 var opr = _work.Repository<Basic_Opreation>().GetModel(sub.SubjectID);
 
-                var retcds =new TroubleCtrDetailView
-                             {
-                                 ID = sub.ID,
-                                 DangerName = danger.Name,
-                                 DangerID=danger.ID,
-                                 MethodName = sub.Eval_Method == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(p => p.Value == sub.Eval_Method).Caption,
-                                 TaskResultMemo = sub.TaskResultMemo,
-                                 SubjectName = dev != null ? dev.Name : post != null ? post.Name : opr != null ? opr.Name : default(string),
-                                 SubjectTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == sub.SubjectType).Caption,
-                                 TaskResultName = Command.GetItems(typeof(PublicEnum.EE_TaskResultType)).FirstOrDefault(q => q.Value == sub.TaskResult).Caption,
-                                 TroubleLevelName = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == sub.TroubleLevel).Caption,
-                                 SGJGDic = dic.GetModel(sub.Eval_SGJG).DictName,
-                                 SGLXDic = dic.GetModel(sub.Eval_SGLX).DictName,
-                                 WHYSDic = dic.GetModel(sub.Eval_WHYS).DictName,
-                                 YXFWDic = dic.GetModel(sub.Eval_YXFW).DictName
-                             };
+                var retcds = new TroubleCtrDetailView
+                {
+                    ID = sub.ID,
+                    DangerName = danger.Name,
+                    DangerID = danger.ID,
+                    MethodName = sub.Eval_Method == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(p => p.Value == sub.Eval_Method).Caption,
+                    TaskResultMemo = sub.TaskResultMemo,
+                    SubjectName = dev != null ? dev.Name : post != null ? post.Name : opr != null ? opr.Name : default(string),
+                    SubjectTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == sub.SubjectType).Caption,
+                    TaskResultName = Command.GetItems(typeof(PublicEnum.EE_TaskResultType)).FirstOrDefault(q => q.Value == sub.TaskResult).Caption,
+                    TroubleLevelName = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == sub.TroubleLevel).Caption,
+                    SGJGDic = dic.GetModel(sub.Eval_SGJG).DictName,
+                    SGLXDic = dic.GetModel(sub.Eval_SGLX).DictName,
+                    WHYSDic = dic.GetModel(sub.Eval_WHYS).DictName,
+                    YXFWDic = dic.GetModel(sub.Eval_YXFW).DictName
+                };
                 return new ActionResult<TroubleCtrDetailView>(retcds);
             }
             catch (Exception ex)
@@ -318,13 +301,13 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbtcds = _rpstcd.Queryable(p=>p.TroubleControlID==para.Query.TroubleControlID).ToList();
+                var dbtcds = _rpstcd.Queryable(p => p.TroubleControlID == para.Query.TroubleControlID).ToList();
                 var billids = dbtcds.Select(s => s.BillSubjectsID);
 
                 var subs = _work.Repository<Bll_TaskBillSubjects>().Queryable(p => billids.Contains(p.ID)).ToList();
 
                 var did = subs.Select(s => s.DangerID);
-                var dangers = _work.Repository<Basic_Danger>().Queryable(p => did.Contains(p.ID)).ToList() ;
+                var dangers = _work.Repository<Basic_Danger>().Queryable(p => did.Contains(p.ID)).ToList();
                 var dic = _work.Repository<Core.Model.DB.Basic_Dict>();
 
                 var subids = subs.Select(s => s.SubjectID);
@@ -334,36 +317,34 @@ namespace ESafety.Account.Service
                 var opres = _work.Repository<Basic_Opreation>().Queryable(q => subids.Contains(q.ID)).ToList();
 
                 var retcds = from s in subs
-                             let d=dangers.FirstOrDefault(q=>q.ID==s.DangerID)
+                             let d = dangers.FirstOrDefault(q => q.ID == s.DangerID)
                              let dev = devs.FirstOrDefault(q => q.ID == s.SubjectID)
                              let ppst = posts.FirstOrDefault(q => q.ID == s.SubjectID)
                              let opr = opres.FirstOrDefault(q => q.ID == s.SubjectID)
                              select new TroubleCtrDetailView
                              {
-                                 ID=s.ID,
-                                 DangerName=d.Name,
-                                 DangerID=d.ID,
-                                 MethodName=s.Eval_Method==0?"":Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(p=>p.Value==s.Eval_Method).Caption,
-                                 TaskResultMemo=s.TaskResultMemo,
+                                 ID = s.ID,
+                                 DangerName = d.Name,
+                                 DangerID = d.ID,
+                                 MethodName = s.Eval_Method == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(p => p.Value == s.Eval_Method).Caption,
+                                 TaskResultMemo = s.TaskResultMemo,
                                  SubjectName = dev != null ? dev.Name : ppst != null ? ppst.Name : opr != null ? opr.Name : default(string),
-                                 SubjectTypeName= Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == s.SubjectType).Caption,
-                                 TaskResultName= Command.GetItems(typeof(PublicEnum.EE_TaskResultType)).FirstOrDefault(q => q.Value == s.TaskResult).Caption,
-                                 TroubleLevelName= Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == s.TroubleLevel).Caption,
-                                 SGJGDic=s.Eval_SGJG==Guid.Empty?"":dic.GetModel(s.Eval_SGJG).DictName,
-                                 SGLXDic=s.Eval_SGLX==Guid.Empty?"":dic.GetModel(s.Eval_SGLX).DictName,
-                                 WHYSDic=s.Eval_WHYS==Guid.Empty?"":dic.GetModel(s.Eval_WHYS).DictName,
-                                 YXFWDic=s.Eval_YXFW==Guid.Empty?"":dic.GetModel(s.Eval_YXFW).DictName
+                                 SubjectTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == s.SubjectType).Caption,
+                                 TaskResultName = Command.GetItems(typeof(PublicEnum.EE_TaskResultType)).FirstOrDefault(q => q.Value == s.TaskResult).Caption,
+                                 TroubleLevelName = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == s.TroubleLevel).Caption,
+                                 SGJGDic = s.Eval_SGJG == Guid.Empty ? "" : dic.GetModel(s.Eval_SGJG).DictName,
+                                 SGLXDic = s.Eval_SGLX == Guid.Empty ? "" : dic.GetModel(s.Eval_SGLX).DictName,
+                                 WHYSDic = s.Eval_WHYS == Guid.Empty ? "" : dic.GetModel(s.Eval_WHYS).DictName,
+                                 YXFWDic = s.Eval_YXFW == Guid.Empty ? "" : dic.GetModel(s.Eval_YXFW).DictName
                              };
 
-                var re = new Pager<TroubleCtrDetailView>().GetCurrentPage(retcds,para.PageSize,para.PageIndex);
+                var re = new Pager<TroubleCtrDetailView>().GetCurrentPage(retcds, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<TroubleCtrDetailView>>(re);
             }
             catch (Exception ex)
             {
                 return new ActionResult<Pager<TroubleCtrDetailView>>(ex);
             }
-            
-
         }
         /// <summary>
         /// 获取管控验收申请日志列表
@@ -377,22 +358,22 @@ namespace ESafety.Account.Service
                 var tcf = _rpstcf.Queryable(p => p.ControlID == id);
                 var fempids = tcf.Select(s => s.FlowEmployeeID);
 
-                var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p=>fempids.Contains(p.ID));
+                var emps = _work.Repository<Basic_Employee>().Queryable(p => fempids.Contains(p.ID));
 
                 var re = from f in tcf.ToList()
-                         let emp=emps.FirstOrDefault(p=>p.ID==f.FlowEmployeeID)
+                         let emp = emps.FirstOrDefault(p => p.ID == f.FlowEmployeeID)
                          orderby f.FlowDate
                          select new TroubleCtrFlowView
                          {
-                             ControlID=f.ControlID,
-                             FlowDate=f.FlowDate,
-                             FlowEmployeeID=f.FlowEmployeeID,
-                             EmpName=emp.CNName,
-                             FlowMemo=f.FlowMemo,
-                             FlowResult=f.FlowResult,
-                             FlowType=(PublicEnum.EE_BusinessType)f.FlowType,
-                             FlowResultName=f.FlowResult==0?"":Command.GetItems(typeof(PublicEnum.EE_FlowResult)).FirstOrDefault(s=>s.Value==f.FlowResult).Caption,
-                             FlowTypeName=Command.GetItems(typeof(PublicEnum.EE_BusinessType)).FirstOrDefault(s=>s.Value==f.FlowType).Caption
+                             ControlID = f.ControlID,
+                             FlowDate = f.FlowDate,
+                             FlowEmployeeID = f.FlowEmployeeID,
+                             EmpName = emp.CNName,
+                             FlowMemo = f.FlowMemo,
+                             FlowResult = f.FlowResult,
+                             FlowType = (PublicEnum.EE_BusinessType)f.FlowType,
+                             FlowResultName = f.FlowResult == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_FlowResult)).FirstOrDefault(s => s.Value == f.FlowResult).Caption,
+                             FlowTypeName = Command.GetItems(typeof(PublicEnum.EE_BusinessType)).FirstOrDefault(s => s.Value == f.FlowType).Caption
                          };
                 return new ActionResult<IEnumerable<TroubleCtrFlowView>>(re);
             }
@@ -410,121 +391,59 @@ namespace ESafety.Account.Service
         {
             try
             {
-                DateTime? starttime = para.Query.StartDate;
-                DateTime? endtime = para.Query.EndTime?.AddDays(1);
-                if (para.Query.IsHistory)
-                {
-                    //管控项
-                    var dbtc = _rpstc.Queryable(q=>
-                    ((q.CreateDate>=starttime&&q.CreateDate<endtime)||(starttime==null&&endtime==null))
-                    &&(q.TroubleLevel==para.Query.TroubleLevel||para.Query.TroubleLevel==0)
-                    && (q.ControlName.Contains(para.Query.Key)||para.Query.Key==string.Empty)
-                    &&q.State==(int)PublicEnum.EE_TroubleState.history);
+                //管控项
+                var user = AppUser.EmployeeInfo;
+                var ctrs = _rpstc.Queryable(p => (p.PrincipalID == user.ID || p.AcceptorID == user.ID || p.ExecutorID == user.ID)
+                                              && (para.Query.StartDate.HasValue ? p.CreateDate>=para.Query.StartDate.Value : true)
+                                              && (para.Query.EndTime.HasValue ? p.CreateDate < para.Query.EndTime.Value : true)
+                                              && (para.Query.TroubleLevel==0||p.TroubleLevel==para.Query.TroubleLevel));
 
-                    //管控负责人
-                    var pempids = dbtc.Select(s => s.PrincipalID);
-                    var pemps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q=>pempids.Contains(q.ID));
-                    //管控负责人部门
-                    var porgids = pemps.Select(s => s.OrgID);
-                    var porgs = _work.Repository<Core.Model.DB.Basic_Org>().Queryable(q => porgids.Contains(q.ID));
+                //管控项的所有单据
+                var billIDs = ctrs.Select(s => s.BillID);
+                var bills = _work.Repository<Bll_TaskBill>().Queryable(p => billIDs.Contains(p.ID));
 
-                    var tcids = dbtc.Select(s => s.ID);
+                //所有人与部门
+                var emps = _work.Repository<Basic_Employee>().Queryable();
+                var orgs = _work.Repository<Basic_Org>().Queryable();
 
-                    //管控最终验收人验收人
-                    var tcfs = _rpstcf.Queryable(p => tcids.Contains(p.ControlID) && p.FlowResult == (int)PublicEnum.EE_FlowResult.Pass);
-                    var tcfempids = tcfs.Select(s => s.FlowEmployeeID);
+                //验收结果
+                var ctrIDs = ctrs.Select(s => s.ID);
+                var tcflow = _rpstcf.Queryable(p => ctrIDs.Contains(p.ControlID)&&p.FlowType==(int)PublicEnum.EE_TroubleFlowState.TroubleR);
 
-                    var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p =>tcfempids.Contains(p.ID));
+                //风险等级
+                var dlvs = _work.Repository<Basic_Dict>().Queryable();
 
-                 
+                var retc = from tc in ctrs.ToList()
+                           let aemp = emps.FirstOrDefault(p => p.ID == tc.AcceptorID)
+                           let eemp = emps.FirstOrDefault(p => p.ID == tc.ExecutorID)
+                           let pemp = emps.FirstOrDefault(p => p.ID == tc.PrincipalID)
+                           let bill=bills.FirstOrDefault(p=>p.ID==tc.BillID)
+                           let bemp=emps.FirstOrDefault(p=>p.ID==bill.EmployeeID)
+                           let flow=tcflow.OrderByDescending(t=>t.FlowDate).FirstOrDefault(p=>p.ControlID==tc.ID)
+                           let org=orgs.FirstOrDefault(p=>p.ID==aemp.OrgID)
+                           let lv=dlvs.FirstOrDefault(p=>p.ID==tc.DangerLevel)
+                           where para.Query.IsHistory ? tc.State == (int)PublicEnum.EE_TroubleState.history : tc.State != (int)PublicEnum.EE_TroubleState.history
+                           where pemp.CNName.Contains(para.Query.Key)||org.OrgName.Contains(para.Query.Key)||tc.Code.Contains(para.Query.Key)||bemp.CNName.Contains(para.Query.Key)||para.Query.Key==string.Empty
+                           select new TroubleCtrView
+                           {
+                               CtrID=tc.ID,
+                               Code=tc.Code,
+                               Acceptor=aemp==null?"":aemp.CNName,
+                               BillEmpName=bemp==null?"":bemp.CNName,
+                               ControlDescription=tc.ControlDescription,
+                               CreateDate=tc.CreateDate,
+                               OrgName=org.OrgName,
+                               TroubleLevelDesc=Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(v=>v.Value==tc.TroubleLevel).Caption,
+                               PrincipalName=pemp.CNName,
+                               FlowTime=flow==null?null:(DateTime?)flow.FlowDate,
+                               DangerLevel=lv.DictName,
+                               StateName= Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(v => v.Value == tc.State).Caption,
+                               FinishTime=tc.FinishTime,
+                               Cuser = user.ID == tc.PrincipalID ? user.ID == tc.ExecutorID ? 4 : user.ID == tc.AcceptorID ? 5 : 1 : user.ID == tc.ExecutorID ? 2 : user.ID == tc.AcceptorID ? 3 : 0
+                           };
+                var re = new Pager<TroubleCtrView>().GetCurrentPage(retc, para.PageSize, para.PageIndex);
+                return new ActionResult<Pager<TroubleCtrView>>(re);
 
-                    var retc = from tc in dbtc.ToList()
-                               let pemp = pemps.FirstOrDefault(q => q.ID == tc.PrincipalID)
-                               let porg = porgs.FirstOrDefault(q => q.ID == pemp.OrgID)
-                               let tcf = tcfs.FirstOrDefault(q => q.ControlID == tc.ID)
-                               let emp = tcf == null ? null : emps.FirstOrDefault(q => q.ID == tcf.FlowEmployeeID)
-                               let bempid= _work.Repository<Bll_TaskBill>().GetModel(tc.BillID).EmployeeID   //巡检人员
-                               let bemp= _work.Repository<Core.Model.DB.Basic_Employee>().GetModel(bempid)
-                               select new TroubleCtrView
-                               {
-                                   Code = tc.Code,
-                                   CtrID = tc.ID,
-                                   State = (PublicEnum.EE_TroubleState)tc.State,
-                                   StateName =Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(p => p.Value == tc.State).Caption,
-
-                                   CreateDate = tc.CreateDate,
-                                   ControlDescription = tc.ControlDescription,
-                                   PrincipalID = tc.PrincipalID,
-                                   PrincipalName = pemp.CNName,
-                                   OrgID = pemp.OrgID,
-                                   OrgName = porg.OrgName,
-                                   FinishTime = tc.FinishTime,
-                                   TroubleLevel = tc.TroubleLevel,
-                                   TroubleLevelDesc = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p => p.Value == tc.TroubleLevel).Caption,
-
-                                   FlowEmp =emp==null?"":emp.CNName,
-                                   FlowTime = tcf == null ? null : (DateTime?)tcf.FlowDate,
-
-                                   BillEmpName=bemp==null?"":bemp.CNName
-
-                                   
-
-                               };
-                    var re = new Pager<TroubleCtrView>().GetCurrentPage(retc,para.PageSize,para.PageIndex);
-                    return new ActionResult<Pager<TroubleCtrView>>(re);
-                }
-                else
-                {
-                        var dbtc = _rpstc.Queryable(q =>
-                        ((q.CreateDate >= starttime && q.CreateDate < endtime)||(starttime ==null && endtime == null))
-                        && (q.TroubleLevel == para.Query.TroubleLevel || para.Query.TroubleLevel == 0)
-                        && (q.ControlName.Contains(para.Query.Key) || para.Query.Key == string.Empty)
-                        && q.State != (int)PublicEnum.EE_TroubleState.history);
-
-                    var pempids = dbtc.Select(s => s.PrincipalID);
-                    var pemps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q => pempids.Contains(q.ID));
-
-                    var porgids = pemps.Select(s => s.OrgID);
-                    var porgs = _work.Repository<Core.Model.DB.Basic_Org>().Queryable(q => porgids.Contains(q.ID));
-
-                    var tcids = dbtc.Select(s => s.ID);
-
-                    var tcfs = _rpstcf.Queryable(p => tcids.Contains(p.ControlID) && p.FlowResult == (int)PublicEnum.EE_FlowResult.Pass).ToList();
-                    var tcfempids = tcfs.Select(s => s.FlowEmployeeID);
-
-                    var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p => tcfempids.Contains(p.ID));
-
-                    var retc = from tc in dbtc.ToList()
-                               let pemp = pemps.FirstOrDefault(q => q.ID == tc.PrincipalID)
-                               let porg = porgs.FirstOrDefault(q => q.ID == pemp.OrgID)
-                               let tcf = tcfs.FirstOrDefault(q => q.ControlID == tc.ID)
-                               let emp = tcf == null ? null : emps.FirstOrDefault(q => q.ID == tcf.FlowEmployeeID)
-                               let bempid = _work.Repository<Bll_TaskBill>().GetModel(tc.BillID).EmployeeID   //巡检人员
-                               let bemp = _work.Repository<Core.Model.DB.Basic_Employee>().GetModel(bempid)
-                               select new TroubleCtrView
-                               {
-                                   Code=tc.Code,
-                                   CtrID = tc.ID,
-                                   State = (PublicEnum.EE_TroubleState)tc.State,
-                                   StateName=tc.State==0?"":Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(p=>p.Value==tc.State).Caption,
-
-                                   CreateDate = tc.CreateDate,
-                                   ControlDescription = tc.ControlDescription,
-                                   PrincipalID = tc.PrincipalID,
-                                   PrincipalName = pemp.CNName,
-                                   OrgID = pemp.OrgID,
-                                   OrgName = porg.OrgName,
-                                   FinishTime = tc.FinishTime,
-                                   TroubleLevel = tc.TroubleLevel,
-                                   TroubleLevelDesc =tc.TroubleLevel==0?"":Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p => p.Value == tc.TroubleLevel).Caption,
-
-                                   FlowEmp = emp == null ? "" : emp.CNName,
-                                   FlowTime = tcf==null?null:(DateTime?)tcf.FlowDate,
-                                   BillEmpName = bemp == null ? "" : bemp.CNName
-                               };
-                    var re = new Pager<TroubleCtrView>().GetCurrentPage(retc, para.PageSize, para.PageIndex);
-                    return new ActionResult<Pager<TroubleCtrView>>(re);
-                }
             }
             catch (Exception ex)
             {
@@ -695,7 +614,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("没有权限!");
                 }
-                dbtask.TroubleLevel= (int)level.TroubleLevel;
+                dbtask.TroubleLevel = (int)level.TroubleLevel;
                 _rpstc.Update(dbtask);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -718,8 +637,10 @@ namespace ESafety.Account.Service
             try
             {
                 var user = AppUser.EmployeeInfo;
-                var ctrs = _rpstc.Queryable(p => p.PrincipalID == user.ID || p.AcceptorID == user.ID || p.ExecutorID == user.ID);
+                var ctrs = _rpstc.Queryable(p => p.PrincipalID == user.ID || p.AcceptorID == user.ID || p.ExecutorID == user.ID&&p.State!=(int)PublicEnum.EE_TroubleState.history);
                 var emps = _work.Repository<Basic_Employee>().Queryable();
+
+
                 var re = from c in ctrs.ToList()
                          let aemp = emps.FirstOrDefault(p => p.ID == c.AcceptorID)
                          let eemp = emps.FirstOrDefault(p => p.ID == c.ExecutorID)
@@ -733,21 +654,24 @@ namespace ESafety.Account.Service
                          let lv = _work.Repository<Basic_Dict>().GetModel(c.DangerLevel)
                          select new APPTroubleCtrView
                          {
-                             KeyID=c.ID,
+                             KeyID = c.ID,
                              Acceptor = aemp == null ? "" : aemp.CNName,
+                             AcceptorID = aemp == null ? null : (Guid?)aemp.ID,
                              Executor = eemp == null ? "" : eemp.CNName,
+                             ExecutorID = eemp == null ? null : (Guid?)eemp.ID,
                              Principal = pemp.CNName,
                              State = (PublicEnum.EE_TroubleState)c.State,
                              CDangerLevel = c.DangerLevel,
                              TroubleLevel = (PublicEnum.EE_TroubleLevel)c.TroubleLevel,
+                             TroubleLevelName = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(p => p.Value == c.TroubleLevel).Caption,
                              CtrTarget = c.ControlDescription,
-                             EstimatedDate = c.FinishTime,
+                             EstimatedDate = c.FinishTime.HasValue ? c.FinishTime.Value.ToString("yyyy-MM-dd") : null,
                              TroubleDetails = checkresult.TaskResultMemo,
                              DangerName = danger.Name,
                              SubName = sub.SubjectName,
                              CDangerLevelName = lv.DictName,
                              DangerPoint = point.Name,
-                             Cuser = user.ID == c.PrincipalID ? 1 : user.ID == c.ExecutorID ? 2 : user.ID == c.AcceptorID ? 3 : 0
+                             Cuser = user.ID == c.PrincipalID ? user.ID == c.ExecutorID ? 4 : user.ID == c.AcceptorID ? 5 : 1 : user.ID == c.ExecutorID ? 2 : user.ID == c.AcceptorID ? 3 : 0
                          };
                 return new ActionResult<IEnumerable<APPTroubleCtrView>>(re);
             }
@@ -765,7 +689,7 @@ namespace ESafety.Account.Service
         {
             try
             {
-              
+
                 if (level == null)
                 {
                     throw new Exception("参数有误");
@@ -776,7 +700,7 @@ namespace ESafety.Account.Service
                     throw new Exception("任务不存在");
                 }
                 var user = AppUser.EmployeeInfo;
-                if (user.ID!=dbtask.PrincipalID)
+                if (user.ID != dbtask.PrincipalID)
                 {
                     throw new Exception("没有权限!");
                 }
@@ -809,7 +733,11 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("执行人或验收人不能为空!");
                 }
-                if (handleTrouble.FinishTime<DateTime.Now)
+                if (handleTrouble.AcceptorID == handleTrouble.ExecutorID)
+                {
+                    throw new Exception("验收人与执行人不能是同一人！");
+                }
+                if (handleTrouble.FinishTime < DateTime.Now)
                 {
                     throw new Exception("请填写正确的预估完成时间!");
                 }
@@ -833,7 +761,39 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> QuickHandleCtr(QuickHandleTroubleCtr quickHandleTrouble)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var ctr = _rpstc.GetModel(quickHandleTrouble.CtrID);
+                if (ctr == null)
+                {
+                    throw new Exception("未找到处理的管控项!");
+                }
+                if (string.IsNullOrEmpty(quickHandleTrouble.Description))
+                {
+                    throw new Exception("请输入处理描述！");
+                }
+                ctr.AcceptorID = ctr.PrincipalID;
+                ctr.ExecutorID = ctr.ExecutorID;
+                ctr.FinishTime = DateTime.Now;
+                ctr.State = (int)PublicEnum.EE_TroubleState.over;
+                var flow = new Bll_TroubleControlFlows
+                {
+                    ControlID = ctr.ID,
+                    FlowDate = DateTime.Now,
+                    FlowEmployeeID = ctr.PrincipalID,
+                    FlowType = (int)PublicEnum.EE_TroubleFlowState.TroubleR,
+                    FlowMemo = quickHandleTrouble.Description,
+                    FlowResult = 1
+                };
+                _rpstc.Update(ctr);
+                _rpstcf.Add(flow);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
         }
         /// <summary>
         /// 转让责任人
@@ -859,7 +819,7 @@ namespace ESafety.Account.Service
                 _work.Commit();
                 return new ActionResult<bool>(true);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return new ActionResult<bool>(ex);
             }

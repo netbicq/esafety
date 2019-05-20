@@ -28,8 +28,12 @@ namespace ESafety.Account.API.Controllers
         private IDocSolutionService docssbll;
         private IVideoService videobll;
         private ITroubleCtrService ctrbll;
+        private IDangerPointService dpbll;
 
-        public APPController(IInspectTask spectask, ITaskBillService taskbill,IOpreateBill opreatebill,IDocInstitutionService docins,IDocSolutionService docss,IVideoService video,ITroubleCtrService ctrService)
+        public APPController(IInspectTask spectask, ITaskBillService taskbill,
+                               IOpreateBill opreatebill,IDocInstitutionService docins,
+                               IDocSolutionService docss,IVideoService video,
+                               ITroubleCtrService ctrService,IDangerPointService dangerPoint)
         {
 
             spectbll = spectask;
@@ -39,7 +43,8 @@ namespace ESafety.Account.API.Controllers
             docssbll = docss;
             videobll = video;
             ctrbll = ctrService;
-            BusinessServices = new List<object> { taskbill, spectask,opreatebill, docins, docss,video,ctrService};            
+            dpbll = dangerPoint;
+            BusinessServices = new List<object> { taskbill, spectask,opreatebill, docins, docss,video,ctrService,dangerPoint};            
             
         }
         /// <summary>
@@ -474,6 +479,28 @@ namespace ESafety.Account.API.Controllers
         {
             LogContent = "快速处理，参数源:" + JsonConvert.SerializeObject(quickHandleTrouble);
             return ctrbll.QuickHandleCtr(quickHandleTrouble);
+        }
+
+        /// <summary>
+        /// APP 端获取风险等级
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getDangerLevels")]
+        public ActionResult<IEnumerable<DangerLevel>> GetDangerLevels()
+        {
+            return dpbll.GetDangerLevels();
+        }
+        /// <summary>
+        /// APP 根据风险点ID 端获取风险点
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("getDangerPointsPage")]
+        public ActionResult<Pager<APPDangerPointView>> GetDangerPointsPage(PagerQuery<Guid> query)
+        {
+            return dpbll.GetDangerPointsPage(query);
         }
     }
 }
