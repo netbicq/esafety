@@ -63,7 +63,6 @@ namespace ESafety.Account.Model.View
         /// 后果
         /// </summary>
         public string Consequence { get; set; }
-
     }
 
     public class DangerPointModel
@@ -112,6 +111,18 @@ namespace ESafety.Account.Model.View
         /// 危险因素ID集合
         /// </summary>
         public IEnumerable<Guid> WXYSIDs { get; set; }
+        /// <summary>
+        /// 警示牌
+        /// </summary>
+        public string WarningSign { get; set; }
+        /// <summary>
+        /// 风险点图片
+        /// </summary>
+        public string DangerPointImg { get; set; }
+        /// <summary>
+        /// 后果
+        /// </summary>
+        public string Consequence { get; set; }
     }
 
     /// <summary>
@@ -159,6 +170,30 @@ namespace ESafety.Account.Model.View
         /// 二维码路径
         /// </summary>
         public string QRCoderUrl { get; set; }
+        /// <summary>
+        /// 警示牌
+        /// </summary>
+        public string WarningSign { get; set; }
+        /// <summary>
+        /// 风险点图片
+        /// </summary>
+        public string DangerPointImg { get; set; }
+        /// <summary>
+        /// 后果
+        /// </summary>
+        public string Consequence { get; set; }
+        /// <summary>
+        /// 管控措施
+        /// </summary>
+        public string ControlMeasure { get; set; }
+        /// <summary>
+        /// 应急处理措施
+        /// </summary>
+        public string EmergencyMeasure { get; set; }
+        /// <summary>
+        /// 危险因素
+        /// </summary>
+        public IEnumerable<WXYSSelector> WXYSDicts { get; set; }
     }
 
 

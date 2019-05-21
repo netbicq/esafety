@@ -84,7 +84,44 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public int Cuser { get; set; }
     }
-
-
-
+    /// <summary>
+    /// APP 统计的管控页菜单
+    /// </summary>
+    public class TroubleCtrMenu
+    {
+        /// <summary>
+        /// 1、整改中 2、未整改
+        /// </summary>
+        public int MenuValue { get; set; }
+        /// <summary>
+        /// 菜单显示的值
+        /// </summary>
+        public string MemuDesc { get; set; }
+        /// <summary>
+        /// 计数
+        /// </summary>
+        public int Count { get; set; }
+    }
+    /// <summary>
+    /// 管控项
+    /// </summary>
+    public class TroubleCtrsPage
+    {
+        /// <summary>
+        /// 管控发现人
+        /// </summary>
+        public string BillEmp { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public string DangerLevel { get; set; }
+        /// <summary>
+        /// 负责人
+        /// </summary>
+        public string Principal { get; set; }
+        /// <summary>
+        /// 隐患等级
+        /// </summary>
+        public string TroubleLevel { get; set; }
+    }
 }

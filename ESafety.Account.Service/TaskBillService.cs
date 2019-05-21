@@ -642,7 +642,8 @@ namespace ESafety.Account.Service
                             TroubleLevel = bill.TroubleLevel,
                             PrincipalID = bill.CtrPrincipal,
                             ControlDescription = "",
-                            ControlName = ""
+                            ControlName = "",
+                          
                         };
                         var ctrDetail = new Bll_TroubleControlDetails
                         {

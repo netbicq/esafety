@@ -272,8 +272,6 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("该风险点名已存在!");
                 }
-                dbdp = pointEdit.CopyTo<Basic_DangerPoint>(dbdp);
-                dbdp.WXYSJson = JsonConvert.SerializeObject(pointEdit.WXYSDictIDs);
                 //风险点图片
                 if (!string.Equals(pointEdit.DangerPointImg, dbdp.DangerPointImg))
                 {
@@ -292,6 +290,8 @@ namespace ESafety.Account.Service
                         File.Delete(wPointImg);
                     }
                 }
+                dbdp = pointEdit.CopyTo<Basic_DangerPoint>(dbdp);
+                dbdp.WXYSJson = JsonConvert.SerializeObject(pointEdit.WXYSDictIDs);
                 //文件
                 srvFile.DelFileByBusinessId(pointEdit.ID);
                 var files = new AttachFileSave
@@ -398,6 +398,7 @@ namespace ESafety.Account.Service
             {
                 var page = rpsdpr.Queryable(p => p.DangerPointID == pointID.Query);
                 var retemp = from pg in page.ToList()
+                             orderby pg.SubjectName descending
                              select new DangerPointRelationView
                              {
                                  ID = pg.ID,
@@ -468,12 +469,28 @@ namespace ESafety.Account.Service
             try
             {
                 var dbdps = rpsdp.Queryable(p => pointIds.Contains(p.ID));
-                var re = from code in dbdps
+
+                var WXYSs = work.Repository<Core.Model.DB.Basic_Dict>();
+
+                var re = from code in dbdps.ToList()
+                         let WXYSIds = JsonConvert.DeserializeObject<List<Guid>>(code.WXYSJson)
                          select new QRCoder
                          {
                              ID = code.ID,
                              Name = code.Name,
-                             QRCoderUrl = code.QRCoderUrl
+                             QRCoderUrl = code.QRCoderUrl,
+                             Consequence = code.Consequence,
+                             ControlMeasure = code.ControlMeasure,
+                             DangerPointImg = code.DangerPointImg,
+                             EmergencyMeasure = code.EmergencyMeasure,
+                             WarningSign = code.WarningSign,
+                             WXYSDicts =from w in WXYSs.Queryable(p=>WXYSIds.Contains(p.ID))
+                                        select new WXYSSelector
+                                        {
+                                            ID=w.ID,
+                                            WXYSDictName=w.DictName
+                                        }
+
                          };
                 return new ActionResult<IEnumerable<QRCoder>>(re);
 
@@ -560,17 +577,18 @@ namespace ESafety.Account.Service
                 var dicts = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => dlvs.Contains(p.ID));
 
                 var empids = dangerPoints.Select(s => s.Principal).Distinct();
-                var emps = work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p=>empids.Contains(p.ID));
+                var emps = work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p => empids.Contains(p.ID));
 
 
                 var retemp = from dp in dangerPoints
-                             let lv=dicts.FirstOrDefault(p=>p.ID==dp.ID)
-                             let emp=emps.FirstOrDefault(p=>p.ID==dp.Principal)
+                             let lv = dicts.FirstOrDefault(p => p.ID == dp.ID)
+                             let emp = emps.FirstOrDefault(p => p.ID == dp.Principal)
+                             orderby lv.DictName descending
                              select new APPDangerPointView
                              {
-                                 DangerLevel=lv.DictName,
-                                 DangerPoint=dp.Name,
-                                 Principal=emp.CNName
+                                 DangerLevel = lv.DictName,
+                                 DangerPoint = dp.Name,
+                                 Principal = emp.CNName
                              };
                 var re = new Pager<APPDangerPointView>().GetCurrentPage(retemp, query.PageSize, query.PageIndex);
                 return new ActionResult<Pager<APPDangerPointView>>(re);

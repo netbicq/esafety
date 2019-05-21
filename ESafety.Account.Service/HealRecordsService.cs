@@ -190,9 +190,12 @@ namespace ESafety.Account.Service
             try
             {
                 var dbhds = _rpshr.Queryable(p => p.DocmentID== para.Query.DocmentID || Guid.Empty == para.Query.DocmentID);
-                var rehds = from s in dbhds.ToList()
-                            let hd = _rpshd.GetModel(s.DocmentID)
-                            let emp = _rpsemp.GetModel(hd.EmployeeID)
+                var hds = _rpshd.Queryable();
+                var emps = _rpsemp.Queryable();
+                var rehds = from s in dbhds
+                            let hd = hds.FirstOrDefault(p=>p.ID==s.DocmentID)
+                            let emp =emps.FirstOrDefault(p=>p.ID==hd.EmployeeID)
+                            orderby emp.CNName
                             select new HealRecordsView
                             {
                                 ID = s.ID,

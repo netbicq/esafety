@@ -262,9 +262,12 @@ namespace ESafety.Account.Service
         public ActionResult<Pager<PostEmployeesView>> GetEmployeesByPostID(PagerQuery<PostEmployeeQuery> para)
         {
             var posts = _rpspostemp.Queryable(p=>p.PostID==para.Query.PostID);
-
-            var repostemp = from ac in posts.ToList()
-                            let o = _rpsemp.GetModel(ac.EmployeeID)
+            var emps = _rpsemp.Queryable();
+            var orgs = _rpsorg.Queryable();
+            var repostemp = from ac in posts
+                            let o = emps.FirstOrDefault(p=>p.ID ==ac.EmployeeID)
+                            let org=orgs.FirstOrDefault(p=>p.ID==o.OrgID)
+                            orderby o.CNName
                             select new PostEmployeesView
                             {
                                 ID=ac.ID,
@@ -276,7 +279,7 @@ namespace ESafety.Account.Service
                                 Login = o.Login,
                                 OrgID = o.OrgID,
                                 EmployeeID = o.ID,
-                                OrgName = _rpsorg.GetModel(o.OrgID).OrgName
+                                OrgName = org.OrgName
                             };
             var re = new Pager<PostEmployeesView>().GetCurrentPage(repostemp, para.PageSize, para.PageIndex);
 

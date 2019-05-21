@@ -105,6 +105,16 @@ namespace ESafety.Account.IService
         /// </summary>
         /// <returns></returns>
         ActionResult<bool> TransferPrincipal(TransferTroublePrincipal transferTrouble);
+        /// <summary>
+        /// APP获取管控菜单与数量
+        /// </summary>
+        ActionResult<IEnumerable<TroubleCtrMenu>> GetCtrMenu();
+        /// <summary>
+        /// APP 分页获取管控列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        ActionResult<Pager<TroubleCtrsPage>> GetTroubleCtrsPage(PagerQuery<int> query);
 
     }
 }

@@ -245,8 +245,9 @@ namespace ESafety.Account.Service
             try
             {
                 var dbdtemps = _rpsdtemp.Queryable(p=>p.TrainID==para.Query.TrainID);
-                var reemps = from s in dbdtemps.ToList()
-                         let emp= _rpsemp.GetModel(s.EmployeeID)
+                var emps = _rpsemp.Queryable();
+                var reemps = from s in dbdtemps
+                         let emp=emps.FirstOrDefault(p=>p.ID==s.EmployeeID)
                          orderby emp.CNName ascending
                          select new DocTrainEmpoyeesView
                          {

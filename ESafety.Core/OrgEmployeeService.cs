@@ -27,8 +27,8 @@ namespace ESafety.Core
 
         private IUserDefined usedefinedService = null;
         private ITree srvTree = null;
-        
-        public OrgEmployeeService(IUnitwork work, IUserDefined udf,ITree tree)
+
+        public OrgEmployeeService(IUnitwork work, IUserDefined udf, ITree tree)
         {
             _work = work;
             Unitwork = work;
@@ -73,10 +73,10 @@ namespace ESafety.Core
                 //新建账号
                 if (employee.IsCreate)
                 {
-                    check = rpsUser.Any(p=>p.Login==employee.Jobno);
+                    check = rpsUser.Any(p => p.Login == employee.Jobno);
                     if (check)
                     {
-                        throw new Exception("已存在用户："+employee.Jobno);
+                        throw new Exception("已存在用户：" + employee.Jobno);
                     }
                     //登录账号
                     var dbuser = new Model.DB.Auth_User()
@@ -155,7 +155,7 @@ namespace ESafety.Core
             try
             {
                 var dbemployee = _rpsemployee.GetModel(id);
-                if (dbemployee==null)
+                if (dbemployee == null)
                 {
                     throw new Exception("该人员不存在!");
                 }
@@ -165,7 +165,7 @@ namespace ESafety.Core
                 {
                     throw new Exception("该人员已分配任务，无法删除!");
                 }
-                check= _work.Repository<Core.Model.DB.Account.Bll_TaskBill>().Any(p => p.EmployeeID == id);
+                check = _work.Repository<Core.Model.DB.Account.Bll_TaskBill>().Any(p => p.EmployeeID == id);
                 if (check)
                 {
                     throw new Exception("该人员已存在任务单据，无法删除!");
@@ -262,7 +262,7 @@ namespace ESafety.Core
                     };
                     dbroles.Add(urole);
                 };
-                userrole.Delete(p=>p.Login==dbemployee.Login);
+                userrole.Delete(p => p.Login == dbemployee.Login);
                 userrole.Add(dbroles);
 
                 //自定义项
@@ -271,7 +271,7 @@ namespace ESafety.Core
                     BusinessID = dbemployee.ID,
                     Values = employee.UserDefineds
                 };
-                var defined=usedefinedService.SaveBuisnessValue(definevalue);
+                var defined = usedefinedService.SaveBuisnessValue(definevalue);
                 if (defined.state != 200)
                 {
                     throw new Exception(defined.msg);
@@ -325,7 +325,7 @@ namespace ESafety.Core
 
         //public IEnumerable<Guid> GetChildIds(Guid id)
         //{
-             
+
         //    List<Guid> re = new List<Guid>();
         //    re.Add(id);
         //    var orgall = from org in _rpsorg.Queryable(q => q.ParentID == id)
@@ -350,12 +350,12 @@ namespace ESafety.Core
         //        var parent = _rpsorg.GetModel(q => q.ID == cnode.ParentID);
         //        if (parent != null)
         //        {
-                    
+
         //            re.Add(parent);
         //            re.AddRange(GetParentIds(parent.ID));
         //        }
         //    }
-            
+
         //    return re;
 
         //}
@@ -397,7 +397,7 @@ namespace ESafety.Core
         /// <returns></returns>
         public ActionResult<IEnumerable<EmployeeView>> GetEmployeelist(Guid orgid)
         {
-            var emps = _rpsemployee.Queryable(q => q.OrgID == orgid&&q.IsQuit==false);
+            var emps = _rpsemployee.Queryable(q => q.OrgID == orgid && q.IsQuit == false);
             var org = _rpsorg.GetModel(orgid);
             var reemps = from em in emps
                          select new EmployeeView
@@ -410,7 +410,7 @@ namespace ESafety.Core
                              HeadIMG = em.HeadIMG,
                              Login = em.Login,
                              OrgID = em.OrgID,
-                             OrgName=org.OrgName
+                             OrgName = org.OrgName
                          };
             return new ActionResult<IEnumerable<EmployeeView>>(reemps);
         }
@@ -468,22 +468,23 @@ namespace ESafety.Core
                 //         };
 
                 var emps = _rpsemployee.Queryable(q => q.OrgID == para.Query.ID);
+                var orgs = _rpsorg.Queryable();
+                var reemps = from em in emps
+                             let or = orgs.FirstOrDefault(p=>p.ID==em.OrgID)
+                             orderby em.CNName
+                             select new EmployeeView
+                             {
+                                 ID = em.ID,
+                                 CNName = em.CNName,
+                                 Gender = em.Gender,
+                                 IsLeader = em.IsLeader,
+                                 IsLevel = em.IsLevel,
+                                 HeadIMG = em.HeadIMG,
+                                 Login = em.Login,
+                                 OrgID = em.OrgID,
+                                 OrgName = or.OrgName
+                             };
 
-                var reemps = from em in emps.ToList()
-                             let or = _rpsorg.GetModel(em.OrgID)
-                         select new EmployeeView
-                         {
-                             ID=em.ID,
-                             CNName = em.CNName,
-                             Gender = em.Gender,
-                             IsLeader = em.IsLeader,
-                             IsLevel = em.IsLevel,
-                             HeadIMG = em.HeadIMG,
-                             Login = em.Login,
-                             OrgID= em.OrgID,
-                            OrgName=or.OrgName
-                         };
-                 
                 var re = new Pager<EmployeeView>().GetCurrentPage(reemps, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<EmployeeView>>(re);
             }
@@ -526,8 +527,8 @@ namespace ESafety.Core
             {
                 (srvTree as TreeService).AppUser = AppUser;
 
-                var re = srvTree.GetTree<Basic_Org,OrgTree>(id);
-                 
+                var re = srvTree.GetTree<Basic_Org, OrgTree>(id);
+
                 return new ActionResult<IEnumerable<OrgTree>>(re);
             }
             catch (Exception ex)

@@ -222,12 +222,13 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var emps = _rpsemp.Queryable(p=>(p.OrgID== para.Query.OrgID || para.Query.OrgID==Guid.Empty)&&(p.CNName.Contains(para.Query.Key)||para.Query.Key==string.Empty)).ToList();
+                var emps = _rpsemp.Queryable(p=>(p.OrgID== para.Query.OrgID || para.Query.OrgID==Guid.Empty)&&(p.CNName.Contains(para.Query.Key)||para.Query.Key==string.Empty));
                 var empsid = emps.Select(p=>p.ID);
 
                 var dbhds = _rpshd.Queryable(p=>empsid.Contains(p.EmployeeID));
-                var rehds = from s in dbhds.ToList()
+                var rehds = from s in dbhds
                             let emp=emps.FirstOrDefault(p=>p.ID==s.EmployeeID)
+                            orderby emp.CNName 
                             select new HealDocmentView
                             {
                                 ID = s.ID,

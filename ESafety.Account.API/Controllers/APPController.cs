@@ -502,5 +502,28 @@ namespace ESafety.Account.API.Controllers
         {
             return dpbll.GetDangerPointsPage(query);
         }
+
+        /// <summary>
+        /// APP端获取统计管控菜单
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getCtrMenu")]
+        public ActionResult<IEnumerable<TroubleCtrMenu>> GetCtrMenu()
+        {
+            return ctrbll.GetCtrMenu();
+        }
+
+        /// <summary>
+        /// APP 统计 分页获取管控项
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("getTroubleCtrsPage")]
+        public ActionResult<Pager<TroubleCtrsPage>> GetTroubleCtrsPage(PagerQuery<int> query)
+        {
+            return ctrbll.GetTroubleCtrsPage(query);
+        }
     }
 }

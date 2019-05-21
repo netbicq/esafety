@@ -25,7 +25,7 @@ namespace ESafety.Unity
         /// </summary>
         /// <param name="enumType"></param>
         /// <returns></returns>
-        public static IList<EnumItem> GetItems(Type enumType)
+        public static IEnumerable<EnumItem> GetItems(Type enumType)
         {
             if (!enumType.IsEnum)
                 throw new InvalidOperationException();

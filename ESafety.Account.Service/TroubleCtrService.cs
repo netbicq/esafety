@@ -24,8 +24,9 @@ namespace ESafety.Account.Service
         private IRepository<Bll_TroubleControlFlows> _rpstcf = null;
 
         //private Core.IFlow srvFlow = null;
+        private ITree srvTree = null;
 
-        public TroubleCtrService(IUnitwork work, IFlow flow) /*: base(work,flow)*/
+        public TroubleCtrService(IUnitwork work, IFlow flow, ITree tree) /*: base(work,flow)*/
         {
             _work = work;
             Unitwork = work;
@@ -37,6 +38,7 @@ namespace ESafety.Account.Service
             //var flowser = srvFlow as FlowService;
             //flowser.AppUser = AppUser;
             //flowser.ACOptions = ACOptions;
+            srvTree = tree;
 
         }
         ///// <summary>
@@ -110,9 +112,17 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("当前状态不允许申请验收!");
                 }
+                else if (tc.ExecutorID != AppUser.EmployeeInfo.ID)
+                {
+                    throw new Exception("您没有权限申请验收！");
+                }
                 if (dbf.FlowType == (int)PublicEnum.EE_TroubleFlowState.TroubleR && tc.State != (int)PublicEnum.EE_TroubleState.applying)
                 {
                     throw new Exception("当前状态不允许验收!");
+                }
+                else if (tc.AcceptorID != AppUser.EmployeeInfo.ID)
+                {
+                    throw new Exception("您没有权限验收！");
                 }
 
                 if (dbf.FlowType == (int)PublicEnum.EE_TroubleFlowState.TroubleApply)
@@ -228,14 +238,15 @@ namespace ESafety.Account.Service
 
                 var retc = new TroubleCtrModel
                 {
-                   Code=dbtc.Code,
-                   BillEmpName=bemp.CNName,
-                   CreateDate=dbtc.CreateDate,
-                   TroubleLevel=(PublicEnum.EE_TroubleLevel)dbtc.TroubleLevel,
-                   DangerLevel=dbtc.DangerLevel,
-                   ControlDescription=dbtc.ControlDescription,
-                   FinishTime=dbtc.FinishTime,
-                   State=(PublicEnum.EE_TroubleState)dbtc.State
+                    CtrID = dbtc.ID,
+                    Code = dbtc.Code,
+                    BillEmpName = bemp.CNName,
+                    CreateDate = dbtc.CreateDate,
+                    TroubleLevel = (PublicEnum.EE_TroubleLevel)dbtc.TroubleLevel,
+                    DangerLevel = dbtc.DangerLevel,
+                    ControlDescription = dbtc.ControlDescription,
+                    FinishTime = dbtc.FinishTime,
+                    State = (PublicEnum.EE_TroubleState)dbtc.State
                 };
 
                 return new ActionResult<TroubleCtrModel>(retc);
@@ -394,9 +405,9 @@ namespace ESafety.Account.Service
                 //管控项
                 var user = AppUser.EmployeeInfo;
                 var ctrs = _rpstc.Queryable(p => (p.PrincipalID == user.ID || p.AcceptorID == user.ID || p.ExecutorID == user.ID)
-                                              && (para.Query.StartDate.HasValue ? p.CreateDate>=para.Query.StartDate.Value : true)
+                                              && (para.Query.StartDate.HasValue ? p.CreateDate >= para.Query.StartDate.Value : true)
                                               && (para.Query.EndTime.HasValue ? p.CreateDate < para.Query.EndTime.Value : true)
-                                              && (para.Query.TroubleLevel==0||p.TroubleLevel==para.Query.TroubleLevel));
+                                              && (para.Query.TroubleLevel == 0 || p.TroubleLevel == para.Query.TroubleLevel));
 
                 //管控项的所有单据
                 var billIDs = ctrs.Select(s => s.BillID);
@@ -408,7 +419,7 @@ namespace ESafety.Account.Service
 
                 //验收结果
                 var ctrIDs = ctrs.Select(s => s.ID);
-                var tcflow = _rpstcf.Queryable(p => ctrIDs.Contains(p.ControlID)&&p.FlowType==(int)PublicEnum.EE_TroubleFlowState.TroubleR);
+                var tcflow = _rpstcf.Queryable(p => ctrIDs.Contains(p.ControlID) && p.FlowType == (int)PublicEnum.EE_TroubleFlowState.TroubleR);
 
                 //风险等级
                 var dlvs = _work.Repository<Basic_Dict>().Queryable();
@@ -417,28 +428,28 @@ namespace ESafety.Account.Service
                            let aemp = emps.FirstOrDefault(p => p.ID == tc.AcceptorID)
                            let eemp = emps.FirstOrDefault(p => p.ID == tc.ExecutorID)
                            let pemp = emps.FirstOrDefault(p => p.ID == tc.PrincipalID)
-                           let bill=bills.FirstOrDefault(p=>p.ID==tc.BillID)
-                           let bemp=emps.FirstOrDefault(p=>p.ID==bill.EmployeeID)
-                           let flow=tcflow.OrderByDescending(t=>t.FlowDate).FirstOrDefault(p=>p.ControlID==tc.ID)
-                           let org=orgs.FirstOrDefault(p=>p.ID==aemp.OrgID)
-                           let lv=dlvs.FirstOrDefault(p=>p.ID==tc.DangerLevel)
+                           let bill = bills.FirstOrDefault(p => p.ID == tc.BillID)
+                           let bemp = emps.FirstOrDefault(p => p.ID == bill.EmployeeID)
+                           let flow = tcflow.OrderByDescending(t => t.FlowDate).FirstOrDefault(p => p.ControlID == tc.ID)
+                           let org = orgs.FirstOrDefault(p => p.ID == aemp.OrgID)
+                           let lv = dlvs.FirstOrDefault(p => p.ID == tc.DangerLevel)
                            where para.Query.IsHistory ? tc.State == (int)PublicEnum.EE_TroubleState.history : tc.State != (int)PublicEnum.EE_TroubleState.history
-                           where pemp.CNName.Contains(para.Query.Key)||org.OrgName.Contains(para.Query.Key)||tc.Code.Contains(para.Query.Key)||bemp.CNName.Contains(para.Query.Key)||para.Query.Key==string.Empty
+                           where pemp.CNName.Contains(para.Query.Key) || org.OrgName.Contains(para.Query.Key) || tc.Code.Contains(para.Query.Key) || bemp.CNName.Contains(para.Query.Key) || para.Query.Key == string.Empty
                            select new TroubleCtrView
                            {
-                               CtrID=tc.ID,
-                               Code=tc.Code,
-                               Acceptor=aemp==null?"":aemp.CNName,
-                               BillEmpName=bemp==null?"":bemp.CNName,
-                               ControlDescription=tc.ControlDescription,
-                               CreateDate=tc.CreateDate,
-                               OrgName=org.OrgName,
-                               TroubleLevelDesc=Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(v=>v.Value==tc.TroubleLevel).Caption,
-                               PrincipalName=pemp.CNName,
-                               FlowTime=flow==null?null:(DateTime?)flow.FlowDate,
-                               DangerLevel=lv.DictName,
-                               StateName= Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(v => v.Value == tc.State).Caption,
-                               FinishTime=tc.FinishTime,
+                               CtrID = tc.ID,
+                               Code = tc.Code,
+                               Acceptor = aemp == null ? "" : aemp.CNName,
+                               BillEmpName = bemp == null ? "" : bemp.CNName,
+                               ControlDescription = tc.ControlDescription,
+                               CreateDate = tc.CreateDate,
+                               OrgName = org.OrgName,
+                               TroubleLevelDesc = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(v => v.Value == tc.TroubleLevel).Caption,
+                               PrincipalName = pemp.CNName,
+                               FlowTime = flow == null ? null : (DateTime?)flow.FlowDate,
+                               DangerLevel = lv.DictName,
+                               StateName = Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(v => v.Value == tc.State).Caption,
+                               FinishTime = tc.FinishTime,
                                Cuser = user.ID == tc.PrincipalID ? user.ID == tc.ExecutorID ? 4 : user.ID == tc.AcceptorID ? 5 : 1 : user.ID == tc.ExecutorID ? 2 : user.ID == tc.AcceptorID ? 3 : 0
                            };
                 var re = new Pager<TroubleCtrView>().GetCurrentPage(retc, para.PageSize, para.PageIndex);
@@ -637,7 +648,7 @@ namespace ESafety.Account.Service
             try
             {
                 var user = AppUser.EmployeeInfo;
-                var ctrs = _rpstc.Queryable(p => p.PrincipalID == user.ID || p.AcceptorID == user.ID || p.ExecutorID == user.ID&&p.State!=(int)PublicEnum.EE_TroubleState.history);
+                var ctrs = _rpstc.Queryable(p => p.PrincipalID == user.ID || p.AcceptorID == user.ID || p.ExecutorID == user.ID && p.State != (int)PublicEnum.EE_TroubleState.history);
                 var emps = _work.Repository<Basic_Employee>().Queryable();
 
 
@@ -822,6 +833,97 @@ namespace ESafety.Account.Service
             catch (Exception ex)
             {
                 return new ActionResult<bool>(ex);
+            }
+        }
+        /// <summary>
+        /// APP端获取统计管控菜单
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<TroubleCtrMenu>> GetCtrMenu()
+        {
+            try
+            {
+
+                var user = AppUser.EmployeeInfo;
+                (srvTree as TreeService).AppUser = AppUser;
+                var orgIDs = srvTree.GetChildrenIds<Core.Model.DB.Basic_Org>(user.OrgID);
+                //当前人及以下部门所管理的所有风险点
+                var dangerPoints = _work.Repository<Basic_DangerPoint>().Queryable(p => orgIDs.Contains(p.OrgID));
+                //风险点所对应的所有管控中的检查单据
+
+                var dpids = dangerPoints.Select(s => s.ID);
+                var bills = _work.Repository<Bll_TaskBill>().Queryable(p => dpids.Contains(p.DangerPointID));
+                var billIDs = bills.Select(s => s.ID);
+                var ctrs = _rpstc.Queryable(p => billIDs.Contains(p.BillID) && p.State < (int)PublicEnum.EE_TroubleState.over);
+
+                var dbf = _rpstcf.Queryable();
+                var re = new List<TroubleCtrMenu>();
+
+                for (int i = 1; i < 3; i++)
+                {
+                    var menu = new TroubleCtrMenu
+                    {
+                        MenuValue = i,
+                        MemuDesc = i == 1 ? "整改中" : "未整改",
+                        Count = i == 1 ? ctrs.Where(p => dbf.Select(s => s.ControlID).Contains(p.ID)).Count()
+                                      : ctrs.Where(p => !dbf.Select(s => s.ControlID).Contains(p.ID)).Count()
+                    };
+                    re.Add(menu);
+                }
+
+                return new ActionResult<IEnumerable<TroubleCtrMenu>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<TroubleCtrMenu>>(ex);
+            }
+        }
+        /// <summary>
+        /// APP 统计 分页获取管控项
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public ActionResult<Pager<TroubleCtrsPage>> GetTroubleCtrsPage(PagerQuery<int> query)
+        {
+            try
+            {
+                var user = AppUser.EmployeeInfo;
+                (srvTree as TreeService).AppUser = AppUser;
+                var orgIDs = srvTree.GetChildrenIds<Core.Model.DB.Basic_Org>(user.OrgID);
+                //当前人及以下部门所管理的所有风险点
+                var dangerPoints = _work.Repository<Basic_DangerPoint>().Queryable(p => orgIDs.Contains(p.OrgID));
+                //风险点所对应的所有管控中的检查单据
+
+                var dpids = dangerPoints.Select(s => s.ID);
+                var bills = _work.Repository<Bll_TaskBill>().Queryable(p => dpids.Contains(p.DangerPointID));
+                var billIDs = bills.Select(s => s.ID);
+                var ctrs = _rpstc.Queryable(p => billIDs.Contains(p.BillID) && p.State < (int)PublicEnum.EE_TroubleState.over);
+
+                var dbf = _rpstcf.Queryable();
+                var emps = _work.Repository<Basic_Employee>().Queryable();
+
+                var dicts = _work.Repository<Basic_Dict>().Queryable(p=>p.ParentID==OptionConst.DangerLevel);
+                var ctrsV = query.Query == 1 ? ctrs.Where(p => dbf.Select(s => s.ControlID).Contains(p.ID)) : ctrs.Where(p => !dbf.Select(s => s.ControlID).Contains(p.ID));
+                var retemp = from c in ctrsV.ToList()
+                             let bill =  bills.FirstOrDefault(p=>p.ID==c.BillID)
+                             let bemp = emps.FirstOrDefault(p => p.ID == bill.EmployeeID)
+                             let pemp = emps.FirstOrDefault(p => p.ID == c.PrincipalID)
+                             let lv = dicts.FirstOrDefault(p=>p.ID==c.DangerLevel)
+                             orderby c.TroubleLevel descending
+                             select new TroubleCtrsPage
+                             {
+                                 BillEmp = bemp.CNName,
+                                 DangerLevel = lv.DictName,
+                                 Principal = pemp.CNName,
+                                 TroubleLevel = Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(v => v.Value == c.TroubleLevel).Caption
+                             };
+                var re = new Pager<TroubleCtrsPage>().GetCurrentPage(retemp,query.PageSize,query.PageIndex);
+                return new ActionResult<Pager<TroubleCtrsPage>>(re);
+
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<Pager<TroubleCtrsPage>>(ex);
             }
         }
     }

@@ -248,6 +248,7 @@ namespace ESafety.Account.Service
                 var retemp = from bill in bills
                              let opreation = opretions.FirstOrDefault(q => q.ID == bill.OpreationID)
                              let emp = emps.FirstOrDefault(q => q.ID == bill.PrincipalEmployeeID)
+                             orderby bill.BillCode descending
                              select new OpreateBillModel
                              {
                                  BillCode = bill.BillCode,

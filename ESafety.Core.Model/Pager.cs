@@ -62,6 +62,38 @@ namespace ESafety.Core.Model
             }
 
         }
+        /// <summary>
+        /// 获取当前页数据
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="pagesize"></param>
+        /// <param name="pageindex"></param>
+        /// <returns></returns>
+        public Pager<T> GetCurrentPage(IQueryable<T> source, int pagesize, int pageindex)
+        {
+
+            var count = source.Count();
+            if (pagesize == 0)
+            {
+                return new Pager<T>()
+                {
+                    Data = source,
+                    Items = count,
+                    Pages = 0
+                };
+            }
+            else
+            {
+
+                return new Pager<T>()
+                {
+                    Data = source.Skip(pagesize * pageindex).Take(pagesize),
+                    Items = count,
+                    Pages = (int)Math.Ceiling(((decimal)count / pagesize)) > 1 ? (int)Math.Ceiling(((decimal)count / pagesize)) : 1
+                };
+            }
+
+        }
 
     }
 
