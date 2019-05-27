@@ -99,9 +99,25 @@ namespace ESafety.Core
         /// </summary>
         ActionResult<IEnumerable<Basic_Dict>> GetEval_YXFW();
         /// <summary>
-        /// 事故可能性
+        /// LECD_L
         /// </summary>
-        ActionResult<IEnumerable<Basic_Dict>> GetEval_SGKLX();
+        ActionResult<IEnumerable<Basic_Dict>> GetEval_LECD_L();
+        /// <summary>
+        /// LECD_E
+        /// </summary>
+        ActionResult<IEnumerable<Basic_Dict>> GetEval_LECD_E();
+        /// <summary>
+        /// LECD_C
+        /// </summary>
+        ActionResult<IEnumerable<Basic_Dict>> GetEval_LECD_C();
+        /// <summary>
+        /// LSD_L
+        /// </summary>
+        ActionResult<IEnumerable<Basic_Dict>> GetEval_LSD_L();
+        /// <summary>
+        /// LSD_S
+        /// </summary>
+        ActionResult<IEnumerable<Basic_Dict>> GetEval_LSD_S();
 
     }
 }

@@ -45,6 +45,10 @@ namespace ESafety.Core
                 {
                     throw new Exception("已经存在词典：" + dict.DictName);
                 }
+                if (dict.ParentID == OptionConst.DangerLevel)
+                {
+                    throw new Exception("系统内置固定项，无法新增!");
+                }
                 var newdict = dict.MAPTO<Basic_Dict>();
 
                 rpsDict.Add(newdict);
@@ -73,7 +77,7 @@ namespace ESafety.Core
                 {
                     throw new Exception("已经存在词典类型：" + dicttype.DictName);
                 }
-
+               
                 var newtype = dicttype.MAPTO<Basic_Dict>();
 
                 rpsDict.Add(newtype);
@@ -100,7 +104,10 @@ namespace ESafety.Core
                 {
                     throw new Exception("词典未找到");
                 }
-
+                if (dbdict.ParentID == OptionConst.DangerLevel)
+                {
+                    throw new Exception("系统内置不允许删除!");
+                }
                 rpsDict.Delete(dbdict);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -158,6 +165,10 @@ namespace ESafety.Core
                 if(dbdict==null)
                 {
                     throw new Exception("词典未找到");
+                }
+                if (dbdict.ParentID == OptionConst.DangerLevel)
+                {
+                    throw new Exception("系统内置不允许修改!");
                 }
                 dbdict = dict.CopyTo<Basic_Dict>(dbdict);
                
@@ -219,7 +230,7 @@ namespace ESafety.Core
         {
             try
             {
-                var retemp = rpsDict.Queryable(q => q.ParentID == para.Query).OrderBy(o=>o.DictName);
+                var retemp = rpsDict.Queryable(q => q.ParentID == para.Query).OrderBy(o=>o.DictName).ToList();
 
                 var re = new Pager<Basic_Dict>().GetCurrentPage(retemp, para.PageSize, para.PageIndex);
                 
@@ -327,22 +338,7 @@ namespace ESafety.Core
                 return new ActionResult<IEnumerable<Basic_Dict>>(ex);
             }
         }
-        /// <summary>
-        /// 获取事故可能性词典
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult<IEnumerable<Basic_Dict>> GetEval_SGKLX()
-        {
-            try
-            {
-                var re = getdictsbyParentID(OptionConst.Eval_SGKLX);
-                return new ActionResult<IEnumerable<Basic_Dict>>(re);
-            }
-            catch (Exception ex)
-            {
-                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
-            }
-        }
+     
         /// <summary>
         /// 获取事故类型词典
         /// </summary>
@@ -384,6 +380,86 @@ namespace ESafety.Core
             try
             {
                 var re = getdictsbyParentID(OptionConst.Eval_YXFW);
+                return new ActionResult<IEnumerable<Basic_Dict>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取LECD_L词典
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_LECD_L()
+        {
+            try
+            {
+                var re = getdictsbyParentID(OptionConst.Eval_LECD_L);
+                return new ActionResult<IEnumerable<Basic_Dict>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取LECD_E词典
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_LECD_E()
+        {
+            try
+            {
+                var re = getdictsbyParentID(OptionConst.Eval_LECD_E);
+                return new ActionResult<IEnumerable<Basic_Dict>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取LECD_C词典
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_LECD_C()
+        {
+            try
+            {
+                var re = getdictsbyParentID(OptionConst.Eval_LECD_C);
+                return new ActionResult<IEnumerable<Basic_Dict>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取LSD_L词典
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_LSD_L()
+        {
+            try
+            {
+                var re = getdictsbyParentID(OptionConst.Eval_LSD_S);
+                return new ActionResult<IEnumerable<Basic_Dict>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
+            }
+        }
+        /// <summary>
+        /// 获取LSD_S词典
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_LSD_S()
+        {
+            try
+            {
+                var re = getdictsbyParentID(OptionConst.Eval_LSD_S);
                 return new ActionResult<IEnumerable<Basic_Dict>>(re);
             }
             catch (Exception ex)

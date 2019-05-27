@@ -95,7 +95,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 隐患等级
         /// </summary>
-        public PublicEnum.EE_TroubleLevel TroubleLevel{ get; set; }
+        public Guid TroubleLevel{ get; set; }
         /// <summary>
         /// 风险等级
         /// </summary>

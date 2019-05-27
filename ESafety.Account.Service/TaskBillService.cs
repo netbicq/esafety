@@ -107,10 +107,9 @@ namespace ESafety.Account.Service
                     ID = dbtbs.ID,
 
                     TroubleLevel = dbtbs.TroubleLevel,
-                    TroubleLevelName = dbtbs.TroubleLevel == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == dbtbs.TroubleLevel).Caption,
-
-                    Eval_Method = dbtbs.Eval_Method,
-                    MethodName = dbtbs.Eval_Method == 0 ? string.Empty : Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(q => q.Value == dbtbs.Eval_Method).Caption,
+                    TroubleLevelName = dbtbs.TroubleLevel == Guid.Empty ? string.Empty : dict.GetModel(dbtbs.TroubleLevel).DictName,
+                    Eval_Method = dbtbs.Eval_Method == -1 ? 0 : dbtbs.Eval_Method,
+                    MethodName = dbtbs.Eval_Method == 0 ? string.Empty : dbtbs.Eval_Method == -1 ? string.Empty : Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(q => q.Value == dbtbs.Eval_Method).Caption,
 
                     Eval_SGJG = dbtbs.Eval_SGJG,
                     SGJGDic = dbtbs.Eval_SGJG == Guid.Empty ? string.Empty : dict.GetModel(dbtbs.Eval_SGJG).DictName,
@@ -163,10 +162,11 @@ namespace ESafety.Account.Service
 
                 var dps = _work.Repository<Basic_DangerPoint>().Queryable(p => dpids.Contains(p.ID));
 
+                var dict = _work.Repository<Core.Model.DB.Basic_Dict>();
                 var rev = from s in dbtb
                           let emp = emps.FirstOrDefault(p => p.ID == s.EmployeeID)
                           let ts = dbts.FirstOrDefault(p => p.ID == s.TaskID)
-                          let tbs = dbtbs.Where(p => p.BillID == s.ID).ToList()
+                          let tbs = dbtbs.OrderByDescending(o => o.TroubleLevel).FirstOrDefault(p => p.BillID == s.ID)
                           let post = posts.FirstOrDefault(p => p.ID == s.PostID)
                           let dp = dps.FirstOrDefault(p => p.ID == s.DangerPointID)
                           where s.BillCode.Contains(para.Query.Key) || ts.Name.Contains(para.Query.Key) || para.Query.Key == string.Empty
@@ -186,8 +186,8 @@ namespace ESafety.Account.Service
                               PostID = s.PostID,
                               PostName = post.Name,
                               TaskName = ts.Name,
-                              TaskResult = tbs.Count() == 0 ? "" : (int)tbs.Max(s => s.TroubleLevel) == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == (int)tbs.Max(s => s.TroubleLevel)).Caption,
-                              TaskResultValue = tbs.Count() == 0 ? 0 : (int)tbs.Max(s => s.TroubleLevel)
+                              TaskResult = tbs == null ? "" : tbs.TroubleLevel == Guid.Empty ? string.Empty : dict.GetModel(tbs.TroubleLevel).DictName,
+                              //TaskResultValue = tbs == null ? 0 : tbs.TroubleLevel == -1 ? 0 : tbs.TroubleLevel
                           };
                 var re = new Pager<TaskBillView>().GetCurrentPage(rev, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<TaskBillView>>(re);
@@ -250,12 +250,12 @@ namespace ESafety.Account.Service
                               TaskResultName = Command.GetItems(typeof(PublicEnum.EE_TaskResultType)).FirstOrDefault(q => q.Value == tbd.TaskResult).Caption,
 
                               TroubleLevel = tbd.TroubleLevel,
-                              TroubleLevelName = tbd.TroubleLevel == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(q => q.Value == tbd.TroubleLevel).Caption,
+                              TroubleLevelName = tbd.TroubleLevel == Guid.Empty ? string.Empty : dict.GetModel(tbd.TroubleLevel).DictName,
 
                               TaskResultMemo = tbd.TaskResultMemo,
 
-                              Eval_Method = tbd.Eval_Method,
-                              MethodName = tbd.Eval_Method == 0 ? string.Empty : Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(q => q.Value == tbd.Eval_Method).Caption,
+                              Eval_Method = tbd.Eval_Method == -1 ? 0 : tbd.Eval_Method,
+                              MethodName = tbd.Eval_Method == 0 ? string.Empty : tbd.Eval_Method == -1 ? string.Empty : Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(q => q.Value == tbd.Eval_Method).Caption,
 
                               Eval_SGJG = tbd.Eval_SGJG,
                               SGJGDic = tbd.Eval_SGJG == Guid.Empty ? string.Empty : dict.GetModel(tbd.Eval_SGJG).DictName,
@@ -569,11 +569,37 @@ namespace ESafety.Account.Service
                     {
                         throw new Exception("请选择评估方法！");
                     }
+                    else if (bill.Eval_Method == (int)PublicEnum.EE_EvaluateMethod.LECD)
+                    {
+                        if (bill.LECD_L == Guid.Empty)
+                        {
+                            throw new Exception("请选择LECD法的L");
+                        }
+                        if (bill.LECD_E == Guid.Empty)
+                        {
+                            throw new Exception("请选择LECD法的E");
+                        }
+                        if (bill.LECD_C == Guid.Empty)
+                        {
+                            throw new Exception("请选择LECD法的C");
+                        }
+                    }
+                    else if (bill.Eval_Method == (int)PublicEnum.EE_EvaluateMethod.LSD)
+                    {
+                        if (bill.LSD_L == Guid.Empty)
+                        {
+                            throw new Exception("请选择LSD法的L");
+                        }
+                        if (bill.LSD_S == Guid.Empty)
+                        {
+                            throw new Exception("请选择LSD法的S");
+                        }
+                    }
                     if (bill.DangerLevel == Guid.Empty)
                     {
                         throw new Exception("请选择风险等级！");
                     }
-                    if (bill.TroubleLevel == 0)
+                    if (bill.TroubleLevel == Guid.Empty)
                     {
                         throw new Exception("请选择隐患等级！");
                     }
@@ -627,7 +653,7 @@ namespace ESafety.Account.Service
                     //新建管控项
                     if (bill.TaskResult == (int)PublicEnum.EE_TaskResultType.abnormal)
                     {
-                       
+
                         //检查时为异常状态时直接新建管控项
                         var rpsCtr = _work.Repository<Bll_TroubleControl>();
                         var rpsCtrDetail = _work.Repository<Bll_TroubleControlDetails>();
@@ -643,7 +669,8 @@ namespace ESafety.Account.Service
                             PrincipalID = bill.CtrPrincipal,
                             ControlDescription = "",
                             ControlName = "",
-                          
+                            DangerPoint=dbbill.DangerPointID,
+
                         };
                         var ctrDetail = new Bll_TroubleControlDetails
                         {
@@ -709,6 +736,7 @@ namespace ESafety.Account.Service
         {
             try
             {
+                var rpsDict = _work.Repository<Basic_Dict>();
                 //当前人
                 var user = AppUser.EmployeeInfo;
                 //当前人的所有待完成单据
@@ -726,6 +754,8 @@ namespace ESafety.Account.Service
                          let danger = dangers.FirstOrDefault(q => q.ID == tb.DangerPointID)
                          let subcount = _work.Repository<Bll_InspectTaskSubject>().Queryable(q => q.InspectTaskID == tb.TaskID).Count()//当前单据检查主体总数
                          let osubcount = _rpstbs.Queryable(p => p.BillID == tb.ID).Count()//已查主体数
+                         let whysids = JsonConvert.DeserializeObject<IEnumerable<Guid>>(danger.WXYSJson)
+                         let dicts = rpsDict.Queryable(p => whysids.Contains(p.ID))
                          select new TaskBillModel
                          {
                              BillID = tb.ID,
@@ -738,6 +768,13 @@ namespace ESafety.Account.Service
                              SubCheckedCount = osubcount,
                              SubCount = subcount,
                              TaskType = (PublicEnum.EE_InspectTaskType)task.TaskType,
+                             WHYSDicts = from d in dicts
+                                         select new Dict
+                                         {
+                                             KeyID = d.ID,
+                                             DictName = d.DictName,
+                                             Memo = d.Memo
+                                         }
                          };
                 return new ActionResult<IEnumerable<TaskBillModel>>(re);
             }
@@ -907,14 +944,20 @@ namespace ESafety.Account.Service
                     ResultTime = subresult.TaskTime,
                     TaskResult = (PublicEnum.EE_TaskResultType)subresult.TaskResult,
                     TaskResultMemo = subresult.TaskResultMemo,
-                    DLevel=subresult.DangerLevel==Guid.Empty?"":dict.GetModel(subresult.DangerLevel).DictName,
-                    WHYSDict = subresult.Eval_WHYS == Guid.Empty ? "" : dict.GetModel(subresult.DangerLevel).DictName,
-                    SGLXDict = subresult.Eval_SGLX == Guid.Empty ? "" : dict.GetModel(subresult.DangerLevel).DictName,
-                    SGJGDict = subresult.Eval_SGJG == Guid.Empty ? "" : dict.GetModel(subresult.DangerLevel).DictName,
-                    YXFWDict = subresult.Eval_YXFW == Guid.Empty ? "" : dict.GetModel(subresult.DangerLevel).DictName,
-                    Method = subresult.Eval_Method == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(v=>v.Value==subresult.Eval_Method).Caption,
-                    TLevel = subresult.TroubleLevel == 0 ? "" : Command.GetItems(typeof(PublicEnum.EE_TroubleLevel)).FirstOrDefault(v => v.Value == subresult.TroubleLevel).Caption,
-                    CtrPrincipal=subresult.CtrPrincipal==Guid.Empty?"":_work.Repository<Basic_Employee>().GetModel(p=>p.ID==subresult.CtrPrincipal).CNName
+                    DLevel = subresult.DangerLevel == Guid.Empty ? "" : dict.GetModel(subresult.DangerLevel).DictName,
+                    WHYSDict = subresult.Eval_WHYS == Guid.Empty ? "" : dict.GetModel(subresult.Eval_WHYS).DictName,
+                    SGLXDict = subresult.Eval_SGLX == Guid.Empty ? "" : dict.GetModel(subresult.Eval_SGLX).DictName,
+                    SGJGDict = subresult.Eval_SGJG == Guid.Empty ? "" : dict.GetModel(subresult.Eval_SGJG).DictName,
+                    YXFWDict = subresult.Eval_YXFW == Guid.Empty ? "" : dict.GetModel(subresult.Eval_YXFW).DictName,
+                    LECD_L = subresult.LECD_L == Guid.Empty ? "" : dict.GetModel(subresult.LECD_L).DictName,
+                    LECD_E = subresult.LECD_E == Guid.Empty ? "" : dict.GetModel(subresult.LECD_E).DictName,
+                    LECD_C = subresult.LECD_C == Guid.Empty ? "" : dict.GetModel(subresult.LECD_C).DictName,
+                    LSD_L = subresult.LSD_L == Guid.Empty ? "" : dict.GetModel(subresult.LSD_L).DictName,
+                    LSD_S = subresult.LSD_S == Guid.Empty ? "" : dict.GetModel(subresult.LSD_S).DictName,
+
+                    Method = (subresult.Eval_Method == 0 || subresult.Eval_Method == -1) ? "" : Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod)).FirstOrDefault(v => v.Value == subresult.Eval_Method).Caption,
+                    TLevel = subresult.TroubleLevel == Guid.Empty ? string.Empty : dict.GetModel(subresult.TroubleLevel).DictName,
+                    CtrPrincipal = subresult.CtrPrincipal == Guid.Empty ? "" : _work.Repository<Basic_Employee>().GetModel(p => p.ID == subresult.CtrPrincipal).CNName
                 };
                 return new ActionResult<SubResultView>(re);
             }
@@ -959,8 +1002,8 @@ namespace ESafety.Account.Service
                          let subs = csubs.Where(p => !osubids.Contains(p.SubjectID)).ToList()//待查主体
                          let subids = subs.Select(p => p.SubjectID)
                          let sbs = _work.Repository<Basic_DangerPointRelation>().Queryable(p => subids.Contains(p.SubjectID)).ToList()
-                         let whysids=JsonConvert.DeserializeObject<IEnumerable<Guid>>(danger.WXYSJson)
-                         let dicts = rpsDict.Queryable(p=>whysids.Contains(p.ID))
+                         let whysids = JsonConvert.DeserializeObject<IEnumerable<Guid>>(danger.WXYSJson)
+                         let dicts = rpsDict.Queryable(p => whysids.Contains(p.ID))
                          select new BillData
                          {
                              BillID = tb.ID,
@@ -978,8 +1021,7 @@ namespace ESafety.Account.Service
                                          {
                                              KeyID = d.ID,
                                              DictName = d.DictName,
-                                             MaxValue = d.MaxValue,
-                                             MinValue = d.MinValue
+                                             Memo = d.Memo
                                          },
                              CheckSubs = from sub in subs
                                          let dg = _work.Repository<Basic_Danger>().GetModel(sub.DangerID)
@@ -1004,12 +1046,19 @@ namespace ESafety.Account.Service
 
                 var emps = _work.Repository<Basic_Employee>().Queryable(p => p.IsQuit == false);
                 var orgs = _work.Repository<Basic_Org>().Queryable();
-                var dlvs = rpsDict.Queryable(p=>p.ParentID==OptionConst.DangerLevel);
+                var dlvs = rpsDict.Queryable(p => p.ParentID == OptionConst.DangerLevel);
                 var sghgs = rpsDict.Queryable(p => p.ParentID == OptionConst.Eval_SGJG);
                 var sglxs = rpsDict.Queryable(p => p.ParentID == OptionConst.Eval_SGLX);
                 var yxfws = rpsDict.Queryable(p => p.ParentID == OptionConst.Eval_YXFW);
                 var methods = Command.GetItems(typeof(PublicEnum.EE_EvaluateMethod));
-                var tlvs= Command.GetItems(typeof(PublicEnum.EE_TroubleLevel));
+
+
+                var lecdls = rpsDict.Queryable(p => p.ParentID == OptionConst.Eval_LECD_L);
+                var lecdes = rpsDict.Queryable(p => p.ParentID == OptionConst.Eval_LECD_E);
+                var lecdcs = rpsDict.Queryable(p => p.ParentID == OptionConst.Eval_LECD_C);
+                var lsdls = rpsDict.Queryable(p => p.ParentID == OptionConst.Eval_LSD_L);
+                var lsdss = rpsDict.Queryable(p => p.ParentID == OptionConst.Eval_LSD_S);
+                var tlvs = rpsDict.Queryable(p => p.ParentID == OptionConst.TroubleLevel);
                 DownloadData data = new DownloadData
                 {
                     Emps = from e in emps
@@ -1026,40 +1075,89 @@ namespace ESafety.Account.Service
                                OrgName = o.OrgName,
                                ParentID = o.ParentID
                            },
-                    DangerLevels=from l in dlvs 
-                                 select new Dict
-                                 {
-                                     KeyID=l.ID,
-                                     DictName=l.DictName,
-                                     MaxValue=l.MaxValue,
-                                     MinValue=l.MinValue
-                                 },
-                    SGHGDicts=from hg in sghgs
-                              select new Dict
+                    SGHGDicts = from hg in sghgs
+                                select new Dict
+                                {
+                                    KeyID = hg.ID,
+                                    DictName = hg.DictName,
+                                    Memo = hg.Memo
+                                },
+                    SGLXDicts = from lx in sglxs
+                                select new Dict
+                                {
+                                    KeyID = lx.ID,
+                                    DictName = lx.DictName,
+                                    Memo = lx.Memo
+                                },
+                    YXFWDicts = from fw in yxfws
+                                select new Dict
+                                {
+                                    KeyID = fw.ID,
+                                    DictName = fw.DictName,
+                                    Memo = fw.Memo
+
+                                },
+                    TroubleLevels = from tlv in tlvs
+                                    select new Dict
+                                    {
+                                        KeyID = tlv.ID,
+                                        DictName = tlv.DictName,
+                                        Memo = tlv.Memo
+
+                                    },
+                    LECD_Ls = from lecdl in lecdls
+                              select new Eval_Dict
                               {
-                                  KeyID = hg.ID,
-                                  DictName = hg.DictName,
-                                  MaxValue = hg.MaxValue,
-                                  MinValue = hg.MinValue
+                                  KeyID = lecdl.ID,
+                                  DictName = lecdl.DictName,
+                                  Memo = lecdl.Memo,
+                                  Value = lecdl.MinValue
                               },
-                    SGLXDicts=from lx in sglxs
-                              select new Dict
+                    LECD_Es = from lecde in lecdes
+                              select new Eval_Dict
                               {
-                                  KeyID = lx.ID,
-                                  DictName = lx.DictName,
-                                  MaxValue = lx.MaxValue,
-                                  MinValue = lx.MinValue
+                                  KeyID = lecde.ID,
+                                  DictName = lecde.DictName,
+                                  Memo = lecde.Memo,
+                                  Value = lecde.MinValue
                               },
-                    YXFWDicts=from fw in yxfws
-                              select new Dict
+                    LECD_Cs = from lecdc in lecdcs
+                              select new Eval_Dict
                               {
-                                  KeyID = fw.ID,
-                                  DictName = fw.DictName,
-                                  MaxValue = fw.MaxValue,
-                                  MinValue = fw.MinValue
+                                  KeyID = lecdc.ID,
+                                  DictName = lecdc.DictName,
+                                  Memo = lecdc.Memo,
+                                  Value = lecdc.MinValue
                               },
-                    EvaluateMethod=methods,
-                    TroubleLevels=tlvs,
+                    LSD_Ls = from lsdl in lsdls
+                             select new Eval_Dict
+                             {
+                                 KeyID = lsdl.ID,
+                                 DictName = lsdl.DictName,
+                                 Memo = lsdl.Memo,
+                                 Value = lsdl.MinValue
+                             },
+                    LSD_Ss = from lsds in lsdss
+                             select new Eval_Dict
+                             {
+                                 KeyID = lsds.ID,
+                                 DictName = lsds.DictName,
+                                 Memo = lsds.Memo,
+                                 Value = lsds.MinValue
+                             },
+                    DangerLevels = from l in dlvs
+                                   orderby l.MinValue
+                                   select new DangerLevelDict
+                                   {
+                                       KeyID = l.ID,
+                                       DictName = l.DictName,
+                                       Memo = l.Memo,
+                                       LECD_DMaxValue = l.LECD_DMaxValue,
+                                       LECD_DMinValue = l.LECD_DMinValue,
+                                       LSD_DMaxValue = l.LSD_DMaxValue,
+                                       LSD_DMinValue = l.LSD_DMinValue,
+                                   },
+                    EvaluateMethod = methods,
                     BillDatas = re,
                     OverTimeTaskCount = overtimetaskcount
                 };
@@ -1113,6 +1211,7 @@ namespace ESafety.Account.Service
                              SubCheckedCount = osubcount,
                              SubCount = osubcount,
                              TaskType = (PublicEnum.EE_InspectTaskType)task.TaskType,
+
                          };
                 return new ActionResult<IEnumerable<TaskBillModel>>(re);
             }

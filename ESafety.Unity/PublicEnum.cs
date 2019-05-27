@@ -277,7 +277,12 @@ namespace ESafety.Unity
             /// LECD
             /// </summary>
             [Description("LECD法")]
-            LECD = 2
+            LECD = 2,
+            /// <summary>
+            /// LSD法
+            /// </summary>
+            [Description("LSD法")]
+            LSD=3
         }
 
         /// <summary>

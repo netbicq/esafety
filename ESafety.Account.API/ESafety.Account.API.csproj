@@ -210,6 +210,7 @@
     <Compile Include="Controllers\DangerManageController.cs" />
     <Compile Include="Controllers\DangerPointController.cs" />
     <Compile Include="Controllers\DangerRelationController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DictController.cs" />
     <Compile Include="Controllers\DocCertificateController.cs" />
     <Compile Include="Controllers\DocInstitutionController.cs" />

@@ -26,7 +26,7 @@ namespace ESafety.Account.API.Controllers
         public DictController(IDict dict)
         {
             bll = dict;
-            BusinessServices =new List<object>() { dict };
+            BusinessServices = new List<object>() { dict };
 
         }
         /// <summary>
@@ -187,17 +187,6 @@ namespace ESafety.Account.API.Controllers
             return bll.GetEval_SGJG();
         }
         /// <summary>
-        /// 获取事故可能性词典
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("getevalsgklx")]
-        public ActionResult<IEnumerable<Basic_Dict>> GetEval_SGKLX()
-        {
-            return bll.GetEval_SGKLX();
-        }
-
-        /// <summary>
         ///获取事故类型词典
         /// </summary>
         /// <returns></returns>
@@ -226,6 +215,57 @@ namespace ESafety.Account.API.Controllers
         public ActionResult<IEnumerable<Basic_Dict>> GetEval_YXFW()
         {
             return bll.GetEval_YXFW();
+        }
+
+        /// <summary>
+        /// 获取LECD_L词典
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getEval_LECD_L")]
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_LECD_L()
+        {
+            return bll.GetEval_LECD_L();
+        }
+        /// <summary>
+        /// 获取LECD_E词典
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getEval_LECD_E")]
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_LECD_E()
+        {
+            return bll.GetEval_LECD_E();
+        }
+        /// <summary>
+        /// 获取LECD_C词典
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getEval_LECD_C")]
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_LECD_C()
+        {
+            return bll.GetEval_LECD_C();
+        }
+        /// <summary>
+        /// 获取LSD_L词典
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getEval_LSD_L")]
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_LSD_L()
+        {
+            return bll.GetEval_LSD_L();
+        }
+        /// <summary>
+        /// 获取LSD_S词典
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getEval_LSD_S")]
+        public ActionResult<IEnumerable<Basic_Dict>> GetEval_LSD_S()
+        {
+            return bll.GetEval_LSD_S();
         }
     }
 }

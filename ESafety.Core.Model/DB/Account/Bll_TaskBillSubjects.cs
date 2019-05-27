@@ -62,7 +62,7 @@ namespace ESafety.Core.Model.DB.Account
         /// <summary>
         /// 隐患等级
         /// </summary>
-        public int TroubleLevel { get; set; }
+        public Guid TroubleLevel { get; set; }
         /// <summary>
         /// 是否管控
         /// </summary>
@@ -75,5 +75,29 @@ namespace ESafety.Core.Model.DB.Account
         /// 管控负责人
         /// </summary>
         public Guid CtrPrincipal { get; set; }
+        /// <summary>
+        /// LECD计算方法的L
+        /// </summary>
+        public Guid LECD_L { get; set; }
+        /// <summary>
+        /// LECD计算方法的L
+        /// </summary>
+        public Guid LECD_E { get; set; }
+        /// <summary>
+        /// LECD计算方法的C
+        /// </summary>
+        public Guid LECD_C { get; set; }
+        /// <summary>
+        /// LSD计算方法的L
+        /// </summary>
+        public Guid LSD_L { get; set; }
+        /// <summary>
+        /// LECD计算方法的L
+        /// </summary>
+        public Guid LSD_S { get; set; }
+        /// <summary>
+        /// 通过计算得出的值，若为手动选择 则存0
+        /// </summary>
+        public int DValue { get; set; }
     }
 }

@@ -215,5 +215,18 @@ namespace ESafety.Account.API.Controllers
             return bll.ChangeDangerLevel(level);
         }
 
+        /// <summary>
+        /// 快速处理
+        /// </summary>
+        /// <param name="quickHandleTrouble"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("quickHandleCtr")]
+        public ActionResult<bool> QuickHandleCtr(QuickHandleTroubleCtr quickHandleTrouble)
+        {
+            LogContent = "快速处理，参数源:" + JsonConvert.SerializeObject(quickHandleTrouble);
+            return bll.QuickHandleCtr(quickHandleTrouble);
+        }
+
     }
 }

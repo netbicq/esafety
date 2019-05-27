@@ -36,16 +36,22 @@ namespace ESafety.Account.Service
         {
             try
             {
-                if (dangerRelation.DangerID==Guid.Empty)
+                if (dangerRelation.DangerID.Count()==0)
                 {
                     throw new Exception("参数有误");
                 }
-                var check = _rpsdangerrelation.Any(p=>p.SubjectID==dangerRelation.SubjectID&&p.DangerID==dangerRelation.DangerID);
+                var check = _rpsdangerrelation.Any(p=>p.SubjectID==dangerRelation.SubjectID&&dangerRelation.DangerID.Contains(p.DangerID));
                 if (check)
                 {
                     throw new Exception("已存在该风险点配置");
                 }
-                var dbdangerrelation=dangerRelation.MAPTO<Basic_DangerRelation>();
+                var dbdangerrelation = from d in dangerRelation.DangerID
+                                       select new Basic_DangerRelation
+                                       {
+                                           ID=Guid.NewGuid(),
+                                           DangerID=d,
+                                           SubjectID=dangerRelation.SubjectID
+                                       };
                 _rpsdangerrelation.Add(dbdangerrelation);
                 _work.Commit();
                 return new ActionResult<bool>(true);

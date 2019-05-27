@@ -30,8 +30,8 @@ namespace ESafety.Account.Service
 
         private Core.IFlow srvFlow = null;
         private IAttachFile srvfile = null;
-
-        public InspectTaskService(IUnitwork work, Core.IFlow flow,IAttachFile file) : base(work, flow)
+        private ITree srvTree = null;
+        public InspectTaskService(IUnitwork work, Core.IFlow flow,IAttachFile file,ITree tree) : base(work, flow)
         {
             _work = work;
             Unitwork = work;
@@ -43,6 +43,7 @@ namespace ESafety.Account.Service
             var flowser = srvFlow as FlowService;
             flowser.AppUser = AppUser;
             flowser.ACOptions = ACOptions;
+            srvTree = tree;
 
         }
         /// <summary>
@@ -669,7 +670,7 @@ namespace ESafety.Account.Service
                 var bills = _work.Repository<Bll_TaskBill>().Queryable(q => taskids.Contains(q.TaskID)).ToList();
 
                 //任务主体
-                var billids = bills.Select(s => s.ID);
+                var billids = bills.Select(s => s.ID).ToList();
                 var billsubjects = _work.Repository<Bll_TaskBillSubjects>().Queryable(q => billids.Contains(q.BillID)).ToList();
 
 
@@ -1113,6 +1114,78 @@ namespace ESafety.Account.Service
             {
                 return new ActionResult<IEnumerable<InsepctTaskByEmployee>>(ex);
             }
+        }
+        /// <summary>
+        /// APP 统计 当前人组织架构下 获取所有超期任务
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<Pager<TimeOutTask>> GetTimeOutTask(PagerQuery<string> query)
+        {
+            
+            try
+            {
+                var user = AppUser.EmployeeInfo;
+                (srvTree as TreeService).AppUser = AppUser;
+                var orgIDs = srvTree.GetChildrenIds<Core.Model.DB.Basic_Org>(user.OrgID);
+
+                //所有人
+                var emps = _work.Repository<Basic_Employee>().Queryable();
+                var empsByOrg = emps.Where(p=>orgIDs.Contains(p.OrgID));
+                var empIds = empsByOrg.Select(s => s.ID);
+                //所有岗位
+                var posts = _work.Repository<Basic_PostEmployees>().Queryable(p=>empIds.Contains(p.EmployeeID));
+                var postIds = posts.Select(p => p.PostID);
+                var tasks = rpstask.Queryable(p=>postIds.Contains(p.ExecutePostID)&&p.TaskType==(int)PublicEnum.EE_InspectTaskType.Cycle).ToList();
+                var postss = _work.Repository<Basic_Post>().Queryable(p => postIds.Contains(p.ID));
+
+
+                //风险点
+
+                var danger = _work.Repository<Basic_DangerPoint>().Queryable();
+                //任务单据
+                var taskids = tasks.Select(s => s.ID);
+                var bills = _work.Repository<Bll_TaskBill>().Queryable(q => taskids.Contains(q.TaskID)).ToList();
+
+                //任务主体
+                var billids = bills.Select(s => s.ID);
+                var billsubjects = _work.Repository<Bll_TaskBillSubjects>().Queryable(q => billids.Contains(q.BillID)).ToList();
+
+                var dicts = _work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => p.ParentID == OptionConst.DangerLevel);
+
+              
+
+                var retemp = from t in tasks.ToList()
+                         let tbills = bills.Where(q => q.TaskID == t.ID)
+                         let dp=danger.FirstOrDefault(p=>p.ID==t.DangerPointID)
+                         let lv=dicts.FirstOrDefault(p=>p.ID==dp.DangerLevel)
+                         let emp=t.EmployeeID==null?null:emps.FirstOrDefault(p=>p.ID==t.EmployeeID)
+                         let post=postss.FirstOrDefault(p=>p.ID==t.ExecutePostID)
+                         //let bill=tbills==null?null:tbills.OrderByDescending(o=>o.StartTime).FirstOrDefault()
+                         let date = t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Year ? t.CycleValue * 365 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Month ? t.CycleValue * 30 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Week ? t.CycleValue * 7 * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Day ? t.CycleValue * 24 * 60
+                        : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Houre ? t.CycleValue * 60
+                        : t.CycleValue
+                         let billsub = tbills == null ? null : billsubjects.OrderByDescending(o => o.TaskTime).FirstOrDefault(q => tbills.Select(s => s.ID).Contains(q.BillID))
+                         let ctime = tbills == null ? (DateTime.Now - t.StartTime).TotalMinutes : billsub == null ? (DateTime.Now - t.StartTime).TotalMinutes : (DateTime.Now - billsub.TaskTime).TotalMinutes
+                         where ctime > date
+                         select new TimeOutTask
+                         {
+                             Name ="任务名:"+t.Name,
+                             EmpOrPost="执行人/岗位:"+(emp==null?post.Name:emp.CNName),
+                             OverHours="超期时长:"+ (((int)ctime - date)/60.0).ToString("0.0")+"小时",
+                             DangerLevel="风险等级:"+lv.DictName,
+                             DangerPoint="风险点:"+dp.Name
+                         };
+                var re=new Pager<TimeOutTask>().GetCurrentPage(retemp,query.PageSize,query.PageIndex);
+                return new ActionResult<Pager<TimeOutTask>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<Pager<TimeOutTask>>(ex);
+            }
+
         }
     }
 }

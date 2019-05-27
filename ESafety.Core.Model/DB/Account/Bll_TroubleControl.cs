@@ -43,7 +43,7 @@ namespace ESafety.Core.Model.DB.Account
         /// <summary>
         /// 隐患级别
         /// </summary>
-        public int TroubleLevel { get; set; }
+        public Guid TroubleLevel { get; set; }
         /// <summary>
         /// 发现日期
         /// </summary>
@@ -60,5 +60,10 @@ namespace ESafety.Core.Model.DB.Account
         /// 风险等级
         /// </summary>
         public Guid DangerLevel { get; set; }
+        /// <summary>
+        /// 风险点
+        /// </summary>
+        public Guid DangerPoint { get; set; }
+
     }
 }

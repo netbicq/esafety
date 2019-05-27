@@ -525,5 +525,16 @@ namespace ESafety.Account.API.Controllers
         {
             return ctrbll.GetTroubleCtrsPage(query);
         }
+
+        /// <summary>
+        /// APP 统计 当前人组织架构下 获取所有超期任务
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("getTimeOutTask")]
+        public ActionResult<Pager<TimeOutTask>> GetTimeOutTask(PagerQuery<string> query)
+        {
+            return spectbll.GetTimeOutTask(query);
+        }
     }
 }

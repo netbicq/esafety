@@ -117,6 +117,11 @@ namespace ESafety.Account.IService
         ///// <param name="dangerPoint"></param>
         ///// <returns></returns>
         //ActionResult<IEnumerable<InsepctTaskByEmployee>> GetEmpTimeOutTaskByQRCoder(Guid dangerPoint);
+        /// <summary>
+        /// APP 统计 当前人组织架构下 获取所有超期任务
+        /// </summary>
+        /// <returns></returns>
+        ActionResult<Pager<TimeOutTask>> GetTimeOutTask(PagerQuery<string> query);
 
     }
 }

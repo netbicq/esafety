@@ -339,5 +339,31 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string DangerName { set; get; }
     }
+    /// <summary>
+    ///超期任务
+    /// </summary>
+    public class TimeOutTask
+    {
+        /// <summary>
+        /// 任务名
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// 人或者岗位
+        /// </summary>
+        public string EmpOrPost { get; set; }
+        /// <summary>
+        /// 超期任务数
+        /// </summary>
+        public string OverHours { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public string DangerLevel { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public string DangerPoint { get; set; }
+    }
 
 }

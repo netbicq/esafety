@@ -53,8 +53,11 @@ namespace ESafety.Account.Service
                     throw new Exception("作业流程未找到");
                 }
 
-                var flows = _work.Repository<Core.Model.DB.Account.Basic_OpreationFlow>().Queryable(q => q.OpreationID == opreationmodel.ID).OrderBy(o => o.PointIndex);
-
+                var flows = _work.Repository<Core.Model.DB.Account.Basic_OpreationFlow>().Queryable(q => q.OpreationID == opreationmodel.ID).OrderBy(o => o.PointIndex).ToList();
+                if (flows.Count()==0)
+                {
+                    throw new Exception("该作业流程未配置流程节点，请配置!");
+                }
 
                 var billdb = bill.MAPTO<Core.Model.DB.Account.Bll_OpreationBill>();
                 billdb.BillCode = Command.CreateCode();
@@ -454,8 +457,8 @@ namespace ESafety.Account.Service
                 var emps =empids==null?null:_work.Repository<Basic_Employee>().Queryable(q => empids.Contains(q.ID)).ToList();
 
                 //获取当前登录人的岗位ID
-                var cuserpost = _work.Repository<Basic_PostEmployees>().GetModel(q => q.EmployeeID == AppUser.EmployeeInfo.ID);
-                var cpostid = cuserpost == null ?Guid.Empty:cuserpost.PostID;
+                var cuserpost = _work.Repository<Basic_PostEmployees>().Queryable(q => q.EmployeeID == AppUser.EmployeeInfo.ID).ToList();
+                var cpostid = cuserpost.Count() > 0 ? cuserpost.Select(s => s.PostID).ToList(): null ;
 
                 var posts = _work.Repository<Basic_Post>().Queryable(q => postids.Contains(q.ID)).ToList();
 
@@ -505,8 +508,7 @@ namespace ESafety.Account.Service
                      : //如果存在上级节点，且上级节点没有任保记录或是上级已回退记录则不可用
                     (uppoint != null && (flows.FirstOrDefault(q => q.OpreationFlowID == uppoint.ID) == null||flows.Any(p => p.OpreationFlowID == uppoint.ID && p.FlowResult== (int)PublicEnum.OpreateFlowResult.reback))) ? false
                     ://如果当前人员不在当前节点的岗位，不可用
-                     f.PostID!=cpostid ? false
-                    : true;
+                    cpostid==null ? false : cpostid.Contains(f.PostID)?true:false;
 
 
                     //终止按钮
@@ -525,8 +527,7 @@ namespace ESafety.Account.Service
                     (flows.Any(q => q.OpreationFlowID == f.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.over)
                     && (nexpoint != null && flows.FirstOrDefault(q => q.OpreationFlowID == nexpoint.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.reback) == null)) ? false
                     ://如果当前人员不在节点的岗位，不可用
-                     f.PostID != cpostid ? false
-                    : true;
+                     cpostid == null ? false : cpostid.Contains(f.PostID) ? true : false;
 
                     uemodel.ReBackEnable =
                     //单据状态
@@ -542,8 +543,7 @@ namespace ESafety.Account.Service
                     ://如果存在完成，而下一级没有退回则不可用
                     (flows.Any(q => q.OpreationFlowID == f.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.over)
                     && (nexpoint != null && flows.FirstOrDefault(q => q.OpreationFlowID == nexpoint.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.reback) == null)) ? false
-                    : f.PostID!=cpostid  ? false
-                    : true;
+                    : cpostid == null ? false : cpostid.Contains(f.PostID) ? true : false;
 
                     //左连接线
                     uemodel.LeftLine =
@@ -579,10 +579,10 @@ namespace ESafety.Account.Service
             try
             {
                 //当前登录人的岗位
-                var cuserpost = _work.Repository<Basic_PostEmployees>().GetModel(q => q.EmployeeID == AppUser.EmployeeInfo.ID);
-                var cpostid = cuserpost == null ? Guid.Empty : cuserpost.PostID;
+                var cuserpost = _work.Repository<Basic_PostEmployees>().Queryable(q => q.EmployeeID == AppUser.EmployeeInfo.ID);
+                var cpostid =cuserpost.Select(s=>s.PostID);
                 //获取当前人能做的所有作业
-                var cflows = _work.Repository<Basic_OpreationFlow>().Queryable(p => p.PostID == cpostid);
+                var cflows = _work.Repository<Basic_OpreationFlow>().Queryable(p =>cpostid.Contains(p.PostID));
                 var opids = cflows.Select(s => s.OpreationID).Distinct();
 
                 //获取当前人做的所有作业流程
@@ -604,11 +604,13 @@ namespace ESafety.Account.Service
                 //作业申请负责人
                 var emps = _work.Repository<Basic_Employee>().Queryable(q => bills.Select(s => s.PrincipalEmployeeID).Contains(q.ID));
 
+                var billflowss = rpsBillFlow.Queryable();
+
                 var re = from bill in bills.ToList()
                          //let opreation = opretions.FirstOrDefault(q => q.ID == bill.OpreationID)
                          let emp = emps.FirstOrDefault(q => q.ID == bill.PrincipalEmployeeID)
                          let oflow=billflows.OrderBy(o=>o.FlowTime).FirstOrDefault(p=>p.BillID==bill.OpreationID)
-                         let flow =flows==null?oflow==null?null:oflows.FirstOrDefault(p=>p.ID==oflow.OpreationFlowID):flows.FirstOrDefault(p => p.OpreationID == bill.OpreationID)
+                         let flow =flows==null?oflow==null?null:oflows.OrderByDescending(o=>o.PointIndex).FirstOrDefault(p=>p.ID==oflow.OpreationFlowID):flows.OrderBy(o=>o.PointIndex).FirstOrDefault(p => p.OpreationID == bill.OpreationID)
                          let allcount = opflows.Where(p => p.OpreationID == bill.OpreationID).Count()
                          select new OpreateBillByEmp
                          {

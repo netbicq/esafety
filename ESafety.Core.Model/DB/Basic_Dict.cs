@@ -39,5 +39,22 @@ namespace ESafety.Core.Model.DB
         /// </summary>
         [StringLength(500)]
         public string Memo { get; set; }
+        /// <summary>
+        /// LECD最小值
+        /// </summary>
+        public int LECD_DMaxValue { get; set; }
+        /// <summary>
+        ///  LECD最大值
+        /// </summary>
+        public int LECD_DMinValue { get; set; }
+
+        /// <summary>
+        ///  LSD最小值
+        /// </summary>
+        public int LSD_DMaxValue { get; set; }
+        /// <summary>
+        ///  LSD最大值
+        /// </summary>
+        public int LSD_DMinValue { get; set; }
     }
 }

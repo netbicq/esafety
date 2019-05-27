@@ -123,6 +123,10 @@ namespace ESafety.Account.Model.View
         /// 后果
         /// </summary>
         public string Consequence { get; set; }
+        /// <summary>
+        /// 位置
+        /// </summary>
+        public string Location { get; set; }
     }
 
     /// <summary>

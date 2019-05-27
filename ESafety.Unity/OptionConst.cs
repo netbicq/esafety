@@ -23,16 +23,20 @@ namespace ESafety.Unity
         /// <summary>
         /// 制度类型
         /// </summary>
-        public static Guid DocRegime { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386038b"); } }
+        public static Guid DocRegime { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386037b"); } }
         /// <summary>
         /// 预案类型
         /// </summary>
-        public static Guid DocSlution { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386039b"); } }
+        public static Guid DocSlution { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386038b"); } }
 
         /// <summary>
         /// 资质类型
         /// </summary>
         public static Guid DocLicense { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386010b"); } }
+        /// <summary>
+        /// 隐患等级
+        /// </summary>
+        public static Guid TroubleLevel { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386030b"); } }
         /// <summary>
         /// 风险等级
         /// </summary>
@@ -54,10 +58,25 @@ namespace ESafety.Unity
         /// </summary>
         public static Guid Eval_YXFW { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386036b"); } }
         /// <summary>
-        /// 事故可能性
+        ///LECD_L
         /// </summary>
-        public static Guid Eval_SGKLX { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386037b"); } }
-
+        public static Guid Eval_LECD_L { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386039b"); } }
+        /// <summary>
+        ///LECD_E
+        /// </summary>
+        public static Guid Eval_LECD_E { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386040b"); } }
+        /// <summary>
+        ///LECD_C
+        /// </summary>
+        public static Guid Eval_LECD_C { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386041b"); } }
+        /// <summary>
+        ///LSD_L
+        /// </summary>
+        public static Guid Eval_LSD_L { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386042b"); } }
+        /// <summary>
+        ///LSD_L
+        /// </summary>
+        public static Guid Eval_LSD_S { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386043b"); } }
 
         #endregion
 

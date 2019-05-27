@@ -83,7 +83,7 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 隐患等级
         /// </summary>
-        public int TroubleLevel { get; set; }
+        public Guid TroubleLevel { get; set; }
         /// <summary>
         /// 风险等级
         /// </summary>
@@ -93,6 +93,31 @@ namespace ESafety.Account.Model.PARA
         /// 管控责任人ID
         /// </summary>
         public Guid PrincipalID { get; set; }
+
+        /// <summary>
+        /// LECD计算方法的L
+        /// </summary>
+        public Guid LECD_L { get; set; }
+        /// <summary>
+        /// LECD计算方法的E
+        /// </summary>
+        public Guid LECD_E { get; set; }
+        /// <summary>
+        /// LECD计算方法的C
+        /// </summary>
+        public Guid LECD_C { get; set; }
+        /// <summary>
+        /// LSD计算方法的L
+        /// </summary>
+        public Guid LSD_L { get; set; }
+        /// <summary>
+        /// LSD计算方法的S
+        /// </summary>
+        public Guid LSD_S { get; set; }
+        /// <summary>
+        /// 通过计算得出的值，若为手动选择 则存0
+        /// </summary>
+        public int DValue { get; set; }
     }
 
 }

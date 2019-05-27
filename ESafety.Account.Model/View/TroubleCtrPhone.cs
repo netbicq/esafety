@@ -54,7 +54,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 隐患级别
         /// </summary>
-        public Unity.PublicEnum.EE_TroubleLevel TroubleLevel { get; set; }
+        public Guid TroubleLevel { get; set; }
         /// <summary>
         /// 隐患级别
         /// </summary>
@@ -123,5 +123,9 @@ namespace ESafety.Account.Model.View
         /// 隐患等级
         /// </summary>
         public string TroubleLevel { get; set; }
+        /// <summary>
+        /// 风险点
+        /// </summary>
+        public string DangerPoint { get; set; }
     }
 }

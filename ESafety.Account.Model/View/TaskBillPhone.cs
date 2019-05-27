@@ -55,6 +55,11 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public PublicEnum.EE_InspectTaskType TaskType { set; get; }
 
+        /// <summary>
+        /// 危害因素
+        /// </summary>
+        public IEnumerable<Dict> WHYSDicts { get; set; }
+
     }
 
     public class TaskSubjectView
@@ -161,6 +166,26 @@ namespace ESafety.Account.Model.View
         /// 管控负责人
         /// </summary>
         public string CtrPrincipal { get; set; }
+        /// <summary>
+        /// LECD计算方法的L
+        /// </summary>
+        public string LECD_L { get; set; }
+        /// <summary>
+        /// LECD计算方法的E
+        /// </summary>
+        public string LECD_E { get; set; }
+        /// <summary>
+        /// LECD计算方法的C
+        /// </summary>
+        public string LECD_C { get; set; }
+        /// <summary>
+        /// LSD计算方法的L
+        /// </summary>
+        public string LSD_L { get; set; }
+        /// <summary>
+        /// LSD计算方法的S
+        /// </summary>
+        public string LSD_S { get; set; }
     }
 
     /// <summary>
@@ -187,7 +212,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 风险等级
         /// </summary>
-        public IEnumerable<Dict> DangerLevels { get; set; }
+        public IEnumerable<DangerLevelDict> DangerLevels { get; set; }
         /// <summary>
         /// 评测方法
         /// </summary>
@@ -195,7 +220,31 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 隐患等级
         /// </summary>
-        public IEnumerable<EnumItem> TroubleLevels { get; set; }
+        public IEnumerable<Dict> TroubleLevels { get; set; }
+
+        /// <summary>
+        /// 用于LECD方法计算的选项，L
+        /// </summary>
+        public IEnumerable<Eval_Dict> LECD_Ls { get; set; }
+
+        /// <summary>
+        /// 用于LECD方法计算的选项，E
+        /// </summary>
+        public IEnumerable<Eval_Dict> LECD_Es { get; set; }
+        /// <summary>
+        /// 用于LECD方法计算的选项，C
+        /// </summary>
+        public IEnumerable<Eval_Dict> LECD_Cs { get; set; }
+
+        /// <summary>
+        /// 用于LSD方法计算的选项，L
+        /// </summary>
+        public IEnumerable<Eval_Dict> LSD_Ls { get; set; }
+        /// <summary>
+        /// 用于LSD方法计算的选项，S
+        /// </summary>
+        public IEnumerable<Eval_Dict> LSD_Ss { get; set; }
+
         /// <summary>
         /// 任务单据
         /// </summary>
@@ -275,15 +324,67 @@ namespace ESafety.Account.Model.View
         /// </summary>
         public string DictName { get; set; }
         /// <summary>
-        /// 最小值
+        ///描述
         /// </summary>
-        public int MinValue { get; set; }
-        /// <summary>
-        /// 最大值
-        /// </summary>
-        public int MaxValue { get; set; }
+        public string Memo { get; set; }
     }
+    /// <summary>
+    /// 风险等级词典
+    /// </summary>
+    public class DangerLevelDict
+    {
+        /// <summary>
+        /// 主键
+        /// </summary>
+        public Guid KeyID { get; set; }
+        /// <summary>
+        /// 词典名称
+        /// </summary>
+        public string DictName { get; set; }
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string Memo { get; set; }
+        /// <summary>
+        /// LECD法 最大值
+        /// </summary>
+        public int LECD_DMaxValue { get; set; }
+        /// <summary>
+        /// LECD法 最小值
+        /// </summary>
+        public int LECD_DMinValue { get; set; }
+        /// <summary>
+        /// LECD法 最大值
+        /// </summary>
+        public int LSD_DMaxValue { get; set; }
+        /// <summary>
+        /// LECD法 最小值
+        /// </summary>
+        public int LSD_DMinValue { get; set; }
+    }
+    /// <summary>
+    /// 用于风险等级计算的
+    /// </summary>
+    public class  Eval_Dict
+    {
+        /// <summary>
+        /// 主键
+        /// </summary>
+        public Guid KeyID { get; set; }
+        /// <summary>
+        /// 词典名称
+        /// </summary>
+        public string DictName { get; set; }
 
+        /// <summary>
+        /// 参与计算的值
+        /// </summary>
+        public double Value { get; set; }
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string Memo { get; set; }
+    }
 
     public class OpreateBillByEmp
     {

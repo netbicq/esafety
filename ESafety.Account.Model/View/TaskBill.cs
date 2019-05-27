@@ -71,7 +71,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 任务结果值
         /// </summary>
-        public int TaskResultValue { get; set; }
+        ///public int TaskResultValue { get; set; }
 
 
     }
@@ -176,7 +176,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 隐患等级
         /// </summary>
-        public int TroubleLevel { get; set; }
+        public Guid TroubleLevel { get; set; }
         /// <summary>
         /// 隐患等级名
         /// </summary>

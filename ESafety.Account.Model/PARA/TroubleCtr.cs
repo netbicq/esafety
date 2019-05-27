@@ -33,7 +33,7 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 隐患级别
         /// </summary>
-        public int TroubleLevel { get; set; }
+        public Guid TroubleLevel { get; set; }
     }
     /// <summary>
     /// 调整风险等级
@@ -67,7 +67,7 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 隐患等级
         /// </summary>
-        public int TroubleLevel { get; set; }
+        public Guid TroubleLevel { get; set; }
         /// <summary>
         /// 关键字(发现人、负责人、负责部门、编号所包含的值)
         /// </summary>

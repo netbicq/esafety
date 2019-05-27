@@ -61,6 +61,10 @@ namespace ESafety.Account.Model.PARA
         /// 后果
         /// </summary>
         public string Consequence { get; set; }
+        /// <summary>
+        /// 位置
+        /// </summary>
+        public string Location { get; set; }
     }
     /// <summary>
     /// 修改风险点

@@ -67,6 +67,7 @@
     <Compile Include="View\DangerManage.cs" />
     <Compile Include="View\DangerPoint.cs" />
     <Compile Include="View\DangerSet.cs" />
+    <Compile Include="View\Dashboard.cs" />
     <Compile Include="View\DocCertificate.cs" />
     <Compile Include="View\DocInstitution.cs" />
     <Compile Include="View\DocMeeting.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="View\OpreateBill.cs" />
     <Compile Include="View\OpreationFlow.cs" />
     <Compile Include="View\PostManage.cs" />
+    <Compile Include="View\Report.cs" />
     <Compile Include="View\SafetyStandard.cs" />
     <Compile Include="View\TaskBill.cs" />
     <Compile Include="View\TaskBillPhone.cs" />

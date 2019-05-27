@@ -267,6 +267,18 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到所需修改的风险点!");
                 }
+                if (pointEdit.WXYSDictIDs.Count() == 0)
+                {
+                    throw new Exception("请选择危险因素!");
+                }
+                if (pointEdit.OrgID == Guid.Empty)
+                {
+                    throw new Exception("请选责任部门!");
+                }
+                if (pointEdit.Principal == Guid.Empty)
+                {
+                    throw new Exception("请选责任人!");
+                }
                 var check = rpsdp.Any(p => p.Name == pointEdit.Name && p.ID != pointEdit.ID);
                 if (check)
                 {
@@ -543,10 +555,10 @@ namespace ESafety.Account.Service
                 (srvTree as TreeService).AppUser = AppUser;
                 var orgIDs = srvTree.GetChildrenIds<Core.Model.DB.Basic_Org>(user.OrgID);
                 var dangerPoints = rpsdp.Queryable(p => orgIDs.Contains(p.OrgID));
-                var dlvs = dangerPoints.Select(s => s.DangerLevel).Distinct();
-                var dicts = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => dlvs.Contains(p.ID));
+                var dicts = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p=>p.ParentID==OptionConst.DangerLevel);
                 var re = from lv in dicts
                          let count = dangerPoints.Count(p => p.DangerLevel == lv.ID)
+                         orderby lv.MinValue descending
                          select new DangerLevel
                          {
                              LevelID = lv.ID,
@@ -572,23 +584,22 @@ namespace ESafety.Account.Service
                 var user = AppUser.EmployeeInfo;
                 (srvTree as TreeService).AppUser = AppUser;
                 var orgIDs = srvTree.GetChildrenIds<Core.Model.DB.Basic_Org>(user.OrgID);
-                var dangerPoints = rpsdp.Queryable(p => orgIDs.Contains(p.OrgID));
-                var dlvs = dangerPoints.Select(s => s.DangerLevel).Distinct();
-                var dicts = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => dlvs.Contains(p.ID));
-
+                var dangerPoints = rpsdp.Queryable(p => orgIDs.Contains(p.OrgID)&&p.DangerLevel==query.Query);
+                
+                var dicts = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => p.ParentID == OptionConst.DangerLevel);
                 var empids = dangerPoints.Select(s => s.Principal).Distinct();
                 var emps = work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p => empids.Contains(p.ID));
 
 
                 var retemp = from dp in dangerPoints
-                             let lv = dicts.FirstOrDefault(p => p.ID == dp.ID)
+                             let lv = dicts.FirstOrDefault(p => p.ID == dp.DangerLevel)
                              let emp = emps.FirstOrDefault(p => p.ID == dp.Principal)
-                             orderby lv.DictName descending
+                             orderby lv.MinValue descending
                              select new APPDangerPointView
                              {
-                                 DangerLevel = lv.DictName,
-                                 DangerPoint = dp.Name,
-                                 Principal = emp.CNName
+                                 DangerLevel ="风险等级:"+lv.DictName,
+                                 DangerPoint ="风险点:"+dp.Name,
+                                 Principal = "责任人:"+emp.CNName
                              };
                 var re = new Pager<APPDangerPointView>().GetCurrentPage(retemp, query.PageSize, query.PageIndex);
                 return new ActionResult<Pager<APPDangerPointView>>(re);

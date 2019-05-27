@@ -17,7 +17,7 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public Guid SubjectID { get; set; }
         //风险点ID
-        public Guid DangerID { get; set; }
+        public IEnumerable<Guid> DangerID { get; set; }
     }
 
     public class DangerRelationQuery
