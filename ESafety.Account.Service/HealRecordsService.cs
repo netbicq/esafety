@@ -25,7 +25,9 @@ namespace ESafety.Account.Service
         private IRepository<Core.Model.DB.Basic_Employee> _rpsemp = null;
         private IRepository<Heal_Records> _rpshr = null;
         private IAttachFile srvFile = null;
-        public HealRecordsService(IUnitwork work,IAttachFile file)
+
+        private IUserDefined srvUserDefined = null;
+        public HealRecordsService(IUnitwork work,IAttachFile file,IUserDefined userDefined)
         {
             _work = work;
             Unitwork = work;
@@ -33,6 +35,7 @@ namespace ESafety.Account.Service
             _rpsemp = work.Repository<Core.Model.DB.Basic_Employee>();
             _rpshr = work.Repository<Heal_Records>();
             srvFile = file;
+            srvUserDefined = userDefined;
 
         }
         /// <summary>
@@ -54,6 +57,18 @@ namespace ESafety.Account.Service
                     throw new Exception("该体检信息已存在！");
                 }
                 var dbhr = recordsNew.MAPTO<Heal_Records>();
+
+                //自定义项
+                var definedvalue = new UserDefinedBusinessValue
+                {
+                    BusinessID = dbhr.ID,
+                    Values = recordsNew.UserDefineds
+                };
+                var defined = srvUserDefined.SaveBuisnessValue(definedvalue);
+                if (defined.state != 200)
+                {
+                    throw new Exception(defined.msg);
+                }
 
                 //电子文档
                 var files = new AttachFileSave
@@ -100,7 +115,8 @@ namespace ESafety.Account.Service
                 _rpshr.Delete(dbhr);
                 //删除电子文档
                 srvFile.DelFileByBusinessId(id);
-
+                //删除自定义项
+                srvUserDefined.DeleteBusinessValue(id);
                 _work.Commit();
                 return new ActionResult<bool>(true);
             }
@@ -129,6 +145,20 @@ namespace ESafety.Account.Service
                     throw new Exception("该人员的体检信息已存在！");
                 }
                 dbhr = recordsEdit.CopyTo<Heal_Records>(dbhr);
+
+                //删除自定义项
+                srvUserDefined.DeleteBusinessValue(dbhr.ID);
+                //自定义项
+                var definedvalue = new UserDefinedBusinessValue
+                {
+                    BusinessID = dbhr.ID,
+                    Values = recordsEdit.UserDefineds
+                };
+                var defined = srvUserDefined.SaveBuisnessValue(definedvalue);
+                if (defined.state != 200)
+                {
+                    throw new Exception(defined.msg);
+                }
                 //电子文档 
                 srvFile.DelFileByBusinessId(dbhr.ID);
                 var files = new AttachFileSave

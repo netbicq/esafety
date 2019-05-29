@@ -229,6 +229,7 @@
     <Compile Include="Controllers\OpreationFlowController.cs" />
     <Compile Include="Controllers\OrgEmployeeController.cs" />
     <Compile Include="Controllers\PostManageController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SafetyStandardController.cs" />
     <Compile Include="Controllers\TaskBillController.cs" />
     <Compile Include="Controllers\TroubleCtrController.cs" />

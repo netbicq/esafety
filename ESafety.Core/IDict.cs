@@ -83,6 +83,10 @@ namespace ESafety.Core
         /// </summary>
         ActionResult<IEnumerable<Basic_Dict>> GetDangerLevel();
         /// <summary>
+        /// 隐患等级
+        /// </summary>
+        ActionResult<IEnumerable<Basic_Dict>> GetTroubleLevel();
+        /// <summary>
         /// 危害因素
         /// </summary>
         ActionResult<IEnumerable<Basic_Dict>> GetEval_WHYS();

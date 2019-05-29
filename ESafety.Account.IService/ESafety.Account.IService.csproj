@@ -56,6 +56,7 @@
     <Compile Include="IOpreateBill.cs" />
     <Compile Include="IOpreationFlowService.cs" />
     <Compile Include="IPostManageService.cs" />
+    <Compile Include="IReport.cs" />
     <Compile Include="ISafetyStandardServcie.cs" />
     <Compile Include="IDocTrainManageService.cs" />
     <Compile Include="ITaskBillService.cs" />

@@ -19,5 +19,9 @@ namespace ESafety.Core.Model.DB.Account
         /// 任务单据明细id
         /// </summary>
         public Guid BillSubjectsID { get; set; }
+        /// <summary>
+        /// 任务检查主体
+        /// </summary>
+        public Guid TaskSubjectsID { get; set; }
     }
 }

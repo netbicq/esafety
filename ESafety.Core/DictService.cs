@@ -467,5 +467,21 @@ namespace ESafety.Core
                 return new ActionResult<IEnumerable<Basic_Dict>>(ex);
             }
         }
+        /// <summary>
+        /// 获取隐患等级
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult<IEnumerable<Basic_Dict>> GetTroubleLevel()
+        {
+            try
+            {
+                var re = getdictsbyParentID(OptionConst.TroubleLevel);
+                return new ActionResult<IEnumerable<Basic_Dict>>(re);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,11 @@ namespace ESafety.Account.Model.View
         /// 风险点位置
         /// </summary>
         public string DPLocation { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public string DLevel { get; set; }
+
     }
 
     public class TroubleCtrl
@@ -56,6 +62,10 @@ namespace ESafety.Account.Model.View
     public class DTroubleCtrl
     {
 
+        /// <summary>
+        /// 企业风险等级
+        /// </summary>
+        public string PDLevel{ get; set; }
         /// <summary>
         /// 未整改计数
         /// </summary>

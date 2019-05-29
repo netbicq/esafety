@@ -417,7 +417,10 @@ namespace ESafety.Unity
             /// 作业
             /// </summary>
             [Description("作业")]
-            Opreate = 3
+            Opreate = 3,
+ 
+
+
         }
 
 
@@ -440,7 +443,27 @@ namespace ESafety.Unity
             /// 职员
             /// </summary>
             [Description("职员")]
-            Employee = 3
+            Employee = 3,
+            /// <summary>
+            /// 风险公示
+            /// </summary>      
+            [Description("风险公示")]
+            Risk = 4,
+            /// <summary>
+            /// 会议
+            /// </summary>
+            [Description("安全会议")]
+            Meeting = 5,
+            /// <summary>
+            /// 健康档案
+            /// </summary>
+            [Description("健康档案")]
+            HealDocment = 6,
+            /// <summary>
+            /// 体检管理
+            /// </summary>
+            [Description("体检管理")]
+            HealRecord = 7,
 
         }
 

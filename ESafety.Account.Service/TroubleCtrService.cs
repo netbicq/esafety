@@ -108,29 +108,30 @@ namespace ESafety.Account.Service
                 var dbf = flowNew.MAPTO<Bll_TroubleControlFlows>();
                 dbf.FlowDate = DateTime.Now;
                 dbf.FlowEmployeeID = AppUser.EmployeeInfo.ID;
+
                 if (dbf.FlowType == (int)PublicEnum.EE_TroubleFlowState.TroubleApply && tc.State != (int)PublicEnum.EE_TroubleState.pending)
                 {
                     throw new Exception("当前状态不允许申请验收!");
-                }
-                else if (tc.ExecutorID != AppUser.EmployeeInfo.ID)
-                {
-                    throw new Exception("您没有权限申请验收！");
                 }
                 if (dbf.FlowType == (int)PublicEnum.EE_TroubleFlowState.TroubleR && tc.State != (int)PublicEnum.EE_TroubleState.applying)
                 {
                     throw new Exception("当前状态不允许验收!");
                 }
-                else if (tc.AcceptorID != AppUser.EmployeeInfo.ID)
-                {
-                    throw new Exception("您没有权限验收！");
-                }
 
                 if (dbf.FlowType == (int)PublicEnum.EE_TroubleFlowState.TroubleApply)
                 {
+                    if (tc.ExecutorID != AppUser.EmployeeInfo.ID)
+                    {
+                        throw new Exception("您没有权限申请验收！");
+                    }
                     tc.State = (int)PublicEnum.EE_TroubleState.applying;
                 }
                 else
                 {
+                    if (tc.AcceptorID != AppUser.EmployeeInfo.ID)
+                    {
+                        throw new Exception("您没有权限验收！");
+                    }
                     if (dbf.FlowResult == 1)
                     {
                         tc.State = (int)PublicEnum.EE_TroubleState.over;
@@ -432,7 +433,7 @@ namespace ESafety.Account.Service
                            let bill = bills.FirstOrDefault(p => p.ID == tc.BillID)
                            let bemp = emps.FirstOrDefault(p => p.ID == bill.EmployeeID)
                            let flow = tcflow.OrderByDescending(t => t.FlowDate).FirstOrDefault(p => p.ControlID == tc.ID)
-                           let org = orgs.FirstOrDefault(p => p.ID == aemp.OrgID)
+                           let org =aemp==null?null:orgs.FirstOrDefault(p => p.ID == aemp.OrgID)
                            let lv = dlvs.FirstOrDefault(p => p.ID == tc.DangerLevel)
                            let tlv=tlvs.FirstOrDefault(p=>p.ID ==tc.TroubleLevel)
                            where para.Query.IsHistory ? tc.State == (int)PublicEnum.EE_TroubleState.history : tc.State != (int)PublicEnum.EE_TroubleState.history
@@ -445,7 +446,7 @@ namespace ESafety.Account.Service
                                BillEmpName = bemp == null ? "" : bemp.CNName,
                                ControlDescription = tc.ControlDescription,
                                CreateDate = tc.CreateDate,
-                               OrgName = org.OrgName,
+                               OrgName = org==null?"":org.OrgName,
                                TroubleLevelDesc = tlv.DictName,
                                PrincipalName = pemp.CNName,
                                FlowTime = flow == null ? null : (DateTime?)flow.FlowDate,
@@ -926,7 +927,7 @@ namespace ESafety.Account.Service
                              let bemp = emps.FirstOrDefault(p => p.ID == bill.EmployeeID)
                              let pemp = emps.FirstOrDefault(p => p.ID == c.PrincipalID)
                              let lv = dicts.FirstOrDefault(p=>p.ID==c.DangerLevel)
-                             let tlv=tlvs.FirstOrDefault(p=>p.ID==c.DangerLevel)
+                             let tlv=tlvs.FirstOrDefault(p=>p.ID==c.TroubleLevel)
                              let dp=dangerPoints.FirstOrDefault(p=>p.ID==bill.DangerPointID)
                              orderby c.TroubleLevel descending
                              select new TroubleCtrsPage

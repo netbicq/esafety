@@ -122,6 +122,18 @@ namespace ESafety.Account.Service
 
                     Eval_YXFW = dbtbs.Eval_YXFW,
                     YXFWDic = dbtbs.Eval_YXFW == Guid.Empty ? string.Empty : dict.GetModel(dbtbs.Eval_YXFW).DictName,
+
+
+                    LECD_L = dbtbs.LECD_L == Guid.Empty ? string.Empty : dict.GetModel(dbtbs.LECD_L).DictName,
+
+                    LECD_E = dbtbs.LECD_E == Guid.Empty ? string.Empty : dict.GetModel(dbtbs.LECD_E).DictName,
+
+                    LECD_C = dbtbs.LECD_C == Guid.Empty ? string.Empty : dict.GetModel(dbtbs.LECD_C).DictName,
+
+                    LSD_L = dbtbs.LSD_L == Guid.Empty ? string.Empty : dict.GetModel(dbtbs.LSD_L).DictName,
+                    LSD_S = dbtbs.LSD_S == Guid.Empty ? string.Empty : dict.GetModel(dbtbs.LSD_S).DictName,
+
+                    CtrPrincipal = dbtbs.CtrPrincipal == Guid.Empty ? string.Empty : _work.Repository<Basic_Employee>().GetModel(dbtbs.CtrPrincipal).CNName,
                     IsControl = dbtbs.IsControl,
                     DangerLevel = lv.DictName
 
@@ -268,6 +280,18 @@ namespace ESafety.Account.Service
 
                               Eval_YXFW = tbd.Eval_YXFW,
                               YXFWDic = tbd.Eval_YXFW == Guid.Empty ? string.Empty : dict.GetModel(tbd.Eval_YXFW).DictName,
+                              
+                              LECD_L = tbd.LECD_L == Guid.Empty ? string.Empty : dict.GetModel(tbd.LECD_L).DictName,
+
+                              LECD_E = tbd.LECD_E == Guid.Empty ? string.Empty : dict.GetModel(tbd.LECD_E).DictName,
+
+                              LECD_C = tbd.LECD_C == Guid.Empty ? string.Empty : dict.GetModel(tbd.LECD_C).DictName,
+
+                              LSD_L = tbd.LSD_L == Guid.Empty ? string.Empty : dict.GetModel(tbd.LSD_L).DictName,
+                              LSD_S = tbd.LSD_S == Guid.Empty ? string.Empty : dict.GetModel(tbd.LSD_S).DictName,
+
+                              CtrPrincipal = tbd.CtrPrincipal == Guid.Empty ? string.Empty : _work.Repository<Basic_Employee>().GetModel(tbd.CtrPrincipal).CNName,
+
                               SubjectID = tbd.SubjectID,
                               SubjectType = tbd.SubjectType,
                               IsControl = tbd.IsControl,
@@ -405,7 +429,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("参数错误!");
                 }
-                var check = _rpstb.Any(p => p.TaskID == bill.TaskID && p.State == (int)PublicEnum.BillFlowState.wait);
+                var check = _rpstb.Any(p => p.TaskID == bill.TaskID && p.State == (int)PublicEnum.BillFlowState.wait&&p.EmployeeID==AppUser.EmployeeInfo.ID);
                 if (check)
                 {
                     throw new Exception("该待检查任务单据已存在!");
@@ -481,7 +505,7 @@ namespace ESafety.Account.Service
                          let sb = csubs.FirstOrDefault(p => p.SubjectID == sub.SubjectID)
                          let dg = danger.FirstOrDefault(p => p.ID == sub.DangerID)
                          let lv = lvs.FirstOrDefault(p => p.ID == dg.DangerLevel)
-                         let isCtr = _work.Repository<Bll_TroubleControlDetails>().Any(p => ctrids.Contains(p.TroubleControlID) && p.BillSubjectsID == sub.ID)
+                         let isCtr = _work.Repository<Bll_TroubleControlDetails>().Any(p => ctrids.Contains(p.TroubleControlID) && p.TaskSubjectsID == sub.ID)
                          select new TaskSubjectView
                          {
                              KeyID = sub.ID,
@@ -549,6 +573,10 @@ namespace ESafety.Account.Service
                 }
                 if (dbsub.TaskResult == (int)PublicEnum.EE_TaskResultType.abnormal)
                 {
+                    var tb = _rpstbs.Queryable(p=>p.DangerID == bill.DangerID && p.SubjectID == bill.SubjectID).OrderByDescending(o=>o.TaskTime).FirstOrDefault();
+
+                   
+
                     if (bill.Eval_WHYS == Guid.Empty)
                     {
                         throw new Exception("请选择危害因素！");
@@ -643,20 +671,32 @@ namespace ESafety.Account.Service
                 var subids = resubs.Select(s => s.SubjectID);
                 var dangerids = resubs.Select(s => s.DangerID);
                 var check = _work.Repository<Bll_InspectTaskSubject>().Any(p => p.InspectTaskID == dbbill.TaskID && !subids.Contains(p.SubjectID) && !dangerids.Contains(p.DangerID));
+
+             
                 if (check)
                 {
                     throw new Exception("存在未检查的项，无法提交完成单据!");
                 }
+
                 var bills = _rpstbs.Queryable(p => p.BillID == dbbill.ID).ToList();
                 foreach (var bill in bills)
                 {
                     //新建管控项
                     if (bill.TaskResult == (int)PublicEnum.EE_TaskResultType.abnormal)
                     {
-
+                        var task = _work.Repository<Bll_InspectTaskSubject>().GetModel(p => p.InspectTaskID == dbbill.TaskID&&p.DangerID==bill.DangerID&&p.SubjectID==bill.SubjectID);
                         //检查时为异常状态时直接新建管控项
+                        //所有未归档的管控项
                         var rpsCtr = _work.Repository<Bll_TroubleControl>();
+                        var ctrs= rpsCtr.Queryable(p => p.State != (int)PublicEnum.EE_TroubleState.history);
+                        var ctrids = ctrs.Select(s => s.ID);
                         var rpsCtrDetail = _work.Repository<Bll_TroubleControlDetails>();
+                        var check1= rpsCtrDetail.Any(p => ctrids.Contains(p.TroubleControlID) && p.BillSubjectsID == task.ID);
+                        if (check1)
+                        {
+                            throw new Exception("当前项已处于管控在中，无法再提交异常状态!");
+                        }
+
                         var ctr = new Bll_TroubleControl
                         {
                             ID = Guid.NewGuid(),
@@ -675,7 +715,8 @@ namespace ESafety.Account.Service
                         var ctrDetail = new Bll_TroubleControlDetails
                         {
                             ID = Guid.NewGuid(),
-                            BillSubjectsID = bill.ID,
+                            TaskSubjectsID = task.ID,
+                            BillSubjectsID =bill.ID,
                             TroubleControlID = ctr.ID
                         };
                         rpsCtr.Add(ctr);
@@ -992,6 +1033,9 @@ namespace ESafety.Account.Service
 
                 var overtimetaskcount = srvTask.GetTaskListByTimeOut().data.Count();
 
+                //所有未归档的管控项
+                var ctrs = _work.Repository<Bll_TroubleControl>().Queryable(p => p.State != (int)PublicEnum.EE_TroubleState.history);
+                var ctrids = ctrs.Select(s => s.ID);
 
                 var re = from tb in tbs
                          let task = tasks.FirstOrDefault(q => q.ID == tb.TaskID)
@@ -1027,6 +1071,7 @@ namespace ESafety.Account.Service
                                          let dg = _work.Repository<Basic_Danger>().GetModel(sub.DangerID)
                                          let lv = rpsDict.GetModel(dg.DangerLevel)
                                          let sb = sbs.FirstOrDefault(q => q.SubjectID == sub.SubjectID)
+                                         let isCtr = _work.Repository<Bll_TroubleControlDetails>().Any(p => ctrids.Contains(p.TroubleControlID) && p.TaskSubjectsID== sub.ID)
                                          select new TaskSubjectView
                                          {
                                              KeyID = sub.ID,
@@ -1039,8 +1084,9 @@ namespace ESafety.Account.Service
                                              Principal = sb.SubjectPrincipal,
                                              PrincipalTel = sb.SubjectPrincipalTel,
                                              DangerName = dg.Name,
-                                             DangerID = dg.ID
-
+                                             DangerID = dg.ID,
+                                             IsControl=isCtr
+                                             
                                          }
                          };
 

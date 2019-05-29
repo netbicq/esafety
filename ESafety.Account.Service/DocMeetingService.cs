@@ -24,12 +24,15 @@ namespace ESafety.Account.Service
         private IRepository<Doc_Meeting> _rpsdm = null;
         private IAttachFile srvFile = null;
 
-        public DocMeetingService(IUnitwork work, IAttachFile file)
+        private IUserDefined srvUserDefined = null;
+
+        public DocMeetingService(IUnitwork work, IAttachFile file,IUserDefined userDefined)
         {
             _work = work;
             Unitwork = work;
             _rpsdm = work.Repository<Doc_Meeting>();
             srvFile = file;
+            srvUserDefined = userDefined;
 
         }
         /// <summary>
@@ -51,6 +54,18 @@ namespace ESafety.Account.Service
                     throw new Exception("该会议主题已存在！");
                 }
                 var dbdm = meetingNew.MAPTO<Doc_Meeting>();
+
+                //自定义项
+                var definedvalue = new UserDefinedBusinessValue
+                {
+                    BusinessID = dbdm.ID,
+                    Values = meetingNew.UserDefineds
+                };
+                var defined = srvUserDefined.SaveBuisnessValue(definedvalue);
+                if (defined.state != 200)
+                {
+                    throw new Exception(defined.msg);
+                }
 
                 //电子文档
                 var files = new AttachFileSave
@@ -97,7 +112,7 @@ namespace ESafety.Account.Service
                 _rpsdm.Delete(dbdm);
                 //删除电子文档
                 srvFile.DelFileByBusinessId(id);
-
+                srvUserDefined.DeleteBusinessValue(id);
                 _work.Commit();
                 return new ActionResult<bool>(true);
             }
@@ -126,6 +141,20 @@ namespace ESafety.Account.Service
                     throw new Exception("该会议主题已存在！");
                 }
                 dbdm = meetingEdit.CopyTo<Doc_Meeting>(dbdm);
+
+                //自定义项
+                srvUserDefined.DeleteBusinessValue(dbdm.ID);
+                var definedvalue = new UserDefinedBusinessValue
+                {
+                    BusinessID = dbdm.ID,
+                    Values = meetingEdit.UserDefineds
+                };
+                var defined = srvUserDefined.SaveBuisnessValue(definedvalue);
+                if (defined.state != 200)
+                {
+                    throw new Exception(defined.msg);
+                }
+
                 //电子文档 
                 srvFile.DelFileByBusinessId(dbdm.ID);
                 var files = new AttachFileSave

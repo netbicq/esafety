@@ -185,5 +185,29 @@ namespace ESafety.Account.Model.View
         /// 是否隐患管控
         /// </summary>
         public bool IsControl { get; set; }
+        /// <summary>
+        /// 管控负责人
+        /// </summary>
+        public string CtrPrincipal { get; set; }
+        /// <summary>
+        /// LECD计算方法的L
+        /// </summary>
+        public string LECD_L { get; set; }
+        /// <summary>
+        /// LECD计算方法的E
+        /// </summary>
+        public string LECD_E { get; set; }
+        /// <summary>
+        /// LECD计算方法的C
+        /// </summary>
+        public string LECD_C { get; set; }
+        /// <summary>
+        /// LSD计算方法的L
+        /// </summary>
+        public string LSD_L { get; set; }
+        /// <summary>
+        /// LSD计算方法的S
+        /// </summary>
+        public string LSD_S { get; set; }
     }
 }

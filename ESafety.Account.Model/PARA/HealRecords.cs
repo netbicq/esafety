@@ -29,6 +29,10 @@ namespace ESafety.Account.Model.PARA
         /// 电子文档
         /// </summary>
         public IEnumerable<AttachFileNew> AttachFiles { get; set; }
+        /// <summary>
+        /// 自定义类项
+        /// </summary>
+        public IEnumerable<UserDefinedValue> UserDefineds { get; set; }
     }
     public class HealRecordsEdit: HealRecordsNew
     {

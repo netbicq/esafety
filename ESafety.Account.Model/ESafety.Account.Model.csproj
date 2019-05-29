@@ -34,6 +34,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -57,6 +58,7 @@
     <Compile Include="PARA\OperateBill.cs" />
     <Compile Include="PARA\OpreationFlow.cs" />
     <Compile Include="PARA\PostManage.cs" />
+    <Compile Include="PARA\Report.cs" />
     <Compile Include="PARA\SafetyStandard.cs" />
     <Compile Include="PARA\DocTrainManage.cs" />
     <Compile Include="PARA\TaskBill.cs" />

@@ -267,5 +267,15 @@ namespace ESafety.Account.API.Controllers
         {
             return bll.GetEval_LSD_S();
         }
+        /// <summary>
+        /// 获取隐患等级
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getTroubleLevel")]
+        public ActionResult<IEnumerable<Basic_Dict>> GetTroubleLevel()
+        {
+            return bll.GetTroubleLevel();
+        }
     }
 }

@@ -131,11 +131,14 @@ namespace ESafety.Account.Service
             try
             {
                 var dps = rpsDP.Queryable();
+                var dicts = work.Repository<Basic_Dict>().Queryable(p=>p.ParentID==OptionConst.DangerLevel);
                 var re = from dp in dps
+                         let lv=dicts.FirstOrDefault(p=>p.ID==dp.DangerLevel)
                          select new DangerPointLocation
                          {
                              DPName = dp.Name,
-                             DPLocation = dp.Location
+                             DPLocation = dp.Location,
+                             DLevel=lv.DictName
                          };
                 return new ActionResult<IEnumerable<DangerPointLocation>>(re);
             }
