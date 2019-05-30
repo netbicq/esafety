@@ -16,7 +16,7 @@ namespace ESafety.Account.API.Controllers
     /// <summary>
     /// 岗位管理
     /// </summary>
-    [RoutePrefix("postmanage")]
+    [RoutePrefix("api/postmanage")]
     public class PostManageController : ESFAPI
     {
         private IPostManageService bll = null;
@@ -119,7 +119,7 @@ namespace ESafety.Account.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("getpost/{id:Guid}")]
-        public ActionResult<PostView> GetPost(Guid id)
+        public ActionResult<PostModel> GetPost(Guid id)
         {
             return bll.GetPost(id);
         }
@@ -129,7 +129,7 @@ namespace ESafety.Account.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("getposts")]
-        public ActionResult<IEnumerable<PostView>> GetPosts()
+        public ActionResult<IEnumerable<PostModel>> GetPosts()
         {
             return bll.GetPosts();
         }

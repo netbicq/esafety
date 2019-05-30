@@ -45,9 +45,11 @@ namespace ESafety.Core
                 {
                     throw new Exception("已经存在词典：" + dict.DictName);
                 }
-                if (dict.ParentID == OptionConst.DangerLevel)
+                if (dict.ParentID == OptionConst.DangerLevel || dict.ParentID == OptionConst.Eval_LECD_C
+                     || dict.ParentID == OptionConst.Eval_LECD_E || dict.ParentID == OptionConst.Eval_LECD_L
+                     || dict.ParentID == OptionConst.Eval_LSD_L || dict.ParentID == OptionConst.Eval_LSD_S)
                 {
-                    throw new Exception("系统内置固定项，无法新增!");
+                    throw new Exception("系统内置不允许修改!");
                 }
                 var newdict = dict.MAPTO<Basic_Dict>();
 
@@ -104,9 +106,11 @@ namespace ESafety.Core
                 {
                     throw new Exception("词典未找到");
                 }
-                if (dbdict.ParentID == OptionConst.DangerLevel)
+                if (dbdict.ParentID == OptionConst.DangerLevel || dbdict.ParentID == OptionConst.Eval_LECD_C
+                     || dbdict.ParentID == OptionConst.Eval_LECD_E || dbdict.ParentID == OptionConst.Eval_LECD_L
+                     || dbdict.ParentID == OptionConst.Eval_LSD_L || dbdict.ParentID == OptionConst.Eval_LSD_S)
                 {
-                    throw new Exception("系统内置不允许删除!");
+                    throw new Exception("系统内置不允许修改!");
                 }
                 rpsDict.Delete(dbdict);
                 _work.Commit();
@@ -166,7 +170,9 @@ namespace ESafety.Core
                 {
                     throw new Exception("词典未找到");
                 }
-                if (dbdict.ParentID == OptionConst.DangerLevel)
+                if (dbdict.ParentID == OptionConst.DangerLevel||dbdict.ParentID==OptionConst.Eval_LECD_C
+                    ||dbdict.ParentID==OptionConst.Eval_LECD_E||dbdict.ParentID==OptionConst.Eval_LECD_L
+                    ||dbdict.ParentID==OptionConst.Eval_LSD_L||dbdict.ParentID==OptionConst.Eval_LSD_S)
                 {
                     throw new Exception("系统内置不允许修改!");
                 }
@@ -230,7 +236,7 @@ namespace ESafety.Core
         {
             try
             {
-                var retemp = rpsDict.Queryable(q => q.ParentID == para.Query).OrderBy(o=>o.DictName).ToList();
+                var retemp = rpsDict.Queryable(q => q.ParentID == para.Query).OrderByDescending(o=>o.MinValue);
 
                 var re = new Pager<Basic_Dict>().GetCurrentPage(retemp, para.PageSize, para.PageIndex);
                 

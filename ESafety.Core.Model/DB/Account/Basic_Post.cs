@@ -23,12 +23,14 @@ namespace ESafety.Core.Model.DB.Account
         /// <summary>
         /// 负责人
         /// </summary>
-        [StringLength(50)]
-        public string Principal { get; set; }
+        public Guid Principal { get; set; }
         /// <summary>
-        /// 负责人电话
+        /// 组织架构ID
         /// </summary>
-        [StringLength(100)]
-        public string PrincipalTel { get; set; }
+        public Guid Org { get; set; }
+        /// <summary>
+        /// 主要任务
+        /// </summary>
+        public string MainTasks { get; set; }
     }
 }

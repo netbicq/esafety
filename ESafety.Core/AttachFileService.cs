@@ -64,6 +64,23 @@ namespace ESafety.Core
             }
 
         }
+        /// <summary>
+        /// 业务是否存在附件
+        /// </summary>
+        /// <param name="businessID"></param>
+        /// <returns></returns>
+        public ActionResult<bool> FileIsExist(Guid businessID)
+        {
+            try
+            {
+                var file = rpsFile.Any(r => r.BusinessID == businessID);
+                return new ActionResult<bool>(file);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
 
         /// <summary>
         /// 根据业务id 删除文件
@@ -99,10 +116,6 @@ namespace ESafety.Core
             }
 
         }
-
-
-
-
         /// <summary>
         /// 根据业务id获取电子文件集合
         /// </summary>

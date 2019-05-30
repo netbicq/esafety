@@ -43,5 +43,12 @@ namespace ESafety.Core
         /// <param name="guid"></param>
         /// <returns></returns>
         ActionResult<bool> DelFileByBusinessId(Guid guid);
+
+        /// <summary>
+        /// 业务是否存在附件
+        /// </summary>
+        /// <param name="businessID"></param>
+        /// <returns></returns>
+        ActionResult<bool> FileIsExist(Guid businessID);
     }
 }

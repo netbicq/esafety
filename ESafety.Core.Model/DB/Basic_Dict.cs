@@ -29,11 +29,11 @@ namespace ESafety.Core.Model.DB
         /// <summary>
         /// 最小值
         /// </summary>
-        public int MinValue { get; set; }
+        public double MinValue { get; set; }
         /// <summary>
         /// 最大值
         /// </summary>
-        public int MaxValue { get; set; }
+        public double MaxValue { get; set; }
         /// <summary>
         /// 备注
         /// </summary>

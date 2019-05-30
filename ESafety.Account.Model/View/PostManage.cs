@@ -33,7 +33,41 @@ namespace ESafety.Account.Model.View
         /// 负责人电话
         /// </summary>
         public string PrincipalTel { get; set; }
+
     }
+
+    public class PostModel
+    {
+        /// <summary>
+        /// 岗位ID
+        /// </summary>
+        public Guid ID { get; set; }
+        /// <summary>
+        ///编号
+        /// </summary>
+        public string Code { get; set; }
+        /// <summary>
+        /// 岗位名称
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// 负责人
+        /// </summary>
+        public Guid Principal { get; set; }
+        /// <summary>
+        /// 组织架构ID
+        /// </summary>
+        public Guid Org { get; set; }
+        /// <summary>
+        /// 主要任务
+        /// </summary>
+        public string MainTasks { get; set; }
+    }
+
+
+
+
+
 
     public class PostEmployeesView
     {

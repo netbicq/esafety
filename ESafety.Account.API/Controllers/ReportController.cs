@@ -51,5 +51,51 @@ namespace ESafety.Account.API.Controllers
         {
             return bll.GetDSReport(query);
         }
+
+        /// <summary>
+        /// 岗位报表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [Route("getPostReport")]
+        [HttpPost]
+        public ActionResult<Pager<PostReport>> GetPostReport(PagerQuery<string> query)
+        {
+            return bll.GetPostReport(query);
+        }
+        /// <summary>
+        ///企业岗位作业内容清单				
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [Route("getOpreateReport")]
+        [HttpPost]
+        public ActionResult<Pager<OpreateReport>> GetOpreateReport(PagerQuery<string> query)
+        {
+            return bll.GetOpreateReport(query);
+        }
+        /// <summary>
+        /// 隐患整改情况
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [Route("getCtrReport")]
+        [HttpPost]
+        public ActionResult<Pager<CtrReport>> GetCtrReport(PagerQuery<CtrReportQuery> query)
+        {
+            return bll.GetCtrReport(query);
+        }
+
+        /// <summary>
+        /// 设备设施风险分级控制清单
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [Route("getSubDReport")]
+        [HttpPost]
+        public ActionResult<Pager<SubDReport>> GetSubDReport(PagerQuery<SubDReportQuery> query)
+        {
+            return bll.GetSubDReport(query);
+        }
     }
 }

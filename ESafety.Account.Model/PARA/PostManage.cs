@@ -24,11 +24,15 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 负责人
         /// </summary>
-        public string Principal { get; set; }
+        public Guid Principal { get; set; }
         /// <summary>
-        /// 负责人电话
+        /// 组织架构ID
         /// </summary>
-        public string PrincipalTel { get; set; }
+        public Guid Org { get; set; }
+        /// <summary>
+        /// 主要任务
+        /// </summary>
+        public string MainTasks { get; set; }
         /// <summary>
         /// 自定义类项
         /// </summary>

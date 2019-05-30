@@ -45,19 +45,22 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<bool> AddPost(PostNew post)
         {
-
-           
             try
             {
                 if (post== null)
                 {
                     throw new Exception("参数有误");
                 }
+                if(post.Org==Guid.Empty||post.Principal==Guid.Empty)
+                {
+                    throw new Exception("请选择组织架构或负责人!");
+                }
                 var check = _rpspost.Any(p=>p.Name==post.Name);
                 if (check)
                 {
                     throw new Exception("该岗位已存在");
                 }
+
                 var dbpost = post.MAPTO<Basic_Post>();
                 //自定义项
                 var definedvalue = new UserDefinedBusinessValue
@@ -192,6 +195,10 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到所需修改的岗位");
                 }
+                if (post.Org == Guid.Empty || post.Principal == Guid.Empty)
+                {
+                    throw new Exception("请选择组织架构或负责人!");
+                }
                 var check = _rpspost.Any(p => p.Name == post.Name&&p.ID!=post.ID);
                 if (check)
                 {
@@ -293,34 +300,34 @@ namespace ESafety.Account.Service
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult<PostView> GetPost(Guid id)
+        public ActionResult<PostModel> GetPost(Guid id)
         {
             try
             {
                 var post = _rpspost.GetModel(id);
-                var re = post.MAPTO<PostView>();
-                return new ActionResult<PostView>(re);
+                var re = post.MAPTO<PostModel>();
+                return new ActionResult<PostModel>(re);
             }
             catch (Exception ex)
             {
-                return new ActionResult<PostView>(ex);
+                return new ActionResult<PostModel>(ex);
             }
         }
         /// <summary>
         /// 获取岗位列表
         /// </summary>
         /// <returns></returns>
-        public ActionResult<IEnumerable<PostView>> GetPosts()
+        public ActionResult<IEnumerable<PostModel>> GetPosts()
         {
             try
             {
                 var dbposts = _rpspost.Queryable();
-                var re = dbposts.MAPTO<PostView>();
-                return new ActionResult<IEnumerable<PostView>>(re);
+                var re = dbposts.MAPTO<PostModel>();
+                return new ActionResult<IEnumerable<PostModel>>(re);
             }
             catch (Exception ex)
             {
-                return new ActionResult<IEnumerable<PostView>>(ex);
+                return new ActionResult<IEnumerable<PostModel>>(ex);
             }
         }
 
@@ -333,18 +340,19 @@ namespace ESafety.Account.Service
         {
             
             var posts = _rpspost.Queryable(q => q.Name.Contains(para.Query.Name)||q.Code.Contains(para.Query.Code) || string.IsNullOrEmpty(para.Query.Name)||string.IsNullOrEmpty(para.Query.Code));
-
+            var empIds = posts.Select(s => s.Principal).Distinct();
+            var emps = _rpsemp.Queryable(p=>empIds.Contains(p.ID));
             var repost = from ac in posts
-                        orderby ac.Code descending
-                        select new PostView
-                        {
-                            Code=ac.Code,
-                            ID=ac.ID,
-                            Name=ac.Name,
-                            Principal=ac.Principal,
-                            PrincipalTel=ac.PrincipalTel
+                         let emp = emps.FirstOrDefault(p => p.ID == ac.Principal)
+                         orderby ac.Code descending
+                         select new PostView
+                         {
+                             Code = ac.Code,
+                             ID = ac.ID,
+                             Name = ac.Name,
+                             Principal = emp == null?"":emp.CNName,
+                             PrincipalTel=emp==null?"":emp.Tel
                         };
-
             var re = new Pager<PostView>().GetCurrentPage(repost, para.PageSize, para.PageIndex);
 
             return new ActionResult<Pager<PostView>>(re);

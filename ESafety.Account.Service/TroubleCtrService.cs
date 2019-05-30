@@ -343,7 +343,7 @@ namespace ESafety.Account.Service
                                  SubjectName = dev != null ? dev.Name : ppst != null ? ppst.Name : opr != null ? opr.Name : default(string),
                                  SubjectTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == s.SubjectType).Caption,
                                  TaskResultName = Command.GetItems(typeof(PublicEnum.EE_TaskResultType)).FirstOrDefault(q => q.Value == s.TaskResult).Caption,
-                                 TroubleLevelName = s.TroubleLevel== Guid.Empty ? "": dic.GetModel(s.TroubleLevel).DictName,
+                                 TroubleLevelName = s.TroubleLevel == Guid.Empty ? "" : dic.GetModel(s.TroubleLevel).DictName,
                                  SGJGDic = s.Eval_SGJG == Guid.Empty ? "" : dic.GetModel(s.Eval_SGJG).DictName,
                                  SGLXDic = s.Eval_SGLX == Guid.Empty ? "" : dic.GetModel(s.Eval_SGLX).DictName,
                                  WHYSDic = s.Eval_WHYS == Guid.Empty ? "" : dic.GetModel(s.Eval_WHYS).DictName,
@@ -405,11 +405,15 @@ namespace ESafety.Account.Service
             {
                 //管控项
                 var user = AppUser.EmployeeInfo;
-                var ctrs = _rpstc.Queryable(p => (p.PrincipalID == user.ID || p.AcceptorID == user.ID || p.ExecutorID == user.ID)
+                var ctrs =AppUser.UserInfo.Login=="admin"? _rpstc.Queryable(p =>(para.Query.StartDate.HasValue ? p.CreateDate >= para.Query.StartDate.Value : true)
+                                              && (para.Query.EndTime.HasValue ? p.CreateDate < para.Query.EndTime.Value : true)
+                                              && (para.Query.TroubleLevel == Guid.Empty || p.TroubleLevel == para.Query.TroubleLevel)
+                                              ) : _rpstc.Queryable(p => (p.PrincipalID == user.ID || p.AcceptorID == user.ID || p.ExecutorID == user.ID)
                                               && (para.Query.StartDate.HasValue ? p.CreateDate >= para.Query.StartDate.Value : true)
                                               && (para.Query.EndTime.HasValue ? p.CreateDate < para.Query.EndTime.Value : true)
-                                              && (para.Query.TroubleLevel == Guid.Empty || p.TroubleLevel == para.Query.TroubleLevel));
-
+                                              && (para.Query.TroubleLevel == Guid.Empty || p.TroubleLevel == para.Query.TroubleLevel)
+                                              );
+                Console.WriteLine(ctrs.ToString());
                 //管控项的所有单据
                 var billIDs = ctrs.Select(s => s.BillID);
                 var bills = _work.Repository<Bll_TaskBill>().Queryable(p => billIDs.Contains(p.ID));
@@ -423,8 +427,8 @@ namespace ESafety.Account.Service
                 var tcflow = _rpstcf.Queryable(p => ctrIDs.Contains(p.ControlID) && p.FlowType == (int)PublicEnum.EE_TroubleFlowState.TroubleR);
 
                 //风险等级
-                var dlvs = _work.Repository<Basic_Dict>().Queryable(p=>p.ParentID==OptionConst.DangerLevel);
-                var tlvs= _work.Repository<Basic_Dict>().Queryable(p => p.ParentID == OptionConst.TroubleLevel);
+                var dlvs = _work.Repository<Basic_Dict>().Queryable(p => p.ParentID == OptionConst.DangerLevel);
+                var tlvs = _work.Repository<Basic_Dict>().Queryable(p => p.ParentID == OptionConst.TroubleLevel);
 
                 var retc = from tc in ctrs.ToList()
                            let aemp = emps.FirstOrDefault(p => p.ID == tc.AcceptorID)
@@ -433,9 +437,9 @@ namespace ESafety.Account.Service
                            let bill = bills.FirstOrDefault(p => p.ID == tc.BillID)
                            let bemp = emps.FirstOrDefault(p => p.ID == bill.EmployeeID)
                            let flow = tcflow.OrderByDescending(t => t.FlowDate).FirstOrDefault(p => p.ControlID == tc.ID)
-                           let org =aemp==null?null:orgs.FirstOrDefault(p => p.ID == aemp.OrgID)
+                           let org = aemp == null ? null : orgs.FirstOrDefault(p => p.ID == aemp.OrgID)
                            let lv = dlvs.FirstOrDefault(p => p.ID == tc.DangerLevel)
-                           let tlv=tlvs.FirstOrDefault(p=>p.ID ==tc.TroubleLevel)
+                           let tlv = tlvs.FirstOrDefault(p => p.ID == tc.TroubleLevel)
                            where para.Query.IsHistory ? tc.State == (int)PublicEnum.EE_TroubleState.history : tc.State != (int)PublicEnum.EE_TroubleState.history
                            where pemp.CNName.Contains(para.Query.Key) || org.OrgName.Contains(para.Query.Key) || tc.Code.Contains(para.Query.Key) || bemp.CNName.Contains(para.Query.Key) || para.Query.Key == string.Empty
                            select new TroubleCtrView
@@ -446,12 +450,15 @@ namespace ESafety.Account.Service
                                BillEmpName = bemp == null ? "" : bemp.CNName,
                                ControlDescription = tc.ControlDescription,
                                CreateDate = tc.CreateDate,
-                               OrgName = org==null?"":org.OrgName,
+                               OrgName = org == null ? "" : org.OrgName,
                                TroubleLevelDesc = tlv.DictName,
                                PrincipalName = pemp.CNName,
                                FlowTime = flow == null ? null : (DateTime?)flow.FlowDate,
                                DangerLevel = lv.DictName,
-                               StateName = Command.GetItems(typeof(PublicEnum.EE_TroubleState)).FirstOrDefault(v => v.Value == tc.State).Caption,
+                               StateName = tc.State == (int)PublicEnum.EE_TroubleState.pending ? "管控中"
+                                         : tc.State == (int)PublicEnum.EE_TroubleState.applying ? "验收中"
+                                         : tc.State == (int)PublicEnum.EE_TroubleState.over ? "已验收"
+                                         : tc.State == (int)PublicEnum.EE_TroubleState.history ? "已归档" : "",
                                FinishTime = tc.FinishTime,
                                Cuser = user.ID == tc.PrincipalID ? user.ID == tc.ExecutorID ? 4 : user.ID == tc.AcceptorID ? 5 : 1 : user.ID == tc.ExecutorID ? 2 : user.ID == tc.AcceptorID ? 3 : 0
                            };
@@ -677,7 +684,7 @@ namespace ESafety.Account.Service
                              State = (PublicEnum.EE_TroubleState)c.State,
                              CDangerLevel = c.DangerLevel,
                              TroubleLevel = c.TroubleLevel,
-                             TroubleLevelName =c.TroubleLevel==Guid.Empty?"": _work.Repository<Basic_Dict>().GetModel(c.TroubleLevel).DictName,
+                             TroubleLevelName = c.TroubleLevel == Guid.Empty ? "" : _work.Repository<Basic_Dict>().GetModel(c.TroubleLevel).DictName,
                              CtrTarget = c.ControlDescription,
                              EstimatedDate = c.FinishTime.HasValue ? c.FinishTime.Value.ToString("yyyy-MM-dd") : null,
                              TroubleDetails = checkresult.TaskResultMemo,
@@ -919,26 +926,26 @@ namespace ESafety.Account.Service
                 var dbf = _rpstcf.Queryable();
                 var emps = _work.Repository<Basic_Employee>().Queryable();
 
-                var dicts = _work.Repository<Basic_Dict>().Queryable(p=>p.ParentID==OptionConst.DangerLevel);
-                var tlvs= _work.Repository<Basic_Dict>().Queryable(p => p.ParentID == OptionConst.TroubleLevel);
+                var dicts = _work.Repository<Basic_Dict>().Queryable(p => p.ParentID == OptionConst.DangerLevel);
+                var tlvs = _work.Repository<Basic_Dict>().Queryable(p => p.ParentID == OptionConst.TroubleLevel);
                 var ctrsV = query.Query == 1 ? ctrs.Where(p => dbf.Select(s => s.ControlID).Contains(p.ID)) : ctrs.Where(p => !dbf.Select(s => s.ControlID).Contains(p.ID));
                 var retemp = from c in ctrsV.ToList()
-                             let bill =  bills.FirstOrDefault(p=>p.ID==c.BillID)
+                             let bill = bills.FirstOrDefault(p => p.ID == c.BillID)
                              let bemp = emps.FirstOrDefault(p => p.ID == bill.EmployeeID)
                              let pemp = emps.FirstOrDefault(p => p.ID == c.PrincipalID)
-                             let lv = dicts.FirstOrDefault(p=>p.ID==c.DangerLevel)
-                             let tlv=tlvs.FirstOrDefault(p=>p.ID==c.TroubleLevel)
-                             let dp=dangerPoints.FirstOrDefault(p=>p.ID==bill.DangerPointID)
+                             let lv = dicts.FirstOrDefault(p => p.ID == c.DangerLevel)
+                             let tlv = tlvs.FirstOrDefault(p => p.ID == c.TroubleLevel)
+                             let dp = dangerPoints.FirstOrDefault(p => p.ID == bill.DangerPointID)
                              orderby c.TroubleLevel descending
                              select new TroubleCtrsPage
                              {
-                                 BillEmp = "发现人:"+bemp.CNName,
-                                 DangerLevel = "风险等级:"+lv.DictName,
-                                 Principal ="责任人:"+pemp.CNName,
-                                 TroubleLevel ="隐患等级:"+tlv.DictName,
-                                 DangerPoint = "风险点:"+dp.Name
+                                 BillEmp = "发现人:" + bemp.CNName,
+                                 DangerLevel = "风险等级:" + lv.DictName,
+                                 Principal = "责任人:" + pemp.CNName,
+                                 TroubleLevel = "隐患等级:" + tlv.DictName,
+                                 DangerPoint = "风险点:" + dp.Name
                              };
-                var re = new Pager<TroubleCtrsPage>().GetCurrentPage(retemp,query.PageSize,query.PageIndex);
+                var re = new Pager<TroubleCtrsPage>().GetCurrentPage(retemp, query.PageSize, query.PageIndex);
                 return new ActionResult<Pager<TroubleCtrsPage>>(re);
 
             }

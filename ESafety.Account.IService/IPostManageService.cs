@@ -18,8 +18,8 @@ namespace ESafety.Account.IService
 
         ActionResult<bool> EditPost(PostEdit post);
 
-        ActionResult<PostView> GetPost(Guid id);
-        ActionResult<IEnumerable<PostView>> GetPosts();
+        ActionResult<PostModel> GetPost(Guid id);
+        ActionResult<IEnumerable<PostModel>> GetPosts();
         ActionResult<Pager<PostView>> GetPostsPage(PagerQuery<PostQuery> para);
 
         ActionResult<bool> AddPostEmployee(PostEmployeeNew  postEmployee);
