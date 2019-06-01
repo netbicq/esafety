@@ -54,7 +54,7 @@ namespace ESafety.Account.IService
         /// </summary>
         /// <param name="pointName"></param>
         /// <returns></returns>
-        ActionResult<Pager<DangerPointView>> GetDangerPointPages(PagerQuery<string> pointName);
+        ActionResult<Pager<DangerPointView>> GetDangerPointPages(PagerQuery<DangerPointQuery> pointName);
         /// <summary>
         /// 根据风险点ID获取检查主体页
         /// </summary>

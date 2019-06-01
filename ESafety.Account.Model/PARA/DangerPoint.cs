@@ -116,7 +116,20 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public int SubjectType { get; set; }
     }
-
+    /// <summary>
+    /// 风险点查询条件
+    /// </summary>
+    public class DangerPointQuery
+    {
+        /// <summary>
+        /// 关键字
+        /// </summary>
+        public string KeyWord { get; set; }
+        /// <summary>
+        /// 风险等级
+        /// </summary>
+        public Guid DLevel { get; set; }
+    }
    
   
 }

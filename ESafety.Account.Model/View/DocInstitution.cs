@@ -56,7 +56,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 发布日期 
         /// </summary>
-        public DateTime IssueDate { get; set; }
+        public string IssueDate { get; set; }
 
     }
     public class PhoneDocInstitutionModelView: PhoneDocInstitutionView

@@ -66,13 +66,13 @@ namespace ESafety.Core
         ActionResult<bool> DelDictType(Guid id);
 
         /// <summary>
-        /// 制度类型
+        /// 风险公示
         /// </summary>
         ActionResult<IEnumerable<Basic_Dict>> GetDocRegime();
-        /// <summary>
-        /// 预案类型
-        /// </summary>
-        ActionResult<IEnumerable<Basic_Dict>> GetDocSlution();
+        ///// <summary>
+        ///// 预案类型
+        ///// </summary>
+        //ActionResult<IEnumerable<Basic_Dict>> GetDocSlution();
 
         /// <summary>
         /// 资质类型

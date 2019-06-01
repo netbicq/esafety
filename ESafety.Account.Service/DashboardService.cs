@@ -51,6 +51,7 @@ namespace ESafety.Account.Service
                            };
                 var re = from dl in dls
                          let count = dpss.Where(p => p.DangerLevelID == dl.ID).Count()
+                         orderby dl.LECD_DMinValue descending
                          select new DashDangerLevel
                          {
                              Level = dl.DictName,
@@ -107,8 +108,57 @@ namespace ESafety.Account.Service
                                  DangerName =sub.SubjectName,
                                  DangerPoint = dp.Name
                              };
+
+                var checkSubs = checkResult.Where(q => subs.Where(p => ctrs.Select(c => c.ID).Contains(p.TroubleControlID)).Select(s => s.BillSubjectsID).Contains(q.ID));
+
+                var SumDLV = 0;
+                foreach (var item in checkSubs)
+                {
+                    SumDLV = SumDLV + item.DValue;
+                }
+                var PDLV = "一般风险";
+                foreach (var item in dicts)
+                {
+                    if (item.MinValue <= SumDLV && item.MaxValue >= SumDLV)
+                    {
+                        PDLV = item.DictName;
+                    }
+                }
+
+                var d= GetDashDLevel();
+                foreach (var item in d.data)
+                {
+                    if (item.Level == "重大风险" && item.Count > 0)
+                    {
+                        PDLV = "重大风险";
+                        break;
+                    }
+                    if (item.Level == "较大风险" && item.Count > 0)
+                    {
+                        if (PDLV == "重大风险")
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            PDLV = "较大风险";
+                        }
+                    }
+                    if (item.Level == "中等风险" && item.Count > 0)
+                    {
+                        if (PDLV == "重大风险"||PDLV=="较大风险")
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            PDLV = "中等风险";
+                        }
+                    }
+                }
                 var re = new DTroubleCtrl
                 {
+                    PDLevel = PDLV,
                     Ctrls = retemp,
                     CtrledCount = ctrs.Where(p => dbf.Select(s => s.ControlID).Contains(p.ID)).Count(),
                     CtrlingCount = ctrs.Where(p => !dbf.Select(s => s.ControlID).Contains(p.ID)).Count()

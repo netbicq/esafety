@@ -126,7 +126,7 @@ namespace ESafety.Account.Service
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult<SafetyStandardView> GetSafetyStandard(Guid id)
+        public ActionResult<SafetyStandardModel> GetSafetyStandard(Guid id)
         {
             try
             {
@@ -135,13 +135,12 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到该安全标准");
                 }
-                var re = safetystandard.MAPTO<SafetyStandardView>();
-                re.DangerSort = _rpsdangersort.GetModel(safetystandard.DangerSortID).SortName;
-                return new ActionResult<SafetyStandardView>(re);
+                var re = safetystandard.MAPTO<SafetyStandardModel>();
+                return new ActionResult<SafetyStandardModel>(re);
             }
             catch (Exception ex)
             { 
-                return new ActionResult<SafetyStandardView>(ex);
+                return new ActionResult<SafetyStandardModel>(ex);
             }
            
         }

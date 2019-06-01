@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESafety.Core.Model.PARA;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,10 @@ namespace ESafety.Account.Model.PARA
         /// 内容
         /// </summary>
         public string Content { get; set; }
+        /// <summary>
+        /// 自定义类项
+        /// </summary>
+        public IEnumerable<UserDefinedValue> UserDefineds { get; set; }
 
     }
 

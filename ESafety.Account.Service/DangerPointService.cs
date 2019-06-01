@@ -356,11 +356,12 @@ namespace ESafety.Account.Service
         /// </summary>
         /// <param name="pointName"></param>
         /// <returns></returns>
-        public ActionResult<Pager<DangerPointView>> GetDangerPointPages(PagerQuery<string> pointName)
+        public ActionResult<Pager<DangerPointView>> GetDangerPointPages(PagerQuery<DangerPointQuery> pointName)
         {
             try
             {
-                var page = rpsdp.Queryable(p => pointName.Query.Contains(p.Name) || pointName.Query == string.Empty);
+                var page = rpsdp.Queryable(p => (p.Name.Contains(pointName.Query.KeyWord) || pointName.Query.KeyWord == string.Empty)
+                                              &&(pointName.Query.DLevel==p.DangerLevel||pointName.Query.DLevel==Guid.Empty));
                 //风险等级
                 var lvids = page.Select(s => s.DangerLevel);
                 var lvs = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => lvids.Contains(p.ID));

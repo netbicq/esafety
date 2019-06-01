@@ -1,5 +1,6 @@
 ﻿using ESafety.Core.Model;
 using ESafety.Core.Model.DB;
+using ESafety.Core.Model.DB.Account;
 using ESafety.Core.Model.PARA;
 using ESafety.Core.Model.View;
 using ESafety.ORM;
@@ -112,6 +113,12 @@ namespace ESafety.Core
                 {
                     throw new Exception("系统内置不允许修改!");
                 }
+                var check = _work.Repository<Doc_Institution>().Any(p => p.TypeID == id);
+                if (check)
+                {
+                    throw new Exception("该词典以用于风险公示下，无法删除!");
+                }
+
                 rpsDict.Delete(dbdict);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -297,7 +304,7 @@ namespace ESafety.Core
             }
         }
         /// <summary>
-        /// 获取制度词典
+        /// 获取风险公示
         /// </summary>
         /// <returns></returns>
         public ActionResult<IEnumerable<Basic_Dict>> GetDocRegime()
@@ -312,22 +319,22 @@ namespace ESafety.Core
                 return new ActionResult<IEnumerable<Basic_Dict>>(ex);
             }
         }
-        /// <summary>
-        /// 获取应急预案词典
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult<IEnumerable<Basic_Dict>> GetDocSlution()
-        {
-            try
-            {
-                var re = getdictsbyParentID(OptionConst.DocSlution);
-                return new ActionResult<IEnumerable<Basic_Dict>>(re);
-            }
-            catch (Exception ex)
-            {
-                return new ActionResult<IEnumerable<Basic_Dict>>(ex);
-            }
-        }
+        ///// <summary>
+        ///// 获取应急预案词典
+        ///// </summary>
+        ///// <returns></returns>
+        //public ActionResult<IEnumerable<Basic_Dict>> GetDocSlution()
+        //{
+        //    try
+        //    {
+        //        var re = getdictsbyParentID(OptionConst.DocSlution);
+        //        return new ActionResult<IEnumerable<Basic_Dict>>(re);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return new ActionResult<IEnumerable<Basic_Dict>>(ex);
+        //    }
+        //}
         /// <summary>
         /// 获取事故后果词典
         /// </summary>

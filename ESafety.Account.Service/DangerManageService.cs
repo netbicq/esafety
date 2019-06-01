@@ -50,10 +50,10 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("参数有误");
                 }
-                var check = _rpsdanger.Any(p => p.DangerSortID == danger.DangerSortID && p.Name == danger.Name && p.Code == danger.Code);
+                var check = _rpsdanger.Any(p => p.DangerSortID == danger.DangerSortID && (p.Name == danger.Name || p.Code == danger.Code));
                 if (check)
                 {
-                    throw new Exception("该风险信息已存在！");
+                    throw new Exception("该风控项名或编号已存在！");
                 }
                 var _danger = danger.MAPTO<Basic_Danger>();
                 _rpsdanger.Add(_danger);
@@ -247,10 +247,10 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到所需修改项");
                 }
-                var check = _rpsdanger.Any(p => p.ID != danger.ID && p.DangerSortID == danger.DangerSortID && p.Name == danger.Name && p.Code == danger.Code);
+                var check = _rpsdanger.Any(p => p.ID != danger.ID && p.DangerSortID == danger.DangerSortID && (p.Name == danger.Name || p.Code == danger.Code));
                 if (check)
                 {
-                    throw new Exception("当前类别下已存在该风险信息");
+                    throw new Exception("当前类别下已存在该风控项名或编号");
                 }
                 var _dbdanger = danger.CopyTo<Basic_Danger>(dbdanger);
                 _rpsdanger.Update(_dbdanger);

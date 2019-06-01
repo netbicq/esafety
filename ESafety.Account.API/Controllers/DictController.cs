@@ -157,7 +157,7 @@ namespace ESafety.Account.API.Controllers
         }
 
         /// <summary>
-        /// 获取制度类型词典
+        /// 获取风险公示词典
         /// </summary>
         /// <returns></returns>
         [Route("getdocregime")]
@@ -166,16 +166,16 @@ namespace ESafety.Account.API.Controllers
         {
             return bll.GetDocRegime();
         }
-        /// <summary>
-        /// 获取应急预案词典
-        /// </summary>
-        /// <returns></returns>
-        [Route("getdocslution")]
-        [HttpGet]
-        public ActionResult<IEnumerable<Basic_Dict>> GetDocSlution()
-        {
-            return bll.GetDocSlution();
-        }
+        ///// <summary>
+        ///// 获取应急预案词典
+        ///// </summary>
+        ///// <returns></returns>
+        //[Route("getdocslution")]
+        //[HttpGet]
+        //public ActionResult<IEnumerable<Basic_Dict>> GetDocSlution()
+        //{
+        //    return bll.GetDocSlution();
+        //}
         /// <summary>
         /// 获取事故后果词典
         /// </summary>

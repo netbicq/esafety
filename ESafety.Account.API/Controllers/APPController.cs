@@ -274,28 +274,28 @@ namespace ESafety.Account.API.Controllers
             return docinsbll.GetDocInstitution(insid);
         }
 
-        /// <summary>
-        /// 根据预案ID获取预案详情
-        /// </summary>
-        /// <param name="docsolutionid"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("getdocsolutionmodel/{docsolutionid:Guid}")]
-        public ActionResult<PhoneDocSolutionModelView> GetDocSolutionModel(Guid docsolutionid)
-        {
-            return docssbll.GetDocSolutionModel(docsolutionid);
-        }
-        /// <summary>
-        /// 根据风险等级ID获取预案列表,默认值为00000000-0000-0000-0000-000000000000
-        /// </summary>
-        /// <param name="dangerlevelid"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("getdocsolutionlist/{dangerlevelid:Guid}")]
-        public ActionResult<IEnumerable<PhoneDocSolutionView>> GetDocSolutionList(Guid dangerlevelid)
-        {
-            return docssbll.GetDocSolutionList(dangerlevelid);
-        }
+        ///// <summary>
+        ///// 根据预案ID获取预案详情
+        ///// </summary>
+        ///// <param name="docsolutionid"></param>
+        ///// <returns></returns>
+        //[HttpGet]
+        //[Route("getdocsolutionmodel/{docsolutionid:Guid}")]
+        //public ActionResult<PhoneDocSolutionModelView> GetDocSolutionModel(Guid docsolutionid)
+        //{
+        //    return docssbll.GetDocSolutionModel(docsolutionid);
+        //}
+        ///// <summary>
+        ///// 根据风险等级ID获取预案列表,默认值为00000000-0000-0000-0000-000000000000
+        ///// </summary>
+        ///// <param name="dangerlevelid"></param>
+        ///// <returns></returns>
+        //[HttpGet]
+        //[Route("getdocsolutionlist/{dangerlevelid:Guid}")]
+        //public ActionResult<IEnumerable<PhoneDocSolutionView>> GetDocSolutionList(Guid dangerlevelid)
+        //{
+        //    return docssbll.GetDocSolutionList(dangerlevelid);
+        //}
         /// <summary>
         /// 获取摄像头列表
         /// </summary>

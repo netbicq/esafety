@@ -71,7 +71,7 @@ namespace ESafety.Account.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("getsftysd/{id:Guid}")]
-        public ActionResult<SafetyStandardView> GetSafetyStandard(Guid id)
+        public ActionResult<SafetyStandardModel> GetSafetyStandard(Guid id)
         {
             return bll.GetSafetyStandard(id);
         }

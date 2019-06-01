@@ -21,13 +21,13 @@ namespace ESafety.Unity
 
         #region "词典常量"
         /// <summary>
-        /// 制度类型
+        /// 风险公示
         /// </summary>
         public static Guid DocRegime { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386037b"); } }
-        /// <summary>
-        /// 预案类型
-        /// </summary>
-        public static Guid DocSlution { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386038b"); } }
+        /////// <summary>
+        /////// 预案类型
+        /////// </summary>
+        //public static Guid DocSlution { get { return Guid.Parse("5fc3fc8d-c00e-401a-a844-fd841386038b"); } }
 
         /// <summary>
         /// 资质类型

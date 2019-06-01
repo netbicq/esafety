@@ -105,7 +105,7 @@ namespace ESafety.Account.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("getDangerPointPages")]
-        public ActionResult<Pager<DangerPointView>> GetDangerPointPages(PagerQuery<string> pointName)
+        public ActionResult<Pager<DangerPointView>> GetDangerPointPages(PagerQuery<DangerPointQuery> pointName)
         {
             return bll.GetDangerPointPages(pointName);
         }

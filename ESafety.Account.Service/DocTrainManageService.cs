@@ -246,8 +246,10 @@ namespace ESafety.Account.Service
             {
                 var dbdtemps = _rpsdtemp.Queryable(p=>p.TrainID==para.Query.TrainID);
                 var emps = _rpsemp.Queryable();
+                var orgs = _rpsorg.Queryable();
                 var reemps = from s in dbdtemps
                          let emp=emps.FirstOrDefault(p=>p.ID==s.EmployeeID)
+                         let org=orgs.FirstOrDefault(p=>p.ID==emp.OrgID)
                          orderby emp.CNName ascending
                          select new DocTrainEmpoyeesView
                          {
@@ -255,7 +257,7 @@ namespace ESafety.Account.Service
                              TrainID=s.TrainID,
                              EmployeeID=s.EmployeeID,
                              Name=emp.CNName,
-                             Department=_rpsorg.GetModel(emp.OrgID).OrgName
+                             Department=org.OrgName
                          };
                 var re = new Pager<DocTrainEmpoyeesView>().GetCurrentPage(reemps,para.PageSize,para.PageIndex);
                 return new ActionResult<Pager<DocTrainEmpoyeesView>>(re);
