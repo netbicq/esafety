@@ -222,23 +222,33 @@ namespace ESafety.Core
         }
         /// <summary>
         /// 获取权限key
+        /// 如果login为空则取所有定义的key
         /// </summary>
         /// <param name="login"></param>
         /// <returns></returns>
         public ActionResult<IEnumerable<Auth_KeyDetail>> GetAllAuth(string login = "")
         {
+            var reauth = _work.Repository<Model.DB.Auth_KeyDetail>().Queryable();
 
-            var urdb = _work.Repository<Model.DB.Auth_UserRole>().Queryable(q => q.Login == login||login=="");
+            if(login == "")
+            {
+                return new ActionResult<IEnumerable<Auth_KeyDetail>>(reauth);
+            }
+            else
+            {
+                var urdb = _work.Repository<Model.DB.Auth_UserRole>().Queryable(q => q.Login == login);
 
-            var roles = urdb.Select(s => s.RoleID);
-            var rolescop = _work.Repository<Model.DB.Auth_RoleAuthScope>().Queryable(q =>
-             roles.Contains(q.RoleID) || !roles.Any());
-            var rolescops = rolescop.Select(s => s.AuthKey);
+                var roles = urdb.Select(s => s.RoleID);
+                var rolescop = _work.Repository<Model.DB.Auth_RoleAuthScope>().Queryable(q =>
+                 roles.Contains(q.RoleID));
+                var rolescops = rolescop.Select(s => s.AuthKey);
 
-            var auth = _work.Repository<Model.DB.Auth_KeyDetail>().Queryable(
-                q => rolescops.Contains(q.AuthKey) || !rolescops.Any());
+                var auth = reauth.Where(
+                    q => rolescops.Contains(q.AuthKey));
 
-            return new ActionResult<IEnumerable<Auth_KeyDetail>>(auth);
+                return new ActionResult<IEnumerable<Auth_KeyDetail>>(auth);
+            }
+           
 
         }
 
