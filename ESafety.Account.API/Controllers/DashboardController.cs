@@ -56,6 +56,6 @@ namespace ESafety.Account.API.Controllers
         {
             return bll.GetDctrl();
         }
-
+      
     }
 }

@@ -39,7 +39,7 @@ namespace ESafety.Account.Service
             {
 
                 var dls = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => p.ParentID == OptionConst.DangerLevel);
-                var ctrs = work.Repository<Bll_TroubleControl>().Queryable();
+                var ctrs = work.Repository<Bll_TroubleControl>().Queryable(p=>p.State<(int)PublicEnum.EE_TroubleState.over);
                 var dps = rpsDP.Queryable();
                 var dpss = from dp in dps
                            let dlvs = ctrs.Where(p => p.DangerPoint == dp.ID).Select(s => s.DangerLevel)
@@ -47,15 +47,29 @@ namespace ESafety.Account.Service
                            let dplv = dls.FirstOrDefault(p => p.ID == dp.DangerLevel)
                            select new
                            {
+                               Name = dp.Name,
+                               Consequence = dp.Consequence,
+                               ControlMeasure = dp.ControlMeasure,
+                               EmergencyMeasure = dp.EmergencyMeasure,
+                               IsCtrl = lv == null ? "否" : "是",
                                DangerLevelID = lv.LECD_DMinValue > dplv.LECD_DMinValue ? lv.ID : dp.DangerLevel,
                            };
                 var re = from dl in dls
-                         let count = dpss.Where(p => p.DangerLevelID == dl.ID).Count()
+                         let dpsss = dpss.Where(p => p.DangerLevelID == dl.ID) 
                          orderby dl.LECD_DMinValue descending
                          select new DashDangerLevel
                          {
+                             DPInfos=from dp in dpsss
+                                     select new DPInfo
+                                     {
+                                         Name=dp.Name,
+                                         Consequence=dp.Consequence,
+                                         ControlMeasure=dp.ControlMeasure,
+                                         EmergencyMeasure=dp.EmergencyMeasure,
+                                         IsCtrl=dp.IsCtrl
+                                     },
                              Level = dl.DictName,
-                             Count = count,
+                             Count = dpsss.Count(),
                          };
                 return new ActionResult<IEnumerable<DashDangerLevel>>(re);
             }
@@ -182,13 +196,18 @@ namespace ESafety.Account.Service
             {
                 var dps = rpsDP.Queryable();
                 var dicts = work.Repository<Basic_Dict>().Queryable(p=>p.ParentID==OptionConst.DangerLevel);
+                var dpids = dps.Select(s => s.ID);
+                var ctrs = work.Repository<Bll_TroubleControl>().Queryable(p => dpids.Contains(p.DangerPoint) && p.State < (int)PublicEnum.EE_TroubleState.over);
                 var re = from dp in dps
                          let lv=dicts.FirstOrDefault(p=>p.ID==dp.DangerLevel)
+                         let ctr= ctrs.Where(p=>p.DangerPoint==dp.ID)
+                         let clv=dicts.OrderByDescending(o=>o.LECD_DMaxValue).FirstOrDefault(p=>ctr.Select(s=>s.DangerLevel).Contains(p.ID))
                          select new DangerPointLocation
                          {
+                             DPID=dp.ID,
                              DPName = dp.Name,
                              DPLocation = dp.Location,
-                             DLevel=lv.DictName
+                             DLevel=clv==null?lv.DictName:clv.DictName
                          };
                 return new ActionResult<IEnumerable<DangerPointLocation>>(re);
             }
