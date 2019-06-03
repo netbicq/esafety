@@ -146,15 +146,16 @@ namespace ESafety.Web.Unity
 
 
             //权限验证
-            //var auth = new Core.Bll.Auth_UserService(obj.Unitwork).GetAllAuth(user.Login);
-            //var currentkey = actionContext.ControllerContext.RouteData.Route.RouteTemplate;
-            //if (AuthKey.AuthKeys.Any(q => q.ActionFullName == currentkey))//如果需要权限控制则验证用户权限
-            //{
-            //    if (!auth.data.Any(q => q.ActionFullName == currentkey))
-            //    {
-            //        throw new Exception("无权操作");
-            //    }
-            //}
+            var auth = new Auth_UserService(obj.Unitwork).GetAllAuth(user.Login);
+            AuthKey.AuthKeys = new Auth_UserService(obj.Unitwork).GetAllAuth().data.ToList();
+            var currentkey = actionContext.ControllerContext.RouteData.Route.RouteTemplate;
+            if (AuthKey.AuthKeys.Any(q => q.ActionFullName == currentkey))//如果需要权限控制则验证用户权限
+            {
+                if (!auth.data.Any(q => q.ActionFullName == currentkey))
+                {
+                    throw new Exception("无权操作");
+                }
+            }
 
             return true;
         }
@@ -312,7 +313,6 @@ namespace ESafety.Web.Unity
 
     public class AuthKey
     {
-
         public static IEnumerable<Core.Model.DB.Auth_KeyDetail> AuthKeys { get; set; }
 
     }

@@ -228,7 +228,7 @@ namespace ESafety.Core
         public ActionResult<IEnumerable<Auth_KeyDetail>> GetAllAuth(string login = "")
         {
 
-            var urdb = _work.Repository<Model.DB.Auth_UserRole>().Queryable(q => q.Login == login);
+            var urdb = _work.Repository<Model.DB.Auth_UserRole>().Queryable(q => q.Login == login||login=="");
 
             var roles = urdb.Select(s => s.RoleID);
             var rolescop = _work.Repository<Model.DB.Auth_RoleAuthScope>().Queryable(q =>
@@ -465,11 +465,13 @@ namespace ESafety.Core
                     q => q.RoleID == roleid);
 
             var temp = from auth in authlist
+                       orderby auth.OrderIndex
                        group auth by auth.ModuleName into authg
                        select new AuthModule
                        {
                            ModuleName = authg.Key,
                            AuthMenus = from menu in authg.Where(q => !string.IsNullOrEmpty(q.RoutUrl) || !string.IsNullOrEmpty(q.FunctionName))
+                                       orderby menu.OrderIndex
                                        group menu by menu.MenuName into menug
                                        select new AuthKeyMenu
                                        {
