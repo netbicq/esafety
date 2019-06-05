@@ -203,9 +203,5 @@ namespace ESafety.Account.Model.PARA
         /// 风险点ID
         /// </summary>
         public Guid DangerPointID { get; set; }
-        /// <summary>
-        /// 主体类型
-        /// </summary>
-        public int SubType { get; set; }
     }
 }

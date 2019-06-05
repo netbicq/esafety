@@ -586,6 +586,7 @@ namespace ESafety.Account.Service
                 var opids = cflows.Select(s => s.OpreationID).Distinct();
 
                 //获取当前人做的所有作业流程
+                var allflows = rpsBillFlow.Queryable();
                 var billflows = rpsBillFlow.Queryable(p => p.FlowEmployeeID == AppUser.EmployeeInfo.ID);
                 var opbillids = billflows.Select(s => s.BillID).Distinct();
                 //当前人做过的节点
@@ -610,7 +611,8 @@ namespace ESafety.Account.Service
                          //let opreation = opretions.FirstOrDefault(q => q.ID == bill.OpreationID)
                          let emp = emps.FirstOrDefault(q => q.ID == bill.PrincipalEmployeeID)
                          let oflow=billflows.OrderBy(o=>o.FlowTime).FirstOrDefault(p=>p.BillID==bill.OpreationID)
-                         let flow =flows==null?oflow==null?null:oflows.OrderByDescending(o=>o.PointIndex).FirstOrDefault(p=>p.ID==oflow.OpreationFlowID):flows.OrderBy(o=>o.PointIndex).FirstOrDefault(p => p.OpreationID == bill.OpreationID)
+                         let coflows=allflows.Where(p=>p.BillID==bill.ID)
+                         let flow =flows==null?oflow==null?null:oflows.OrderByDescending(o=>o.PointIndex).FirstOrDefault(p=>p.ID==oflow.OpreationFlowID):flows.OrderBy(o=>o.PointIndex).FirstOrDefault(p => p.OpreationID == bill.OpreationID&&!coflows.Select(s=>s.OpreationFlowID).Contains(p.ID))
                          let allcount = opflows.Where(p => p.OpreationID == bill.OpreationID).Count()
                          select new OpreateBillByEmp
                          {

@@ -334,7 +334,7 @@ namespace ESafety.Account.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("getdangerselector")]
-        public ActionResult<IEnumerable<Sub>> GetTempTaskDangerSelector(TempTaskDangerSelect select)
+        public ActionResult<IEnumerable<CSub>> GetTempTaskDangerSelector(TempTaskDangerSelect select)
         {
             return spectbll.GetTempTaskDangerSelector(select);
         }

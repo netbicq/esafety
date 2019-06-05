@@ -505,7 +505,10 @@ namespace ESafety.Account.Service
                          let sb = csubs.FirstOrDefault(p => p.SubjectID == sub.SubjectID)
                          let dg = danger.FirstOrDefault(p => p.ID == sub.DangerID)
                          let lv = lvs.FirstOrDefault(p => p.ID == dg.DangerLevel)
-                         let isCtr = _work.Repository<Bll_TroubleControlDetails>().Any(p => ctrids.Contains(p.TroubleControlID) && p.TaskSubjectsID == sub.ID)
+                         let isCtr = _work.Repository<Bll_TroubleControlDetails>().Queryable(p => ctrids.Contains(p.TroubleControlID) && p.TaskSubjectsID == sub.ID).FirstOrDefault()
+                         let sdids = _work.Repository<Basic_DangerSafetyStandards>().Queryable(p => p.DangerID == sub.DangerID).Select(s => s.SafetyStandardID)
+                         let sds = _work.Repository<Basic_SafetyStandard>().Queryable(p => sdids.Contains(p.ID))
+                         let rest =isCtr==null?null:_rpstbs.Queryable(p => p.ID == isCtr.BillSubjectsID).FirstOrDefault()
                          select new TaskSubjectView
                          {
                              KeyID = sub.ID,
@@ -519,7 +522,18 @@ namespace ESafety.Account.Service
                              PrincipalTel = sb.SubjectPrincipalTel,
                              DangerName = dg.Name,
                              DangerID = dg.ID,
-                             IsControl = isCtr
+                             IsControl = isCtr==null?false:true,
+                             LastResult=rest==null?"":rest.TaskResultMemo,
+                             SubStandards= from sd in sds
+                                           select new SubStandard
+                                           {
+                                               SubStandardID = sd.ID,
+                                               Name = "执行标准名:" + sd.Name,
+                                               Accident = "事故措施:" + sd.Accident,
+                                               Controls = "管理措施:" + sd.Controls,
+                                               Engineering = "工程措施:" + sd.Engineering,
+                                               Individual = "个体措施:" + sd.Individual
+                                           }
 
                          };
                 return new ActionResult<IEnumerable<TaskSubjectView>>(re);
@@ -723,6 +737,7 @@ namespace ESafety.Account.Service
                         rpsCtrDetail.Add(ctrDetail);
                     }
                 }
+                dbbill.EndTime = DateTime.Now;
                 dbbill.State = (int)PublicEnum.BillFlowState.normal;
                 _rpstb.Update(dbbill);
                 return new ActionResult<bool>(true);
@@ -912,6 +927,8 @@ namespace ESafety.Account.Service
                          let lv = lvs.FirstOrDefault(p => p.ID == dg.DangerLevel)
                          let rest = subs.FirstOrDefault(p => p.SubjectID == sub.SubjectID && p.DangerID == sub.DangerID)
                          let isCtr = _work.Repository<Bll_TroubleControlDetails>().Any(p => ctrids.Contains(p.TroubleControlID) && p.BillSubjectsID == sub.ID)
+                         let sdids = _work.Repository<Basic_DangerSafetyStandards>().Queryable(p => p.DangerID == sub.DangerID).Select(s => s.SafetyStandardID)
+                         let sds = _work.Repository<Basic_SafetyStandard>().Queryable(p => sdids.Contains(p.ID))
                          select new TaskSubjectOverView
                          {
                              KeyID = sub.ID,
@@ -926,7 +943,17 @@ namespace ESafety.Account.Service
                              PrincipalTel = sb.SubjectPrincipalTel,
                              DangerID = dg.ID,
                              DangerName = dg.Name,
-                             IsControl = isCtr
+                             IsControl = isCtr,
+                             SubStandards= from sd in sds
+                                           select new SubStandard
+                                           {
+                                               SubStandardID=sd.ID,
+                                               Name = "执行标准名:" + sd.Name,
+                                               Accident = "事故措施:" + sd.Accident,
+                                               Controls = "管理措施:" + sd.Controls,
+                                               Engineering = "工程措施:" + sd.Engineering,
+                                               Individual = "个体措施:" + sd.Individual
+                                           }
                          };
                 return new ActionResult<IEnumerable<TaskSubjectOverView>>(re);
             }
@@ -1071,7 +1098,10 @@ namespace ESafety.Account.Service
                                          let dg = _work.Repository<Basic_Danger>().GetModel(sub.DangerID)
                                          let lv = rpsDict.GetModel(dg.DangerLevel)
                                          let sb = sbs.FirstOrDefault(q => q.SubjectID == sub.SubjectID)
-                                         let isCtr = _work.Repository<Bll_TroubleControlDetails>().Any(p => ctrids.Contains(p.TroubleControlID) && p.TaskSubjectsID== sub.ID)
+                                         let isCtr = _work.Repository<Bll_TroubleControlDetails>().Queryable(p => ctrids.Contains(p.TroubleControlID) && p.TaskSubjectsID== sub.ID).FirstOrDefault()
+                                         let sdids=_work.Repository<Basic_DangerSafetyStandards>().Queryable(p=>p.DangerID==sub.DangerID).Select(s=>s.SafetyStandardID)
+                                         let sds=_work.Repository<Basic_SafetyStandard>().Queryable(p=>sdids.Contains(p.ID))
+                                         let rest =isCtr==null?null: _rpstbs.Queryable(p=>p.ID==isCtr.BillSubjectsID).FirstOrDefault()
                                          select new TaskSubjectView
                                          {
                                              KeyID = sub.ID,
@@ -1085,7 +1115,20 @@ namespace ESafety.Account.Service
                                              PrincipalTel = sb.SubjectPrincipalTel,
                                              DangerName = dg.Name,
                                              DangerID = dg.ID,
-                                             IsControl=isCtr
+                                             IsControl=isCtr==null?false:true,
+                                             LastResult=rest==null?"":rest.TaskResultMemo,
+                                             SubStandards=from sd in sds 
+                                                          select new SubStandard
+                                                          {
+                                                              SubStandardID = sd.ID,
+                                                              Name ="执行标准名:"+sd.Name,
+                                                              Accident="事故措施:"+sd.Accident,
+                                                              Controls="管理措施:"+sd.Controls,
+                                                              Engineering="工程措施:"+sd.Engineering,
+                                                              Individual="个体措施:"+sd.Individual
+                                                          }
+
+                                             
                                              
                                          }
                          };
