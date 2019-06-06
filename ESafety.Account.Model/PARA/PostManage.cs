@@ -61,7 +61,7 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 人员ID
         /// </summary>
-        public Guid EmployeeID { get; set; }
+        public IEnumerable<Guid> EmployeeID { get; set; }
     }
 
     public class PostQuery

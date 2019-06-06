@@ -138,22 +138,19 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到该风险点");
                 }
-                if (relationNew.SubjectID == Guid.Empty || relationNew.SubjectType == 0)
-                {
-                    throw new Exception("主体与主体类型不能为空!");
-                }
-                var check = rpsdpr.Any(p => p.SubjectID == relationNew.SubjectID && p.DangerPointID == relationNew.DangerPointID);
+                var subids = relationNew.DSubs.Select(s => s.SubjectID);
+                var check = rpsdpr.Any(p => subids.Contains(p.SubjectID)&& p.DangerPointID == relationNew.DangerPointID);
                 if (check)
                 {
-                    throw new Exception("该风险点下已存在, 主体" + relationNew.SubjectName);
+                    throw new Exception("配置主体中有已存在的于风险点下的!");
                 }
-                check = work.Repository<Basic_DangerRelation>().Any(p => p.SubjectID == relationNew.SubjectID);
+                check = work.Repository<Basic_DangerRelation>().Any(p => subids.Contains(p.SubjectID));
                 if (!check)
                 {
-                    throw new Exception("该主体下没有风控项!");
+                    throw new Exception("配置主体中存在没有配置风控项的主体!");
                 }
                 //所有风控项ID
-                var dangerids = work.Repository<Basic_DangerRelation>().Queryable(p => p.SubjectID == relationNew.SubjectID).Select(s => s.DangerID);
+                var dangerids = work.Repository<Basic_DangerRelation>().Queryable(p => subids.Contains(p.SubjectID)).Select(s => s.DangerID);
                 //所有风险等级ID
                 var lvids = work.Repository<Basic_Danger>().Queryable(p => dangerids.Contains(p.ID)).Select(s => s.DangerLevel);
                 //最大的风险等级具体项
@@ -166,7 +163,16 @@ namespace ESafety.Account.Service
                     dbdp.DangerLevel = lv.ID;
                     rpsdp.Update(dbdp);
                 }
-                var dbdpr = relationNew.MAPTO<Basic_DangerPointRelation>();
+                var dbdpr =from dr in relationNew.DSubs
+                           select new Basic_DangerPointRelation
+                           {
+                               DangerPointID=relationNew.DangerPointID,
+                               SubjectID=dr.SubjectID,
+                               SubjectName=dr.SubjectName,
+                               SubjectPrincipal=dr.SubjectPrincipal,
+                               SubjectPrincipalTel=dr.SubjectPrincipalTel,
+                               SubjectType=dr.SubjectType
+                           };
                 rpsdpr.Add(dbdpr);
                 work.Commit();
                 return new ActionResult<bool>(true);
