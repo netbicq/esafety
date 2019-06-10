@@ -103,16 +103,21 @@ namespace ESafety.Account.Service
         {
             try
             {
-                if (postEmployee.EmployeeID==Guid.Empty)
+                if (postEmployee.EmployeeID.Count()<=0)
                 {
                     throw new Exception("参数有误");
                 }
-                var check = _rpspostemp.Any(p => p.PostID == postEmployee.PostID && p.EmployeeID == postEmployee.EmployeeID);
+                var check = _rpspostemp.Any(p =>postEmployee.EmployeeID.Contains(p.EmployeeID)&&p.PostID==postEmployee.PostID);
                 if (check)
                 {
-                    throw new Exception("该人员已在该岗位下");
+                    throw new Exception("选中人员中存在已在该岗位下的人员");
                 }
-                var dbpostemp = postEmployee.MAPTO<Basic_PostEmployees>();
+                var dbpostemp = from emp in postEmployee.EmployeeID
+                                select new Basic_PostEmployees
+                                {
+                                    EmployeeID = emp,
+                                    PostID = postEmployee.PostID
+                                };
                 _rpspostemp.Add(dbpostemp);
                 _work.Commit();
                 return new ActionResult<bool>(true);

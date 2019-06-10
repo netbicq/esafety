@@ -307,6 +307,25 @@ namespace ESafety.Account.Model.View
         public PublicEnum.EE_SubjectType SubjectType { get; set; }
     }
     /// <summary>
+    /// 主体集合
+    /// </summary>
+    public class CSub
+    {
+        /// <summary>
+        /// ID
+        /// </summary>
+        public int SubTypeID { get; set; }
+        /// <summary>
+        /// 主体类型
+        /// </summary>
+        public string SubType { get; set; }
+        /// <summary>
+        /// 主体集合
+        /// </summary>
+        public IEnumerable<Sub> Subs { get; set; }
+    }
+
+    /// <summary>
     /// 主体
     /// </summary>
     public class Sub
@@ -330,6 +349,7 @@ namespace ESafety.Account.Model.View
     /// </summary>
     public class Danger
     {
+
         /// <summary>
         ///风控项ID
         /// </summary>

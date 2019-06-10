@@ -103,7 +103,7 @@ namespace ESafety.Account.IService
         /// 获取风控项选择器
         /// </summary>
         /// <returns></returns>
-        ActionResult<IEnumerable<Sub>> GetTempTaskDangerSelector(TempTaskDangerSelect select);
+        ActionResult<IEnumerable<CSub>> GetTempTaskDangerSelector(TempTaskDangerSelect select);
 
         /// <summary>
         /// 通过风险点ID获取当前人员的任务

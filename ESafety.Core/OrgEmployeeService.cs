@@ -86,6 +86,8 @@ namespace ESafety.Core
                         OtherView = true,
                         Pwd = "123456",
                         TokenValidTime = DateTime.Now,
+                        CreateMan=AppUser.UserInfo.Login,
+                        CreateDate=DateTime.Now,
                         State = 1,
                         Token = "",
                     };

@@ -84,6 +84,15 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public Guid DangerPointID { get; set; }
         /// <summary>
+        /// 主体
+        /// </summary>
+        public IEnumerable<DSub> DSubs { get; set; }
+       
+    }
+
+    public class DSub
+    {
+        /// <summary>
         /// 主体ID
         /// </summary>
         public Guid SubjectID { get; set; }

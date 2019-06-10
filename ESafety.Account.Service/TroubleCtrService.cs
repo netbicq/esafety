@@ -658,7 +658,7 @@ namespace ESafety.Account.Service
             try
             {
                 var user = AppUser.EmployeeInfo;
-                var ctrs = _rpstc.Queryable(p => p.PrincipalID == user.ID || p.AcceptorID == user.ID || p.ExecutorID == user.ID && p.State != (int)PublicEnum.EE_TroubleState.history);
+                var ctrs = _rpstc.Queryable(p => (p.PrincipalID == user.ID || p.AcceptorID == user.ID || p.ExecutorID == user.ID) && p.State != (int)PublicEnum.EE_TroubleState.history);
                 var emps = _work.Repository<Basic_Employee>().Queryable();
 
 

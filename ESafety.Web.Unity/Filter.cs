@@ -151,6 +151,10 @@ namespace ESafety.Web.Unity
             var currentkey = actionContext.ControllerContext.RouteData.Route.RouteTemplate;
             if (AuthKey.AuthKeys.Any(q => q.ActionFullName == currentkey))//如果需要权限控制则验证用户权限
             {
+                if(currentkey=="api/attachfile/uploadfile"||currentkey== "api/attachfile/delfile/{id}")
+                {
+                    return true;
+                }
                 if (!auth.data.Any(q => q.ActionFullName == currentkey))
                 {
                     throw new Exception("无权操作");

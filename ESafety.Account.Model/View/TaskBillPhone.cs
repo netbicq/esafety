@@ -112,7 +112,45 @@ namespace ESafety.Account.Model.View
         /// 是否管控中，只有不是管控中的时候，才能调整检查的检查结果
         /// </summary>
         public bool IsControl { get; set; }
+        /// <summary>
+        ///  执行标准
+        /// </summary>
+        public IEnumerable<SubStandard> SubStandards { get; set; }
+        /// <summary>
+        /// 上次检查结果 只会在管控中的时候显示
+        /// </summary>
+        public string  LastResult { get; set; }    
+
     }
+
+    public class SubStandard
+    {
+        /// <summary>
+        /// 标准ID
+        /// </summary>
+        public Guid SubStandardID { get; set; }
+        /// <summary>
+        /// 安全标准名称
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// 管控措施
+        /// </summary>
+        public string Controls { get; set; }
+        /// <summary>
+        /// 工程措施
+        /// </summary>
+        public string Engineering { get; set; }
+        /// <summary>
+        /// 事故措施
+        /// </summary>
+        public string Accident { get; set; }
+        /// <summary>
+        /// 个体措施
+        /// </summary>
+        public string Individual { get; set; }
+    }
+
 
     public class TaskSubjectOverView: TaskSubjectView
     {
