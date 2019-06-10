@@ -235,6 +235,7 @@
     <Compile Include="Controllers\TroubleCtrController.cs" />
     <Compile Include="Controllers\UserDefinedController.cs" />
     <Compile Include="Controllers\VideoController.cs" />
+    <Compile Include="Controllers\WeixinController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

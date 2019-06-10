@@ -62,6 +62,7 @@
     <Compile Include="ITaskBillService.cs" />
     <Compile Include="ITroubleCtrService.cs" />
     <Compile Include="IVideoService.cs" />
+    <Compile Include="IWeixinService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -79,6 +79,7 @@
     <Compile Include="TaskBillService.cs" />
     <Compile Include="TroubleCtrService.cs" />
     <Compile Include="VideoService.cs" />
+    <Compile Include="WeixinService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
