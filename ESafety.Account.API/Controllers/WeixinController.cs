@@ -18,6 +18,10 @@ namespace ESafety.Account.API.Controllers
     public class WeixinController : ESFAPI
     {
 
+        public WeixinController()
+        {
+            BusinessServices = new List<object> { };
+        }
 
         [HttpGet]
         [Route("wxjscfg")]
