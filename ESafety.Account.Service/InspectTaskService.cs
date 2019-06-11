@@ -630,7 +630,7 @@ namespace ESafety.Account.Service
                              TaskDescription = t.TaskDescription,
                              //最后时间和超时时间
                              LastTime = billsub == null ? "" : billsub.TaskTime.ToString(),
-                             TimeOutHours = 0,
+                             TimeOutHours = (int)(date - ctime),
                              CycleDateType = t.CycleDateType,
                              CycleValue = t.CycleValue,
                              CycleName = Command.GetItems(typeof(PublicEnum.EE_CycleDateType)).FirstOrDefault(p => p.Value == t.CycleDateType).Caption,
