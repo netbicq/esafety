@@ -1,4 +1,5 @@
 ﻿using ESafety.Web.Unity;
+using Newtonsoft.Json.Linq;
 using Quick.WXHelper;
 using Quick.WXHelper.Dto;
 using System;
@@ -81,6 +82,62 @@ namespace ESafety.Account.API.Controllers
             context.Response.Write(responseXML);
             context.Response.End();
         }
-        
+
+        /// <summary>
+        /// 静默获取openid鉴权
+        /// </summary>
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("authcode")]
+        public void GetCode()
+        {
+            HttpContext context = HttpContext.Current;
+            context.Response.ContentType = "text/plain";
+
+            string BusinessUrl = context.Request.QueryString["url"]; //业务页面地址
+            string codeurl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + Quick.WXHelper.WxConfig.configModel.AppID + "&redirect_uri=" + Quick.WXHelper.WxConfig.configModel.Openid_redirecturl + "&response_type=code&scope=snsapi_base&state=" + BusinessUrl + "#wechat_redirect";
+
+            context.Response.Redirect(codeurl);
+        }
+
+        /// <summary>
+        /// 获取openid
+        /// </summary>
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("authopenid")]
+        public void GetOpenID()
+        {
+            HttpContext context = HttpContext.Current;
+            context.Response.ContentType = "text/plain";
+
+            string code = context.Request.QueryString["code"];
+            string state = context.Request.QueryString["state"];
+            //获取openid
+            string resultJosn = Quick.WXHelper.WxAction.wxAPIGet(Quick.WXHelper.WxConfig.wxActionType.GetOpenID, "", code);
+            string openid = "";
+
+            JObject jo = JObject.Parse(resultJosn);
+
+            if (!resultJosn.Contains("errcode"))
+            {
+                openid = jo["openid"].ToString();
+                if (state.Contains("%3F") || state.Contains("?"))//如果返回页面带参数
+                {
+
+                    context.Response.Redirect(state + "&openID=" + openid);
+                }
+                else
+                {
+
+                    context.Response.Redirect(state + "?openID=" + openid);
+                }
+            }
+            else
+            {
+                string errmsg = jo["errmsg"].ToString();
+                context.Response.Redirect(state + "?errmsg=" + errmsg);
+            }
+        }
     }
 }
