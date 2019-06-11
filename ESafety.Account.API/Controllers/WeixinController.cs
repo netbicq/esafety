@@ -34,7 +34,7 @@ namespace ESafety.Account.API.Controllers
         /// <param name="openID"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("signinbyopenid/{openID:string}")]
+        [Route("signinbyopenid/{openID}")]
         [AllowAnonymous]
         public ActionResult<UserView> UserSignin(string openID)
         {
@@ -60,7 +60,7 @@ namespace ESafety.Account.API.Controllers
         /// <param name="openid"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("userwxunbind/{openid:string}")]
+        [Route("userwxunbind/{openid}")]
         [AllowAnonymous]
         public ActionResult<bool> UserWxUnBind(string openid)
         {
