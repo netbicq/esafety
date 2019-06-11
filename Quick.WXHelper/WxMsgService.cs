@@ -173,8 +173,8 @@ namespace Quick.WXHelper
                     switch (Eventtype)
                     {
                         case "subscribe"://关注公众号
-                            var remsg = System.Configuration.ConfigurationManager.AppSettings["SubscribeText"];
-                            responseXML = string.Format(WxMsgText, FromUserName, WxConfig.configModel.WXCode, WxAction.GenerateTimeStamp(), remsg);
+                            //var remsg = System.Configuration.ConfigurationManager.AppSettings["SubscribeText"];
+                            //responseXML = string.Format(WxMsgText, FromUserName, WxConfig.configModel.WXCode, WxAction.GenerateTimeStamp(), remsg);
                             break;
                         default:
                             break;

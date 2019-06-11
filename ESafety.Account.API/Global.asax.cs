@@ -23,8 +23,7 @@ namespace ESafety.Account.API
 
 
             AOP.reg();
- 
-
+             
 
         }
     }
