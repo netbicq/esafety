@@ -200,6 +200,10 @@ namespace ESafety.Account.Model.View
         /// 执行频率
         /// </summary>
         public string CycleName { get; set; }
+        /// <summary>
+        /// 是否做过，false没有，true有
+        /// </summary>
+        public bool HasDone { get; set; }
     }
     /// <summary>
     /// 临时任务模型

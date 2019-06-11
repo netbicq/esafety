@@ -225,39 +225,43 @@ namespace ESafety.Account.Service
                 var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q => empids.Contains(q.ID));
                 var posts = _work.Repository<Basic_Post>().Queryable(q => postids.Contains(q.ID));
 
-                var re = from t in retemp.ToList()
-                         let dangepoint = dangerpoints.FirstOrDefault(q => q.ID == t.DangerPointID)
-                         let employee = emps.FirstOrDefault(q => q.ID == t.EmployeeID)
-                         let postinfo = posts.FirstOrDefault(q => q.ID == t.ExecutePostID)
-                         select new InspectTaskView
-                         {
-                             Code = t.Code,
-                             CreateDate = t.CreateDate,
-                             CreateMan = t.CreateMan,
-                             CycleDateType = t.CycleDateType,
-                             CycleValue = t.CycleValue,
-                             DangerPointID = t.DangerPointID,
-                             DangerPointName = dangepoint == null ? "" : dangepoint.Name,
-                             Name = t.Name,
-                             ID = t.ID,
-                             EmployeeID = t.EmployeeID.GetValueOrDefault(),
-                             EmployeeName = employee == null ? "" : employee.CNName,
-                             EndTime = t.EndTime,
-                             ExecutePostID = t.ExecutePostID,
-                             ExecutePostName = postinfo == null ? "" : postinfo.Name,
-                             StartTime = t.StartTime,
-                             State = t.State,
-                             StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == t.State).Caption,
-                             TaskDescription = t.TaskDescription,
-                             TaskType = (PublicEnum.EE_InspectTaskType)t.TaskType,
-                             MasterID = t.MasterID
+                var result = new Pager<Bll_InspectTask>().GetCurrentPage(retemp.OrderByDescending(o => o.CreateDate), qurey.PageSize, qurey.PageIndex);
 
+                var re = new Pager<InspectTaskView>
+                {
+                    ExcelResult = result.ExcelResult,
+                    Items = result.Items,
+                    Pages = result.Pages,
+                    Data = from t in result.Data
+                           let dangepoint = dangerpoints.FirstOrDefault(q => q.ID == t.DangerPointID)
+                           let employee = emps.FirstOrDefault(q => q.ID == t.EmployeeID)
+                           let postinfo = posts.FirstOrDefault(q => q.ID == t.ExecutePostID)
+                           select new InspectTaskView
+                           {
+                               Code = t.Code,
+                               CreateDate = t.CreateDate,
+                               CreateMan = t.CreateMan,
+                               CycleDateType = t.CycleDateType,
+                               CycleValue = t.CycleValue,
+                               DangerPointID = t.DangerPointID,
+                               DangerPointName = dangepoint == null ? "" : dangepoint.Name,
+                               Name = t.Name,
+                               ID = t.ID,
+                               EmployeeID = t.EmployeeID.GetValueOrDefault(),
+                               EmployeeName = employee == null ? "" : employee.CNName,
+                               EndTime = t.EndTime,
+                               ExecutePostID = t.ExecutePostID,
+                               ExecutePostName = postinfo == null ? "" : postinfo.Name,
+                               StartTime = t.StartTime,
+                               State = t.State,
+                               StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == t.State).Caption,
+                               TaskDescription = t.TaskDescription,
+                               TaskType = (PublicEnum.EE_InspectTaskType)t.TaskType,
+                               MasterID = t.MasterID
+                           }
 
-                         };
-
-                var result = new Pager<InspectTaskView>().GetCurrentPage(re, qurey.PageSize, qurey.PageIndex);
-
-                return new ActionResult<Pager<InspectTaskView>>(result);
+                };
+                return new ActionResult<Pager<InspectTaskView>>(re);
 
 
             }
@@ -290,35 +294,40 @@ namespace ESafety.Account.Service
                 var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q => empids.Contains(q.ID));
                 var posts = _work.Repository<Basic_Post>().Queryable(q => postids.Contains(q.ID));
 
-                var re = from t in retemp.ToList()
-                         let dangepoint = dangerpoints.FirstOrDefault(q => q.ID == t.DangerPointID)
-                         let employee = emps.FirstOrDefault(q => q.ID == t.EmployeeID)
-                         let postinfo = posts.FirstOrDefault(q => q.ID == t.ExecutePostID)
-                         select new InspectTempTaskView
-                         {
-                             Code = t.Code,
-                             CreateDate = t.CreateDate,
-                             CreateMan = t.CreateMan,
-                             DangerPointID = t.DangerPointID,
-                             DangerPointName = dangepoint == null ? "" : dangepoint.Name,
-                             Name = t.Name,
-                             ID = t.ID,
-                             EmployeeID = t.EmployeeID.GetValueOrDefault(),
-                             EmployeeName = employee == null ? "" : employee.CNName,
-                             EndTime = t.EndTime,
-                             ExecutePostID = t.ExecutePostID,
-                             ExecutePostName = postinfo == null ? "" : postinfo.Name,
-                             StartTime = t.StartTime,
-                             State = t.State,
-                             StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == t.State).Caption,
-                             TaskDescription = t.TaskDescription,
-                             TaskType = (PublicEnum.EE_InspectTaskType)t.TaskType,
-                             MasterID = t.MasterID
-                         };
+                var result = new Pager<Bll_InspectTask>().GetCurrentPage(retemp.OrderByDescending(o => o.CreateDate), qurey.PageSize, qurey.PageIndex);
 
-                var result = new Pager<InspectTempTaskView>().GetCurrentPage(re, qurey.PageSize, qurey.PageIndex);
-
-                return new ActionResult<Pager<InspectTempTaskView>>(result);
+                var re = new Pager<InspectTempTaskView>
+                {
+                    Items = result.Items,
+                    Pages = result.Pages,
+                    ExcelResult = result.ExcelResult,
+                    Data = from t in result.Data
+                           let dangepoint = dangerpoints.FirstOrDefault(q => q.ID == t.DangerPointID)
+                           let employee = emps.FirstOrDefault(q => q.ID == t.EmployeeID)
+                           let postinfo = posts.FirstOrDefault(q => q.ID == t.ExecutePostID)
+                           select new InspectTempTaskView
+                           {
+                               Code = t.Code,
+                               CreateDate = t.CreateDate,
+                               CreateMan = t.CreateMan,
+                               DangerPointID = t.DangerPointID,
+                               DangerPointName = dangepoint == null ? "" : dangepoint.Name,
+                               Name = t.Name,
+                               ID = t.ID,
+                               EmployeeID = t.EmployeeID.GetValueOrDefault(),
+                               EmployeeName = employee == null ? "" : employee.CNName,
+                               EndTime = t.EndTime,
+                               ExecutePostID = t.ExecutePostID,
+                               ExecutePostName = postinfo == null ? "" : postinfo.Name,
+                               StartTime = t.StartTime,
+                               State = t.State,
+                               StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == t.State).Caption,
+                               TaskDescription = t.TaskDescription,
+                               TaskType = (PublicEnum.EE_InspectTaskType)t.TaskType,
+                               MasterID = t.MasterID
+                           }
+                };
+                return new ActionResult<Pager<InspectTempTaskView>>(re);
 
 
             }
@@ -598,7 +607,6 @@ namespace ESafety.Account.Service
                 var re = from t in tasks
                          let danger = dangers.FirstOrDefault(q => q.ID == t.DangerPointID)
                          let tbills = bills.Where(q => q.TaskID == t.ID)
-                         // let bill = tbills == null ? null : tbills.OrderByDescending(o => o.StartTime).FirstOrDefault()
                          let date = t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Year ? t.CycleValue * 365 * 24 * 60
                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Month ? t.CycleValue * 30 * 24 * 60
                         : t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Week ? t.CycleValue * 7 * 24 * 60
@@ -607,7 +615,9 @@ namespace ESafety.Account.Service
                         : t.CycleValue
                          let billsub = tbills == null ? null : billsubjects.OrderByDescending(o => o.TaskTime).FirstOrDefault(q => tbills.Select(s => s.ID).Contains(q.BillID))
                          let ctime = tbills == null ? (DateTime.Now - t.StartTime).TotalMinutes : billsub == null ? (DateTime.Now - t.StartTime).TotalMinutes : (DateTime.Now - billsub.TaskTime).TotalMinutes
+                         let bill =tbills==null?false:tbills.Any(p => p.TaskID == t.ID && p.State >= (int)PublicEnum.BillFlowState.wait && p.EndTime>=billsub.TaskTime)
                          where ctime < date
+                         orderby (date-ctime) ascending
                          select new InsepctTaskByEmployee
                          {
 
@@ -623,7 +633,8 @@ namespace ESafety.Account.Service
                              TimeOutHours = 0,
                              CycleDateType = t.CycleDateType,
                              CycleValue = t.CycleValue,
-                             CycleName = Command.GetItems(typeof(PublicEnum.EE_CycleDateType)).FirstOrDefault(p => p.Value == t.CycleDateType).Caption
+                             CycleName = Command.GetItems(typeof(PublicEnum.EE_CycleDateType)).FirstOrDefault(p => p.Value == t.CycleDateType).Caption,
+                             HasDone = bill
                          };
 
 
@@ -940,10 +951,10 @@ namespace ESafety.Account.Service
                 var resubs = from csb in Command.GetItems(typeof(PublicEnum.EE_SubjectType))
                              select new CSub
                              {
-                                 SubTypeID=csb.Value,
-                                 SubType=csb.Caption,
+                                 SubTypeID = csb.Value,
+                                 SubType = csb.Caption,
                                  Subs = from sub in subs
-                                        where sub.SubjectType==csb.Value
+                                        where sub.SubjectType == csb.Value
                                         select new Sub
                                         {
                                             SubID = sub.SubjectID,
@@ -958,7 +969,7 @@ namespace ESafety.Account.Service
                                                       }
                                         }
                              };
- 
+
                 return new ActionResult<IEnumerable<CSub>>(resubs);
 
             }
