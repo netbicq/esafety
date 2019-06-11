@@ -24,6 +24,10 @@ namespace ESafety.Core.Model.DB
         /// </summary>
         public string Token { get; set; }
         /// <summary>
+        /// 用户的openID
+        /// </summary>
+        public string openID { get; set; }
+        /// <summary>
         /// 查看他人数据
         /// </summary>
         public bool OtherView { get; set; }
