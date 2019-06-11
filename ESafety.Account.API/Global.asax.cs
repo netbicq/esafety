@@ -23,8 +23,8 @@ namespace ESafety.Account.API
 
 
             AOP.reg();
-             
 
+            Quick.WXHelper.WxConfig.LoadConfig();
         }
     }
 }
