@@ -131,7 +131,28 @@ namespace ESafety.Core.Model.PARA
         public string Pwd { get; set; } 
 
     }
-
+    /// <summary>
+    /// 微信绑定用户参数
+    /// </summary>
+    public class UserSigninWX
+    {
+        /// <summary>
+        /// 账套代码
+        /// </summary>
+        public string AccountCode { get; set; }
+        /// <summary>
+        /// 用户名
+        /// </summary>
+        public string Login { get; set; }
+        /// <summary>
+        /// 密码
+        /// </summary>
+        public string Pwd { get; set; }
+        /// <summary>
+        /// 微信openID
+        /// </summary>
+        public string openID { get; set; }
+    }
 
     /// <summary>
     /// 搜索

@@ -1,4 +1,7 @@
-﻿using ESafety.Web.Unity;
+﻿using ESafety.Core.Model;
+using ESafety.Core.Model.PARA;
+using ESafety.Core.Model.View;
+using ESafety.Web.Unity;
 using Newtonsoft.Json.Linq;
 using Quick.WXHelper;
 using Quick.WXHelper.Dto;
@@ -18,7 +21,54 @@ namespace ESafety.Account.API.Controllers
     public class WeixinController : ESFAPI
     {
 
+        private Core.IAuth_User bll = null;
 
+        public WeixinController(Core.IAuth_User user)
+        {
+            bll = user as Service.Auth_UserService;
+            BusinessServices = new List<object> { bll as Service.Auth_UserService };
+        }
+        /// <summary>
+        /// 通过openid登陆
+        /// </summary>
+        /// <param name="openID"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("signinbyopenid/{openID}")]
+        [AllowAnonymous]
+        public ActionResult<UserView> UserSignin(string openID)
+        {
+            LogContent = "用户登陆,用户：" + openID;
+            return bll.UserSigninByopenID(openID);
+        }
+        /// <summary>
+        /// 用户绑写微信
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("userwxbind")]
+        [AllowAnonymous]
+        public ActionResult<UserView> UserWxBind(UserSigninWX para)
+        {
+            LogContent = "用户绑定微信账号：" + Newtonsoft.Json.JsonConvert.SerializeObject(para);
+            return bll.UserSigninBind(para);
+        }
+        /// <summary>
+        /// 解绑，非匿名访问
+        /// </summary>
+        /// <param name="openid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("userwxunbind/{openid}")]
+        [AllowAnonymous]
+        public ActionResult<bool> UserWxUnBind(string openid)
+        {
+            LogContent = "解绑微信号：" + openid;
+            return bll.UserWxUnBind(openid);
+        }
+
+        [AllowAnonymous]
         [HttpGet]
         [Route("wxjscfg")]
         public APIResult<JSConfig> GetWXConfig(string url)
@@ -27,6 +77,7 @@ namespace ESafety.Account.API.Controllers
             return Quick.WXHelper.WxService.GetJSWxConfig(url);
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [HttpPost]
         [Route("getmsg")]
@@ -100,6 +151,7 @@ namespace ESafety.Account.API.Controllers
             context.Response.Redirect(codeurl);
         }
 
+        
         /// <summary>
         /// 获取openid
         /// </summary>

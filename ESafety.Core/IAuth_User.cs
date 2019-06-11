@@ -58,6 +58,24 @@ namespace ESafety.Core
 
         ActionResult<Model.View.UserView> UserSignin(Model.PARA.UserSignin para);
         /// <summary>
+        /// 用户绑定openid
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        ActionResult<Model.View.UserView> UserSigninBind(Model.PARA.UserSigninWX para);
+        /// <summary>
+        /// 用户解绑
+        /// </summary>
+        /// <param name="openid"></param>
+        /// <returns></returns>
+        ActionResult<bool> UserWxUnBind(string openid);
+        /// <summary>
+        /// 通过openid登陆
+        /// </summary>
+        /// <param name="openid"></param>
+        /// <returns></returns>
+        ActionResult<Model.View.UserView> UserSigninByopenID(string openid);
+        /// <summary>
         /// 获取用户列表
         /// </summary>
         /// <param name="para"></param>
@@ -131,5 +149,6 @@ namespace ESafety.Core
         /// </summary>
         /// <returns></returns>
         ActionResult<IEnumerable<Auth_User>> userbin();
+
     }
 }

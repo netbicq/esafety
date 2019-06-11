@@ -108,6 +108,7 @@
     <Compile Include="DB\Auth_User.cs" />
     <Compile Include="DB\Auth_UserProfile.cs" />
     <Compile Include="DB\Auth_UserRole.cs" />
+    <Compile Include="DB\Platform\Auth_WxBinds.cs" />
     <Compile Include="DB\RPTAccountScope.cs" />
     <Compile Include="DB\RPTChildrenColumn.cs" />
     <Compile Include="DB\RPTChildrenTable.cs" />

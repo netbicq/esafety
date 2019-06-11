@@ -23,6 +23,7 @@ namespace ESafety.Core
 
         private IRepository<Model.DB.Auth_User> _rpsuser = null;
         private IRepository<Model.DB.Auth_UserProfile> _rpsprofiel = null;
+        private IRepository<Model.DB.Platform.Auth_WxBinds> _rpswxbinds = null;
 
         public Auth_UserService(ORM.IUnitwork work)
         {
@@ -31,6 +32,7 @@ namespace ESafety.Core
 
             _rpsprofiel = work.Repository<Model.DB.Auth_UserProfile>();
             _rpsuser = work.Repository<Model.DB.Auth_User>();
+            _rpswxbinds = work.Repository<Model.DB.Platform.Auth_WxBinds>();
 
         }
 
@@ -707,6 +709,123 @@ namespace ESafety.Core
 
 
         }
-         
+        /// <summary>
+        /// 用户绑定
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        public virtual ActionResult<UserView> UserSigninBind(UserSigninWX para)
+        {
+            var user = _rpsuser.GetModel(q => q.Login == para.Login);
+            if (user == null)
+            {
+                throw new Exception("用户名或密码错误");
+            }
+            if (string.Compare(user.Pwd, para.Pwd, false) != 0)
+            {
+                throw new Exception("用户名或密码错误");
+            }
+            if (string.IsNullOrEmpty(para.openID))
+            {
+                throw new Exception("openID不能为空");
+            }
+            if (!string.IsNullOrEmpty(user.openID)) //已经绑定则不允许重新绑定
+            {
+                throw new Exception("用户已经绑定微信");
+            }
+            var profile = _rpsprofiel.GetModel(q => q.Login == para.Login);
+
+            //int vtimes = int.Parse(System.Configuration.ConfigurationManager.AppSettings["TokenValidTimes"]);
+
+
+            //user.TokenValidTime = DateTime.Now.AddMinutes(vtimes);
+
+            //user.Token = Command.CreateToken(64);
+            user.Token = "";
+
+            user.openID = para.openID;
+
+            _rpsuser.Update(user);
+            _work.Commit();
+
+            //写入平台的绑定信息
+            
+
+            return new ActionResult<UserView>(new UserView
+            {
+                UserInfo = user,
+                UserProfile = profile,
+            });
+        }
+
+        public virtual ActionResult<UserView> UserSigninByopenID(string openid)
+        {
+            throw new Exception("平台不支持微信登陆");
+
+            //var wxbind = _rpswxbinds.GetModel(q => q.openID == openid);
+            //if(wxbind == null)
+            //{
+            //    throw new Exception("微信尚未绑定");
+            //}
+
+            //var user = _rpsuser.GetModel(q => q.Login == para.Login);
+            //if (user == null)
+            //{
+            //    throw new Exception("用户名或密码错误");
+            //}
+            //if (string.Compare(user.Pwd, para.Pwd, false) != 0)
+            //{
+            //    throw new Exception("用户名或密码错误");
+            //}
+            //if (string.IsNullOrEmpty(para.openID))
+            //{
+            //    throw new Exception("openID不能为空");
+            //}
+            //var profile = _rpsprofiel.GetModel(q => q.Login == para.Login);
+
+            ////int vtimes = int.Parse(System.Configuration.ConfigurationManager.AppSettings["TokenValidTimes"]);
+
+
+            ////user.TokenValidTime = DateTime.Now.AddMinutes(vtimes);
+
+            ////user.Token = Command.CreateToken(64);
+            //user.openID = para.openID;
+
+            //_rpsuser.Update(user);
+            //_work.Commit();
+
+            //return new ActionResult<UserView>(new UserView
+            //{
+            //    UserInfo = user,
+            //    UserProfile = profile,
+            //});
+        }
+        /// <summary>
+        /// 用户解绑
+        /// </summary>
+        /// <param name="openid"></param>
+        /// <returns></returns>
+        public virtual ActionResult<bool> UserWxUnBind(string openid)
+        {
+           
+            try
+            {
+                _work.SetUserDB(null);
+
+                //throw new NotImplementedException(); 
+                var wxbind = _rpswxbinds.GetModel(q => q.openID == openid);
+                if (wxbind == null)
+                {
+                    throw new Exception("该openid未绑定");
+                }
+                _rpswxbinds.Delete(wxbind);
+                _work.Commit();
+                return new ActionResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new ActionResult<bool>(ex);
+            }
+        }
     }
 }
