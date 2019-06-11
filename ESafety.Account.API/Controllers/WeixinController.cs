@@ -27,6 +27,7 @@ namespace ESafety.Account.API.Controllers
             return Quick.WXHelper.WxService.GetJSWxConfig(url);
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [HttpPost]
         [Route("getmsg")]
