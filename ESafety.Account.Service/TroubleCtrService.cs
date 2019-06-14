@@ -430,7 +430,7 @@ namespace ESafety.Account.Service
                 var dlvs = _work.Repository<Basic_Dict>().Queryable(p => p.ParentID == OptionConst.DangerLevel);
                 var tlvs = _work.Repository<Basic_Dict>().Queryable(p => p.ParentID == OptionConst.TroubleLevel);
 
-                var retc = from tc in ctrs.ToList()
+                var retc = from tc in ctrs
                            let aemp = emps.FirstOrDefault(p => p.ID == tc.AcceptorID)
                            let eemp = emps.FirstOrDefault(p => p.ID == tc.ExecutorID)
                            let pemp = emps.FirstOrDefault(p => p.ID == tc.PrincipalID)
@@ -442,6 +442,8 @@ namespace ESafety.Account.Service
                            let tlv = tlvs.FirstOrDefault(p => p.ID == tc.TroubleLevel)
                            where para.Query.IsHistory ? tc.State == (int)PublicEnum.EE_TroubleState.history : tc.State != (int)PublicEnum.EE_TroubleState.history
                            where pemp.CNName.Contains(para.Query.Key) || org.OrgName.Contains(para.Query.Key) || tc.Code.Contains(para.Query.Key) || bemp.CNName.Contains(para.Query.Key) || para.Query.Key == string.Empty
+                           orderby lv.MinValue descending
+                           orderby tlv.MinValue descending
                            select new TroubleCtrView
                            {
                                CtrID = tc.ID,
@@ -673,6 +675,7 @@ namespace ESafety.Account.Service
                          let sub = _work.Repository<Basic_DangerPointRelation>().Queryable(p => p.SubjectID == checkresult.SubjectID).First()
                          let danger = _work.Repository<Basic_Danger>().GetModel(p => p.ID == checkresult.DangerID)
                          let lv = _work.Repository<Basic_Dict>().GetModel(c.DangerLevel)
+                         let femp=emps.FirstOrDefault(p=>p.ID==bill.EmployeeID)
                          select new APPTroubleCtrView
                          {
                              KeyID = c.ID,
@@ -692,6 +695,8 @@ namespace ESafety.Account.Service
                              SubName = sub.SubjectName,
                              CDangerLevelName = lv.DictName,
                              DangerPoint = point.Name,
+                             BID=checkresult.ID,
+                             FEmp=femp.CNName,
                              Cuser = user.ID == c.PrincipalID ? user.ID == c.ExecutorID ? 4 : user.ID == c.AcceptorID ? 5 : 1 : user.ID == c.ExecutorID ? 2 : user.ID == c.AcceptorID ? 3 : 0
                          };
                 return new ActionResult<IEnumerable<APPTroubleCtrView>>(re);
@@ -880,7 +885,7 @@ namespace ESafety.Account.Service
                 var billIDs = bills.Select(s => s.ID);
                 var ctrs = _rpstc.Queryable(p => billIDs.Contains(p.BillID) && p.State < (int)PublicEnum.EE_TroubleState.over);
 
-                var dbf = _rpstcf.Queryable();
+                //var dbf = _rpstcf.Queryable();
                 var re = new List<TroubleCtrMenu>();
 
                 for (int i = 1; i < 3; i++)
@@ -889,9 +894,9 @@ namespace ESafety.Account.Service
                     {
                         MenuValue = i,
                         MemuDesc = i == 1 ? "整改中" : "未整改",
-                        Count = i == 1 ? ctrs.Where(p => dbf.Select(s => s.ControlID).Contains(p.ID)).Count()
-                                      : ctrs.Where(p => !dbf.Select(s => s.ControlID).Contains(p.ID)).Count()
-                    };
+                        Count = i == 1 ? ctrs.Where(p => /*dbf.Select(s => s.ControlID).Contains(p.ID)*/p.ExecutorID != null || p.AcceptorID != null || p.FinishTime != null).Count() 
+                                       : ctrs.Where(p => p.ExecutorID == null && p.AcceptorID == null && p.FinishTime == null).Count()
+                };
                     re.Add(menu);
                 }
 
@@ -923,19 +928,28 @@ namespace ESafety.Account.Service
                 var billIDs = bills.Select(s => s.ID);
                 var ctrs = _rpstc.Queryable(p => billIDs.Contains(p.BillID) && p.State < (int)PublicEnum.EE_TroubleState.over);
 
-                var dbf = _rpstcf.Queryable();
+                // var dbf = _rpstcf.Queryable();
                 var emps = _work.Repository<Basic_Employee>().Queryable();
 
                 var dicts = _work.Repository<Basic_Dict>().Queryable(p => p.ParentID == OptionConst.DangerLevel);
                 var tlvs = _work.Repository<Basic_Dict>().Queryable(p => p.ParentID == OptionConst.TroubleLevel);
-                var ctrsV = query.Query == 1 ? ctrs.Where(p => dbf.Select(s => s.ControlID).Contains(p.ID)) : ctrs.Where(p => !dbf.Select(s => s.ControlID).Contains(p.ID));
+                var ctrsV = query.Query == 1 ? ctrs.Where(p => /*dbf.Select(s => s.ControlID).Contains(p.ID)*/p.ExecutorID != null|| p.AcceptorID!=null||p.FinishTime!=null) : ctrs.Where(p => p.ExecutorID == null && p.AcceptorID == null && p.FinishTime == null);
+
+                var details = _rpstcd.Queryable();
+
                 var retemp = from c in ctrsV.ToList()
                              let bill = bills.FirstOrDefault(p => p.ID == c.BillID)
                              let bemp = emps.FirstOrDefault(p => p.ID == bill.EmployeeID)
                              let pemp = emps.FirstOrDefault(p => p.ID == c.PrincipalID)
+                             let aemp = c.AcceptorID == null ? null : emps.FirstOrDefault(p => p.ID == c.AcceptorID)
+                             let eemp = c.ExecutorID == null ? null : emps.FirstOrDefault(p => p.ID == c.ExecutorID)
                              let lv = dicts.FirstOrDefault(p => p.ID == c.DangerLevel)
                              let tlv = tlvs.FirstOrDefault(p => p.ID == c.TroubleLevel)
                              let dp = dangerPoints.FirstOrDefault(p => p.ID == bill.DangerPointID)
+                             let check = details.FirstOrDefault(p => p.TroubleControlID == c.ID)
+                             let checksub=_work.Repository<Bll_TaskBillSubjects>().Queryable().FirstOrDefault(p=>p.ID==check.BillSubjectsID)
+                             let sub=_work.Repository<Basic_DangerPointRelation>().Queryable().FirstOrDefault(p=>p.DangerPointID==c.DangerPoint&&p.SubjectID==checksub.SubjectID)
+                             let danger=_work.Repository<Basic_Danger>().GetModel(checksub.DangerID)
                              orderby c.TroubleLevel descending
                              select new TroubleCtrsPage
                              {
@@ -943,7 +957,14 @@ namespace ESafety.Account.Service
                                  DangerLevel = "风险等级:" + lv.DictName,
                                  Principal = "责任人:" + pemp.CNName,
                                  TroubleLevel = "隐患等级:" + tlv.DictName,
-                                 DangerPoint = "风险点:" + dp.Name
+                                 DangerPoint = "风险点:" + dp.Name,
+                                 AEmp=aemp==null?"":"执行人:"+aemp.CNName,
+                                 CTime=c.FinishTime==null?"":"预计完成时间:"+c.FinishTime.Value,
+                                 EEmp=eemp==null?"":"验收人:"+eemp.CNName,
+                                 SubType="管控主体类型:"+Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(v=>v.Value==sub.SubjectType).Caption,
+                                 CheckSub="管控主体名:"+sub.SubjectName,
+                                 Danger="风控项:"+danger.Name
+                                 
                              };
                 var re = new Pager<TroubleCtrsPage>().GetCurrentPage(retemp, query.PageSize, query.PageIndex);
                 return new ActionResult<Pager<TroubleCtrsPage>>(re);

@@ -148,10 +148,10 @@ namespace ESafety.Core.Model.PARA
         /// </summary>
         public string Tel { get; set; }
 
-        /// <summary>
-        /// 角色ID集合
-        /// </summary>
-        public IEnumerable<Guid> RoleIDs { get; set; }
+        ///// <summary>
+        ///// 角色ID集合
+        ///// </summary>
+        //public IEnumerable<Guid> RoleIDs { get; set; }
     }
 
     public class EmployeeQuery

@@ -122,6 +122,7 @@ namespace ESafety.Account.Service
 
             return new ActionResult<UserView>(new UserView
             {
+                AccountID=act.ID,
                 UserInfo = user,
                 UserProfile = profile
             }); 
@@ -211,6 +212,54 @@ namespace ESafety.Account.Service
             Unitwork.SetUserDB(userdb);
 
             var sresult = base.UserSignin(para);
+            if (sresult.data != null && sresult.state == 200)
+            {
+                var user = sresult.data.UserInfo;
+                user.TokenValidTime = DateTime.Now.AddMinutes(account.TokenValidTimes);
+                _work.Repository<Core.Model.DB.Auth_User>().Update(user);
+                _work.Commit();
+
+                sresult.data.AccountID = account.ID;
+                sresult.data.AccountCode = account.AccountCode;
+                sresult.data.AccountName = account.AccountName;
+                sresult.data.Principal = account.Principal;
+                sresult.data.ShortName = account.ShortName;
+                sresult.data.Tel = account.Tel;
+
+            }
+            return sresult;
+        }
+        /// <summary>
+        /// 移动端登陆
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        public override ActionResult<UserView> APPUserSignin(UserSignin para)
+        {
+            var rpsaccount = _work.Repository<AccountInfo>();
+            var account = rpsaccount.GetModel(q => q.AccountCode == para.AccountCode);
+
+            if (account == null)
+            {
+                throw new Exception("用户名密码或账套号错误");
+            }
+            if (account.State == (int)PublicEnum.AccountState.Closed || account.ValidDate <= DateTime.Now)
+            {
+                throw new Exception("账套已过期或已关闭");
+            }
+
+
+
+            Core.Model.AppUserDB userdb = new AppUserDB()
+            {
+                DBName = account.DBName,
+                DBPwd = account.DBPwd,
+                DBServer = account.DBServer,
+                DBUid = account.DBUid
+            };
+            Unitwork.SetUserDB(userdb);
+
+            var sresult = base.APPUserSignin(para);
             if (sresult.data != null && sresult.state == 200)
             {
                 var user = sresult.data.UserInfo;

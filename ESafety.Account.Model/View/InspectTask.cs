@@ -57,7 +57,8 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 状态
         /// </summary>
-        public string StateName { get; set; }
+        [Newtonsoft.Json.JsonConverter(typeof(EnumJsonConvert<PublicEnum.BillFlowState>))]
+        public PublicEnum.BillFlowState StateName { get; set; }
         /// <summary>
         /// 仓建人
         /// </summary>

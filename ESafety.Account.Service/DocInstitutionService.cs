@@ -192,7 +192,7 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbins = _rpsin.GetList(p=>p.TypeID==para.Query.TypeID&&(p.Name.Contains(para.Query.Name)||string.IsNullOrEmpty(para.Query.Name))).OrderBy(o=>o.Name);
+                var dbins = _rpsin.GetList(p=>p.TypeID==para.Query.TypeID&&(p.Name.Contains(para.Query.Name)||string.IsNullOrEmpty(para.Query.Name))).OrderBy(o=>o.CreateDate);
                 var revs = dbins.MAPTO<DocInstitutionView>();
                 var re = new Pager<DocInstitutionView>().GetCurrentPage(revs, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<DocInstitutionView>>(re);

@@ -224,44 +224,37 @@ namespace ESafety.Account.Service
                 var dangerpoints = _work.Repository<Basic_DangerPoint>().Queryable(q => dpids.Contains(q.ID));
                 var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q => empids.Contains(q.ID));
                 var posts = _work.Repository<Basic_Post>().Queryable(q => postids.Contains(q.ID));
+                var re = from t in retemp
+                         let dangepoint = dangerpoints.FirstOrDefault(q => q.ID == t.DangerPointID)
+                         let employee = emps.FirstOrDefault(q => q.ID == t.EmployeeID)
+                         let postinfo = posts.FirstOrDefault(q => q.ID == t.ExecutePostID)
+                         orderby t.CreateDate
+                         select new InspectTaskView
+                         {
+                             Code = t.Code,
+                             CreateDate = t.CreateDate,
+                             CreateMan = t.CreateMan,
+                             CycleDateType = t.CycleDateType,
+                             CycleValue = t.CycleValue,
+                             DangerPointID = t.DangerPointID,
+                             DangerPointName = dangepoint == null ? "" : dangepoint.Name,
+                             Name = t.Name,
+                             ID = t.ID,
+                             EmployeeID =t.EmployeeID==null?Guid.Empty:t.EmployeeID.Value,
+                             EmployeeName = employee == null ? "" : employee.CNName,
+                             EndTime = t.EndTime,
+                             ExecutePostID = t.ExecutePostID,
+                             ExecutePostName = postinfo == null ? "" : postinfo.Name,
+                             StartTime = t.StartTime,
+                             State = t.State,
+                             StateName = (PublicEnum.BillFlowState)t.State,
+                             TaskDescription = t.TaskDescription,
+                             TaskType = (PublicEnum.EE_InspectTaskType)t.TaskType,
+                             MasterID = t.MasterID
+                         };
 
-                var result = new Pager<Bll_InspectTask>().GetCurrentPage(retemp.OrderByDescending(o => o.CreateDate), qurey.PageSize, qurey.PageIndex);
-
-                var re = new Pager<InspectTaskView>
-                {
-                    ExcelResult = result.ExcelResult,
-                    Items = result.Items,
-                    Pages = result.Pages,
-                    Data = from t in result.Data
-                           let dangepoint = dangerpoints.FirstOrDefault(q => q.ID == t.DangerPointID)
-                           let employee = emps.FirstOrDefault(q => q.ID == t.EmployeeID)
-                           let postinfo = posts.FirstOrDefault(q => q.ID == t.ExecutePostID)
-                           select new InspectTaskView
-                           {
-                               Code = t.Code,
-                               CreateDate = t.CreateDate,
-                               CreateMan = t.CreateMan,
-                               CycleDateType = t.CycleDateType,
-                               CycleValue = t.CycleValue,
-                               DangerPointID = t.DangerPointID,
-                               DangerPointName = dangepoint == null ? "" : dangepoint.Name,
-                               Name = t.Name,
-                               ID = t.ID,
-                               EmployeeID = t.EmployeeID.GetValueOrDefault(),
-                               EmployeeName = employee == null ? "" : employee.CNName,
-                               EndTime = t.EndTime,
-                               ExecutePostID = t.ExecutePostID,
-                               ExecutePostName = postinfo == null ? "" : postinfo.Name,
-                               StartTime = t.StartTime,
-                               State = t.State,
-                               StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == t.State).Caption,
-                               TaskDescription = t.TaskDescription,
-                               TaskType = (PublicEnum.EE_InspectTaskType)t.TaskType,
-                               MasterID = t.MasterID
-                           }
-
-                };
-                return new ActionResult<Pager<InspectTaskView>>(re);
+                var result = new Pager<InspectTaskView>().GetCurrentPage(re, qurey.PageSize, qurey.PageIndex);
+                return new ActionResult<Pager<InspectTaskView>>(result);
 
 
             }
@@ -294,40 +287,36 @@ namespace ESafety.Account.Service
                 var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q => empids.Contains(q.ID));
                 var posts = _work.Repository<Basic_Post>().Queryable(q => postids.Contains(q.ID));
 
-                var result = new Pager<Bll_InspectTask>().GetCurrentPage(retemp.OrderByDescending(o => o.CreateDate), qurey.PageSize, qurey.PageIndex);
+               
 
-                var re = new Pager<InspectTempTaskView>
-                {
-                    Items = result.Items,
-                    Pages = result.Pages,
-                    ExcelResult = result.ExcelResult,
-                    Data = from t in result.Data
-                           let dangepoint = dangerpoints.FirstOrDefault(q => q.ID == t.DangerPointID)
-                           let employee = emps.FirstOrDefault(q => q.ID == t.EmployeeID)
-                           let postinfo = posts.FirstOrDefault(q => q.ID == t.ExecutePostID)
-                           select new InspectTempTaskView
-                           {
-                               Code = t.Code,
-                               CreateDate = t.CreateDate,
-                               CreateMan = t.CreateMan,
-                               DangerPointID = t.DangerPointID,
-                               DangerPointName = dangepoint == null ? "" : dangepoint.Name,
-                               Name = t.Name,
-                               ID = t.ID,
-                               EmployeeID = t.EmployeeID.GetValueOrDefault(),
-                               EmployeeName = employee == null ? "" : employee.CNName,
-                               EndTime = t.EndTime,
-                               ExecutePostID = t.ExecutePostID,
-                               ExecutePostName = postinfo == null ? "" : postinfo.Name,
-                               StartTime = t.StartTime,
-                               State = t.State,
-                               StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == t.State).Caption,
-                               TaskDescription = t.TaskDescription,
-                               TaskType = (PublicEnum.EE_InspectTaskType)t.TaskType,
-                               MasterID = t.MasterID
-                           }
-                };
-                return new ActionResult<Pager<InspectTempTaskView>>(re);
+                var re = from t in retemp
+                         let dangepoint = dangerpoints.FirstOrDefault(q => q.ID == t.DangerPointID)
+                         let employee = emps.FirstOrDefault(q => q.ID == t.EmployeeID)
+                         let postinfo = posts.FirstOrDefault(q => q.ID == t.ExecutePostID)
+                         orderby t.CreateDate
+                         select new InspectTempTaskView
+                         {
+                             Code = t.Code,
+                             CreateDate = t.CreateDate,
+                             CreateMan = t.CreateMan,
+                             DangerPointID = t.DangerPointID,
+                             DangerPointName = dangepoint == null ? "" : dangepoint.Name,
+                             Name = t.Name,
+                             ID = t.ID,
+                             EmployeeID =t.EmployeeID==null?Guid.Empty:t.EmployeeID.Value,
+                             EmployeeName = employee == null ? "" : employee.CNName,
+                             EndTime = t.EndTime,
+                             ExecutePostID = t.ExecutePostID,
+                             ExecutePostName = postinfo == null ? "" : postinfo.Name,
+                             StartTime = t.StartTime,
+                             State = t.State,
+                             StateName = (PublicEnum.BillFlowState)t.State,
+                             TaskDescription = t.TaskDescription,
+                             TaskType = (PublicEnum.EE_InspectTaskType)t.TaskType,
+                             MasterID = t.MasterID
+                         };
+                var result = new Pager<InspectTempTaskView>().GetCurrentPage(re, qurey.PageSize, qurey.PageIndex);
+                return new ActionResult<Pager<InspectTempTaskView>>(result);
 
 
             }
@@ -517,7 +506,7 @@ namespace ESafety.Account.Service
 
                 remodel.DangerPointName = dangmodel == null ? default(string) : dangmodel.Name;
                 remodel.EmployeeName = emp == null ? default(string) : emp.CNName;
-                remodel.StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == remodel.State).Caption;
+                remodel.StateName = (PublicEnum.BillFlowState)remodel.State;
                 remodel.ExecutePostName = post == null ? default(string) : post.Name;
 
 

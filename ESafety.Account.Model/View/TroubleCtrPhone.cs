@@ -83,6 +83,14 @@ namespace ESafety.Account.Model.View
         /// 当前人 1负责人 2执行人 3验收人 4负责人与执行人 5负责人与验收人
         /// </summary>
         public int Cuser { get; set; }
+        /// <summary>
+        /// 用于图片的查询
+        /// </summary>
+        public Guid BID { get; set; }
+        /// <summary>
+        /// 隐患发现人
+        /// </summary>
+        public string FEmp { get; set; }
     }
     /// <summary>
     /// APP 统计的管控页菜单
@@ -127,5 +135,29 @@ namespace ESafety.Account.Model.View
         /// 风险点
         /// </summary>
         public string DangerPoint { get; set; }
+        /// <summary>
+        /// 主体类型
+        /// </summary>
+        public string SubType { get; set; }
+        /// <summary>
+        /// 主体
+        /// </summary>
+        public string CheckSub { get; set; }
+        /// <summary>
+        /// 风控项
+        /// </summary>
+        public string Danger { get; set; }
+        /// <summary>
+        /// 验收人
+        /// </summary>
+        public string AEmp { get; set; }
+        /// <summary>
+        /// 执行人
+        /// </summary>
+        public string EEmp { get; set; }
+        /// <summary>
+        /// 预计完成时间
+        /// </summary>
+        public string CTime { get; set; }
     }
 }

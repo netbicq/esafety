@@ -90,6 +90,7 @@ namespace ESafety.Core
                         CreateDate=DateTime.Now,
                         State = 1,
                         Token = "",
+                        openID="",
                     };
                     //个人资料
                     var profile = new Model.DB.Auth_UserProfile()
@@ -251,21 +252,21 @@ namespace ESafety.Core
                 }
                 dbemployee = employee.CopyTo<Basic_Employee>(dbemployee);
 
-                //角色
-                var userrole = _work.Repository<Model.DB.Auth_UserRole>();
-                var dbroles = new List<Model.DB.Auth_UserRole>();
-                foreach (var role in employee.RoleIDs)
-                {
-                    var urole = new Model.DB.Auth_UserRole
-                    {
-                        Login = dbemployee.Login,
-                        RoleID = role,
-                        ID = Guid.NewGuid()
-                    };
-                    dbroles.Add(urole);
-                };
-                userrole.Delete(p => p.Login == dbemployee.Login);
-                userrole.Add(dbroles);
+                ////角色
+                //var userrole = _work.Repository<Model.DB.Auth_UserRole>();
+                //var dbroles = new List<Model.DB.Auth_UserRole>();
+                //foreach (var role in employee.RoleIDs)
+                //{
+                //    var urole = new Model.DB.Auth_UserRole
+                //    {
+                //        Login = dbemployee.Login,
+                //        RoleID = role,
+                //        ID = Guid.NewGuid()
+                //    };
+                //    dbroles.Add(urole);
+                //};
+                //userrole.Delete(p => p.Login == dbemployee.Login);
+                //userrole.Add(dbroles);
 
                 //自定义项
                 var definevalue = new UserDefinedBusinessValue

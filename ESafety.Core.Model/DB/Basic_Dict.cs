@@ -56,5 +56,9 @@ namespace ESafety.Core.Model.DB
         ///  LSD最大值
         /// </summary>
         public int LSD_DMinValue { get; set; }
+        /// <summary>
+        ///  创建时间
+        /// </summary>
+        public DateTime CreateDate { get; set; }
     }
 }

@@ -50,12 +50,21 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("参数有误");
                 }
-                var check = _rpsdanger.Any(p => p.DangerSortID == danger.DangerSortID && (p.Name == danger.Name || p.Code == danger.Code));
+                var DangerNames = danger.Dangers.Select(s => s.Name);
+                var DangerCodes = danger.Dangers.Select(s => s.Code);
+                var check = _rpsdanger.Any(p => p.DangerSortID == danger.DangerSortID && (DangerNames.Contains(p.Name)|| DangerCodes.Contains(p.Code)));
                 if (check)
                 {
-                    throw new Exception("该风控项名或编号已存在！");
+                    throw new Exception("集合中已存在配置的项!");
                 }
-                var _danger = danger.MAPTO<Basic_Danger>();
+                var _danger = from d in danger.Dangers
+                              select new Basic_Danger
+                              {
+                                  Code = d.Code,
+                                  DangerLevel = d.DangerLevel,
+                                  DangerSortID = danger.DangerSortID,
+                                  Name = d.Name
+                              };
                 _rpsdanger.Add(_danger);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -416,6 +425,7 @@ namespace ESafety.Account.Service
             {
                 var dbdangersorts = _rpsdangersort.Queryable(p => p.ParentID == id);
                 var re = from s in dbdangersorts.ToList()
+                         orderby s.SortName 
                          select new DangerSortView
                          {
                              ID = s.ID,

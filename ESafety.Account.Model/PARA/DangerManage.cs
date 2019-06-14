@@ -8,11 +8,6 @@ using System.Threading.Tasks;
 
 namespace ESafety.Account.Model.PARA
 {
-    public class DangerManage
-    {
-
-    }
-
     public class DangerSortNew
     {
         public Guid ParentID { get; set; }
@@ -25,6 +20,18 @@ namespace ESafety.Account.Model.PARA
     public class DangerNew
     {
         /// <summary>
+        /// 类别ID
+        /// </summary>
+        public Guid DangerSortID { get; set; }
+        /// <summary>
+        /// 风控项
+        /// </summary>
+        public IEnumerable<DangerItem> Dangers { get; set; }
+    }
+
+    public class DangerItem
+    {
+        /// <summary>
         /// 编号
         /// </summary>
         public string Code { get; set; }
@@ -33,18 +40,27 @@ namespace ESafety.Account.Model.PARA
         /// </summary>
         public string Name { get; set; }
         /// <summary>
-        /// 类别ID
-        /// </summary>
-        public Guid DangerSortID { get; set; }
-        /// <summary>
         /// 风险级别
         /// </summary>
         public Guid DangerLevel { get; set; }
     }
 
+
     public class DangerEdit:DangerNew
     {
         public Guid ID { get; set; }
+        /// <summary>
+        /// 编号
+        /// </summary>
+        public string Code { get; set; }
+        /// <summary>
+        /// 名称
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// 风险级别
+        /// </summary>
+        public Guid DangerLevel { get; set; }
     }
 
     public class DangerSafetyStandards

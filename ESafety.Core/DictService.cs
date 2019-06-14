@@ -53,7 +53,7 @@ namespace ESafety.Core
                     throw new Exception("系统内置不允许修改!");
                 }
                 var newdict = dict.MAPTO<Basic_Dict>();
-
+                newdict.CreateDate = DateTime.Now;
                 rpsDict.Add(newdict);
                 
 
@@ -82,7 +82,7 @@ namespace ESafety.Core
                 }
                
                 var newtype = dicttype.MAPTO<Basic_Dict>();
-
+                newtype.CreateDate = DateTime.Now;
                 rpsDict.Add(newtype);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -243,7 +243,7 @@ namespace ESafety.Core
         {
             try
             {
-                var retemp = rpsDict.Queryable(q => q.ParentID == para.Query).OrderByDescending(o=>o.MinValue);
+                var retemp = rpsDict.Queryable(q => q.ParentID == para.Query).OrderByDescending(o=>o.MinValue).OrderBy(s=>s.CreateDate);
 
                 var re = new Pager<Basic_Dict>().GetCurrentPage(retemp, para.PageSize, para.PageIndex);
                 
@@ -284,7 +284,7 @@ namespace ESafety.Core
 
         private IEnumerable<Basic_Dict> getdictsbyParentID(Guid parentid)
         {
-            var re = rpsDict.Queryable(q => q.ParentID == parentid);
+            var re = rpsDict.Queryable(q => q.ParentID == parentid).OrderBy(o=>o.CreateDate);
             return re;
         }
         /// <summary>
@@ -295,7 +295,7 @@ namespace ESafety.Core
         {
             try
             {
-                var re = getdictsbyParentID(OptionConst.DocLicense);
+                var re = getdictsbyParentID(OptionConst.DocLicense).OrderBy(o => o.CreateDate);
                 return new ActionResult<IEnumerable<Basic_Dict>>(re);
             }
             catch (Exception ex)
@@ -311,7 +311,7 @@ namespace ESafety.Core
         {
             try
             {
-                var re = getdictsbyParentID(OptionConst.DocRegime);
+                var re = getdictsbyParentID(OptionConst.DocRegime).OrderBy(o => o.CreateDate);
                 return new ActionResult<IEnumerable<Basic_Dict>>(re);
             }
             catch (Exception ex)
@@ -343,7 +343,7 @@ namespace ESafety.Core
         {
             try
             {
-                var re = getdictsbyParentID(OptionConst.Eval_SGJG);
+                var re = getdictsbyParentID(OptionConst.Eval_SGJG).OrderBy(o => o.CreateDate);
                 return new ActionResult<IEnumerable<Basic_Dict>>(re);
             }
             catch (Exception ex)
@@ -360,7 +360,7 @@ namespace ESafety.Core
         {
             try
             {
-                var re = getdictsbyParentID(OptionConst.Eval_SGLX);
+                var re = getdictsbyParentID(OptionConst.Eval_SGLX).OrderBy(o => o.CreateDate);
                 return new ActionResult<IEnumerable<Basic_Dict>>(re);
             }
             catch (Exception ex)
@@ -376,7 +376,7 @@ namespace ESafety.Core
         {
             try
             {
-                var re = getdictsbyParentID(OptionConst.Eval_WHYS );
+                var re = getdictsbyParentID(OptionConst.Eval_WHYS ).OrderBy(o => o.CreateDate);
                 return new ActionResult<IEnumerable<Basic_Dict>>(re);
             }
             catch (Exception ex)
@@ -392,7 +392,7 @@ namespace ESafety.Core
         {
             try
             {
-                var re = getdictsbyParentID(OptionConst.Eval_YXFW);
+                var re = getdictsbyParentID(OptionConst.Eval_YXFW).OrderBy(o => o.CreateDate);
                 return new ActionResult<IEnumerable<Basic_Dict>>(re);
             }
             catch (Exception ex)
@@ -408,7 +408,7 @@ namespace ESafety.Core
         {
             try
             {
-                var re = getdictsbyParentID(OptionConst.Eval_LECD_L);
+                var re = getdictsbyParentID(OptionConst.Eval_LECD_L).OrderBy(o => o.CreateDate);
                 return new ActionResult<IEnumerable<Basic_Dict>>(re);
             }
             catch (Exception ex)
@@ -424,7 +424,7 @@ namespace ESafety.Core
         {
             try
             {
-                var re = getdictsbyParentID(OptionConst.Eval_LECD_E);
+                var re = getdictsbyParentID(OptionConst.Eval_LECD_E).OrderBy(o => o.CreateDate);
                 return new ActionResult<IEnumerable<Basic_Dict>>(re);
             }
             catch (Exception ex)
@@ -440,7 +440,7 @@ namespace ESafety.Core
         {
             try
             {
-                var re = getdictsbyParentID(OptionConst.Eval_LECD_C);
+                var re = getdictsbyParentID(OptionConst.Eval_LECD_C).OrderBy(o => o.CreateDate);
                 return new ActionResult<IEnumerable<Basic_Dict>>(re);
             }
             catch (Exception ex)
@@ -456,7 +456,7 @@ namespace ESafety.Core
         {
             try
             {
-                var re = getdictsbyParentID(OptionConst.Eval_LSD_S);
+                var re = getdictsbyParentID(OptionConst.Eval_LSD_S).OrderBy(o => o.CreateDate);
                 return new ActionResult<IEnumerable<Basic_Dict>>(re);
             }
             catch (Exception ex)
@@ -472,7 +472,7 @@ namespace ESafety.Core
         {
             try
             {
-                var re = getdictsbyParentID(OptionConst.Eval_LSD_S);
+                var re = getdictsbyParentID(OptionConst.Eval_LSD_S).OrderBy(o => o.CreateDate);
                 return new ActionResult<IEnumerable<Basic_Dict>>(re);
             }
             catch (Exception ex)
@@ -488,7 +488,7 @@ namespace ESafety.Core
         {
             try
             {
-                var re = getdictsbyParentID(OptionConst.TroubleLevel);
+                var re = getdictsbyParentID(OptionConst.TroubleLevel).OrderBy(o => o.CreateDate);
                 return new ActionResult<IEnumerable<Basic_Dict>>(re);
             }
             catch (Exception ex)

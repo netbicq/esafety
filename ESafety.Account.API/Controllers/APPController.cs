@@ -1,7 +1,10 @@
 ﻿using ESafety.Account.IService;
 using ESafety.Account.Model.PARA;
 using ESafety.Account.Model.View;
+using ESafety.Core;
 using ESafety.Core.Model;
+using ESafety.Core.Model.PARA;
+using ESafety.Core.Model.View;
 using ESafety.ORM;
 using ESafety.Web.Unity;
 using Newtonsoft.Json;
@@ -29,11 +32,13 @@ namespace ESafety.Account.API.Controllers
         private IVideoService videobll;
         private ITroubleCtrService ctrbll;
         private IDangerPointService dpbll;
+        private IAuth_User authbll;
 
         public APPController(IInspectTask spectask, ITaskBillService taskbill,
                                IOpreateBill opreatebill,IDocInstitutionService docins,
                                IDocSolutionService docss,IVideoService video,
-                               ITroubleCtrService ctrService,IDangerPointService dangerPoint)
+                               ITroubleCtrService ctrService,IDangerPointService dangerPoint,
+                               IAuth_User auth)
         {
 
             spectbll = spectask;
@@ -44,8 +49,16 @@ namespace ESafety.Account.API.Controllers
             videobll = video;
             ctrbll = ctrService;
             dpbll = dangerPoint;
-            BusinessServices = new List<object> { taskbill, spectask,opreatebill, docins, docss,video,ctrService,dangerPoint};            
+            authbll = auth;
+            BusinessServices = new List<object> { taskbill, spectask,opreatebill, docins, docss,video,ctrService,dangerPoint,auth};            
             
+        }
+        [HttpPost]
+        [Route("appUserSignin")]
+        [AllowAnonymous]
+        public ActionResult<UserView> APPUserSignin(UserSignin para)
+        {
+            return authbll.APPUserSignin(para);
         }
         /// <summary>
         /// 新建任务单

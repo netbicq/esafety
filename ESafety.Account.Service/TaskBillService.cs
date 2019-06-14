@@ -156,32 +156,34 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbtb = _rpstb.Queryable(q => (q.PostID == para.Query.PostID || para.Query.PostID == Guid.Empty) && (para.Query.TaskState.HasValue == false ? true : q.State == para.Query.TaskState.Value)).ToList();
+                var dbtb = _rpstb.Queryable(q => (q.PostID == para.Query.PostID || para.Query.PostID == Guid.Empty) && (para.Query.TaskState.HasValue == false ? true : q.State == para.Query.TaskState.Value));
                 var tbid = dbtb.Select(s => s.ID);
                 var dpids = dbtb.Select(s => s.DangerPointID);
 
-                var popstid = dbtb.Select(s => s.PostID).ToList();
-                var taskid = dbtb.Select(s => s.TaskID).ToList();
-                var empids = dbtb.Select(p => p.EmployeeID).ToList();
+                var popstid = dbtb.Select(s => s.PostID);
+                var taskid = dbtb.Select(s => s.TaskID);
+                var empids = dbtb.Select(p => p.EmployeeID);
 
-                var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p => empids.Contains(p.ID)).ToList();
+                var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p => empids.Contains(p.ID));
 
-                var dbts = _work.Repository<Bll_InspectTask>().Queryable(p => taskid.Contains(p.ID)).ToList();
+                var dbts = _work.Repository<Bll_InspectTask>().Queryable(p => taskid.Contains(p.ID));
 
                 var dbtbs = _rpstbs.Queryable(p => tbid.Contains(p.BillID));
 
-                var posts = _work.Repository<Basic_Post>().Queryable(q => popstid.Contains(q.ID)).ToList();
+                var posts = _work.Repository<Basic_Post>().Queryable(q => popstid.Contains(q.ID));
 
                 var dps = _work.Repository<Basic_DangerPoint>().Queryable(p => dpids.Contains(p.ID));
 
-                var dict = _work.Repository<Core.Model.DB.Basic_Dict>();
+                var dict = _work.Repository<Core.Model.DB.Basic_Dict>().Queryable();
                 var rev = from s in dbtb
                           let emp = emps.FirstOrDefault(p => p.ID == s.EmployeeID)
                           let ts = dbts.FirstOrDefault(p => p.ID == s.TaskID)
                           let tbs = dbtbs.OrderByDescending(o => o.TroubleLevel).FirstOrDefault(p => p.BillID == s.ID)
                           let post = posts.FirstOrDefault(p => p.ID == s.PostID)
                           let dp = dps.FirstOrDefault(p => p.ID == s.DangerPointID)
+                          let tlv=tbs==null?null:dict.FirstOrDefault(p=>p.ID==tbs.TroubleLevel)
                           where s.BillCode.Contains(para.Query.Key) || ts.Name.Contains(para.Query.Key) || para.Query.Key == string.Empty
+                          orderby s.StartTime descending
                           select new TaskBillView
                           {
                               ID = s.ID,
@@ -192,13 +194,13 @@ namespace ESafety.Account.Service
                               DangerPointID = s.DangerPointID,
                               DangerPointName = dp.Name,
                               State = s.State,
-                              StateName = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(q => q.Value == s.State).Caption,
+                              StateName = (PublicEnum.BillFlowState)s.State,
                               EndTime = s.EndTime,
                               EmployeeName = emp.CNName,
                               PostID = s.PostID,
                               PostName = post.Name,
                               TaskName = ts.Name,
-                              TaskResult = tbs == null ? "" : tbs.TroubleLevel == Guid.Empty ? string.Empty : dict.GetModel(tbs.TroubleLevel).DictName,
+                              TaskResult = tlv==null? "":tlv.DictName,
                               //TaskResultValue = tbs == null ? 0 : tbs.TroubleLevel == -1 ? 0 : tbs.TroubleLevel
                           };
                 var re = new Pager<TaskBillView>().GetCurrentPage(rev, para.PageSize, para.PageIndex);

@@ -76,6 +76,12 @@ namespace ESafety.Core
         /// <returns></returns>
         ActionResult<Model.View.UserView> UserSigninByopenID(string openid);
         /// <summary>
+        /// 通过openid登陆
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        ActionResult<Model.View.UserView> APPUserSignin(Model.PARA.UserSignin para);
+        /// <summary>
         /// 获取用户列表
         /// </summary>
         /// <param name="para"></param>

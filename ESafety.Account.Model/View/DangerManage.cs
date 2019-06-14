@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 
 namespace ESafety.Account.Model.View
 {
-    class DangerManage
-    {
-    }
 
     public class DangerSortView
     {

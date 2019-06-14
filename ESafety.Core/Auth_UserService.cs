@@ -52,7 +52,8 @@ namespace ESafety.Core
                 Pwd = user.Pwd,
                 TokenValidTime = DateTime.Now,
                 State = 1,
-                Token = ""
+                Token = "",
+                openID="",
             };
             var profile = new Model.DB.Auth_UserProfile()
             {
@@ -706,9 +707,47 @@ namespace ESafety.Core
                 UserInfo = user,
                 UserProfile = profile,
             });
-
-
         }
+
+        /// <summary>
+        /// 用户登陆
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        public virtual ActionResult<UserView> APPUserSignin(UserSignin para)
+        {
+            if (para.Login == "Admin")
+            {
+                throw new Exception("该用户无法登陆移动端!");
+            }
+            var user = _rpsuser.GetModel(q => q.Login == para.Login);
+            if (user == null)
+            {
+                throw new Exception("用户名或密码错误");
+            }
+            if (string.Compare(user.Pwd, para.Pwd, false) != 0)
+            {
+                throw new Exception("用户名或密码错误");
+            }
+            var profile = _rpsprofiel.GetModel(q => q.Login == para.Login);
+
+            int vtimes = int.Parse(System.Configuration.ConfigurationManager.AppSettings["TokenValidTimes"]);
+
+
+            user.TokenValidTime = DateTime.Now.AddMinutes(vtimes);
+
+            user.Token = Command.CreateToken(64);
+            _rpsuser.Update(user);
+            _work.Commit();
+
+            return new ActionResult<UserView>(new UserView
+            {
+                UserInfo = user,
+                UserProfile = profile,
+            });
+        }
+
+
         /// <summary>
         /// 用户绑定
         /// </summary>

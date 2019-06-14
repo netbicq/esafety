@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESafety.Unity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -63,7 +64,8 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 状态名
         /// </summary>
-        public string StateName { get; set; }
+        [Newtonsoft.Json.JsonConverter(typeof(EnumJsonConvert<PublicEnum.BillFlowState>))]
+        public PublicEnum.BillFlowState StateName { get; set; }
         /// <summary>
         /// 任务结果
         /// </summary>
