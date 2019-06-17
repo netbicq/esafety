@@ -243,7 +243,7 @@ namespace ESafety.Core
         {
             try
             {
-                var retemp = rpsDict.Queryable(q => q.ParentID == para.Query).OrderByDescending(o=>o.MinValue).OrderBy(s=>s.CreateDate);
+                var retemp = rpsDict.Queryable(q => q.ParentID == para.Query).OrderBy(s=>s.CreateDate);
 
                 var re = new Pager<Basic_Dict>().GetCurrentPage(retemp, para.PageSize, para.PageIndex);
                 

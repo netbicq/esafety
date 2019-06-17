@@ -1,5 +1,6 @@
 ﻿using ESafety.Core.Model;
 using ESafety.Core.Model.DB;
+using ESafety.Core.Model.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -154,7 +155,7 @@ namespace ESafety.Core
         /// 获取用户名选择器
         /// </summary>
         /// <returns></returns>
-        ActionResult<IEnumerable<Auth_User>> userbin();
+        ActionResult<IEnumerable<UserSelector>> userbin();
 
     }
 }

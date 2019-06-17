@@ -243,7 +243,7 @@ namespace ESafety.Account.API.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("getbin")]
-        public ActionResult<IEnumerable<Auth_User>> Getbin()
+        public ActionResult<IEnumerable<UserSelector>> Getbin()
         {
             return bll.userbin();
         }

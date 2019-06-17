@@ -314,6 +314,7 @@ namespace ESafety.Account.Service
                 var dicts = _work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => lvids.Contains(p.ID));
                 var dangers = from danger in dbdangers.ToList()
                               let d = dicts.FirstOrDefault(p => p.ID == danger.DangerLevel)
+                              orderby danger.Code
                               select new DangerView
                               {
                                   Code = danger.Code,

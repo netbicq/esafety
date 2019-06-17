@@ -668,11 +668,20 @@ namespace ESafety.Core
         /// 获取用户选择器
         /// </summary>
         /// <returns></returns>
-        public ActionResult<IEnumerable<Auth_User>> userbin()
+        public ActionResult<IEnumerable<UserSelector>> userbin()
         {
-            var em = _rpsuser.Queryable();
+            var em = _rpsuser.Queryable(p=>p.State==(int)PublicEnum.GenericState.Normal);
+            var pro = _rpsprofiel.Queryable();
 
-            return new ActionResult<IEnumerable<Auth_User>>(em);
+            var re = from l in em
+                     let p = pro.FirstOrDefault(p => p.Login == l.Login)
+                     select new UserSelector
+                     {
+                         Login = l.Login,
+                         Name = p.CNName
+                     };
+
+            return new ActionResult<IEnumerable<UserSelector>>(re);
         }
 
         /// <summary>

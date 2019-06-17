@@ -148,5 +148,15 @@ namespace ESafety.Core.Model.View
         public bool Checked { get; set; }
     }
 
-
+    public class UserSelector
+    {
+        /// <summary>
+        /// 用户名
+        /// </summary>
+        public string Login { get; set; }
+        /// <summary>
+        /// 姓名
+        /// </summary>
+        public string Name { get; set; }
+    }
 }
