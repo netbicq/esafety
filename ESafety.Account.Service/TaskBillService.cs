@@ -485,7 +485,7 @@ namespace ESafety.Account.Service
                 var odangerid = subs.Select(s => s.DangerID);
 
                 //获取任务主体中未执行的主体
-                var tasksubs = _work.Repository<Bll_InspectTaskSubject>().Queryable(q => q.InspectTaskID == bill.TaskID && (!osubid.Contains(q.SubjectID) || !odangerid.Contains(q.DangerID))).ToList();
+                var tasksubs = _work.Repository<Bll_InspectTaskSubject>().Queryable(q => q.InspectTaskID == bill.TaskID && (!osubid.Contains(q.SubjectID) || !odangerid.Contains(q.DangerID)));
                 var subids = tasksubs.Select(s => s.SubjectID);
 
 
@@ -503,7 +503,7 @@ namespace ESafety.Account.Service
                 var ctrs = _work.Repository<Bll_TroubleControl>().Queryable(p => p.State != (int)PublicEnum.EE_TroubleState.history);
                 var ctrids = ctrs.Select(s => s.ID);
                 // 在此单据中未执行的主体信息
-                var re = from sub in tasksubs
+                var re = from sub in tasksubs.ToList()
                          let sb = csubs.FirstOrDefault(p => p.SubjectID == sub.SubjectID)
                          let dg = danger.FirstOrDefault(p => p.ID == sub.DangerID)
                          let lv = lvs.FirstOrDefault(p => p.ID == dg.DangerLevel)
@@ -518,7 +518,7 @@ namespace ESafety.Account.Service
                              SubID = sub.SubjectID,
                              DangerLevel = lv == null ? "" : lv.DictName,
                              SubType = (PublicEnum.EE_SubjectType)sub.SubjectType,
-                             SubTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == sub.SubjectType).Caption,
+                             SubTypeName = (PublicEnum.EE_SubjectType)sub.SubjectType,
                              SubName = sb.SubjectName,
                              Principal = sb.SubjectPrincipal,
                              PrincipalTel = sb.SubjectPrincipalTel,
@@ -686,7 +686,7 @@ namespace ESafety.Account.Service
                 var resubs = _work.Repository<Bll_TaskBillSubjects>().Queryable(p => p.BillID == billid);
                 var subids = resubs.Select(s => s.SubjectID);
                 var dangerids = resubs.Select(s => s.DangerID);
-                var check = _work.Repository<Bll_InspectTaskSubject>().Any(p => p.InspectTaskID == dbbill.TaskID && !subids.Contains(p.SubjectID) && !dangerids.Contains(p.DangerID));
+                var check = _work.Repository<Bll_InspectTaskSubject>().Any(p => p.InspectTaskID == dbbill.TaskID /*&& !subids.Contains(p.SubjectID)*/ && !dangerids.Contains(p.DangerID));
 
              
                 if (check)
@@ -798,7 +798,7 @@ namespace ESafety.Account.Service
                 //当前人
                 var user = AppUser.EmployeeInfo;
                 //当前人的所有待完成单据
-                var tbs = _rpstb.Queryable(q => q.EmployeeID == user.ID && q.State == (int)PublicEnum.BillFlowState.wait).ToList();
+                var tbs = _rpstb.Queryable(q => q.EmployeeID == user.ID && q.State == (int)PublicEnum.BillFlowState.wait);
 
                 //当前人所有单据对应的任务
                 var taskids = tbs.Select(s => s.TaskID);
@@ -807,11 +807,14 @@ namespace ESafety.Account.Service
                 //单据的风险点
                 var dangerids = tbs.Select(s => s.DangerPointID);
                 var dangers = _work.Repository<Basic_DangerPoint>().Queryable(p => dangerids.Contains(p.ID));
-                var re = from tb in tbs
+                var subs = _work.Repository<Bll_InspectTaskSubject>().Queryable();
+                var osubs = _rpstbs.Queryable();
+               
+                var re = from tb in tbs.ToList()
                          let task = tasks.FirstOrDefault(q => q.ID == tb.TaskID)
                          let danger = dangers.FirstOrDefault(q => q.ID == tb.DangerPointID)
-                         let subcount = _work.Repository<Bll_InspectTaskSubject>().Queryable(q => q.InspectTaskID == tb.TaskID).Count()//当前单据检查主体总数
-                         let osubcount = _rpstbs.Queryable(p => p.BillID == tb.ID).Count()//已查主体数
+                         let subcount = subs.Where(q => q.InspectTaskID == tb.TaskID).Count()//当前单据检查主体总数
+                         let osubcount = osubs.Where(p => p.BillID == tb.ID).Count()//已查主体数
                          let whysids = JsonConvert.DeserializeObject<IEnumerable<Guid>>(danger.WXYSJson)
                          let dicts = rpsDict.Queryable(p => whysids.Contains(p.ID))
                          select new TaskBillModel
@@ -821,7 +824,7 @@ namespace ESafety.Account.Service
                              EndTime = (DateTime)tb.EndTime,
                              EmployeeName = user.CNName,
                              TaskName = task.Name,
-                             State = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(p => p.Value == tb.State).Caption,
+                             State = (PublicEnum.BillFlowState)tb.State,
                              DangerPointName = danger.Name,
                              SubCheckedCount = osubcount,
                              SubCount = subcount,
@@ -853,7 +856,7 @@ namespace ESafety.Account.Service
                 //当前人
                 var user = AppUser.EmployeeInfo;
                 //当前人的所有已完成单据
-                var tbs = _rpstb.Queryable(q => q.EmployeeID == user.ID && q.State >= (int)PublicEnum.BillFlowState.normal).ToList();
+                var tbs = _rpstb.Queryable(q => q.EmployeeID == user.ID && q.State >= (int)PublicEnum.BillFlowState.normal);
 
                 //当前人所有单据对应的任务
                 var taskids = tbs.Select(s => s.TaskID);
@@ -862,10 +865,11 @@ namespace ESafety.Account.Service
                 //单据的风险点
                 var dangerids = tbs.Select(s => s.DangerPointID);
                 var dangers = _work.Repository<Basic_DangerPoint>().Queryable(p => dangerids.Contains(p.ID));
-                var re = from tb in tbs
+                var osubs = _rpstbs.Queryable();
+                var re = from tb in tbs.ToList()
                          let task = tasks.FirstOrDefault(q => q.ID == tb.TaskID)
                          let danger = dangers.FirstOrDefault(q => q.ID == tb.DangerPointID)
-                         let osubcount = _rpstbs.Queryable(p => p.BillID == tb.ID).Count()//已查主体数
+                         let osubcount = osubs.Where(p => p.BillID == tb.ID).Count()//已查主体数
                          select new TaskBillModel
                          {
                              BillID = tb.ID,
@@ -873,7 +877,7 @@ namespace ESafety.Account.Service
                              EndTime = (DateTime)tb.EndTime,
                              EmployeeName = user.CNName,
                              TaskName = task.Name,
-                             State = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(p => p.Value == tb.State).Caption,
+                             State =  (PublicEnum.BillFlowState)tb.State,
                              DangerPointName = danger.Name,
                              SubCheckedCount = osubcount,
                              SubCount = osubcount,
@@ -902,7 +906,7 @@ namespace ESafety.Account.Service
                     throw new Exception("未找到该任务单!");
                 }
                 //获取已经执行了的主体
-                var subs = _rpstbs.Queryable(p => p.BillID == taskbillid).ToList();
+                var subs = _rpstbs.Queryable(p => p.BillID == taskbillid);
                 var osubid = subs.Select(s => s.SubjectID);
                 var odangerids = subs.Select(s => s.DangerID);
 
@@ -923,7 +927,7 @@ namespace ESafety.Account.Service
                 var ctrs = _work.Repository<Bll_TroubleControl>().Queryable(p => p.State != (int)PublicEnum.EE_TroubleState.history);
                 var ctrids = ctrs.Select(s => s.ID);
                 // 在此单据中未执行的主体信息
-                var re = from sub in tasksubs
+                var re = from sub in tasksubs.ToList()
                          let sb = csubs.FirstOrDefault(p => p.SubjectID == sub.SubjectID)
                          let dg = danger.FirstOrDefault(p => p.ID == sub.DangerID)
                          let lv = lvs.FirstOrDefault(p => p.ID == dg.DangerLevel)
@@ -939,7 +943,7 @@ namespace ESafety.Account.Service
                              SubID = sub.SubjectID,
                              DangerLevel = lv == null ? "" : lv.DictName,
                              SubType = (PublicEnum.EE_SubjectType)sub.SubjectType,
-                             SubTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == sub.SubjectType).Caption,
+                             SubTypeName = (PublicEnum.EE_SubjectType)sub.SubjectType,
                              SubName = sb.SubjectName,
                              Principal = sb.SubjectPrincipal,
                              PrincipalTel = sb.SubjectPrincipalTel,
@@ -1048,7 +1052,7 @@ namespace ESafety.Account.Service
                 //当前人
                 var user = AppUser.EmployeeInfo;
                 //当前人的所有待完成单据
-                var tbs = _rpstb.Queryable(q => q.EmployeeID == user.ID && q.State == (int)PublicEnum.BillFlowState.wait).ToList();
+                var tbs = _rpstb.Queryable(q => q.EmployeeID == user.ID && q.State == (int)PublicEnum.BillFlowState.wait);
 
                 //当前人所有单据对应的任务
                 var taskids = tbs.Select(s => s.TaskID);
@@ -1066,13 +1070,13 @@ namespace ESafety.Account.Service
                 var ctrs = _work.Repository<Bll_TroubleControl>().Queryable(p => p.State != (int)PublicEnum.EE_TroubleState.history);
                 var ctrids = ctrs.Select(s => s.ID);
 
-                var re = from tb in tbs
+                var re = from tb in tbs.ToList()
                          let task = tasks.FirstOrDefault(q => q.ID == tb.TaskID)
                          let danger = dangers.FirstOrDefault(q => q.ID == tb.DangerPointID)
                          let csubs = _work.Repository<Bll_InspectTaskSubject>().Queryable(q => q.InspectTaskID == tb.TaskID)//当前单据检查主体
-                         let osubs = _rpstbs.Queryable(p => p.BillID == tb.ID)//已查主体数
-                         let osubids = osubs.Select(s => s.SubjectID)
-                         let subs = csubs.Where(p => !osubids.Contains(p.SubjectID)).ToList()//待查主体
+                         let osubs = _rpstbs.Queryable(p => p.BillID == tb.ID)//已查风控项
+                         let osubids = osubs.Select(s => s.DangerID)
+                         let subs = csubs.Where(p => !osubids.Contains(p.DangerID)).ToList()//待查风控项
                          let subids = subs.Select(p => p.SubjectID)
                          let sbs = _work.Repository<Basic_DangerPointRelation>().Queryable(p => subids.Contains(p.SubjectID)).ToList()
                          let whysids = JsonConvert.DeserializeObject<IEnumerable<Guid>>(danger.WXYSJson)
@@ -1084,7 +1088,7 @@ namespace ESafety.Account.Service
                              EndTime = (DateTime)tb.EndTime,
                              EmployeeName = user.CNName,
                              TaskName = task.Name,
-                             State = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(p => p.Value == tb.State).Caption,
+                             State =(PublicEnum.BillFlowState)tb.State,
                              DangerPointName = danger.Name,
                              SubCheckedCount = osubs.Count(),
                              SubCount = csubs.Count(),
@@ -1111,7 +1115,7 @@ namespace ESafety.Account.Service
                                              SubID = sub.SubjectID,
                                              DangerLevel = lv == null ? "" : lv.DictName,
                                              SubType = (PublicEnum.EE_SubjectType)sub.SubjectType,
-                                             SubTypeName = Command.GetItems(typeof(PublicEnum.EE_SubjectType)).FirstOrDefault(q => q.Value == sub.SubjectType).Caption,
+                                             SubTypeName = (PublicEnum.EE_SubjectType)sub.SubjectType,
                                              SubName = sb.SubjectName,
                                              Principal = sb.SubjectPrincipal,
                                              PrincipalTel = sb.SubjectPrincipalTel,
@@ -1268,12 +1272,12 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<IEnumerable<TaskBillModel>> GetTaskBillMastersOverByQRCoder(Guid pointID)
         {
-            // throw new NotImplementedException();
+            
             try
             {
 
                 //当风险点的所有已完成单据
-                var tbs = _rpstb.Queryable(q => q.DangerPointID == pointID && q.State >= (int)PublicEnum.BillFlowState.normal).ToList();
+                var tbs = _rpstb.Queryable(q => q.DangerPointID == pointID && q.State >= (int)PublicEnum.BillFlowState.normal);
 
                 var empids = tbs.Select(s => s.EmployeeID);
                 //当前人所有单据对应的任务
@@ -1297,7 +1301,7 @@ namespace ESafety.Account.Service
                              EndTime = (DateTime)tb.EndTime,
                              EmployeeName = user.CNName,
                              TaskName = task.Name,
-                             State = Command.GetItems(typeof(PublicEnum.BillFlowState)).FirstOrDefault(p => p.Value == tb.State).Caption,
+                             State = (PublicEnum.BillFlowState)tb.State,
                              DangerPointName = danger.Name,
                              SubCheckedCount = osubcount,
                              SubCount = osubcount,

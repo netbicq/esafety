@@ -1,5 +1,6 @@
 ﻿using ESafety.Core.Model.DB.Account;
 using ESafety.Unity;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,8 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 当前状态
         /// </summary>
-        public string State { get; set; }
+        [JsonConverter(typeof(EnumJsonConvert<PublicEnum.BillFlowState>))]
+        public PublicEnum.BillFlowState State { get; set; }
         /// <summary>
         /// 开始时间
         /// </summary>
@@ -99,7 +101,8 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 主体类型名称
         /// </summary>
-        public string SubTypeName { get; set; }
+        [JsonConverter(typeof(EnumJsonConvert<PublicEnum.EE_SubjectType>))]
+        public PublicEnum.EE_SubjectType SubTypeName { get; set; }
         /// <summary>
         /// 风控项
         /// </summary>

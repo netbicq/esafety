@@ -54,7 +54,7 @@ namespace ESafety.Core.Model.DB.Account
         public Guid ExecutePostID { get; set; }
         
         /// <summary>
-        /// 执行人 id
+        /// 负责人 id
         /// </summary>
         public Guid? EmployeeID { get; set; }
         /// <summary>
