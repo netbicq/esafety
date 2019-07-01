@@ -430,7 +430,7 @@ namespace ESafety.Account.Service
                 var dlvs = _work.Repository<Basic_Dict>().Queryable(p => p.ParentID == OptionConst.DangerLevel);
                 var tlvs = _work.Repository<Basic_Dict>().Queryable(p => p.ParentID == OptionConst.TroubleLevel);
 
-                var retc = from tc in ctrs
+                var retc = from tc in ctrs.ToList()
                            let aemp = emps.FirstOrDefault(p => p.ID == tc.AcceptorID)
                            let eemp = emps.FirstOrDefault(p => p.ID == tc.ExecutorID)
                            let pemp = emps.FirstOrDefault(p => p.ID == tc.PrincipalID)

@@ -267,7 +267,10 @@ namespace ESafety.Unity
                     j++;
                 }
                 string re = Guid.NewGuid().ToString() + ".xls";
-
+                if (!Directory.Exists(filePath))
+                {
+                    Directory.CreateDirectory(filePath);
+                }
                 using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
                 {
                     book.Write(ms);

@@ -44,6 +44,7 @@ namespace ESafety.Core
             dbaccount.ValidDate = Convert.ToDateTime("2098-02-06");
             dbaccount.State = 1;
             dbaccount.CreateMan = AppUser.UserProfile.CNName;
+          
             var re = _work.Repository<AccountInfo>().Add(dbaccount);
             _work.Commit();
 

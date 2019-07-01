@@ -254,7 +254,25 @@ namespace ESafety.Account.Service
                                   OrgID=f.OrgID
 
                               };
+
+                string excel = "";
+                if (para.ToExcel)
+                {
+                    var sw = from f in dbfacilities
+                             let org = orgs.FirstOrDefault(p => p.ID == f.OrgID)
+                             orderby f.Code ascending
+                             select new
+                             {
+                                 编号 = f.Code,
+                                 设备名称 = f.Name,
+                                 设备类别 = sortname,
+                                 使用单位 = org.OrgName,
+                             };
+                    excel = Command.CreateExcel(sw.AsEnumerable(), AppUser.OutPutPaht);
+                }
+
                 var re = new Pager<FacilityView>().GetCurrentPage(refclty, para.PageSize, para.PageIndex);
+                re.ExcelResult = excel;
                 return new ActionResult<Pager<FacilityView>>(re);
             }
             catch (Exception ex)

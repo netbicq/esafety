@@ -349,7 +349,7 @@ namespace ESafety.Account.Service
             var emps = _rpsemp.Queryable(p=>empIds.Contains(p.ID));
             var repost = from ac in posts
                          let emp = emps.FirstOrDefault(p => p.ID == ac.Principal)
-                         orderby ac.Code descending
+                         orderby ac.Code 
                          select new PostView
                          {
                              Code = ac.Code,
@@ -358,7 +358,24 @@ namespace ESafety.Account.Service
                              Principal = emp == null?"":emp.CNName,
                              PrincipalTel=emp==null?"":emp.Tel
                         };
+            string excel = "";
+            if (para.ToExcel)
+            {
+                var sw = from ac in posts
+                         let emp = emps.FirstOrDefault(p => p.ID == ac.Principal)
+                         orderby ac.Code descending
+                         select new  
+                         {
+                             岗位编号= ac.Code,
+                             岗位名称 = ac.Name,
+                             负责人名称 = emp == null ? "" : emp.CNName,
+                             负责人电话 = emp == null ? "" : emp.Tel
+                         };
+                excel = Command.CreateExcel(sw.AsEnumerable(), AppUser.OutPutPaht);
+            }
+
             var re = new Pager<PostView>().GetCurrentPage(repost, para.PageSize, para.PageIndex);
+            re.ExcelResult = excel;
 
             return new ActionResult<Pager<PostView>>(re);
         }

@@ -139,7 +139,7 @@ namespace ESafety.Account.Service
                     throw new Exception("未找到该风险点");
                 }
                 var subids = relationNew.DSubs.Select(s => s.SubjectID);
-                var check = rpsdpr.Any(p => subids.Contains(p.SubjectID)&& p.DangerPointID == relationNew.DangerPointID);
+                var check = rpsdpr.Any(p => subids.Contains(p.SubjectID) && p.DangerPointID == relationNew.DangerPointID);
                 if (check)
                 {
                     throw new Exception("配置主体中有已存在的于风险点下的!");
@@ -163,16 +163,16 @@ namespace ESafety.Account.Service
                     dbdp.DangerLevel = lv.ID;
                     rpsdp.Update(dbdp);
                 }
-                var dbdpr =from dr in relationNew.DSubs
-                           select new Basic_DangerPointRelation
-                           {
-                               DangerPointID=relationNew.DangerPointID,
-                               SubjectID=dr.SubjectID,
-                               SubjectName=dr.SubjectName,
-                               SubjectPrincipal=dr.SubjectPrincipal,
-                               SubjectPrincipalTel=dr.SubjectPrincipalTel,
-                               SubjectType=dr.SubjectType
-                           };
+                var dbdpr = from dr in relationNew.DSubs
+                            select new Basic_DangerPointRelation
+                            {
+                                DangerPointID = relationNew.DangerPointID,
+                                SubjectID = dr.SubjectID,
+                                SubjectName = dr.SubjectName,
+                                SubjectPrincipal = dr.SubjectPrincipal,
+                                SubjectPrincipalTel = dr.SubjectPrincipalTel,
+                                SubjectType = dr.SubjectType
+                            };
                 rpsdpr.Add(dbdpr);
                 work.Commit();
                 return new ActionResult<bool>(true);
@@ -367,7 +367,7 @@ namespace ESafety.Account.Service
             try
             {
                 var page = rpsdp.Queryable(p => (p.Name.Contains(pointName.Query.KeyWord) || pointName.Query.KeyWord == string.Empty)
-                                              &&(pointName.Query.DLevel==p.DangerLevel||pointName.Query.DLevel==Guid.Empty));
+                                              && (pointName.Query.DLevel == p.DangerLevel || pointName.Query.DLevel == Guid.Empty));
                 //风险等级
                 var lvids = page.Select(s => s.DangerLevel);
                 var lvs = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => lvids.Contains(p.ID));
@@ -398,7 +398,32 @@ namespace ESafety.Account.Service
                                  Consequence = p.Consequence,
                                  OrgName = porg.OrgName
                              };
+                string excel = "";
+                if (pointName.ToExcel)
+                {
+                    var sw = from p in page
+                             let lv = lvs.FirstOrDefault(q => q.ID == p.DangerLevel)
+                             let emp = emps.FirstOrDefault(q => q.ID == p.Principal)
+                             let porg = org.FirstOrDefault(p => p.ID == emp.OrgID)
+                             orderby p.Code ascending
+                             select new
+                             {
+                                 编号 = p.Code,
+                                 风险点名称 = p.Name,
+                                 描述 = p.Memo,
+                                 应急处理措施 = p.EmergencyMeasure,
+                                 管理措施 = p.ControlMeasure,
+                                 风险等级 = lv.DictName,
+                                 后果 = p.Consequence,
+                                 负责人部门 = porg.OrgName,
+                                 负责人 = emp.CNName
+                             };
+                    excel = Command.CreateExcel(sw.AsEnumerable(), AppUser.OutPutPaht);
+                }
+
+
                 var re = new Pager<DangerPointView>().GetCurrentPage(retemp, pointName.PageSize, pointName.PageIndex);
+                re.ExcelResult = excel;
                 return new ActionResult<Pager<DangerPointView>>(re);
             }
             catch (Exception ex)
@@ -503,12 +528,12 @@ namespace ESafety.Account.Service
                              DangerPointImg = code.DangerPointImg,
                              EmergencyMeasure = code.EmergencyMeasure,
                              WarningSign = code.WarningSign,
-                             WXYSDicts =from w in WXYSs.Queryable(p=>WXYSIds.Contains(p.ID))
-                                        select new WXYSSelector
-                                        {
-                                            ID=w.ID,
-                                            WXYSDictName=w.DictName
-                                        }
+                             WXYSDicts = from w in WXYSs.Queryable(p => WXYSIds.Contains(p.ID))
+                                         select new WXYSSelector
+                                         {
+                                             ID = w.ID,
+                                             WXYSDictName = w.DictName
+                                         }
 
                          };
                 return new ActionResult<IEnumerable<QRCoder>>(re);
@@ -562,7 +587,7 @@ namespace ESafety.Account.Service
                 (srvTree as TreeService).AppUser = AppUser;
                 var orgIDs = srvTree.GetChildrenIds<Core.Model.DB.Basic_Org>(user.OrgID);
                 var dangerPoints = rpsdp.Queryable(p => orgIDs.Contains(p.OrgID));
-                var dicts = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p=>p.ParentID==OptionConst.DangerLevel);
+                var dicts = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => p.ParentID == OptionConst.DangerLevel);
                 var re = from lv in dicts
                          let count = dangerPoints.Count(p => p.DangerLevel == lv.ID)
                          orderby lv.MinValue descending
@@ -591,8 +616,8 @@ namespace ESafety.Account.Service
                 var user = AppUser.EmployeeInfo;
                 (srvTree as TreeService).AppUser = AppUser;
                 var orgIDs = srvTree.GetChildrenIds<Core.Model.DB.Basic_Org>(user.OrgID);
-                var dangerPoints = rpsdp.Queryable(p => orgIDs.Contains(p.OrgID)&&p.DangerLevel==query.Query);
-                
+                var dangerPoints = rpsdp.Queryable(p => orgIDs.Contains(p.OrgID) && p.DangerLevel == query.Query);
+
                 var dicts = work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => p.ParentID == OptionConst.DangerLevel);
                 var empids = dangerPoints.Select(s => s.Principal).Distinct();
                 var emps = work.Repository<Core.Model.DB.Basic_Employee>().Queryable(p => empids.Contains(p.ID));
@@ -604,9 +629,9 @@ namespace ESafety.Account.Service
                              orderby lv.MinValue descending
                              select new APPDangerPointView
                              {
-                                 DangerLevel ="风险等级:"+lv.DictName,
-                                 DangerPoint ="风险点:"+dp.Name,
-                                 Principal = "责任人:"+emp.CNName
+                                 DangerLevel = "风险等级:" + lv.DictName,
+                                 DangerPoint = "风险点:" + dp.Name,
+                                 Principal = "责任人:" + emp.CNName
                              };
                 var re = new Pager<APPDangerPointView>().GetCurrentPage(retemp, query.PageSize, query.PageIndex);
                 return new ActionResult<Pager<APPDangerPointView>>(re);

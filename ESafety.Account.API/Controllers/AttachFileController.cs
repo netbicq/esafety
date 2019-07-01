@@ -120,6 +120,61 @@ namespace ESafety.Account.API.Controllers
             }
         }
 
+        /// <summary>
+        /// 上传风险点地图，返回服务器文件地址
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("uploadMap")]
+        public async Task<ActionResult<string>> Upload()
+        {
+            try
+            {
+
+                if (!Request.Content.IsMimeMultipartContent())
+                {
+                    this.Request.CreateResponse(HttpStatusCode.UnsupportedMediaType);
+                }
+
+                var provider = GetMultipartProvider();
+                var result = await Request.Content.ReadAsMultipartAsync(provider);
+                string privateUploadPath = uploadPath;
+                if (!Directory.Exists(privateUploadPath + "/map"))
+                {
+                    Directory.CreateDirectory(privateUploadPath + "/map");
+                }
+
+                var dbPath = "";
+                foreach (var data in result.FileData)
+                {
+
+                    string originalFileName = GetDeserializedFileName(data);
+                    var uploadedFileInfo = new FileInfo(data.LocalFileName);
+
+                    //var request = new NoteItemRequest();
+                    var newName = AppUser.AccountCode + Path.GetExtension(originalFileName);
+
+                    if (".jpg".Contains(Path.GetExtension(originalFileName).ToLower()))
+                    {
+
+                        var targetFileName = Path.Combine(privateUploadPath + "/map/", newName);
+                        File.Move(data.LocalFileName, targetFileName);
+                        dbPath = "~/uploads/map/" + newName;
+                    }
+                    else
+                    {
+                        throw new Exception("文件格式不正确!");
+                    }
+
+                }
+                return new ActionResult<string>(dbPath);
+            }
+            catch (System.Exception ex)
+            {
+                return new ActionResult<string>(ex);
+            }
+        }
+
         private MultipartFormDataStreamProvider GetMultipartProvider()
         {
 

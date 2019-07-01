@@ -234,7 +234,24 @@ namespace ESafety.Account.Service
                              Memo=ac.Memo,
                              PostName=post.Name
                          };
+            string excel = "";
+            if (para.ToExcel)
+            {
+                var sw = from ac in opreations
+                         let post = posts.FirstOrDefault(p => p.ID == ac.PostID)
+                         orderby ac.Code  
+                         select new  
+                         {
+                             作业编号 = ac.Code,
+                             作业名称= ac.Name,
+                             是否回流 = ac.IsBackReturn?"是":"否",
+                             描述= ac.Memo,
+                             负责岗位 = post.Name
+                         };
+                excel = Command.CreateExcel(sw.AsEnumerable(), AppUser.OutPutPaht);
+            }
             var re = new Pager<OpreationView>().GetCurrentPage(reops, para.PageSize, para.PageIndex);
+            re.ExcelResult = excel;
 
             return new ActionResult<Pager<OpreationView>>(re);
 
