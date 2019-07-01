@@ -92,6 +92,7 @@ namespace ESafety.Core
                 account.DBServer = dbserver;
                 account.DBUid = dbuid;
                 account.TokenValidTimes = 30;
+                accountrps.Update(account);
                 _work.Commit();
 
 
