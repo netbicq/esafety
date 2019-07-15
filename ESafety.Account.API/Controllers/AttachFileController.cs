@@ -158,6 +158,10 @@ namespace ESafety.Account.API.Controllers
                     {
 
                         var targetFileName = Path.Combine(privateUploadPath + "/map/", newName);
+                        if (File.Exists(targetFileName))
+                        {
+                            File.Delete(targetFileName);
+                        }
                         File.Move(data.LocalFileName, targetFileName);
                         dbPath = "~/uploads/map/" + newName;
                     }

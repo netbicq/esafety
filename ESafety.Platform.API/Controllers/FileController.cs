@@ -1,4 +1,5 @@
-﻿using ESafety.Core.Model;
+﻿using ESafety.Core;
+using ESafety.Core.Model;
 using ESafety.Web.Unity;
 using Newtonsoft.Json;
 using System;
@@ -18,6 +19,14 @@ namespace ESafety.Platform.API.Controllers
     [RoutePrefix("api/file")]
     public class FileController : ESFAPI
     {
+        private IAttachFile bll = null;
+
+        public FileController(IAttachFile file)
+        {
+            bll = file;
+            BusinessServices = new List<object> { file };
+
+        }
         /// <summary>
         /// 文件上传，返回服务器文件地址
         /// </summary>

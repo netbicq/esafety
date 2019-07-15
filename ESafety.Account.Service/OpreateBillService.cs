@@ -352,7 +352,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("作业流和不支持回退");
                 }
-                var checkflow = rpsBillFlow.Any(q => q.FlowResult == (int)flow.FlowResult && q.OpreationFlowID == flow.OpreationFlowID);
+                var checkflow = rpsBillFlow.Any(q => q.FlowResult == (int)flow.FlowResult && q.OpreationFlowID == flow.OpreationFlowID&&q.BillID==flow.BillID);
                 if (checkflow)
                 {
                     throw new Exception("该作业单已经提交了该节点的处理结果");
