@@ -276,7 +276,9 @@ namespace ESafety.Account.Service
                                   bill.State == (int)PublicEnum.BillFlowState.deny ? "已拒绝" :
                                   bill.State == (int)PublicEnum.BillFlowState.normal ? "待审批" :
                                   bill.State == (int)PublicEnum.BillFlowState.pending ? "审批中" :
-                                  bill.State == (int)PublicEnum.BillFlowState.recalled ? "已撤回" : "未知",
+                                  bill.State == (int)PublicEnum.BillFlowState.recalled ? "已撤回" :
+                                  bill.State==(int)PublicEnum.BillFlowState.stop?"已终止":
+                                  bill.State==(int)PublicEnum.BillFlowState.Reback?"已回退":"未知",
                                  PrincipalEmployeeName = emp == null ? "" : emp.CNName
                              };
 

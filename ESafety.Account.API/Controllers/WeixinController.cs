@@ -191,5 +191,32 @@ namespace ESafety.Account.API.Controllers
                 context.Response.Redirect(state + "?errmsg=" + errmsg);
             }
         }
+
+
+        /// <summary>
+        /// 创建微信公众号菜单
+        /// </summary>
+        /// <param name="menu"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("createmenu")]
+        public  APIResult<string> CreateMenu(Menu menu)
+        {
+            return WxService.CreateMenu(menu);
+        }
+
+        /// <summary>
+        /// 获取微信公众号菜单
+        /// </summary>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("getmenu")]
+        public APIResult<MenuQuery> GetMenu()
+        {
+            return WxService.GetMenu();
+        }
+
     }
 }
