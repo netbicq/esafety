@@ -215,6 +215,7 @@ namespace ESafety.Account.Service
                 var dicts = _work.Repository<Core.Model.DB.Basic_Dict>().Queryable(p => typeids.Contains(p.ID));
                 var re = from ins in dbins.ToList()
                          let type=dicts.FirstOrDefault(p=>p.ID==ins.TypeID)
+                         orderby ins.CreateDate  descending
                          select new PhoneDocInstitutionView
                          {
                              BigCode="字号:"+ins.BigCode,
