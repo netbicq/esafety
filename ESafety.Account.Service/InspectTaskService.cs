@@ -604,7 +604,7 @@ namespace ESafety.Account.Service
                         : t.CycleValue
                          let billsub = tbills == null ? null : billsubjects.OrderByDescending(o => o.TaskTime).FirstOrDefault(q => tbills.Select(s => s.ID).Contains(q.BillID))
                          let ctime = tbills == null ? (DateTime.Now - t.StartTime).TotalMinutes : billsub == null ? (DateTime.Now - t.StartTime).TotalMinutes : (DateTime.Now - billsub.TaskTime).TotalMinutes
-                         let bill =tbills==null?false:tbills.Any(p => p.TaskID == t.ID && p.State >= (int)PublicEnum.BillFlowState.wait && p.EndTime>=billsub.TaskTime)
+                         let bill =tbills==null?false:billsub==null?false:tbills.Any(p => p.TaskID == t.ID && p.State >= (int)PublicEnum.BillFlowState.wait && p.EndTime>=billsub.TaskTime)
                          where ctime < date
                          orderby (date-ctime) ascending
                          select new InsepctTaskByEmployee
