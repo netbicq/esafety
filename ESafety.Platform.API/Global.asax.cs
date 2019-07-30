@@ -27,6 +27,7 @@ namespace ESafety.Platform.API
 
             var auth = new Auth_UserService(new Unitwork(new ESFdb())).GetAllAuth("");
             Web.Unity.AuthKey.AuthKeys = auth.data.ToList();
+     
         }
     }
 }

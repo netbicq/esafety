@@ -198,7 +198,8 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <param name="menu"></param>
         /// <returns></returns>
-        [AllowAnonymous]
+        [PlatformAuthFilter]
+        [PlatformActionFilter]
         [HttpPost]
         [Route("createmenu")]
         public  APIResult<string> CreateMenu(Menu menu)
@@ -210,7 +211,8 @@ namespace ESafety.Account.API.Controllers
         /// 获取微信公众号菜单
         /// </summary>
         /// <returns></returns>
-        [AllowAnonymous]
+        [PlatformAuthFilter]
+        [PlatformActionFilter]
         [HttpPost]
         [Route("getmenu")]
         public APIResult<MenuQuery> GetMenu()

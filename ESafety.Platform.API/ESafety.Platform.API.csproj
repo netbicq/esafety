@@ -401,6 +401,10 @@
       <Project>{138da9a8-707a-4222-9466-9d9c25ab1fa8}</Project>
       <Name>ESafety.Web.Unity</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Quick.WXHelper\Quick.WXHelper.csproj">
+      <Project>{9BED3453-03F6-40BE-B018-34BE00D72243}</Project>
+      <Name>Quick.WXHelper</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

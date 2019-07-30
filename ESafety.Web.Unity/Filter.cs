@@ -79,6 +79,11 @@ namespace ESafety.Web.Unity
     {
         protected override bool IsAuthorized(HttpActionContext actionContext)
         {
+            if (actionContext.ControllerContext.RouteData.Route.RouteTemplate== "api/wx/getmenu"
+                ||actionContext.ControllerContext.RouteData.Route.RouteTemplate == "api/wx/createmenu")
+            {
+                return true;
+            }
             ESFAPI api = (ESFAPI)actionContext.ControllerContext.Controller;
 
             IEnumerable<string> Token;
@@ -183,6 +188,10 @@ namespace ESafety.Web.Unity
                 StringContent recontent = new StringContent(reStr, Encoding.GetEncoding("GB2312"));
 
                 actionExecutedContext.Response.Content = recontent;
+            }
+            if (actionExecutedContext.ActionContext.ControllerContext.RouteData.Route.RouteTemplate == "api/attachfile/uploadfile")
+            {
+                actionExecutedContext.Response.Headers.Add("Access-Control-Allow-Credentials","true");
             }
             base.OnActionExecuted(actionExecutedContext);
         }
