@@ -8,6 +8,8 @@ using ESafety.Core.Model.DB.Account;
 using ESafety.Core.Model.PARA;
 using ESafety.ORM;
 using ESafety.Unity;
+using Quick.WXHelper;
+using Quick.WXHelper.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -125,6 +127,29 @@ namespace ESafety.Account.Service
                         throw new Exception("您没有权限申请验收！");
                     }
                     tc.State = (int)PublicEnum.EE_TroubleState.applying;
+                    /******************************发送管控验收人信息**************************************/
+                    var org = _work.Repository<Basic_Org>().GetModel(AppUser.EmployeeInfo.OrgID);
+
+                    var aemp = _work.Repository<Basic_Employee>().GetModel(tc.AcceptorID.Value);
+                    var msgToUser = _work.Repository<Auth_User>().GetModel(p => p.Login == aemp.Login);
+
+                    var sendData = new Dictionary<string, MessageDataBase>();
+                    sendData.Add("first", new MessageDataBase { value = "您有一个待验收的管控项" });
+                    sendData.Add("keyword1", new MessageDataBase { value = tc.Code});
+                    sendData.Add("keyword2", new MessageDataBase { value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") });
+                    sendData.Add("keyword3", new MessageDataBase { value = AppUser.EmployeeInfo.CNName });
+                    sendData.Add("keyword4", new MessageDataBase { value = org.OrgName});
+                    sendData.Add("keyword4", new MessageDataBase { value = dbf.FlowMemo});
+                    sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
+                    var Msg = new TemplateMessagePara
+                    {
+                        template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
+                        touser = msgToUser.openID,
+                        data = sendData,
+                        url = "http://esfwx.quickcq.com/HiddenTrouble"
+                    };
+                    WxService.SendTemplateMessage(Msg);
+                    /************************************************************************/
                 }
                 else
                 {
@@ -767,6 +792,37 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("请填写正确的预估完成时间!");
                 }
+                /******************************发送管处理人信息**************************************/
+                var ctrp = _work.Repository<Basic_Employee>().GetModel(handleTrouble.ExecutorID);
+                var msgToUser = _work.Repository<Auth_User>().GetModel(p => p.Login == ctrp.Login);
+                var sendData = new Dictionary<string, MessageDataBase>();
+
+                var ctrds = _work.Repository<Bll_TroubleControlDetails>().Queryable(p => p.TroubleControlID == ctr.ID);
+                var msgs = _work.Repository<Bll_TaskBillSubjects>().Queryable(p => ctrds.Select(s => s.TaskSubjectsID).Contains(p.ID));
+                var msg = "";
+                foreach (var item in msgs)
+                {
+                    msg += item.TaskResultMemo+",";
+
+                }
+                msg= msg.Substring(0,msg.Length-1)+"。";
+                sendData.Add("first", new MessageDataBase { value = "安全隐患整改通知" });
+                sendData.Add("keyword1", new MessageDataBase { value = AppUser.EmployeeInfo.CNName });
+                sendData.Add("keyword2", new MessageDataBase { value =msg});
+                sendData.Add("keyword3", new MessageDataBase { value = handleTrouble.ControlDescription });
+                sendData.Add("keyword4", new MessageDataBase { value = handleTrouble.FinishTime.ToString("yyyy-MM-dd HH:mm:ss") });
+                sendData.Add("keyword5", new MessageDataBase { value = handleTrouble.FinishTime.ToString("yyyy-MM-dd HH:mm:ss") });
+                sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
+                var Msg = new TemplateMessagePara
+                {
+                    template_id = "cgqClikHxkX7k4wgAVc7IaXdoJ8ZQrjKMvnLsVKweFg",
+                    touser = msgToUser.openID,
+                    data = sendData,
+                    url = "http://esfwx.quickcq.com/HiddenTrouble"
+                };
+                WxService.SendTemplateMessage(Msg);
+                /************************************************************************/
+
                 ctr.AcceptorID = handleTrouble.AcceptorID;
                 ctr.ExecutorID = handleTrouble.ExecutorID;
                 ctr.FinishTime = handleTrouble.FinishTime;
@@ -856,6 +912,29 @@ namespace ESafety.Account.Service
                 }
                 ctr.PrincipalID = transferTrouble.PrincipalID;
                 _rpstc.Update(ctr);
+                /******************************发送管控项信息**************************************/
+                var ctrp = _work.Repository<Basic_Employee>().GetModel(ctr.PrincipalID);
+                var bill = _work.Repository<Bll_TaskBill>().GetModel(ctr.BillID);
+                var femp = _work.Repository<Basic_Employee>().GetModel(bill.EmployeeID);
+                var msgToUser = _work.Repository<Auth_User>().GetModel(p => p.Login == ctrp.Login);
+                var dangerPoint = _work.Repository<Basic_DangerPoint>().GetModel(ctr.DangerPoint);
+                var sendData = new Dictionary<string, MessageDataBase>();
+                sendData.Add("first", new MessageDataBase { value = "安全隐患待处理" });
+                sendData.Add("keyword1", new MessageDataBase { value = femp.CNName });
+                sendData.Add("keyword2", new MessageDataBase { value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") });
+                sendData.Add("keyword3", new MessageDataBase { value = dangerPoint.Name });
+                sendData.Add("keyword4", new MessageDataBase { value = bill.EndTime.Value.ToString("yyyy-MM-dd HH:mm:ss") });
+                sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
+                var Msg = new TemplateMessagePara
+                {
+                    template_id = "46LiWSOZ1MGVh2j8_pvyMkmzfw4ItkVVrV0DQUg24cU",
+                    touser = msgToUser.openID,
+                    data = sendData,
+                    url = "http://esfwx.quickcq.com/HiddenTrouble"
+                };
+                WxService.SendTemplateMessage(Msg);
+                /************************************************************************/
+
                 _work.Commit();
                 return new ActionResult<bool>(true);
             }

@@ -509,7 +509,6 @@ namespace ESafety.Unity
             Bool = 6
 
         }
-
         #endregion
 
 

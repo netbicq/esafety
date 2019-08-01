@@ -3,6 +3,8 @@ using ESafety.Core.Model.DB;
 using ESafety.Core.Model.PARA;
 using ESafety.ORM;
 using ESafety.Unity;
+using Quick.WXHelper;
+using Quick.WXHelper.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
