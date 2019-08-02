@@ -9,6 +9,8 @@ using ESafety.Core.Model.PARA;
 using ESafety.ORM;
 using ESafety.Unity;
 using Newtonsoft.Json;
+using Quick.WXHelper;
+using Quick.WXHelper.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -387,6 +389,35 @@ namespace ESafety.Account.Service
                             billmodel.State = (int)PublicEnum.BillFlowState.Over;
                             writbill = true;
                         }
+                        //如果不是最后一步就给下一步推送信息
+                        /******************************发送管处理人信息**************************************/
+                        var nextpoint = points.OrderBy(o => o.PointIndex).FirstOrDefault(p => p.PointIndex > oflow.PointIndex);
+
+                        var empsIds = _work.Repository<Basic_PostEmployees>().Queryable(p=>p.PostID==nextpoint.PostID).Select(s=>s.EmployeeID);
+                        var ctrp = _work.Repository<Basic_Employee>().Queryable(p=>empsIds.Contains(p.ID)).Select(s=>s.Login);
+                        var msgToUsers = _work.Repository<Auth_User>().Queryable(p => ctrp.Contains(p.Login));
+
+                        foreach (var item in msgToUsers)
+                        {
+                            var sendData = new Dictionary<string, MessageDataBase>();
+                            sendData.Add("first", new MessageDataBase { value = "请尽快完成当前节点的类容" });
+                            sendData.Add("keyword1", new MessageDataBase { value = billmodel.BillName });
+                            sendData.Add("keyword2", new MessageDataBase { value = "作业流程" });
+                            sendData.Add("keyword3", new MessageDataBase { value = nextpoint.PointName });
+                            sendData.Add("keyword4", new MessageDataBase { value = billmodel.CreateDate.ToString("yyyy-MM-dd HH:mm:ss") });
+                            sendData.Add("keyword5", new MessageDataBase { value = billmodel.EndTime.ToString("yyyy-MM-dd HH:mm:ss") });
+                            sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
+                            var Msg = new TemplateMessagePara
+                            {
+                                template_id = "sv9tEVVLO82uKVIN82SXBLh4aiiSfsJuGO3CHDPnkhg",
+                                touser = item.openID,
+                                data = sendData,
+                                url = "http://esfwx.quickcq.com/MyWork/Doingwork"
+                            };
+                            WxService.SendTemplateMessage(Msg);
+                        }
+                        /************************************************************************/
+
                         break;
                     case PublicEnum.OpreateFlowResult.reback://退回到最后一步时则退回完成
                         var relastpointid = points.OrderBy(o => o.PointIndex).FirstOrDefault().ID;
@@ -395,6 +426,34 @@ namespace ESafety.Account.Service
                             billmodel.State = (int)PublicEnum.BillFlowState.Reback;
                             writbill = true;
                         }
+                        //如果不是最后一步就给上一步推送信息
+                        /******************************发送管处理人信息**************************************/
+                        var lastpoint = points.OrderByDescending(o => o.PointIndex).FirstOrDefault(p => p.PointIndex < oflow.PointIndex);
+                        var empsIds1 = _work.Repository<Basic_PostEmployees>().Queryable(p => p.PostID == lastpoint.PostID).Select(s => s.EmployeeID);
+                        var ctrp1 = _work.Repository<Basic_Employee>().Queryable(p => empsIds1.Contains(p.ID)).Select(s => s.Login);
+                        var msgToUsers1 = _work.Repository<Auth_User>().Queryable(p => ctrp1.Contains(p.Login));
+
+                        foreach (var item in msgToUsers1)
+                        {
+                            var sendData = new Dictionary<string, MessageDataBase>();
+                            sendData.Add("first", new MessageDataBase { value = "请尽快完成当前节点的类容" });
+                            sendData.Add("keyword1", new MessageDataBase { value = billmodel.BillName });
+                            sendData.Add("keyword2", new MessageDataBase { value = "作业流程" });
+                            sendData.Add("keyword3", new MessageDataBase { value = lastpoint.PointName });
+                            sendData.Add("keyword4", new MessageDataBase { value = billmodel.CreateDate.ToString("yyyy-MM-dd HH:mm:ss") });
+                            sendData.Add("keyword5", new MessageDataBase { value = billmodel.EndTime.ToString("yyyy-MM-dd HH:mm:ss") });
+                            sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
+                            var Msg = new TemplateMessagePara
+                            {
+                                template_id = "sv9tEVVLO82uKVIN82SXBLh4aiiSfsJuGO3CHDPnkhg",
+                                touser = item.openID,
+                                data = sendData,
+                                url = "http://esfwx.quickcq.com/MyWork/Doingwork"
+                            };
+                            WxService.SendTemplateMessage(Msg);
+                        }
+                        /************************************************************************/
+
                         break;
                     default:
                         break;
