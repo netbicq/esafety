@@ -108,6 +108,8 @@ namespace ESafety.Account.Service
                     throw new Exception("未找到所要删除的人员健康档案");
                 }
                 _rpshd.Delete(dbhd);
+
+                _work.Repository<Heal_Records>().Delete(p => p.DocmentID == id);
                 //删除电子文档
                 srvFile.DelFileByBusinessId(id);
                 //删除自定义项

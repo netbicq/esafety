@@ -229,7 +229,7 @@ namespace ESafety.Account.Service
                             select new HealRecordsView
                             {
                                 ID = s.ID,
-                                Age = DateTime.Now.Year - hd.BirthDay.Year,
+                                Age =DateTime.Now.Year - hd.BirthDay.Year,
                                 Name = emp.CNName,
                                 Gender = emp.Gender,
                                 DocmentID=s.DocmentID,
