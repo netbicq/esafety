@@ -132,6 +132,14 @@ namespace ESafety.Core.Model.PARA
         /// 业务单据ID
         /// </summary>
         public Guid BusinessID { get; set; }
+        /// <summary>
+        /// 业务单据号
+        /// </summary>
+        public string BusinessCode { get; set; }
+        /// <summary>
+        /// 业务单据创建时间
+        /// </summary>
+        public DateTime BusinessDate { get; set; }
     }
     /// <summary>
     /// 审批
@@ -183,5 +191,13 @@ namespace ESafety.Core.Model.PARA
         /// 业务id
         /// </summary>
         public Guid BusinessID { get; set; }
+        /// <summary>
+        /// 业务单据号
+        /// </summary>
+        public string BusinessCode { get; set; }
+        /// <summary>
+        /// 业务单据创建时间
+        /// </summary>
+        public DateTime BusinessDate { get; set; }
     }
 }

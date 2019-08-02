@@ -89,7 +89,9 @@ namespace ESafety.Core
                 {
                     MasterID=para.MasterID,
                     BusinessID = para.BusinessID,
-                    BusinessType = para.BusinessType
+                    BusinessType = para.BusinessType,
+                    BusinessCode=para.BusinessCode,
+                    BusinessDate=para.BusinessDate
                 };
                 (srvFlow as FlowService).AppUser = AppUser;
 

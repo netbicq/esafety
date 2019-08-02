@@ -127,7 +127,10 @@ namespace ESafety.Account.Service
                 {
                     BusinessID = businessmodel.ID,
                     MasterID=businessmodel.MasterID,
-                    BusinessType = PublicEnum.EE_BusinessType.Apply
+                    BusinessType = PublicEnum.EE_BusinessType.Apply,
+                    BusinessCode = businessmodel.BillCode,
+                    BusinessDate = businessmodel.CreateDate
+
                 });
                 if (flowtask.state != 200)
                 {
@@ -149,8 +152,7 @@ namespace ESafety.Account.Service
                     rpsOpreateBill.Update(businessmodel);
 
                     //写入审批流程起始任务
-                    taskmodel.BusinessCode = businessmodel.BillCode;
-                    taskmodel.BusinessDate = businessmodel.CreateDate;
+                   
                     taskmodel.MasterID = businessmodel.MasterID;
                     _work.Repository<Flow_Task>().Add(taskmodel);
 

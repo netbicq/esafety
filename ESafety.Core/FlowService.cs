@@ -1012,6 +1012,8 @@ namespace ESafety.Core
                     {
                         ApplyUser = AppUser.UserInfo.Login,
                         BusinessID = task.BusinessID,
+                        BusinessDate=task.BusinessDate,
+                        BusinessCode=task.BusinessCode,
                         MasterID=task.MasterID,
                         BusinessType = point.BusinessType,
                         PointID = point.ID,
@@ -1054,7 +1056,7 @@ namespace ESafety.Core
                         var sendData = new Dictionary<string, MessageDataBase>();
                         sendData.Add("first", new MessageDataBase { value = "您有一个待审批事项" });
                         sendData.Add("keyword1", new MessageDataBase { value = ptask.BusinessCode });
-                        sendData.Add("keyword2", new MessageDataBase { value = ptask.BusinessDate.ToString("yyyy-MM-dddd HH:mm:ss") });
+                        sendData.Add("keyword2", new MessageDataBase { value = ptask.BusinessDate.ToString("yyyy-MM-dd HH:mm:ss") });
                         sendData.Add("keyword3", new MessageDataBase { value = aemp.CNName });
                         sendData.Add("keyword4", new MessageDataBase { value = aorg.OrgName });
                         sendData.Add("keyword5", new MessageDataBase { value = $"您有一个审批流程类型为{msg}的流程需要审批！" });
