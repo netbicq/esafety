@@ -399,6 +399,11 @@ namespace ESafety.Account.Service
 
                         foreach (var item in msgToUsers)
                         {
+                            //判断是否绑定微信
+                            if (string.IsNullOrEmpty(item.openID))
+                            {
+                                continue;
+                            }
                             var sendData = new Dictionary<string, MessageDataBase>();
                             sendData.Add("first", new MessageDataBase { value = "请尽快完成当前节点的类容" });
                             sendData.Add("keyword1", new MessageDataBase { value = billmodel.BillName });
@@ -435,6 +440,12 @@ namespace ESafety.Account.Service
 
                         foreach (var item in msgToUsers1)
                         {
+                            //判断是否绑定微信
+                            if (string.IsNullOrEmpty(item.openID))
+                            {
+                                continue;
+                            }
+
                             var sendData = new Dictionary<string, MessageDataBase>();
                             sendData.Add("first", new MessageDataBase { value = "请尽快完成当前节点的类容" });
                             sendData.Add("keyword1", new MessageDataBase { value = billmodel.BillName });

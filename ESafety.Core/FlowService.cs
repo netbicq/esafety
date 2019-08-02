@@ -224,28 +224,30 @@ namespace ESafety.Core
                         /******************************发送审批流程信息**************************************/
                         var aemp = _work.Repository<Basic_Employee>().GetModel(p => p.Login == nexttask.ApplyUser);
                         var msgToUser = _work.Repository<Auth_User>().GetModel(p => p.Login == nexttask.TaskUser);
-
-                        var aorg = _work.Repository<Basic_Org>().GetModel(aemp.OrgID);
-
-                        var msg = nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.Apply ? "作业申请"
-                                : nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.InspectTask ? "巡检任务"
-                                : nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.TempTask ? "临时任务"
-                                : "";
-                        var sendData = new Dictionary<string, MessageDataBase>();
-                        sendData.Add("first", new MessageDataBase { value = "您有一个待审批事项" });
-                        sendData.Add("keyword1", new MessageDataBase { value = nexttask.BusinessCode });
-                        sendData.Add("keyword2", new MessageDataBase { value = nexttask.BusinessDate.ToString("yyyy-MM-dddd HH:mm:ss") });
-                        sendData.Add("keyword3", new MessageDataBase { value = aemp.CNName });
-                        sendData.Add("keyword4", new MessageDataBase { value = aorg.OrgName });
-                        sendData.Add("keyword5", new MessageDataBase { value = $"您有一个审批流程类型为{msg}的流程需要审批！" });
-                        sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
-                        var Msg = new TemplateMessagePara
+                        if (!string.IsNullOrEmpty(msgToUser.openID))
                         {
-                            template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
-                            touser = msgToUser.openID,
-                            data = sendData,
-                        };
-                        WxService.SendTemplateMessage(Msg);
+                            var aorg = _work.Repository<Basic_Org>().GetModel(aemp.OrgID);
+
+                            var msg = nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.Apply ? "作业申请"
+                                    : nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.InspectTask ? "巡检任务"
+                                    : nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.TempTask ? "临时任务"
+                                    : "";
+                            var sendData = new Dictionary<string, MessageDataBase>();
+                            sendData.Add("first", new MessageDataBase { value = "您有一个待审批事项" });
+                            sendData.Add("keyword1", new MessageDataBase { value = nexttask.BusinessCode });
+                            sendData.Add("keyword2", new MessageDataBase { value = nexttask.BusinessDate.ToString("yyyy-MM-dddd HH:mm:ss") });
+                            sendData.Add("keyword3", new MessageDataBase { value = aemp.CNName });
+                            sendData.Add("keyword4", new MessageDataBase { value = aorg.OrgName });
+                            sendData.Add("keyword5", new MessageDataBase { value = $"您有一个审批流程类型为{msg}的流程需要审批！" });
+                            sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
+                            var Msg = new TemplateMessagePara
+                            {
+                                template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
+                                touser = msgToUser.openID,
+                                data = sendData,
+                            };
+                            WxService.SendTemplateMessage(Msg);
+                        }
                         /************************************************************************/
 
                     }
@@ -280,28 +282,31 @@ namespace ESafety.Core
                             /******************************发送审批流程信息**************************************/
                             var aemp = _work.Repository<Basic_Employee>().GetModel(p => p.Login == nexttask.ApplyUser);
                             var msgToUser = _work.Repository<Auth_User>().GetModel(p => p.Login == nexttask.TaskUser);
-
-                            var aorg = _work.Repository<Basic_Org>().GetModel(aemp.OrgID);
-
-                            var msg = nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.Apply ? "作业申请"
-                                    : nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.InspectTask ? "巡检任务"
-                                    : nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.TempTask ? "临时任务"
-                                    : "";
-                            var sendData = new Dictionary<string, MessageDataBase>();
-                            sendData.Add("first", new MessageDataBase { value = "您有一个待审批事项" });
-                            sendData.Add("keyword1", new MessageDataBase { value = nexttask.BusinessCode });
-                            sendData.Add("keyword2", new MessageDataBase { value = nexttask.BusinessDate.ToString("yyyy-MM-dddd HH:mm:ss") });
-                            sendData.Add("keyword3", new MessageDataBase { value = aemp.CNName });
-                            sendData.Add("keyword4", new MessageDataBase { value = aorg.OrgName });
-                            sendData.Add("keyword5", new MessageDataBase { value = $"您有一个审批流程类型为{msg}的流程需要审批！" });
-                            sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
-                            var Msg = new TemplateMessagePara
+                            if (!string.IsNullOrEmpty(msgToUser.openID))
                             {
-                                template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
-                                touser = msgToUser.openID,
-                                data = sendData,
-                            };
-                            WxService.SendTemplateMessage(Msg);
+                                var aorg = _work.Repository<Basic_Org>().GetModel(aemp.OrgID);
+
+                                var msg = nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.Apply ? "作业申请"
+                                        : nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.InspectTask ? "巡检任务"
+                                        : nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.TempTask ? "临时任务"
+                                        : "";
+                                var sendData = new Dictionary<string, MessageDataBase>();
+                                sendData.Add("first", new MessageDataBase { value = "您有一个待审批事项" });
+                                sendData.Add("keyword1", new MessageDataBase { value = nexttask.BusinessCode });
+                                sendData.Add("keyword2", new MessageDataBase { value = nexttask.BusinessDate.ToString("yyyy-MM-dddd HH:mm:ss") });
+                                sendData.Add("keyword3", new MessageDataBase { value = aemp.CNName });
+                                sendData.Add("keyword4", new MessageDataBase { value = aorg.OrgName });
+                                sendData.Add("keyword5", new MessageDataBase { value = $"您有一个审批流程类型为{msg}的流程需要审批！" });
+                                sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
+                                var Msg = new TemplateMessagePara
+                                {
+                                    template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
+                                    touser = msgToUser.openID,
+                                    data = sendData,
+                                };
+                                WxService.SendTemplateMessage(Msg);
+                            }
+                          
                             /************************************************************************/
                             rpsTask.Add(nexttask);
                             approveResult = PublicEnum.EE_FlowApproveResult.normal;
@@ -1038,31 +1043,31 @@ namespace ESafety.Core
                     /******************************发送审批流程信息**************************************/
                     var aemp = _work.Repository<Basic_Employee>().GetModel(p=>p.Login==ptask.ApplyUser);
                     var msgToUser = _work.Repository<Auth_User>().GetModel(p => p.Login == ptask.TaskUser);
-
-                    var aorg = _work.Repository<Basic_Org>().GetModel(aemp.OrgID);
-
-                    var msg = ptask.BusinessType == (int)PublicEnum.EE_BusinessType.Apply ? "作业申请" 
-                            : ptask.BusinessType==(int)PublicEnum.EE_BusinessType.InspectTask?"巡检任务"
-                            : ptask.BusinessType==(int)PublicEnum.EE_BusinessType.TempTask?"临时任务"
-                            : "";
-                    var sendData = new Dictionary<string, MessageDataBase>();
-                    sendData.Add("first", new MessageDataBase { value = "您有一个待审批事项" });
-                    sendData.Add("keyword1", new MessageDataBase { value = ptask.BusinessCode });
-                    sendData.Add("keyword2", new MessageDataBase { value = ptask.BusinessDate.ToString("yyyy-MM-dddd HH:mm:ss") });
-                    sendData.Add("keyword3", new MessageDataBase { value = aemp.CNName });
-                    sendData.Add("keyword4", new MessageDataBase { value = aorg.OrgName });
-                    sendData.Add("keyword5", new MessageDataBase { value = $"您有一个审批流程类型为{msg}的流程需要审批！" });
-                    sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
-                    var Msg = new TemplateMessagePara
+                    if (!string.IsNullOrEmpty(msgToUser.openID))
                     {
-                        template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
-                        touser = msgToUser.openID,
-                        data = sendData,
-                    };
-                    WxService.SendTemplateMessage(Msg);
+                        var aorg = _work.Repository<Basic_Org>().GetModel(aemp.OrgID);
+
+                        var msg = ptask.BusinessType == (int)PublicEnum.EE_BusinessType.Apply ? "作业申请"
+                                : ptask.BusinessType == (int)PublicEnum.EE_BusinessType.InspectTask ? "巡检任务"
+                                : ptask.BusinessType == (int)PublicEnum.EE_BusinessType.TempTask ? "临时任务"
+                                : "";
+                        var sendData = new Dictionary<string, MessageDataBase>();
+                        sendData.Add("first", new MessageDataBase { value = "您有一个待审批事项" });
+                        sendData.Add("keyword1", new MessageDataBase { value = ptask.BusinessCode });
+                        sendData.Add("keyword2", new MessageDataBase { value = ptask.BusinessDate.ToString("yyyy-MM-dddd HH:mm:ss") });
+                        sendData.Add("keyword3", new MessageDataBase { value = aemp.CNName });
+                        sendData.Add("keyword4", new MessageDataBase { value = aorg.OrgName });
+                        sendData.Add("keyword5", new MessageDataBase { value = $"您有一个审批流程类型为{msg}的流程需要审批！" });
+                        sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
+                        var Msg = new TemplateMessagePara
+                        {
+                            template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
+                            touser = msgToUser.openID,
+                            data = sendData,
+                        };
+                        WxService.SendTemplateMessage(Msg);
+                    }
                     /************************************************************************/
-
-
                     return new ActionResult<Flow_Task>(ptask);
                 }
             }
