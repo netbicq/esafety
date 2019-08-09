@@ -60,7 +60,10 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("该作业流程未配置流程节点，请配置!");
                 }
-
+                if (bill.PrincipalEmployeeID == Guid.Empty)
+                {
+                    throw new Exception("请选择作业流程负责人!");
+                }
                 var billdb = bill.MAPTO<Core.Model.DB.Account.Bll_OpreationBill>();
                 billdb.BillCode = Command.CreateCode();
                 billdb.FlowsJson = JsonConvert.SerializeObject(flows);

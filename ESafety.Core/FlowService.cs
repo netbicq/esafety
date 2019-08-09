@@ -189,7 +189,8 @@ namespace ESafety.Core
                     FlowUser = task.TaskUser,
                     FlowVersion = task.FlowVersion,
                     ID = Guid.NewGuid(),
-                    PointName = currentpoint.PointName
+                    PointName = currentpoint.PointName,
+                    MasterID=task.MasterID
                 };
                 Flow_Task nexttask;//下一任务
 
@@ -217,7 +218,8 @@ namespace ESafety.Core
                             ID = Guid.NewGuid(),
                             PointID = task.PointID,
                             TaskDate = DateTime.Now,
-                            TaskUser = nexuser.PointUser
+                            TaskUser = nexuser.PointUser,
+                            MasterID = task.MasterID
                         };
                         rpsTask.Add(nexttask);
                         approveResult = PublicEnum.EE_FlowApproveResult.normal;
@@ -277,7 +279,8 @@ namespace ESafety.Core
                                 ID = Guid.NewGuid(),
                                 PointID = nextpoint.ID,
                                 TaskDate = DateTime.Now,
-                                TaskUser = nexuser.PointUser
+                                TaskUser = nexuser.PointUser,
+                                MasterID = task.MasterID
                             };
                             /******************************发送审批流程信息**************************************/
                             var aemp = _work.Repository<Basic_Employee>().GetModel(p => p.Login == nexttask.ApplyUser);
@@ -656,8 +659,9 @@ namespace ESafety.Core
                 {
                     throw new Exception("数据有误");
                 }
+                var masterID = logs[0].MasterID;
                 //审批节点
-                var points = rpsPoint.Queryable(q => q.BusinessType == btype).OrderBy(o => o.PointIndex).ToList();
+                var points = rpsPoint.Queryable(q => q.BusinessType == btype&&q.MasterID==masterID).OrderBy(o => o.PointIndex).ToList();
                 var pointsids = points.Select(s => s.ID);
                 //审批用户
                 var pointuser = rpsPointUser.Queryable(q => pointsids.Contains(q.PointID));

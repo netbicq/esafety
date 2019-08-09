@@ -272,6 +272,7 @@ namespace ESafety.Account.Service
                 }
                 var dbof =_rpsof.Queryable(p=>p.OpreationID==id);
                 var re = from s in dbof.ToList()
+                         orderby s.PointIndex
                          select new OpreationFlowView
                          {
                              ID = s.ID,
