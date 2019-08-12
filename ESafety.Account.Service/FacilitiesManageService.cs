@@ -55,6 +55,11 @@ namespace ESafety.Account.Service
                     throw new Exception("该设备设施类别已存在！");
                 }
                 var dbfacilitiessort = facilitiesSort.MAPTO<Basic_FacilitiesSort>();
+                var parent = _rpsfacilitiessort.GetModel(facilitiesSort.ParentID);
+
+            
+                //根据上级设置Level
+                dbfacilitiessort.Level = parent == null ? 1 : parent.Level + 1;
                 _rpsfacilitiessort.Add(dbfacilitiessort);
                 _work.Commit();
                 return new ActionResult<bool>(true);
@@ -240,7 +245,7 @@ namespace ESafety.Account.Service
                 var orgs = _work.Repository<Core.Model.DB.Basic_Org>().Queryable(p=>orgids.Contains(p.ID));
                 var refclty = from f in dbfacilities
                               let org = orgs.FirstOrDefault(p=>p.ID==f.OrgID)
-                              orderby f.Code ascending
+                              orderby f.Code, f.Code.Length
                               select new FacilityView
                               {
                                   ID = f.ID,
@@ -400,6 +405,7 @@ namespace ESafety.Account.Service
                 var sort = _rpsfacilitiessort.Queryable();
                 var refclty = from f in dbfacilities
                               let s=sort.FirstOrDefault(p=>p.ID==f.SortID)
+                              orderby f.Code,s.Level
                               select new FacilityView
                               {
                                   ID = f.ID,

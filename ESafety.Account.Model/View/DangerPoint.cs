@@ -114,7 +114,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 警示牌
         /// </summary>
-        public string WarningSign { get; set; }
+        public IEnumerable<string> WarningSign { get; set; }
         /// <summary>
         /// 风险点图片
         /// </summary>
@@ -177,7 +177,7 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 警示牌
         /// </summary>
-        public string WarningSign { get; set; }
+        public IEnumerable<string> WarningSign { get; set; }
         /// <summary>
         /// 风险点图片
         /// </summary>

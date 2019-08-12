@@ -474,7 +474,7 @@ namespace ESafety.Core
                 var orgs = _rpsorg.Queryable();
                 var reemps = from em in emps
                              let or = orgs.FirstOrDefault(p=>p.ID==em.OrgID)
-                             orderby em.CNName
+                             orderby em.Login
                              select new EmployeeView
                              {
                                  ID = em.ID,

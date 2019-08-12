@@ -52,7 +52,7 @@ namespace ESafety.Account.Model.PARA
         /// <summary>
         /// 警示牌
         /// </summary>
-        public string WarningSign { get; set; }
+        public IEnumerable<string> WarningSigns { get; set; }
         /// <summary>
         /// 风险点图片
         /// </summary>

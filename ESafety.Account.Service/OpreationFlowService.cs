@@ -224,7 +224,7 @@ namespace ESafety.Account.Service
             var posts = _rpspost.Queryable(p=>pids.Contains(p.ID));
             var reops = from ac in opreations
                          let post=posts.FirstOrDefault(p=>p.ID==ac.PostID)
-                         orderby ac.Code descending
+                         orderby ac.Code 
                          select new OpreationView
                          {
                              Code = ac.Code,
@@ -330,6 +330,7 @@ namespace ESafety.Account.Service
                 var posts = _rpspost.Queryable(p => pids.Contains(p.ID));
                 var reops = from ac in opreations
                             let post = posts.FirstOrDefault(p => p.ID == ac.PostID)
+                            orderby ac.Code
                             select new OpreationView
                             {
                                 Code = ac.Code,
@@ -354,11 +355,12 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var user = AppUser.EmployeeInfo;
-                var post = _work.Repository<Basic_PostEmployees>().Queryable(p=>p.EmployeeID==user.ID);
-                var postids = post.Select(s => s.PostID);
-                var opreations = AppUser.UserInfo.Login == "admin" ? _rpsopreation.Queryable(): _rpsopreation.Queryable(p=>postids.Contains(p.PostID));
+                //var user = AppUser.EmployeeInfo;
+               // var post = _work.Repository<Basic_PostEmployees>().Queryable(p=>p.EmployeeID==user.ID);
+               // var postids = post.Select(s => s.PostID);
+                var opreations = /*AppUser.UserInfo.Login == "admin" ?*/ _rpsopreation.Queryable()/*: _rpsopreation.Queryable(p=>postids.Contains(p.PostID))*/;
                 var re = from o in opreations
+                         orderby o.Code
                          select new OpreationSelector
                          {
                              ID = o.ID,

@@ -49,6 +49,8 @@ namespace ESafety.Account.Service
             {
                 throw new Exception("账套已经过期或已关闭");
             }
+            rpsbinds.Delete(wxbind);
+           
             Core.Model.AppUserDB userdb = new AppUserDB()
             {
                 DBName = act.DBName,
