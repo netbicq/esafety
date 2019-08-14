@@ -247,6 +247,7 @@ namespace ESafety.Core
                                 template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
                                 touser = msgToUser.openID,
                                 data = sendData,
+                                url = "http://esfwx.quickcq.com/ApprovalPending"
                             };
                             WxService.SendTemplateMessage(Msg);
                         }
@@ -306,6 +307,7 @@ namespace ESafety.Core
                                     template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
                                     touser = msgToUser.openID,
                                     data = sendData,
+                                    url = "http://esfwx.quickcq.com/ApprovalPending"
                                 };
                                 WxService.SendTemplateMessage(Msg);
                             }
@@ -1072,6 +1074,7 @@ namespace ESafety.Core
                             template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
                             touser = msgToUser.openID,
                             data = sendData,
+                            url = "http://esfwx.quickcq.com/ApprovalPending"
                         };
                         WxService.SendTemplateMessage(Msg);
                     }

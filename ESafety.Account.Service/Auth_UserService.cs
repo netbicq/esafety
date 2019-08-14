@@ -66,7 +66,8 @@ namespace ESafety.Account.Service
             {
                 throw new Exception("用户未绑定微信");
             }
-            rpsuser.Delete(user);
+            user.openID = "";
+            rpsuser.Update(user);
             _work.Commit();
 
             return base.UserWxUnBind(openid);

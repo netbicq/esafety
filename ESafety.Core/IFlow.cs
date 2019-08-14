@@ -157,5 +157,7 @@ namespace ESafety.Core
         /// <param name="businessid"></param>
         /// <returns></returns>
         ActionResult<IEnumerable<FlowLogView>> GetFlowLog(Guid businessid);
+
+      
     }
 }
