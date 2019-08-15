@@ -146,6 +146,10 @@ namespace ESafety.Core
             var parent = _rpsorg.GetModel(org.ParentID);
             if (AppUser.UserInfo.Login!="admin")
             {
+                if (parent == null)
+                {
+                    throw new Exception("初始级组织架构能由管理员新建!");
+                }
                 var child = srvTree.GetChildrenIds<Basic_Org>(AppUser.EmployeeInfo.OrgID);
                 if (!child.Contains(org.ParentID))
                 {
