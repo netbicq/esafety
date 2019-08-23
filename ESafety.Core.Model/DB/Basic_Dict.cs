@@ -19,7 +19,7 @@ namespace ESafety.Core.Model.DB
         /// <summary>
         /// 是否系统
         /// </summary>
-        public bool IsSYS { get; set; }
+        public bool IsSYS { get; set; } = false;
         /// <summary>
         /// 词典名称
         /// </summary>

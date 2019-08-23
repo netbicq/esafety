@@ -20,7 +20,7 @@ namespace ESafety.Account.Service
         private IUnitwork _work = null;
         private IRepository<Doc_Certificate> _rpsdc = null;
         private IAttachFile srvFile = null;
-        public DocCertificateService(IUnitwork work,IAttachFile file)
+        public DocCertificateService(IUnitwork work, IAttachFile file)
         {
             _work = work;
             Unitwork = work;
@@ -40,12 +40,12 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("参数有误");
                 }
-                var check = _rpsdc.Any(p=>p.Name==certificateNew.Name&&p.TypeID==certificateNew.TypeID);
+                var check = _rpsdc.Any(p => p.Name == certificateNew.Name && p.TypeID == certificateNew.TypeID && p.Owner == certificateNew.Owner);
                 if (check)
                 {
                     throw new Exception("该资质类型下已存在该资质");
                 }
-                var dbdc= certificateNew.MAPTO<Doc_Certificate>();
+                var dbdc = certificateNew.MAPTO<Doc_Certificate>();
                 //电子文档
                 var files = new AttachFileSave
                 {
@@ -59,7 +59,7 @@ namespace ESafety.Account.Service
                             }
                 };
 
-                var fre=srvFile.SaveFiles(files);
+                var fre = srvFile.SaveFiles(files);
                 if (fre.state != 200)
                 {
                     throw new Exception(fre.msg);
@@ -83,7 +83,7 @@ namespace ESafety.Account.Service
             try
             {
                 var dbdc = _rpsdc.GetModel(id);
-                if (dbdc==null)
+                if (dbdc == null)
                 {
                     throw new Exception("未找到该资质模型");
                 }
@@ -111,7 +111,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到所需修改的资质模型");
                 }
-                var check = _rpsdc.Any(p => p.ID != certificateEdit.ID && p.Name == certificateEdit.Name&&p.TypeID==certificateEdit.TypeID);
+                var check = _rpsdc.Any(p => p.ID != certificateEdit.ID && p.Name == certificateEdit.Name && p.TypeID == certificateEdit.TypeID && p.Owner == certificateEdit.Owner);
                 if (check)
                 {
                     throw new Exception("该资质类型下已存在该资质");
@@ -132,7 +132,7 @@ namespace ESafety.Account.Service
                             }
                 };
 
-                var fre= srvFile.SaveFiles(files);
+                var fre = srvFile.SaveFiles(files);
                 if (fre.state != 200)
                 {
                     throw new Exception(fre.msg);
@@ -173,18 +173,18 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbdcs = _rpsdc.Queryable(p =>p.TypeID==para.Query.TypeID&&(p.Name.Contains(para.Query.Name)||string.IsNullOrEmpty(para.Query.Name)));
+                var dbdcs = _rpsdc.Queryable(p => p.TypeID == para.Query.TypeID && (p.Name.Contains(para.Query.Name) || string.IsNullOrEmpty(para.Query.Name)));
                 var redcs = from s in dbdcs
                             orderby s.Name
                             select new DocCertificateView
                             {
                                 ID = s.ID,
-                                ApproveDate=s.ApproveDate,
-                                InvalidDate=s.InvalidDate,
-                                IssueOrg=s.IssueOrg,
-                                Name=s.Name,
-                                Owner=s.Owner,
-                                TypeID=s.TypeID
+                                ApproveDate = s.ApproveDate,
+                                InvalidDate = s.InvalidDate,
+                                IssueOrg = s.IssueOrg,
+                                Name = s.Name,
+                                Owner = s.Owner,
+                                TypeID = s.TypeID
                             };
                 var re = new Pager<DocCertificateView>().GetCurrentPage(redcs, para.PageSize, para.PageIndex);
                 return new ActionResult<Pager<DocCertificateView>>(re);
