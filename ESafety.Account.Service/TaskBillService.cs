@@ -9,6 +9,8 @@ using ESafety.Core.Model.PARA;
 using ESafety.ORM;
 using ESafety.Unity;
 using Newtonsoft.Json;
+using Quick.WXHelper;
+using Quick.WXHelper.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -181,7 +183,7 @@ namespace ESafety.Account.Service
                           let tbs = dbtbs.OrderByDescending(o => o.TroubleLevel).FirstOrDefault(p => p.BillID == s.ID)
                           let post = posts.FirstOrDefault(p => p.ID == s.PostID)
                           let dp = dps.FirstOrDefault(p => p.ID == s.DangerPointID)
-                          let tlv=tbs==null?null:dict.FirstOrDefault(p=>p.ID==tbs.TroubleLevel)
+                          let tlv = tbs == null ? null : dict.FirstOrDefault(p => p.ID == tbs.TroubleLevel)
                           where s.BillCode.Contains(para.Query.Key) || ts.Name.Contains(para.Query.Key) || para.Query.Key == string.Empty
                           orderby s.StartTime descending
                           select new TaskBillView
@@ -200,7 +202,7 @@ namespace ESafety.Account.Service
                               PostID = s.PostID,
                               PostName = post.Name,
                               TaskName = ts.Name,
-                              TaskResult = tlv==null? "":tlv.DictName,
+                              TaskResult = tlv == null ? "" : tlv.DictName,
                               //TaskResultValue = tbs == null ? 0 : tbs.TroubleLevel == -1 ? 0 : tbs.TroubleLevel
                           };
                 var re = new Pager<TaskBillView>().GetCurrentPage(rev, para.PageSize, para.PageIndex);
@@ -282,7 +284,7 @@ namespace ESafety.Account.Service
 
                               Eval_YXFW = tbd.Eval_YXFW,
                               YXFWDic = tbd.Eval_YXFW == Guid.Empty ? string.Empty : dict.GetModel(tbd.Eval_YXFW).DictName,
-                              
+
                               LECD_L = tbd.LECD_L == Guid.Empty ? string.Empty : dict.GetModel(tbd.LECD_L).DictName,
 
                               LECD_E = tbd.LECD_E == Guid.Empty ? string.Empty : dict.GetModel(tbd.LECD_E).DictName,
@@ -431,7 +433,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("参数错误!");
                 }
-                var check = _rpstb.Any(p => p.TaskID == bill.TaskID && p.State == (int)PublicEnum.BillFlowState.wait&&p.EmployeeID==AppUser.EmployeeInfo.ID);
+                var check = _rpstb.Any(p => p.TaskID == bill.TaskID && p.State == (int)PublicEnum.BillFlowState.wait && p.EmployeeID == AppUser.EmployeeInfo.ID);
                 if (check)
                 {
                     throw new Exception("该待检查任务单据已存在!");
@@ -510,7 +512,7 @@ namespace ESafety.Account.Service
                          let isCtr = _work.Repository<Bll_TroubleControlDetails>().Queryable(p => ctrids.Contains(p.TroubleControlID) && p.TaskSubjectsID == sub.ID).FirstOrDefault()
                          let sdids = _work.Repository<Basic_DangerSafetyStandards>().Queryable(p => p.DangerID == sub.DangerID).Select(s => s.SafetyStandardID)
                          let sds = _work.Repository<Basic_SafetyStandard>().Queryable(p => sdids.Contains(p.ID))
-                         let rest =isCtr==null?null:_rpstbs.Queryable(p => p.ID == isCtr.BillSubjectsID).FirstOrDefault()
+                         let rest = isCtr == null ? null : _rpstbs.Queryable(p => p.ID == isCtr.BillSubjectsID).FirstOrDefault()
                          select new TaskSubjectView
                          {
                              KeyID = sub.ID,
@@ -524,18 +526,18 @@ namespace ESafety.Account.Service
                              PrincipalTel = sb.SubjectPrincipalTel,
                              DangerName = dg.Name,
                              DangerID = dg.ID,
-                             IsControl = isCtr==null?false:true,
-                             LastResult=rest==null?"":rest.TaskResultMemo,
-                             SubStandards= from sd in sds
-                                           select new SubStandard
-                                           {
-                                               SubStandardID = sd.ID,
-                                               Name = "执行标准名:" + sd.Name,
-                                               Accident = "事故措施:" + sd.Accident,
-                                               Controls = "管理措施:" + sd.Controls,
-                                               Engineering = "工程措施:" + sd.Engineering,
-                                               Individual = "个体措施:" + sd.Individual
-                                           }
+                             IsControl = isCtr == null ? false : true,
+                             LastResult = rest == null ? "" : rest.TaskResultMemo,
+                             SubStandards = from sd in sds
+                                            select new SubStandard
+                                            {
+                                                SubStandardID = sd.ID,
+                                                Name = "执行标准名:" + sd.Name,
+                                                Accident = "事故措施:" + sd.Accident,
+                                                Controls = "管理措施:" + sd.Controls,
+                                                Engineering = "工程措施:" + sd.Engineering,
+                                                Individual = "个体措施:" + sd.Individual
+                                            }
 
                          };
                 return new ActionResult<IEnumerable<TaskSubjectView>>(re);
@@ -589,9 +591,9 @@ namespace ESafety.Account.Service
                 }
                 if (dbsub.TaskResult == (int)PublicEnum.EE_TaskResultType.abnormal)
                 {
-                    var tb = _rpstbs.Queryable(p=>p.DangerID == bill.DangerID && p.SubjectID == bill.SubjectID).OrderByDescending(o=>o.TaskTime).FirstOrDefault();
+                    var tb = _rpstbs.Queryable(p => p.DangerID == bill.DangerID && p.SubjectID == bill.SubjectID).OrderByDescending(o => o.TaskTime).FirstOrDefault();
 
-                   
+
 
                     if (bill.Eval_WHYS == Guid.Empty)
                     {
@@ -688,7 +690,7 @@ namespace ESafety.Account.Service
                 var dangerids = resubs.Select(s => s.DangerID);
                 var check = _work.Repository<Bll_InspectTaskSubject>().Any(p => p.InspectTaskID == dbbill.TaskID /*&& !subids.Contains(p.SubjectID)*/ && !dangerids.Contains(p.DangerID));
 
-             
+
                 if (check)
                 {
                     throw new Exception("存在未检查的项，无法提交完成单据!");
@@ -700,14 +702,14 @@ namespace ESafety.Account.Service
                     //新建管控项
                     if (bill.TaskResult == (int)PublicEnum.EE_TaskResultType.abnormal)
                     {
-                        var task = _work.Repository<Bll_InspectTaskSubject>().GetModel(p => p.InspectTaskID == dbbill.TaskID&&p.DangerID==bill.DangerID&&p.SubjectID==bill.SubjectID);
+                        var task = _work.Repository<Bll_InspectTaskSubject>().GetModel(p => p.InspectTaskID == dbbill.TaskID && p.DangerID == bill.DangerID && p.SubjectID == bill.SubjectID);
                         //检查时为异常状态时直接新建管控项
                         //所有未归档的管控项
                         var rpsCtr = _work.Repository<Bll_TroubleControl>();
-                        var ctrs= rpsCtr.Queryable(p => p.State != (int)PublicEnum.EE_TroubleState.history);
+                        var ctrs = rpsCtr.Queryable(p => p.State != (int)PublicEnum.EE_TroubleState.history);
                         var ctrids = ctrs.Select(s => s.ID);
                         var rpsCtrDetail = _work.Repository<Bll_TroubleControlDetails>();
-                        var check1= rpsCtrDetail.Any(p => ctrids.Contains(p.TroubleControlID) && p.BillSubjectsID == task.ID);
+                        var check1 = rpsCtrDetail.Any(p => ctrids.Contains(p.TroubleControlID) && p.BillSubjectsID == task.ID);
                         if (check1)
                         {
                             throw new Exception("当前项已处于管控在中，无法再提交异常状态!");
@@ -725,23 +727,44 @@ namespace ESafety.Account.Service
                             PrincipalID = bill.CtrPrincipal,
                             ControlDescription = "",
                             ControlName = "",
-                            DangerPoint=dbbill.DangerPointID,
+                            DangerPoint = dbbill.DangerPointID,
 
                         };
                         var ctrDetail = new Bll_TroubleControlDetails
                         {
                             ID = Guid.NewGuid(),
                             TaskSubjectsID = task.ID,
-                            BillSubjectsID =bill.ID,
+                            BillSubjectsID = bill.ID,
                             TroubleControlID = ctr.ID
                         };
                         rpsCtr.Add(ctr);
                         rpsCtrDetail.Add(ctrDetail);
+                        /******************************发送管控项信息**************************************/
+                        var ctrp = _work.Repository<Basic_Employee>().GetModel(bill.CtrPrincipal);
+                        var msgToUser = _work.Repository<Auth_User>().GetModel(p => p.Login ==ctrp.Login);
+                        var dangerPoint = _work.Repository<Basic_DangerPoint>().GetModel(dbbill.DangerPointID);
+                        var sendData = new Dictionary<string, MessageDataBase>();
+                        sendData.Add("first",new MessageDataBase { value="安全隐患待处理"});
+                        sendData.Add("keyword1", new MessageDataBase { value = AppUser.EmployeeInfo.CNName });
+                        sendData.Add("keyword2", new MessageDataBase { value = DateTime.Now.ToString("yyyy-MM-dddd HH:mm:ss") });
+                        sendData.Add("keyword3", new MessageDataBase { value =dangerPoint.Name});
+                        sendData.Add("keyword4", new MessageDataBase { value = bill.TaskTime.ToString("yyyy-MM-dddd HH:mm:ss") });
+                        sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
+                        var Msg = new TemplateMessagePara
+                        {
+                            template_id = "46LiWSOZ1MGVh2j8_pvyMkmzfw4ItkVVrV0DQUg24cU",
+                            touser =msgToUser.openID,
+                            data=sendData,
+                            url= "http://esfwx.quickcq.com/HiddenTrouble"
+                        };
+                        WxService.SendTemplateMessage(Msg);
+                        /************************************************************************/
                     }
                 }
                 dbbill.EndTime = DateTime.Now;
                 dbbill.State = (int)PublicEnum.BillFlowState.normal;
                 _rpstb.Update(dbbill);
+                _work.Commit();
                 return new ActionResult<bool>(true);
             }
             catch (Exception ex)
@@ -809,7 +832,7 @@ namespace ESafety.Account.Service
                 var dangers = _work.Repository<Basic_DangerPoint>().Queryable(p => dangerids.Contains(p.ID));
                 var subs = _work.Repository<Bll_InspectTaskSubject>().Queryable();
                 var osubs = _rpstbs.Queryable();
-               
+
                 var re = from tb in tbs.ToList()
                          let task = tasks.FirstOrDefault(q => q.ID == tb.TaskID)
                          let danger = dangers.FirstOrDefault(q => q.ID == tb.DangerPointID)
@@ -877,7 +900,7 @@ namespace ESafety.Account.Service
                              EndTime = (DateTime)tb.EndTime,
                              EmployeeName = user.CNName,
                              TaskName = task.Name,
-                             State =  (PublicEnum.BillFlowState)tb.State,
+                             State = (PublicEnum.BillFlowState)tb.State,
                              DangerPointName = danger.Name,
                              SubCheckedCount = osubcount,
                              SubCount = osubcount,
@@ -950,16 +973,16 @@ namespace ESafety.Account.Service
                              DangerID = dg.ID,
                              DangerName = dg.Name,
                              IsControl = isCtr,
-                             SubStandards= from sd in sds
-                                           select new SubStandard
-                                           {
-                                               SubStandardID=sd.ID,
-                                               Name = "执行标准名:" + sd.Name,
-                                               Accident = "事故措施:" + sd.Accident,
-                                               Controls = "管理措施:" + sd.Controls,
-                                               Engineering = "工程措施:" + sd.Engineering,
-                                               Individual = "个体措施:" + sd.Individual
-                                           }
+                             SubStandards = from sd in sds
+                                            select new SubStandard
+                                            {
+                                                SubStandardID = sd.ID,
+                                                Name = "执行标准名:" + sd.Name,
+                                                Accident = "事故措施:" + sd.Accident,
+                                                Controls = "管理措施:" + sd.Controls,
+                                                Engineering = "工程措施:" + sd.Engineering,
+                                                Individual = "个体措施:" + sd.Individual
+                                            }
                          };
                 return new ActionResult<IEnumerable<TaskSubjectOverView>>(re);
             }
@@ -1088,7 +1111,7 @@ namespace ESafety.Account.Service
                              EndTime = (DateTime)tb.EndTime,
                              EmployeeName = user.CNName,
                              TaskName = task.Name,
-                             State =(PublicEnum.BillFlowState)tb.State,
+                             State = (PublicEnum.BillFlowState)tb.State,
                              DangerPointName = danger.Name,
                              SubCheckedCount = osubs.Count(),
                              SubCount = csubs.Count(),
@@ -1104,10 +1127,10 @@ namespace ESafety.Account.Service
                                          let dg = _work.Repository<Basic_Danger>().GetModel(sub.DangerID)
                                          let lv = rpsDict.GetModel(dg.DangerLevel)
                                          let sb = sbs.FirstOrDefault(q => q.SubjectID == sub.SubjectID)
-                                         let isCtr = _work.Repository<Bll_TroubleControlDetails>().Queryable(p => ctrids.Contains(p.TroubleControlID) && p.TaskSubjectsID== sub.ID).FirstOrDefault()
-                                         let sdids=_work.Repository<Basic_DangerSafetyStandards>().Queryable(p=>p.DangerID==sub.DangerID).Select(s=>s.SafetyStandardID)
-                                         let sds=_work.Repository<Basic_SafetyStandard>().Queryable(p=>sdids.Contains(p.ID))
-                                         let rest =isCtr==null?null: _rpstbs.Queryable(p=>p.ID==isCtr.BillSubjectsID).FirstOrDefault()
+                                         let isCtr = _work.Repository<Bll_TroubleControlDetails>().Queryable(p => ctrids.Contains(p.TroubleControlID) && p.TaskSubjectsID == sub.ID).FirstOrDefault()
+                                         let sdids = _work.Repository<Basic_DangerSafetyStandards>().Queryable(p => p.DangerID == sub.DangerID).Select(s => s.SafetyStandardID)
+                                         let sds = _work.Repository<Basic_SafetyStandard>().Queryable(p => sdids.Contains(p.ID))
+                                         let rest = isCtr == null ? null : _rpstbs.Queryable(p => p.ID == isCtr.BillSubjectsID).FirstOrDefault()
                                          select new TaskSubjectView
                                          {
                                              KeyID = sub.ID,
@@ -1121,21 +1144,21 @@ namespace ESafety.Account.Service
                                              PrincipalTel = sb.SubjectPrincipalTel,
                                              DangerName = dg.Name,
                                              DangerID = dg.ID,
-                                             IsControl=isCtr==null?false:true,
-                                             LastResult=rest==null?"":rest.TaskResultMemo,
-                                             SubStandards=from sd in sds 
-                                                          select new SubStandard
-                                                          {
-                                                              SubStandardID = sd.ID,
-                                                              Name ="执行标准名:"+sd.Name,
-                                                              Accident="事故措施:"+sd.Accident,
-                                                              Controls="管理措施:"+sd.Controls,
-                                                              Engineering="工程措施:"+sd.Engineering,
-                                                              Individual="个体措施:"+sd.Individual
-                                                          }
+                                             IsControl = isCtr == null ? false : true,
+                                             LastResult = rest == null ? "" : rest.TaskResultMemo,
+                                             SubStandards = from sd in sds
+                                                            select new SubStandard
+                                                            {
+                                                                SubStandardID = sd.ID,
+                                                                Name = "执行标准名:" + sd.Name,
+                                                                Accident = "事故措施:" + sd.Accident,
+                                                                Controls = "管理措施:" + sd.Controls,
+                                                                Engineering = "工程措施:" + sd.Engineering,
+                                                                Individual = "个体措施:" + sd.Individual
+                                                            }
 
-                                             
-                                             
+
+
                                          }
                          };
 
@@ -1272,7 +1295,7 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<IEnumerable<TaskBillModel>> GetTaskBillMastersOverByQRCoder(Guid pointID)
         {
-            
+
             try
             {
 

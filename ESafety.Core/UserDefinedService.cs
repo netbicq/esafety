@@ -61,7 +61,11 @@ namespace ESafety.Core
             {
                 throw new Exception("已经存在相同的标题 ：" + entity.Caption);
             }
-
+             check = _rpsdefined.Any(q => q.DefinedType == (int)entity.DefinedType && q.VisibleIndex==entity.VisibleIndex);
+            if (check)
+            {
+                throw new Exception($"该类型下已存在顺序为【{entity.VisibleIndex}】的自定义项!");
+            }
             var dbdefined = entity.MAPTO<Basic_UserDefined>();
             
             _rpsdefined.Add(dbdefined);
@@ -201,6 +205,7 @@ namespace ESafety.Core
                 var test = userdefineds.ToList();
                 var re = from p in userdefineds.ToList()
                          let dict =_rpsdict.GetModel(q=>q.ID == p.DictID)
+                         orderby p.VisibleIndex
                          select new UserDefinedView
                          {
                              Caption = p.Caption,

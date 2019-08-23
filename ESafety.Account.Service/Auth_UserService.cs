@@ -49,6 +49,9 @@ namespace ESafety.Account.Service
             {
                 throw new Exception("账套已经过期或已关闭");
             }
+            //rpsbinds.Delete(wxbind);
+            //_work.Commit();
+           
             Core.Model.AppUserDB userdb = new AppUserDB()
             {
                 DBName = act.DBName,
@@ -64,7 +67,8 @@ namespace ESafety.Account.Service
             {
                 throw new Exception("用户未绑定微信");
             }
-            rpsuser.Delete(user);
+            user.openID = "";
+            rpsuser.Update(user);
             _work.Commit();
 
             return base.UserWxUnBind(openid);
@@ -151,12 +155,13 @@ namespace ESafety.Account.Service
             {
                 throw new Exception("微信号已经绑定账号");
             }
-            rpswxbind.Add(new Auth_WxBinds
+            var dbwxbind = new Auth_WxBinds
             {
                 AccountCode = para.AccountCode,
                 ID = Guid.NewGuid(),
                 openID = para.openID
-            });
+            };
+            rpswxbind.Add(dbwxbind);
             _work.Commit();//写入平台绑定
 
             Core.Model.AppUserDB userdb = new AppUserDB()
@@ -181,6 +186,12 @@ namespace ESafety.Account.Service
                 sresult.data.Principal = account.Principal;
                 sresult.data.ShortName = account.ShortName;
                 sresult.data.Tel = account.Tel;
+
+            }
+            else
+            {
+                Unitwork.SetUserDB(null);
+                rpswxbind.Delete(dbwxbind);
 
             }
             return sresult; 

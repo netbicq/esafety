@@ -4,6 +4,8 @@ using ESafety.Core.Model.PARA;
 using ESafety.Core.Model.View;
 using ESafety.ORM;
 using ESafety.Unity;
+using Quick.WXHelper;
+using Quick.WXHelper.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +27,7 @@ namespace ESafety.Core
         private IRepository<Flow_Task> rpsTask = null;
         private IRepository<Model.DB.Flow_Result> rpsResult = null;
         private IRepository<Basic_Employee> rpsEmployee = null;
-      
+
 
         /// <summary>
         /// 构造
@@ -41,7 +43,7 @@ namespace ESafety.Core
             rpsResult = _work.Repository<Model.DB.Flow_Result>();
             rpsEmployee = _work.Repository<Basic_Employee>();
             rpsFlowMaster = _work.Repository<Flow_Master>();
- 
+
 
         }
         /// <summary>
@@ -57,10 +59,10 @@ namespace ESafety.Core
                 {
                     throw new Exception("参数错误!");
                 }
-                var check = rpsFlowMaster.Any(p=>p.Name==flowMasterNew.Name&&p.BusinessType==(int)flowMasterNew.BusinessType);
+                var check = rpsFlowMaster.Any(p => p.Name == flowMasterNew.Name && p.BusinessType == (int)flowMasterNew.BusinessType);
                 if (check)
                 {
-                    throw new Exception("该业务类型下，已存在名："+flowMasterNew.Name+"的Master!");
+                    throw new Exception("该业务类型下，已存在名：" + flowMasterNew.Name + "的Master!");
                 }
                 var flowMaster = flowMasterNew.MAPTO<Flow_Master>();
                 rpsFlowMaster.Add(flowMaster);
@@ -82,7 +84,7 @@ namespace ESafety.Core
         {
             try
             {
-                var checkpoint = rpsPoint.Any(q => q.MasterID ==point.MasterID && q.PointName == point.PointName);
+                var checkpoint = rpsPoint.Any(q => q.MasterID == point.MasterID && q.PointName == point.PointName);
                 if (checkpoint)
                 {
                     throw new Exception("同一流程Master下存在节点名称:" + point.PointName + "已经存在");
@@ -130,7 +132,7 @@ namespace ESafety.Core
                 }
 
                 usercheck = rpsPointUser.Any(q => q.PointID == pointuser.PointID);
-                if(point.PointType==(int)PublicEnum.EE_FlowPointType.Generic&&usercheck)
+                if (point.PointType == (int)PublicEnum.EE_FlowPointType.Generic && usercheck)
                 {
                     throw new Exception("节点为普通审批，已存在审批人!");
                 }
@@ -178,8 +180,8 @@ namespace ESafety.Core
                 {
                     ApplyUser = task.ApplyUser,
                     BusinessID = task.BusinessID,
-                    BusinessCode=task.BusinessCode,
-                    BusinessDate=task.BusinessDate,
+                    BusinessCode = task.BusinessCode,
+                    BusinessDate = task.BusinessDate,
                     BusinessType = task.BusinessType,
                     FlowDate = DateTime.Now,
                     FlowMemo = approve.FlowMemo,
@@ -187,7 +189,8 @@ namespace ESafety.Core
                     FlowUser = task.TaskUser,
                     FlowVersion = task.FlowVersion,
                     ID = Guid.NewGuid(),
-                    PointName = currentpoint.PointName
+                    PointName = currentpoint.PointName,
+                    MasterID=task.MasterID
                 };
                 Flow_Task nexttask;//下一任务
 
@@ -210,15 +213,46 @@ namespace ESafety.Core
                             BusinessID = task.BusinessID,
                             BusinessType = task.BusinessType,
                             FlowVersion = task.FlowVersion,
-                            BusinessCode=task.BusinessCode,
-                            BusinessDate=task.BusinessDate,
+                            BusinessCode = task.BusinessCode,
+                            BusinessDate = task.BusinessDate,
                             ID = Guid.NewGuid(),
                             PointID = task.PointID,
                             TaskDate = DateTime.Now,
-                            TaskUser = nexuser.PointUser
+                            TaskUser = nexuser.PointUser,
+                            MasterID = task.MasterID
                         };
                         rpsTask.Add(nexttask);
                         approveResult = PublicEnum.EE_FlowApproveResult.normal;
+                        /******************************发送审批流程信息**************************************/
+                        var aemp = _work.Repository<Basic_Employee>().GetModel(p => p.Login == nexttask.ApplyUser);
+                        var msgToUser = _work.Repository<Auth_User>().GetModel(p => p.Login == nexttask.TaskUser);
+                        if (!string.IsNullOrEmpty(msgToUser.openID))
+                        {
+                            var aorg = _work.Repository<Basic_Org>().GetModel(aemp.OrgID);
+
+                            var msg = nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.Apply ? "作业申请"
+                                    : nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.InspectTask ? "巡检任务"
+                                    : nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.TempTask ? "临时任务"
+                                    : "";
+                            var sendData = new Dictionary<string, MessageDataBase>();
+                            sendData.Add("first", new MessageDataBase { value = "您有一个待审批事项" });
+                            sendData.Add("keyword1", new MessageDataBase { value = nexttask.BusinessCode });
+                            sendData.Add("keyword2", new MessageDataBase { value = nexttask.BusinessDate.ToString("yyyy-MM-dddd HH:mm:ss") });
+                            sendData.Add("keyword3", new MessageDataBase { value = aemp.CNName });
+                            sendData.Add("keyword4", new MessageDataBase { value = aorg.OrgName });
+                            sendData.Add("keyword5", new MessageDataBase { value = $"您有一个审批流程类型为{msg}的流程需要审批！" });
+                            sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
+                            var Msg = new TemplateMessagePara
+                            {
+                                template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
+                                touser = msgToUser.openID,
+                                data = sendData,
+                                url = "http://esfwx.quickcq.com/ApprovalPending"
+                            };
+                            WxService.SendTemplateMessage(Msg);
+                        }
+                        /************************************************************************/
+
                     }
                     else //当前节点没有下一位用户，则找下一节点
                     {
@@ -241,14 +275,44 @@ namespace ESafety.Core
                                 BusinessID = task.BusinessID,
                                 BusinessType = task.BusinessType,
                                 FlowVersion = task.FlowVersion,
-                                BusinessCode=task.BusinessCode,
-                                BusinessDate=task.BusinessDate,
+                                BusinessCode = task.BusinessCode,
+                                BusinessDate = task.BusinessDate,
                                 ID = Guid.NewGuid(),
                                 PointID = nextpoint.ID,
                                 TaskDate = DateTime.Now,
-                                TaskUser = nexuser.PointUser
+                                TaskUser = nexuser.PointUser,
+                                MasterID = task.MasterID
                             };
+                            /******************************发送审批流程信息**************************************/
+                            var aemp = _work.Repository<Basic_Employee>().GetModel(p => p.Login == nexttask.ApplyUser);
+                            var msgToUser = _work.Repository<Auth_User>().GetModel(p => p.Login == nexttask.TaskUser);
+                            if (!string.IsNullOrEmpty(msgToUser.openID))
+                            {
+                                var aorg = _work.Repository<Basic_Org>().GetModel(aemp.OrgID);
 
+                                var msg = nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.Apply ? "作业申请"
+                                        : nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.InspectTask ? "巡检任务"
+                                        : nexttask.BusinessType == (int)PublicEnum.EE_BusinessType.TempTask ? "临时任务"
+                                        : "";
+                                var sendData = new Dictionary<string, MessageDataBase>();
+                                sendData.Add("first", new MessageDataBase { value = "您有一个待审批事项" });
+                                sendData.Add("keyword1", new MessageDataBase { value = nexttask.BusinessCode });
+                                sendData.Add("keyword2", new MessageDataBase { value = nexttask.BusinessDate.ToString("yyyy-MM-dddd HH:mm:ss") });
+                                sendData.Add("keyword3", new MessageDataBase { value = aemp.CNName });
+                                sendData.Add("keyword4", new MessageDataBase { value = aorg.OrgName });
+                                sendData.Add("keyword5", new MessageDataBase { value = $"您有一个审批流程类型为{msg}的流程需要审批！" });
+                                sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
+                                var Msg = new TemplateMessagePara
+                                {
+                                    template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
+                                    touser = msgToUser.openID,
+                                    data = sendData,
+                                    url = "http://esfwx.quickcq.com/ApprovalPending"
+                                };
+                                WxService.SendTemplateMessage(Msg);
+                            }
+
+                            /************************************************************************/
                             rpsTask.Add(nexttask);
                             approveResult = PublicEnum.EE_FlowApproveResult.normal;
                         }
@@ -259,12 +323,12 @@ namespace ESafety.Core
 
 
                             //审批的最后节点，直接实例化，不使用注入
-                            
+
                             var bservice = new FlowBusinessService(Unitwork, this);
                             bservice.AppUser = AppUser;
                             bservice.ACOptions = ACOptions;
 
-                            var overresult = bservice.BusinessOver(task.BusinessID,(PublicEnum.EE_BusinessType) task.BusinessType);
+                            var overresult = bservice.BusinessOver(task.BusinessID, (PublicEnum.EE_BusinessType)task.BusinessType);
 
                             if (overresult.state != 200)
                             {
@@ -327,7 +391,7 @@ namespace ESafety.Core
                 {
                     throw new Exception("流程Master不存在！");
                 }
-                var check = rpsPoint.Any(p=>p.MasterID==masterID);
+                var check = rpsPoint.Any(p => p.MasterID == masterID);
                 if (check)
                 {
                     throw new Exception("流程Master下,存在节点无法删除!");
@@ -421,7 +485,7 @@ namespace ESafety.Core
                 {
                     throw new Exception("未找到所需修改项!");
                 }
-                var check = rpsFlowMaster.Any(p => p.Name == flowMasterEdit.Name && p.BusinessType == (int)dbFlowMaster.BusinessType&&p.ID!=flowMasterEdit.MasterID);
+                var check = rpsFlowMaster.Any(p => p.Name == flowMasterEdit.Name && p.BusinessType == (int)dbFlowMaster.BusinessType && p.ID != flowMasterEdit.MasterID);
                 if (check)
                 {
                     throw new Exception("该业务类型下，已存在名：" + flowMasterEdit.Name + "的Master!");
@@ -532,8 +596,8 @@ namespace ESafety.Core
                 var dbresult = new Model.DB.Flow_Result()
                 {
                     ID = Guid.NewGuid(),
-                    BusinessCode=dbtask.BusinessCode,
-                    BusinessDate=DateTime.Now,
+                    BusinessCode = dbtask.BusinessCode,
+                    BusinessDate = DateTime.Now,
                     ApplyUser = AppUser.UserInfo.Login,
                     BusinessID = recall.BusinessID,
                     BusinessType = dbtask.BusinessType,
@@ -597,8 +661,9 @@ namespace ESafety.Core
                 {
                     throw new Exception("数据有误");
                 }
+                var masterID = logs[0].MasterID;
                 //审批节点
-                var points = rpsPoint.Queryable(q => q.BusinessType == btype).OrderBy(o => o.PointIndex).ToList();
+                var points = rpsPoint.Queryable(q => q.BusinessType == btype&&q.MasterID==masterID).OrderBy(o => o.PointIndex).ToList();
                 var pointsids = points.Select(s => s.ID);
                 //审批用户
                 var pointuser = rpsPointUser.Queryable(q => pointsids.Contains(q.PointID));
@@ -673,7 +738,7 @@ namespace ESafety.Core
         {
             try
             {
-                var masters = rpsFlowMaster.Queryable(p=>p.BusinessType==query.Query||query.Query==0);
+                var masters = rpsFlowMaster.Queryable(p => p.BusinessType == query.Query || query.Query == 0);
                 var retemp = from m in masters.ToList()
                              select new FlowMasterView
                              {
@@ -851,11 +916,12 @@ namespace ESafety.Core
         {
             try
             {
-                var points = rpsPoint.Queryable(q => q.BusinessType ==(int)query.Query.BusinessType&&q.MasterID==query.Query.MasterID);
+                var points = rpsPoint.Queryable(q => q.BusinessType == (int)query.Query.BusinessType && q.MasterID == query.Query.MasterID);
                 var typenames = Command.GetItems(typeof(PublicEnum.EE_BusinessType));
                 var ptypenames = Command.GetItems(typeof(PublicEnum.EE_FlowPointType));
 
                 var retemp = from p in points.ToList()
+                             orderby p.PointIndex
                          select new Flow_PointView
                          {
                              BusinessType = (PublicEnum.EE_BusinessType)p.BusinessType,
@@ -866,7 +932,7 @@ namespace ESafety.Core
                              PointType = (PublicEnum.EE_FlowPointType)p.PointType,
                              PointTypeName = ptypenames.FirstOrDefault(q => q.Value == p.PointType).Caption
                          };
-                var re = new Pager<Flow_PointView>().GetCurrentPage(retemp,query.PageSize,query.PageIndex);
+                var re = new Pager<Flow_PointView>().GetCurrentPage(retemp, query.PageSize, query.PageIndex);
                 return new ActionResult<Pager<Flow_PointView>>(re);
             }
             catch (Exception ex)
@@ -912,6 +978,7 @@ namespace ESafety.Core
                 var users = rpsPointUser.Queryable(q => q.PointID == pointid);
                 var re = from u in users.ToList()
                          let emp = rpsEmployee.GetModel(q => q.Login == u.PointUser)
+                         orderby u.UserIndex
                          select new Point_UsersView
                          {
                              ID = u.ID,
@@ -953,7 +1020,9 @@ namespace ESafety.Core
                     {
                         ApplyUser = AppUser.UserInfo.Login,
                         BusinessID = task.BusinessID,
-                        MasterID=task.MasterID,
+                        BusinessDate = task.BusinessDate,
+                        BusinessCode = task.BusinessCode,
+                        MasterID = task.MasterID,
                         BusinessType = point.BusinessType,
                         PointID = point.ID,
                         TaskDate = DateTime.Now
@@ -963,7 +1032,7 @@ namespace ESafety.Core
                     {
                         case PublicEnum.EE_FlowPointType.Generic: //普通节点
                             user = rpsPointUser.GetModel(q => q.PointID == point.ID);
-                            if (user==null)
+                            if (user == null)
                             {
                                 throw new Exception("请配置审批节点的用户!");
                             }
@@ -980,6 +1049,36 @@ namespace ESafety.Core
                         default:
                             break;
                     }
+
+                    /******************************发送审批流程信息**************************************/
+                    var aemp = _work.Repository<Basic_Employee>().GetModel(p => p.Login == ptask.ApplyUser);
+                    var msgToUser = _work.Repository<Auth_User>().GetModel(p => p.Login == ptask.TaskUser);
+                    if (!string.IsNullOrEmpty(msgToUser.openID))
+                    {
+                        var aorg = _work.Repository<Basic_Org>().GetModel(aemp.OrgID);
+
+                        var msg = ptask.BusinessType == (int)PublicEnum.EE_BusinessType.Apply ? "作业申请"
+                                : ptask.BusinessType == (int)PublicEnum.EE_BusinessType.InspectTask ? "巡检任务"
+                                : ptask.BusinessType == (int)PublicEnum.EE_BusinessType.TempTask ? "临时任务"
+                                : "";
+                        var sendData = new Dictionary<string, MessageDataBase>();
+                        sendData.Add("first", new MessageDataBase { value = "您有一个待审批事项" });
+                        sendData.Add("keyword1", new MessageDataBase { value = ptask.BusinessCode });
+                        sendData.Add("keyword2", new MessageDataBase { value = ptask.BusinessDate.ToString("yyyy-MM-dd HH:mm:ss") });
+                        sendData.Add("keyword3", new MessageDataBase { value = aemp.CNName });
+                        sendData.Add("keyword4", new MessageDataBase { value = aorg.OrgName });
+                        sendData.Add("keyword5", new MessageDataBase { value = $"您有一个审批流程类型为{msg}的流程需要审批！" });
+                        sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
+                        var Msg = new TemplateMessagePara
+                        {
+                            template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
+                            touser = msgToUser.openID,
+                            data = sendData,
+                            url = "http://esfwx.quickcq.com/ApprovalPending"
+                        };
+                        WxService.SendTemplateMessage(Msg);
+                    }
+                    /************************************************************************/
                     return new ActionResult<Flow_Task>(ptask);
                 }
             }

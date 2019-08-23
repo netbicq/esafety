@@ -264,7 +264,7 @@ namespace ESafety.Account.Service
                 var retemp = from p in posts.ToList()
                              let org = orgs.FirstOrDefault(q => q.ID == p.Org)
                              let hasFile= rpsFile.Any(q => q.BusinessID == p.ID)
-                             orderby org.Level descending
+                             orderby org.Level,p.Code
                              select new PostReport
                              {
                                  Org =org.OrgName,

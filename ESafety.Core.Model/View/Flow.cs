@@ -287,5 +287,4 @@ namespace ESafety.Core.Model.View
         /// </summary>
         public string FlowMemo { get; set; }
     }
-
 }

@@ -65,6 +65,7 @@ namespace ESafety.Account.Service
                 var dbdp = pointNew.MAPTO<Basic_DangerPoint>();
                 dbdp.WXYSJson = JsonConvert.SerializeObject(pointNew.WXYSDictIDs);
                 dbdp.Code = Command.CreateCode();
+                dbdp.WarningSign = JsonConvert.SerializeObject(pointNew.WarningSigns);
                 dbdp.QRCoderUrl = CreateQRCoder(dbdp.ID);
                 //文件
                 var files = new AttachFileSave
@@ -299,17 +300,23 @@ namespace ESafety.Account.Service
                         File.Delete(dPointImg);
                     }
                 }
-                //警示图标
-                if (!string.Equals(pointEdit.WarningSign, dbdp.WarningSign))
+                //删除警示牌
+                foreach (var item in JsonConvert.DeserializeObject<IEnumerable<string>>(dbdp.WarningSign))
                 {
-                    var wPointImg = HttpContext.Current.Server.MapPath(dbdp.WarningSign);
-                    if (File.Exists(wPointImg))
+                    if (!pointEdit.WarningSigns.Contains(item))
                     {
-                        File.Delete(wPointImg);
+                        var dPointImg = HttpContext.Current.Server.MapPath(item);
+                        if (File.Exists(dPointImg))
+                        {
+                            File.Delete(dPointImg);
+                        }
                     }
                 }
+               
                 dbdp = pointEdit.CopyTo<Basic_DangerPoint>(dbdp);
+
                 dbdp.WXYSJson = JsonConvert.SerializeObject(pointEdit.WXYSDictIDs);
+                dbdp.WarningSign = JsonConvert.SerializeObject(pointEdit.WarningSigns);
                 //文件
                 srvFile.DelFileByBusinessId(pointEdit.ID);
                 var files = new AttachFileSave
@@ -349,6 +356,7 @@ namespace ESafety.Account.Service
                 var user = work.Repository<Core.Model.DB.Basic_Employee>().GetModel(dbdp.Principal);
                 re.OrgID = user.OrgID;
                 re.WXYSIDs = JsonConvert.DeserializeObject<IEnumerable<Guid>>(dbdp.WXYSJson);
+                re.WarningSign = JsonConvert.DeserializeObject<IEnumerable<string>>(dbdp.WarningSign);
                 return new ActionResult<DangerPointModel>(re);
             }
             catch (Exception ex)
@@ -518,6 +526,7 @@ namespace ESafety.Account.Service
 
                 var re = from code in dbdps.ToList()
                          let WXYSIds = JsonConvert.DeserializeObject<List<Guid>>(code.WXYSJson)
+                         let war=JsonConvert.DeserializeObject<IEnumerable<string>>(code.WarningSign)
                          select new QRCoder
                          {
                              ID = code.ID,
@@ -527,7 +536,7 @@ namespace ESafety.Account.Service
                              ControlMeasure = code.ControlMeasure,
                              DangerPointImg = code.DangerPointImg,
                              EmergencyMeasure = code.EmergencyMeasure,
-                             WarningSign = code.WarningSign,
+                             WarningSign = war,
                              WXYSDicts = from w in WXYSs.Queryable(p => WXYSIds.Contains(p.ID))
                                          select new WXYSSelector
                                          {

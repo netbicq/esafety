@@ -3,6 +3,8 @@ using ESafety.Core.Model.DB;
 using ESafety.Core.Model.PARA;
 using ESafety.ORM;
 using ESafety.Unity;
+using Quick.WXHelper;
+using Quick.WXHelper.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -87,7 +89,9 @@ namespace ESafety.Core
                 {
                     MasterID=para.MasterID,
                     BusinessID = para.BusinessID,
-                    BusinessType = para.BusinessType
+                    BusinessType = para.BusinessType,
+                    BusinessCode=para.BusinessCode,
+                    BusinessDate=para.BusinessDate
                 };
                 (srvFlow as FlowService).AppUser = AppUser;
 

@@ -522,7 +522,7 @@ namespace ESafety.Core
                         || string.IsNullOrEmpty(para.KeyWord)
                         ))
                         let pro = profiles.FirstOrDefault(q => q.Login == u.Login)
-                        orderby pro.CNName
+                        orderby pro.Login
                         select new UserView
                         {
                             UserInfo = u,

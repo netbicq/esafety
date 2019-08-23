@@ -102,6 +102,10 @@
       <Project>{fd6e7f38-6e75-4027-89df-94fd3ab93a3d}</Project>
       <Name>ESafety.Unity</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Quick.WXHelper\Quick.WXHelper.csproj">
+      <Project>{9BED3453-03F6-40BE-B018-34BE00D72243}</Project>
+      <Name>Quick.WXHelper</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

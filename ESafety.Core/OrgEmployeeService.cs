@@ -142,7 +142,22 @@ namespace ESafety.Core
             {
                 throw new Exception("已经存在相同的组织名称 ：" + org.OrgName);
             }
+
             var parent = _rpsorg.GetModel(org.ParentID);
+            if (AppUser.UserInfo.Login!="admin")
+            {
+                if (parent == null)
+                {
+                    throw new Exception("初始级组织架构能由管理员新建!");
+                }
+                var child = srvTree.GetChildrenIds<Basic_Org>(AppUser.EmployeeInfo.OrgID);
+                if (!child.Contains(org.ParentID))
+                {
+                    var msg = $"你没有权限在【{parent.OrgName}】组织下新建组织!";
+                    throw new Exception(msg);
+                }
+            }
+           
 
             var _org = org.MAPTO<Basic_Org>();
             //根据上级设置Level
@@ -161,6 +176,16 @@ namespace ESafety.Core
                 if (dbemployee == null)
                 {
                     throw new Exception("该人员不存在!");
+                }
+                var parent = _rpsorg.GetModel(dbemployee.OrgID);
+                if (AppUser.UserInfo.Login != "admin")
+                {
+                    var child = srvTree.GetChildrenIds<Basic_Org>(AppUser.EmployeeInfo.OrgID);
+                    if (!child.Contains(dbemployee.OrgID))
+                    {
+                        var msg = $"你没有权限删除【{parent.OrgName}】组织下的人员!";
+                        throw new Exception(msg);
+                    }
                 }
                 //作业务检查
                 var check = _work.Repository<Core.Model.DB.Account.Bll_InspectTask>().Any(p => p.EmployeeID == id);
@@ -207,6 +232,16 @@ namespace ESafety.Core
                 {
                     throw new Exception("该组织结构不存在!");
                 }
+                if (AppUser.UserInfo.Login != "admin")
+                {
+                    var child = srvTree.GetChildrenIds<Basic_Org>(AppUser.EmployeeInfo.OrgID);
+                    if (!child.Contains(id))
+                    {
+                        var msg = $"你没有权限删除该组织架构!";
+                        throw new Exception(msg);
+                    }
+                }
+
                 var check = _rpsorg.Any(q => q.ParentID == id);
                 if (check)
                 {
@@ -474,7 +509,7 @@ namespace ESafety.Core
                 var orgs = _rpsorg.Queryable();
                 var reemps = from em in emps
                              let or = orgs.FirstOrDefault(p=>p.ID==em.OrgID)
-                             orderby em.CNName
+                             orderby em.Login
                              select new EmployeeView
                              {
                                  ID = em.ID,

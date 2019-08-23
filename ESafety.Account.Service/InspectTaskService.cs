@@ -445,6 +445,8 @@ namespace ESafety.Account.Service
                 {
                     MasterID = businessmodel.MasterID,
                     BusinessID = businessmodel.ID,
+                    BusinessCode=businessmodel.Code,
+                    BusinessDate=businessmodel.CreateDate,
                     BusinessType = businessmodel.TaskType == (int)PublicEnum.EE_InspectTaskType.Cycle ? PublicEnum.EE_BusinessType.InspectTask : PublicEnum.EE_BusinessType.TempTask
                 });
                 if (flowtask.state != 200)
@@ -467,8 +469,7 @@ namespace ESafety.Account.Service
                     rpstask.Update(businessmodel);
 
                     //写入审批流程起始任务
-                    taskmodel.BusinessCode = businessmodel.Code;
-                    taskmodel.BusinessDate = businessmodel.CreateDate;
+                  
 
                     _work.Repository<Flow_Task>().Add(taskmodel);
 

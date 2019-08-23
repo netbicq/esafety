@@ -326,7 +326,7 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var dbposts = _rpspost.Queryable();
+                var dbposts = _rpspost.Queryable().OrderBy(o=>o.Code);
                 var re = dbposts.MAPTO<PostModel>();
                 return new ActionResult<IEnumerable<PostModel>>(re);
             }
