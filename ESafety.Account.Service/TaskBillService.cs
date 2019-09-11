@@ -214,7 +214,6 @@ namespace ESafety.Account.Service
             }
         }
 
-
         /// <summary>
         /// 根据任务单据ID获取任务详情
         /// </summary>
