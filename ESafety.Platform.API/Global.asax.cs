@@ -8,8 +8,10 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using ESafety.Core.Model.DB; 
-
+using ESafety.Core.Model.DB;
+using System.IO;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace ESafety.Platform.API
 {
@@ -27,7 +29,6 @@ namespace ESafety.Platform.API
 
             var auth = new Auth_UserService(new Unitwork(new ESFdb())).GetAllAuth("");
             Web.Unity.AuthKey.AuthKeys = auth.data.ToList();
-     
         }
     }
 }

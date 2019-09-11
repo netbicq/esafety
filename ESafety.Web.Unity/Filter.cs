@@ -2,6 +2,7 @@
 using ESafety.Core.Model;
 using ESafety.Core.Model.DB;
 using ESafety.Core.Model.DB.Platform;
+using ESafety.ORM;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -273,6 +274,11 @@ namespace ESafety.Web.Unity
             //权限验证
             var auth = new Auth_UserService(obj.Unitwork).GetAllAuth(user.Login);
             var currentkey = actionContext.ControllerContext.RouteData.Route.RouteTemplate;
+            if (currentkey == "api/wx/createmenu" || currentkey=="api/wx/getmenu")
+            {
+                var auth1 = new Auth_UserService(new Unitwork(new ESFdb())).GetAllAuth("");
+                Web.Unity.AuthKey.AuthKeys = auth1.data.ToList();
+            }
             if (AuthKey.AuthKeys.Any(q => q.ActionFullName == currentkey))//如果需要权限控制则验证用户权限
             {
                 if (!auth.data.Any(q => q.ActionFullName == currentkey))
