@@ -1311,7 +1311,7 @@ namespace ESafety.Account.Service
                 //单据的风险点
                 var dangerids = tbs.Select(s => s.DangerPointID);
                 var dangers = _work.Repository<Basic_DangerPoint>().Queryable(p => dangerids.Contains(p.ID));
-                var re = from tb in tbs
+                var re = from tb in tbs.ToList()
                          let task = tasks.FirstOrDefault(q => q.ID == tb.TaskID)
                          let danger = dangers.FirstOrDefault(q => q.ID == tb.DangerPointID)
                          let osubcount = _rpstbs.Queryable(p => p.BillID == tb.ID).Count()//已查主体数
@@ -1320,7 +1320,7 @@ namespace ESafety.Account.Service
                          {
                              BillID = tb.ID,
                              StartTime = tb.StartTime,
-                             EndTime = (DateTime)tb.EndTime,
+                             EndTime = tb.EndTime.Value,
                              EmployeeName = user.CNName,
                              TaskName = task.Name,
                              State = (PublicEnum.BillFlowState)tb.State,
