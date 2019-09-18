@@ -1294,10 +1294,8 @@ namespace ESafety.Account.Service
         /// <returns></returns>
         public ActionResult<IEnumerable<TaskBillModel>> GetTaskBillMastersOverByQRCoder(Guid pointID)
         {
-
             try
             {
-
                 //当风险点的所有已完成单据
                 var tbs = _rpstb.Queryable(q => q.DangerPointID == pointID && q.State >= (int)PublicEnum.BillFlowState.normal);
 
@@ -1327,8 +1325,7 @@ namespace ESafety.Account.Service
                              DangerPointName = danger.Name,
                              SubCheckedCount = osubcount,
                              SubCount = osubcount,
-                             TaskType = (PublicEnum.EE_InspectTaskType)task.TaskType,
-
+                             TaskType = (PublicEnum.EE_InspectTaskType)task.TaskType,                           
                          };
                 return new ActionResult<IEnumerable<TaskBillModel>>(re);
             }

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Configuration; 
+using System.Configuration;
 
 
 namespace ESafety.Core
@@ -17,7 +17,7 @@ namespace ESafety.Core
     /// <summary>
     /// 用户Service
     /// </summary>
-    public class Auth_UserService : ServiceBase,IAuth_User
+    public class Auth_UserService : ServiceBase, IAuth_User
     {
         private IUnitwork _work = null;
 
@@ -53,7 +53,7 @@ namespace ESafety.Core
                 TokenValidTime = DateTime.Now,
                 State = 1,
                 Token = "",
-                openID="",
+                openID = "",
             };
             var profile = new Model.DB.Auth_UserProfile()
             {
@@ -161,7 +161,7 @@ namespace ESafety.Core
             {
                 throw new Exception("用户不存在");
             }
-            if(dbuser.Login == "admin")
+            if (dbuser.Login == "admin")
             {
                 throw new Exception("系统内置超级用户不允许删除");
             }
@@ -233,7 +233,7 @@ namespace ESafety.Core
         {
             var reauth = _work.Repository<Model.DB.Auth_KeyDetail>().Queryable();
 
-            if(login == "")
+            if (login == "")
             {
                 return new ActionResult<IEnumerable<Auth_KeyDetail>>(reauth);
             }
@@ -251,7 +251,7 @@ namespace ESafety.Core
 
                 return new ActionResult<IEnumerable<Auth_KeyDetail>>(auth);
             }
-           
+
 
         }
 
@@ -324,8 +324,8 @@ namespace ESafety.Core
             //    }
             //    else
             //    {
-                    //keysall = keybase.Union(modulebase).Union(menubase);
-                //}
+            //keysall = keybase.Union(modulebase).Union(menubase);
+            //}
             //    var re = from ak in keysall
             //             group ak by ak.ModuleName into modeulg
             //             select new AuthModuleMenu
@@ -345,23 +345,23 @@ namespace ESafety.Core
             //{
 
 
-                IEnumerable<Auth_Key> keysall = null;
+            IEnumerable<Auth_Key> keysall = null;
 
-                keysall = keybase.Union(modulebase).Union(menubase);
-                var re = from ak in keysall
-                         group ak by ak.ModuleName into modeulg
-                         select new AuthModuleMenu
-                         {
-                             ModuleName = modeulg.Key,
-                             ModulInfo = keysall.FirstOrDefault(q => q.ModuleName == modeulg.Key && string.IsNullOrEmpty(q.MenuName) && string.IsNullOrEmpty(q.RoutUrl)),
-                             Menu = keysall.Where(q => q.ModuleName == modeulg.Key && !string.IsNullOrEmpty(q.MenuName) && !string.IsNullOrEmpty(q.RoutUrl)).OrderBy(q => q.OrderIndex)
+            keysall = keybase.Union(modulebase).Union(menubase);
+            var re = from ak in keysall
+                     group ak by ak.ModuleName into modeulg
+                     select new AuthModuleMenu
+                     {
+                         ModuleName = modeulg.Key,
+                         ModulInfo = keysall.FirstOrDefault(q => q.ModuleName == modeulg.Key && string.IsNullOrEmpty(q.MenuName) && string.IsNullOrEmpty(q.RoutUrl)),
+                         Menu = keysall.Where(q => q.ModuleName == modeulg.Key && !string.IsNullOrEmpty(q.MenuName) && !string.IsNullOrEmpty(q.RoutUrl)).OrderBy(q => q.OrderIndex)
 
-                         };
-                var result = from r in re
-                             orderby r.ModulInfo.OrderIndex
-                             select r;
+                     };
+            var result = from r in re
+                         orderby r.ModulInfo.OrderIndex
+                         select r;
 
-                return new ActionResult<IEnumerable<AuthModuleMenu>>(result);
+            return new ActionResult<IEnumerable<AuthModuleMenu>>(result);
             //}
 
 
@@ -468,8 +468,8 @@ namespace ESafety.Core
             //else
             //{
 
-                authlist = _work.Repository<Model.DB.Auth_Key>().Queryable();
-                authkeys = _work.Repository<Model.DB.Auth_Key>().Queryable();
+            authlist = _work.Repository<Model.DB.Auth_Key>().Queryable();
+            authkeys = _work.Repository<Model.DB.Auth_Key>().Queryable();
 
             //}
 
@@ -657,7 +657,7 @@ namespace ESafety.Core
             {
                 throw new Exception("用户不存在");
             }
-            user = para.CopyTo<Auth_User>(user);             
+            user = para.CopyTo<Auth_User>(user);
 
             _rpsuser.Update(user);
             _work.Commit();
@@ -670,7 +670,7 @@ namespace ESafety.Core
         /// <returns></returns>
         public ActionResult<IEnumerable<UserSelector>> userbin()
         {
-            var em = _rpsuser.Queryable(p=>p.State==(int)PublicEnum.GenericState.Normal);
+            var em = _rpsuser.Queryable(p => p.State == (int)PublicEnum.GenericState.Normal);
             var pro = _rpsprofiel.Queryable();
 
             var re = from l in em
@@ -779,6 +779,8 @@ namespace ESafety.Core
             }
             if (!string.IsNullOrEmpty(user.openID)) //已经绑定则不允许重新绑定
             {
+                Unitwork.SetUserDB(null);
+                _rpswxbinds.Delete(o => o.openID == user.openID);
                 throw new Exception("用户已经绑定微信");
             }
             var profile = _rpsprofiel.GetModel(q => q.Login == para.Login);
@@ -797,7 +799,7 @@ namespace ESafety.Core
             _work.Commit();
 
             //写入平台的绑定信息
-            
+
 
             return new ActionResult<UserView>(new UserView
             {
@@ -855,7 +857,7 @@ namespace ESafety.Core
         /// <returns></returns>
         public virtual ActionResult<bool> UserWxUnBind(string openid)
         {
-           
+
             try
             {
                 _work.SetUserDB(null);
