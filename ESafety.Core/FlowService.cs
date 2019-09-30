@@ -142,8 +142,6 @@ namespace ESafety.Core
                 _work.Commit();
 
                 return new ActionResult<bool>(true);
-
-
             }
             catch (Exception ex)
             {

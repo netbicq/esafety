@@ -329,7 +329,6 @@ namespace ESafety.Account.Service
             }
             catch (Exception ex)
             {
-
                 return new ActionResult<IEnumerable<DangerView>>(ex);
             }
         }

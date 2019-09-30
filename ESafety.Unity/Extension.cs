@@ -66,9 +66,14 @@ namespace ESafety.Unity
             {
                 return default(T);
             }
-            Mapper.Reset();
-            Mapper.Initialize(ctx => ctx.CreateMap(obj.GetType(), typeof(T)));
-            return Mapper.Map<T>(obj);
+            //Mapper.Reset();
+            //Mapper.Initialize(ctx => ctx.CreateMap(obj.GetType(), typeof(T)));
+            //return Mapper.Map<T>(obj);
+            var mapper = new MapperConfiguration(ctx =>
+            {
+                ctx.CreateMap(obj.GetType(), typeof(T));
+            }).CreateMapper();
+            return mapper.Map<T>(obj);
         }
         /// <summary>
         /// 集合转换
@@ -82,9 +87,14 @@ namespace ESafety.Unity
             {
                 throw new ArgumentNullException();
             }
-            Mapper.Reset();
-            Mapper.Initialize(ctx => ctx.CreateMap(list.GetType(), typeof(T)));
-            return Mapper.Map<List<T>>(list);
+            //Mapper.Reset();
+            //Mapper.Initialize(ctx => ctx.CreateMap(list.GetType(), typeof(T)));
+            //return Mapper.Map<List<T>>(list);
+            var mapper = new MapperConfiguration(ctx =>
+            {
+                ctx.CreateMap(list.GetType(), typeof(T));
+            }).CreateMapper();
+            return mapper.Map<List<T>>(list);
         }
     }
 }
