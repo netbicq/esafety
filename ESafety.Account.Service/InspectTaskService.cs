@@ -240,7 +240,7 @@ namespace ESafety.Account.Service
                              DangerPointName = dangepoint == null ? "" : dangepoint.Name,
                              Name = t.Name,
                              ID = t.ID,
-                             EmployeeID =t.EmployeeID==null?Guid.Empty:t.EmployeeID.Value,
+                             EmployeeID = t.EmployeeID == null ? Guid.Empty : t.EmployeeID.Value,
                              EmployeeName = employee == null ? "" : employee.CNName,
                              EndTime = t.EndTime,
                              ExecutePostID = t.ExecutePostID,
@@ -253,10 +253,51 @@ namespace ESafety.Account.Service
                              MasterID = t.MasterID
                          };
 
+                var excel = "";
+                if (qurey.ToExcel)
+                {
+                    var res = from t in retemp
+                              let dangepoint = dangerpoints.FirstOrDefault(q => q.ID == t.DangerPointID)
+                              let employee = emps.FirstOrDefault(q => q.ID == t.EmployeeID)
+                              let postinfo = posts.FirstOrDefault(q => q.ID == t.ExecutePostID)
+                              orderby t.CreateDate
+                              select new
+                              {
+                                  编号 = t.Code,
+                                  名称 = t.Name,
+                                  开始时间 = t.StartTime,
+                                  结束时间 = t.EndTime,
+
+
+                                  执行频率 = t.CycleValue + (t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Day ? "日" :
+                                                          t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Houre ? "小时" :
+                                                          t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Minute ? "分钟" :
+                                                          t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Month ? "月" :
+                                                          t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Week ? "周" :
+                                                          t.CycleDateType == (int)PublicEnum.EE_CycleDateType.Year ? "年" :
+                                                          ""),
+
+
+                                  执行人 = employee == null ? "" : employee.CNName,
+                                  执行岗位 = postinfo == null ? "" : postinfo.Name,
+                                  状态 = t.State == (int)PublicEnum.BillFlowState.approved ? "审批通过" :
+                                    t.State == (int)PublicEnum.BillFlowState.audited ? "已审核" :
+                                    t.State == (int)PublicEnum.BillFlowState.cancel ? "已作废" :
+                                    t.State == (int)PublicEnum.BillFlowState.check ? "已验收" :
+                                    t.State == (int)PublicEnum.BillFlowState.deny ? "已拒绝" :
+                                    t.State == (int)PublicEnum.BillFlowState.normal ? "待审批" :
+                                    t.State == (int)PublicEnum.BillFlowState.pending ? "审批中" :
+                                    t.State == (int)PublicEnum.BillFlowState.recalled ? "已撤回" :
+                                    t.State == (int)PublicEnum.BillFlowState.stop ? "已终止" :
+                                    t.State == (int)PublicEnum.BillFlowState.Reback ? "已回退" : "未知",
+
+                              };
+                    excel = Command.CreateExcel(res.AsEnumerable(), AppUser.OutPutPaht);
+                }
+
                 var result = new Pager<InspectTaskView>().GetCurrentPage(re, qurey.PageSize, qurey.PageIndex);
+                result.ExcelResult = excel;
                 return new ActionResult<Pager<InspectTaskView>>(result);
-
-
             }
             catch (Exception ex)
             {
@@ -287,7 +328,7 @@ namespace ESafety.Account.Service
                 var emps = _work.Repository<Core.Model.DB.Basic_Employee>().Queryable(q => empids.Contains(q.ID));
                 var posts = _work.Repository<Basic_Post>().Queryable(q => postids.Contains(q.ID));
 
-               
+
 
                 var re = from t in retemp
                          let dangepoint = dangerpoints.FirstOrDefault(q => q.ID == t.DangerPointID)
@@ -303,7 +344,7 @@ namespace ESafety.Account.Service
                              DangerPointName = dangepoint == null ? "" : dangepoint.Name,
                              Name = t.Name,
                              ID = t.ID,
-                             EmployeeID =t.EmployeeID==null?Guid.Empty:t.EmployeeID.Value,
+                             EmployeeID = t.EmployeeID == null ? Guid.Empty : t.EmployeeID.Value,
                              EmployeeName = employee == null ? "" : employee.CNName,
                              EndTime = t.EndTime,
                              ExecutePostID = t.ExecutePostID,
@@ -315,7 +356,39 @@ namespace ESafety.Account.Service
                              TaskType = (PublicEnum.EE_InspectTaskType)t.TaskType,
                              MasterID = t.MasterID
                          };
+                var excel = "";
+                if (qurey.ToExcel)
+                {
+                    var res = from t in retemp
+                              let dangepoint = dangerpoints.FirstOrDefault(q => q.ID == t.DangerPointID)
+                              let employee = emps.FirstOrDefault(q => q.ID == t.EmployeeID)
+                              let postinfo = posts.FirstOrDefault(q => q.ID == t.ExecutePostID)
+                              orderby t.CreateDate
+                              select new
+                              {
+                                  任务号 = t.Code,
+                                  任务名称 = t.Name,
+                                  开始时间 = t.StartTime,
+                                  结束时间 = t.EndTime,
+                                  执行岗位 = postinfo == null ? "" : postinfo.Name,
+                                  执行人 = employee == null ? "" : employee.CNName,
+                                  发起人 = t.CreateMan,
+                                  状态 = t.State == (int)PublicEnum.BillFlowState.approved ? "审批通过" :
+                                    t.State == (int)PublicEnum.BillFlowState.audited ? "已审核" :
+                                    t.State == (int)PublicEnum.BillFlowState.cancel ? "已作废" :
+                                    t.State == (int)PublicEnum.BillFlowState.check ? "已验收" :
+                                    t.State == (int)PublicEnum.BillFlowState.deny ? "已拒绝" :
+                                    t.State == (int)PublicEnum.BillFlowState.normal ? "待审批" :
+                                    t.State == (int)PublicEnum.BillFlowState.pending ? "审批中" :
+                                    t.State == (int)PublicEnum.BillFlowState.recalled ? "已撤回" :
+                                    t.State == (int)PublicEnum.BillFlowState.stop ? "已终止" :
+                                    t.State == (int)PublicEnum.BillFlowState.Reback ? "已回退" : "未知",
+
+                              };
+                    excel = Command.CreateExcel(res.AsEnumerable(), AppUser.OutPutPaht);
+                }
                 var result = new Pager<InspectTempTaskView>().GetCurrentPage(re, qurey.PageSize, qurey.PageIndex);
+                result.ExcelResult = excel;
                 return new ActionResult<Pager<InspectTempTaskView>>(result);
 
 
@@ -445,8 +518,8 @@ namespace ESafety.Account.Service
                 {
                     MasterID = businessmodel.MasterID,
                     BusinessID = businessmodel.ID,
-                    BusinessCode=businessmodel.Code,
-                    BusinessDate=businessmodel.CreateDate,
+                    BusinessCode = businessmodel.Code,
+                    BusinessDate = businessmodel.CreateDate,
                     BusinessType = businessmodel.TaskType == (int)PublicEnum.EE_InspectTaskType.Cycle ? PublicEnum.EE_BusinessType.InspectTask : PublicEnum.EE_BusinessType.TempTask
                 });
                 if (flowtask.state != 200)
@@ -469,7 +542,7 @@ namespace ESafety.Account.Service
                     rpstask.Update(businessmodel);
 
                     //写入审批流程起始任务
-                  
+
 
                     _work.Repository<Flow_Task>().Add(taskmodel);
 
@@ -605,9 +678,9 @@ namespace ESafety.Account.Service
                         : t.CycleValue
                          let billsub = tbills == null ? null : billsubjects.OrderByDescending(o => o.TaskTime).FirstOrDefault(q => tbills.Select(s => s.ID).Contains(q.BillID))
                          let ctime = tbills == null ? (DateTime.Now - t.StartTime).TotalMinutes : billsub == null ? (DateTime.Now - t.StartTime).TotalMinutes : (DateTime.Now - billsub.TaskTime).TotalMinutes
-                         let bill =tbills==null?false:billsub==null?false:tbills.Any(p => p.TaskID == t.ID && p.State >= (int)PublicEnum.BillFlowState.wait && p.EndTime>=billsub.TaskTime)
+                         let bill = tbills == null ? false : billsub == null ? false : tbills.Any(p => p.TaskID == t.ID && p.State >= (int)PublicEnum.BillFlowState.wait && p.EndTime >= billsub.TaskTime)
                          where ctime < date
-                         orderby (date-ctime) ascending
+                         orderby (date - ctime) ascending
                          select new InsepctTaskByEmployee
                          {
 

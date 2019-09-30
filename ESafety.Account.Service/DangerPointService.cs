@@ -50,6 +50,10 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("该风险点已存在");
                 }
+                if (pointNew.DangerLevel == Guid.Empty)
+                {
+                    throw new Exception("请选择风险等级！");
+                }
                 if (pointNew.WXYSDictIDs.Count() == 0)
                 {
                     throw new Exception("请选择危险因素!");
@@ -273,6 +277,10 @@ namespace ESafety.Account.Service
                 if (dbdp == null)
                 {
                     throw new Exception("未找到所需修改的风险点!");
+                }
+                if (pointEdit.DangerLevel == Guid.Empty)
+                {
+                    throw new Exception("请选择风险等级！");
                 }
                 if (pointEdit.WXYSDictIDs.Count() == 0)
                 {

@@ -80,10 +80,10 @@ namespace ESafety.Account.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("getsftysds")]
-        public ActionResult<IEnumerable<SafetyStandardView>> GetSafetyStandards()
+        [Route("getsftysds/{toExcel}")]
+        public ActionResult<SafetyStandards> GetSafetyStandards(bool toExcel = false)
         {
-            return bll.GetSafetyStandards();
+            return bll.GetSafetyStandards(toExcel);
         }
         /// <summary>
         /// 根据风险点ID获取所有安全标准

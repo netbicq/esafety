@@ -111,7 +111,8 @@ namespace ESafety.Account.API.Controllers
                     {
                         //获取地理位署
                         //await _wechatservice.ReceiveMsg(requestXML);
-                        //Task.Run(async () => {
+                        //Task.Run(async () =>
+                        //{
 
                         //});
 

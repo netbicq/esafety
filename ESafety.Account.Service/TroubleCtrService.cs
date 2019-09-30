@@ -524,7 +524,46 @@ namespace ESafety.Account.Service
                                FinishTime = tc.FinishTime,
                                Cuser = user.ID == tc.PrincipalID ? user.ID == tc.ExecutorID ? 4 : user.ID == tc.AcceptorID ? 5 : 1 : user.ID == tc.ExecutorID ? 2 : user.ID == tc.AcceptorID ? 3 : 0
                            };
+
+                var result = "";
+                if (para.ToExcel)
+                {
+                    var exc= from tc in ctrs.ToList()
+                             let aemp = emps.FirstOrDefault(p => p.ID == tc.AcceptorID)
+                             let eemp = emps.FirstOrDefault(p => p.ID == tc.ExecutorID)
+                             let pemp = emps.FirstOrDefault(p => p.ID == tc.PrincipalID)
+                             let bill = bills.FirstOrDefault(p => p.ID == tc.BillID)
+                             let bemp = emps.FirstOrDefault(p => p.ID == bill.EmployeeID)
+                             let flow = tcflow.OrderByDescending(t => t.FlowDate).FirstOrDefault(p => p.ControlID == tc.ID)
+                             let org = aemp == null ? null : orgs.FirstOrDefault(p => p.ID == aemp.OrgID)
+                             let lv = dlvs.FirstOrDefault(p => p.ID == tc.DangerLevel)
+                             let tlv = tlvs.FirstOrDefault(p => p.ID == tc.TroubleLevel)
+                             where para.Query.IsHistory ? tc.State == (int)PublicEnum.EE_TroubleState.history : tc.State != (int)PublicEnum.EE_TroubleState.history
+                             where pemp.CNName.Contains(para.Query.Key) || org.OrgName.Contains(para.Query.Key) || tc.Code.Contains(para.Query.Key) || bemp.CNName.Contains(para.Query.Key) || para.Query.Key == string.Empty
+                             orderby lv.MinValue descending
+                             orderby tlv.MinValue descending
+                             select new 
+                             {
+                                 
+                                 隐患编号 = tc.Code,
+                                 巡检人员 = bemp == null ? "" : bemp.CNName,
+                                 责任人 = pemp.CNName,
+                                 责任部门 = org == null ? "" : org.OrgName,
+                                 发现时间 = tc.CreateDate,
+                                 完成时间 = tc.FinishTime,
+                                 隐患等级 = tlv.DictName,
+                                 风险等级 = lv.DictName,
+                                 验收人 = aemp == null ? "" : aemp.CNName,
+                                 验收时间 = flow == null ? null : (DateTime?)flow.FlowDate,
+                                 状态 = tc.State == (int)PublicEnum.EE_TroubleState.pending ? "管控中"
+                                           : tc.State == (int)PublicEnum.EE_TroubleState.applying ? "验收中"
+                                           : tc.State == (int)PublicEnum.EE_TroubleState.over ? "已验收"
+                                           : tc.State == (int)PublicEnum.EE_TroubleState.history ? "已归档" : ""
+                             };
+                    result = Command.CreateExcel(exc.AsEnumerable(), AppUser.OutPutPaht);
+                }
                 var re = new Pager<TroubleCtrView>().GetCurrentPage(retc, para.PageSize, para.PageIndex);
+                re.ExcelResult = result;
                 return new ActionResult<Pager<TroubleCtrView>>(re);
 
             }
@@ -852,10 +891,10 @@ namespace ESafety.Account.Service
                     sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
                     var Msg = new TemplateMessagePara
                     {
-                        template_id = "cgqClikHxkX7k4wgAVc7IaXdoJ8ZQrjKMvnLsVKweFg",
+                        template_id = "2w-hq1IAOb3DLcn1hmgnMzC120f6MezQ6ZKbN_9MlMo",
                         touser = msgToUser.openID,
                         data = sendData,
-                        url = "http://esfwx.quickcq.com/HiddenTrouble"
+                        url = "http://weixin.bjjtza.com/HiddenTrouble"
                     };
                     WxService.SendTemplateMessage(Msg);
                 }
@@ -967,10 +1006,10 @@ namespace ESafety.Account.Service
                     sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
                     var Msg = new TemplateMessagePara
                     {
-                        template_id = "46LiWSOZ1MGVh2j8_pvyMkmzfw4ItkVVrV0DQUg24cU",
+                        template_id = "U2BQhgckeL4PMAzfIUkdpNZ-pAHMqyLTQOGwo8JDshU",
                         touser = msgToUser.openID,
                         data = sendData,
-                        url = "http://esfwx.quickcq.com/HiddenTrouble"
+                        url = "http://weixin.bjjtza.com/HiddenTrouble"
                     };
                     WxService.SendTemplateMessage(Msg);
                 }

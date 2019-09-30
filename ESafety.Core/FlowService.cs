@@ -244,10 +244,10 @@ namespace ESafety.Core
                             sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
                             var Msg = new TemplateMessagePara
                             {
-                                template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
+                                template_id = "lMtAv69HdQsPg1A-mtQQ4mcoLQ-zvkHs9hBMsXnkwso",
                                 touser = msgToUser.openID,
                                 data = sendData,
-                                url = "http://esfwx.quickcq.com/ApprovalPending"
+                                url = "http://weixin.bjjtza.com/ApprovalPending"
                             };
                             WxService.SendTemplateMessage(Msg);
                         }
@@ -304,10 +304,10 @@ namespace ESafety.Core
                                 sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
                                 var Msg = new TemplateMessagePara
                                 {
-                                    template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
+                                    template_id = "lMtAv69HdQsPg1A-mtQQ4mcoLQ-zvkHs9hBMsXnkwso",
                                     touser = msgToUser.openID,
                                     data = sendData,
-                                    url = "http://esfwx.quickcq.com/ApprovalPending"
+                                    url = "http://weixin.bjjtza.com/ApprovalPending"
                                 };
                                 WxService.SendTemplateMessage(Msg);
                             }
@@ -1071,10 +1071,10 @@ namespace ESafety.Core
                         sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
                         var Msg = new TemplateMessagePara
                         {
-                            template_id = "UNDMK7-Wi9JBEPZFqKs_PP7yhivT5hdqtr8yHEPAaRY",
+                            template_id = "lMtAv69HdQsPg1A-mtQQ4mcoLQ-zvkHs9hBMsXnkwso",
                             touser = msgToUser.openID,
                             data = sendData,
-                            url = "http://esfwx.quickcq.com/ApprovalPending"
+                            url = "http://weixin.bjjtza.com/ApprovalPending"
                         };
                         WxService.SendTemplateMessage(Msg);
                     }

@@ -56,7 +56,7 @@ namespace ESafety.Account.Service
                 }
 
                 var flows = _work.Repository<Core.Model.DB.Account.Basic_OpreationFlow>().Queryable(q => q.OpreationID == opreationmodel.ID).OrderBy(o => o.PointIndex).ToList();
-                if (flows.Count()==0)
+                if (flows.Count() == 0)
                 {
                     throw new Exception("该作业流程未配置流程节点，请配置!");
                 }
@@ -129,7 +129,7 @@ namespace ESafety.Account.Service
                 var flowtask = base.StartFlow(new BusinessAprovePara
                 {
                     BusinessID = businessmodel.ID,
-                    MasterID=businessmodel.MasterID,
+                    MasterID = businessmodel.MasterID,
                     BusinessType = PublicEnum.EE_BusinessType.Apply,
                     BusinessCode = businessmodel.BillCode,
                     BusinessDate = businessmodel.CreateDate
@@ -144,7 +144,7 @@ namespace ESafety.Account.Service
                 {
                     //没有流程，直接为审批通过
                     businessmodel.State = (int)PublicEnum.BillFlowState.approved;
-                    
+
                     rpsOpreateBill.Update(businessmodel);
                     _work.Commit();
                 }
@@ -155,7 +155,7 @@ namespace ESafety.Account.Service
                     rpsOpreateBill.Update(businessmodel);
 
                     //写入审批流程起始任务
-                   
+
                     taskmodel.MasterID = businessmodel.MasterID;
                     _work.Repository<Flow_Task>().Add(taskmodel);
 
@@ -189,7 +189,7 @@ namespace ESafety.Account.Service
                 //检查审批流程状态
                 var flowcheck = base.BusinessAprove(new BusinessAprovePara
                 {
-                    MasterID=businessmodel.MasterID,
+                    MasterID = businessmodel.MasterID,
                     BusinessID = businessid,
                     BusinessType = PublicEnum.EE_BusinessType.Apply
                 });
@@ -258,7 +258,7 @@ namespace ESafety.Account.Service
                 var retemp = from bill in bills
                              let opreation = opretions.FirstOrDefault(q => q.ID == bill.OpreationID)
                              let emp = emps.FirstOrDefault(q => q.ID == bill.PrincipalEmployeeID)
-                             orderby bill.BillCode 
+                             orderby bill.BillCode
                              select new OpreateBillModel
                              {
                                  BillCode = bill.BillCode,
@@ -284,12 +284,48 @@ namespace ESafety.Account.Service
                                   bill.State == (int)PublicEnum.BillFlowState.normal ? "待审批" :
                                   bill.State == (int)PublicEnum.BillFlowState.pending ? "审批中" :
                                   bill.State == (int)PublicEnum.BillFlowState.recalled ? "已撤回" :
-                                  bill.State==(int)PublicEnum.BillFlowState.stop?"已终止":
-                                  bill.State==(int)PublicEnum.BillFlowState.Reback?"已回退":"未知",
+                                  bill.State == (int)PublicEnum.BillFlowState.stop ? "已终止" :
+                                  bill.State == (int)PublicEnum.BillFlowState.Reback ? "已回退" : "未知",
                                  PrincipalEmployeeName = emp == null ? "" : emp.CNName
                              };
 
+                var excel = "";
+                if (Para.ToExcel)
+                {
+                    var res = from bill in bills
+                              let opreation = opretions.FirstOrDefault(q => q.ID == bill.OpreationID)
+                              let emp = emps.FirstOrDefault(q => q.ID == bill.PrincipalEmployeeID)
+                              orderby bill.BillCode
+                              select new
+                              {
+                                  作业编号 = bill.BillCode,
+                                  作业名称 = bill.BillName,
+                                  开始时间 = bill.StartTime,
+                                  结束时间 = bill.EndTime,
+                                  作业发起人 = bill.CreateMan,
+                                  作业发起时间 = bill.CreateDate,
+                                  作业负责人 = emp == null ? "" : emp.CNName,
+                                  作业流程 = opreation == null ? "" : opreation.Name,
+                                  作业时长 = bill.BillLong,
+                                  作业申请描述 = bill.Description,
+                                  状态 =
+                                   bill.State == (int)PublicEnum.BillFlowState.approved ? "审批通过" :
+                                   bill.State == (int)PublicEnum.BillFlowState.audited ? "已审核" :
+                                   bill.State == (int)PublicEnum.BillFlowState.cancel ? "已作废" :
+                                   bill.State == (int)PublicEnum.BillFlowState.check ? "已验收" :
+                                   bill.State == (int)PublicEnum.BillFlowState.deny ? "已拒绝" :
+                                   bill.State == (int)PublicEnum.BillFlowState.normal ? "待审批" :
+                                   bill.State == (int)PublicEnum.BillFlowState.pending ? "审批中" :
+                                   bill.State == (int)PublicEnum.BillFlowState.recalled ? "已撤回" :
+                                   bill.State == (int)PublicEnum.BillFlowState.stop ? "已终止" :
+                                   bill.State == (int)PublicEnum.BillFlowState.Reback ? "已回退" : "未知",
+
+                              };
+                    excel = Command.CreateExcel(res.AsEnumerable(), AppUser.OutPutPaht);
+                }
+
                 var re = new Pager<OpreateBillModel>().GetCurrentPage(retemp, Para.PageSize, Para.PageIndex);
+                re.ExcelResult = excel;
                 return new ActionResult<Pager<OpreateBillModel>>(re);
 
             }
@@ -361,7 +397,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("作业流和不支持回退");
                 }
-                var checkflow = rpsBillFlow.Any(q => q.FlowResult == (int)flow.FlowResult && q.OpreationFlowID == flow.OpreationFlowID&&q.BillID==flow.BillID);
+                var checkflow = rpsBillFlow.Any(q => q.FlowResult == (int)flow.FlowResult && q.OpreationFlowID == flow.OpreationFlowID && q.BillID == flow.BillID);
                 if (checkflow)
                 {
                     throw new Exception("该作业单已经提交了该节点的处理结果");
@@ -398,8 +434,8 @@ namespace ESafety.Account.Service
                         /******************************发送管处理人信息**************************************/
                         var nextpoint = points.OrderBy(o => o.PointIndex).FirstOrDefault(p => p.PointIndex > oflow.PointIndex);
 
-                        var empsIds = _work.Repository<Basic_PostEmployees>().Queryable(p=>p.PostID==nextpoint.PostID).Select(s=>s.EmployeeID);
-                        var ctrp = _work.Repository<Basic_Employee>().Queryable(p=>empsIds.Contains(p.ID)).Select(s=>s.Login);
+                        var empsIds = _work.Repository<Basic_PostEmployees>().Queryable(p => p.PostID == nextpoint.PostID).Select(s => s.EmployeeID);
+                        var ctrp = _work.Repository<Basic_Employee>().Queryable(p => empsIds.Contains(p.ID)).Select(s => s.Login);
                         var msgToUsers = _work.Repository<Auth_User>().Queryable(p => ctrp.Contains(p.Login));
 
                         foreach (var item in msgToUsers)
@@ -419,10 +455,10 @@ namespace ESafety.Account.Service
                             sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
                             var Msg = new TemplateMessagePara
                             {
-                                template_id = "sv9tEVVLO82uKVIN82SXBLh4aiiSfsJuGO3CHDPnkhg",
+                                template_id = "6HzNyomBRZiKo5u-JgJFbr2ygqdQ-n7wq3c5obqQpY0",
                                 touser = item.openID,
                                 data = sendData,
-                                url = "http://esfwx.quickcq.com/MyWork/Doingwork"
+                                url = "http://weixin.bjjtza.com/MyWork/Doingwork"
                             };
                             WxService.SendTemplateMessage(Msg);
                         }
@@ -461,10 +497,10 @@ namespace ESafety.Account.Service
                             sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
                             var Msg = new TemplateMessagePara
                             {
-                                template_id = "sv9tEVVLO82uKVIN82SXBLh4aiiSfsJuGO3CHDPnkhg",
+                                template_id = "6HzNyomBRZiKo5u-JgJFbr2ygqdQ-n7wq3c5obqQpY0",
                                 touser = item.openID,
                                 data = sendData,
-                                url = "http://esfwx.quickcq.com/MyWork/Doingwork"
+                                url = "http://weixin.bjjtza.com/MyWork/Doingwork"
                             };
                             WxService.SendTemplateMessage(Msg);
                         }
@@ -517,7 +553,7 @@ namespace ESafety.Account.Service
                 var opreationmodel = JsonConvert.DeserializeObject<Basic_Opreation>(billmodel.OpreationJSON);
                 var emp = _work.Repository<Basic_Employee>().GetModel(billmodel.PrincipalEmployeeID);
 
-                
+
                 //返回值的属性赋值
                 remodel.OpreationName = opreationmodel.Name;
                 remodel.PrincipalEmployeeName = emp == null ? "" : emp.CNName;
@@ -526,16 +562,16 @@ namespace ESafety.Account.Service
                 //节点处理
                 var flows = _work.Repository<Bll_OpreateionBillFlow>().Queryable(q => q.BillID == billmodel.ID).ToList();
 
-                
+
                 var postids = points.Select(s => s.PostID).ToList();
 
                 var empids = flows.Select(s => s.FlowEmployeeID);
 
-                var emps =empids==null?null:_work.Repository<Basic_Employee>().Queryable(q => empids.Contains(q.ID)).ToList();
+                var emps = empids == null ? null : _work.Repository<Basic_Employee>().Queryable(q => empids.Contains(q.ID)).ToList();
 
                 //获取当前登录人的岗位ID
                 var cuserpost = _work.Repository<Basic_PostEmployees>().Queryable(q => q.EmployeeID == AppUser.EmployeeInfo.ID).ToList();
-                var cpostid = cuserpost.Count() > 0 ? cuserpost.Select(s => s.PostID).ToList(): null ;
+                var cpostid = cuserpost.Count() > 0 ? cuserpost.Select(s => s.PostID).ToList() : null;
 
                 var posts = _work.Repository<Basic_Post>().Queryable(q => postids.Contains(q.ID)).ToList();
 
@@ -548,7 +584,7 @@ namespace ESafety.Account.Service
 
                     var nexpoint = points.OrderBy(o => o.PointIndex).FirstOrDefault(q => q.PointIndex > f.PointIndex);
                     var post = posts.FirstOrDefault(q => q.ID == f.PostID);
-                   // var flow = flows.FirstOrDefault(q => q.OpreationFlowID == f.ID);
+                    // var flow = flows.FirstOrDefault(q => q.OpreationFlowID == f.ID);
                     var nextids = points.OrderBy(o => o.PointIndex).Where(q => q.PointIndex > f.PointIndex).Select(s => s.ID);
 
                     //var flownew = flows.OrderByDescending(q => q.FlowTime).FirstOrDefault(q => q.OpreationFlowID == f.ID);
@@ -560,18 +596,18 @@ namespace ESafety.Account.Service
                         PointIndex = f.PointIndex,
                         PointName = f.PointName,
                         PostID = f.PostID,
-                        detials=from flow in flows
-                                where flow.OpreationFlowID==f.ID
-                                select new OpreateBillFlowDetials
-                                {
-                                    FlowEmployeeID = flow == null ? Guid.Empty : flow.FlowEmployeeID,
-                                    FlowEmployeeName = flow == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID) == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID).CNName,
-                                    FlowMemo = flow == null ? "" : flow.FlowMemo
-                                },
-                      
+                        detials = from flow in flows
+                                  where flow.OpreationFlowID == f.ID
+                                  select new OpreateBillFlowDetials
+                                  {
+                                      FlowEmployeeID = flow == null ? Guid.Empty : flow.FlowEmployeeID,
+                                      FlowEmployeeName = flow == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID) == null ? "" : emps.FirstOrDefault(q => q.ID == flow.FlowEmployeeID).CNName,
+                                      FlowMemo = flow == null ? "" : flow.FlowMemo
+                                  },
+
                         PostName = post == null ? "" : post.Name,
-                  
-                        
+
+
                     };
                     var uemodel = new OpreateFlowUEModel();
                     //完成按钮
@@ -583,9 +619,9 @@ namespace ESafety.Account.Service
                     ://如果本节点已经存在了记录，按钮不允许处理
                     flows.Any(q => q.OpreationFlowID == f.ID) ? false
                      : //如果存在上级节点，且上级节点没有任保记录或是上级已回退记录则不可用
-                    (uppoint != null && (flows.FirstOrDefault(q => q.OpreationFlowID == uppoint.ID) == null||flows.Any(p => p.OpreationFlowID == uppoint.ID && p.FlowResult== (int)PublicEnum.OpreateFlowResult.reback))) ? false
+                    (uppoint != null && (flows.FirstOrDefault(q => q.OpreationFlowID == uppoint.ID) == null || flows.Any(p => p.OpreationFlowID == uppoint.ID && p.FlowResult == (int)PublicEnum.OpreateFlowResult.reback))) ? false
                     ://如果当前人员不在当前节点的岗位，不可用
-                    cpostid==null ? false : cpostid.Contains(f.PostID)?true:false;
+                    cpostid == null ? false : cpostid.Contains(f.PostID) ? true : false;
 
 
                     //终止按钮
@@ -599,7 +635,7 @@ namespace ESafety.Account.Service
                     ://如果后面节点有任何终止记录则不可用
                     flows.Any(q => nextids.Contains(q.OpreationFlowID) && q.FlowResult == (int)PublicEnum.OpreateFlowResult.stop) ? false
                     ://如果当前节点是终止记录数据处理或者是回退，不可用
-                    flows.Any(q => q.OpreationFlowID == f.ID && (q.FlowResult == (int)PublicEnum.OpreateFlowResult.stop||q.FlowResult == (int)PublicEnum.OpreateFlowResult.reback)) ? false
+                    flows.Any(q => q.OpreationFlowID == f.ID && (q.FlowResult == (int)PublicEnum.OpreateFlowResult.stop || q.FlowResult == (int)PublicEnum.OpreateFlowResult.reback)) ? false
                     ://如果当前节点是完成，而下一级没有退回则不可用
                     (flows.Any(q => q.OpreationFlowID == f.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.over)
                     && (nexpoint != null && flows.FirstOrDefault(q => q.OpreationFlowID == nexpoint.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.reback) == null)) ? false
@@ -612,7 +648,7 @@ namespace ESafety.Account.Service
                     billmodel.State == (int)PublicEnum.BillFlowState.Reback ||
                     billmodel.State == (int)PublicEnum.BillFlowState.Over) ? false
                     ://存在上级，而上级没有任何数据或上级已回退则不可用
-                    (uppoint != null && (flows.FirstOrDefault(q => q.OpreationFlowID == uppoint.ID) == null||flows.Any(p => p.OpreationFlowID == uppoint.ID && p.FlowResult== (int)PublicEnum.OpreateFlowResult.reback))) ? false
+                    (uppoint != null && (flows.FirstOrDefault(q => q.OpreationFlowID == uppoint.ID) == null || flows.Any(p => p.OpreationFlowID == uppoint.ID && p.FlowResult == (int)PublicEnum.OpreateFlowResult.reback))) ? false
                     ://已经存在了退回则不可用
                     flows.Any(q => q.OpreationFlowID == f.ID && q.FlowResult == (int)PublicEnum.OpreateFlowResult.reback) ? false
                     ://如果后面节点有任何终止记录则不可用
@@ -635,7 +671,7 @@ namespace ESafety.Account.Service
                     rf.FlowUEModel = uemodel;
                     reflows.Add(rf);
 
-                } 
+                }
 
                 remodel.BillFlows = reflows;
 
@@ -657,22 +693,22 @@ namespace ESafety.Account.Service
             {
                 //当前登录人的岗位
                 var cuserpost = _work.Repository<Basic_PostEmployees>().Queryable(q => q.EmployeeID == AppUser.EmployeeInfo.ID);
-                var cpostid =cuserpost.Select(s=>s.PostID);
+                var cpostid = cuserpost.Select(s => s.PostID);
                 //已审核单据所有单据
-                var bills = rpsOpreateBill.Queryable(p=>p.State==(int)PublicEnum.BillFlowState.audited);
+                var bills = rpsOpreateBill.Queryable(p => p.State == (int)PublicEnum.BillFlowState.audited);
                 //作业申请负责人
                 var emps = _work.Repository<Basic_Employee>().Queryable();
                 var allflows = rpsBillFlow.Queryable();
 
                 var re = from bill in bills.ToList()
                          let emp = emps.FirstOrDefault(q => q.ID == bill.PrincipalEmployeeID)
-                         let flow=JsonConvert.DeserializeObject<IEnumerable<Basic_OpreationFlow>>(bill.FlowsJson)
-                         let ocflow=allflows.OrderByDescending(o=>o.FlowTime).FirstOrDefault(p=>p.BillID==bill.ID)
-                         let cf=ocflow==null?null:flow.FirstOrDefault(p=>p.ID==ocflow.OpreationFlowID)
-                         let lastflow= ocflow == null ? null : allflows.OrderByDescending(o => o.FlowTime).FirstOrDefault(p => p.BillID == bill.ID&&p.FlowTime<ocflow.FlowTime)
-                         let lf= lastflow==null?null:flow.FirstOrDefault(p => p.ID == lastflow.OpreationFlowID)
-                         let allcount=flow.Count()
-                         where flow.Any(p=>cpostid.Contains(p.PostID))
+                         let flow = JsonConvert.DeserializeObject<IEnumerable<Basic_OpreationFlow>>(bill.FlowsJson)
+                         let ocflow = allflows.OrderByDescending(o => o.FlowTime).FirstOrDefault(p => p.BillID == bill.ID)
+                         let cf = ocflow == null ? null : flow.FirstOrDefault(p => p.ID == ocflow.OpreationFlowID)
+                         let lastflow = ocflow == null ? null : allflows.OrderByDescending(o => o.FlowTime).FirstOrDefault(p => p.BillID == bill.ID && p.FlowTime < ocflow.FlowTime)
+                         let lf = lastflow == null ? null : flow.FirstOrDefault(p => p.ID == lastflow.OpreationFlowID)
+                         let allcount = flow.Count()
+                         where flow.Any(p => cpostid.Contains(p.PostID))
                          select new OpreateBillByEmp
                          {
                              OpreateBillID = bill.ID,
@@ -682,8 +718,8 @@ namespace ESafety.Account.Service
                              EndTime = bill.EndTime,
                              BillLong = bill.BillLong,
                              Description = bill.Description,
-                             AllCount=allcount,
-                             CurrentIndex=cf==null?1:lf==null?(cf.PointIndex+1): lf.PointIndex > cf.PointIndex ? ((0 - cf.PointIndex)+1) : (cf.PointIndex+1)
+                             AllCount = allcount,
+                             CurrentIndex = cf == null ? 1 : lf == null ? (cf.PointIndex + 1) : lf.PointIndex > cf.PointIndex ? ((0 - cf.PointIndex) + 1) : (cf.PointIndex + 1)
                          };
 
                 return new ActionResult<IEnumerable<OpreateBillByEmp>>(re);
@@ -692,7 +728,7 @@ namespace ESafety.Account.Service
             {
                 return new ActionResult<IEnumerable<OpreateBillByEmp>>(ex);
             }
-           
+
         }
 
         /// <summary>

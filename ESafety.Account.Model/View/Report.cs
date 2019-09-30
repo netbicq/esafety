@@ -165,7 +165,8 @@ namespace ESafety.Account.Model.View
         /// <summary>
         /// 是否通过
         /// </summary>
-        public string IsAccepte { get; set; }
+        [Newtonsoft.Json.JsonConverter(typeof(EnumJsonConvert<Unity.PublicEnum.EE_TroubleState>))]
+        public Unity.PublicEnum.EE_TroubleState IsAccepte { get; set; }
         /// <summary>
         /// 验收人
         /// </summary>

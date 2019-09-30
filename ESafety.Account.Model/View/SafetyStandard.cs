@@ -52,6 +52,15 @@ namespace ESafety.Account.Model.View
         /// 个体措施
         /// </summary>
         public string Individual { get; set; }
+
+    
+    }
+    public class SafetyStandards
+    {
+        public IEnumerable<SafetyStandardView> Standards { get; set; }
+
+        public string ExcelPath { get; set; }
+
     }
     /// <summary>
     /// 执行标准模型

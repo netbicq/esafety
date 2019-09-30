@@ -24,7 +24,7 @@ namespace ESafety.Account.Service
             _work = work;
             Unitwork = work;
             _rpssafetystandard = work.Repository<Basic_SafetyStandard>();
-            _rpsdangersort= work.Repository<Basic_DangerSort>();
+            _rpsdangersort = work.Repository<Basic_DangerSort>();
             _rpsdssd = work.Repository<Basic_DangerSafetyStandards>();
         }
         /// <summary>
@@ -40,7 +40,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("参数有误");
                 }
-                if (safetystandard.DangerSortID==Guid.Empty)
+                if (safetystandard.DangerSortID == Guid.Empty)
                 {
                     throw new Exception("请选择则风控项类别！");
                 }
@@ -74,7 +74,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到该安全标准");
                 }
-                var check = _rpsdssd.Any(p=>p.SafetyStandardID==id);
+                var check = _rpsdssd.Any(p => p.SafetyStandardID == id);
                 if (check)
                 {
                     throw new Exception("该安全点已经配置在风险点下，无法删除！");
@@ -88,7 +88,7 @@ namespace ESafety.Account.Service
 
                 return new ActionResult<bool>(ex);
             }
-       
+
         }
         /// <summary>
         /// 修改安全标准
@@ -104,7 +104,7 @@ namespace ESafety.Account.Service
                 {
                     throw new Exception("未找到所需修改安全标准");
                 }
-                var check =_rpsdssd.Any(p=>p.SafetyStandardID==safetystandard.ID);
+                var check = _rpsdssd.Any(p => p.SafetyStandardID == safetystandard.ID);
                 if (check)
                 {
                     throw new Exception("该安全标准已配置在风险点下,无法修改!");
@@ -118,7 +118,7 @@ namespace ESafety.Account.Service
             {
                 return new ActionResult<bool>(ex);
             }
-   
+
         }
 
         /// <summary>
@@ -139,44 +139,65 @@ namespace ESafety.Account.Service
                 return new ActionResult<SafetyStandardModel>(re);
             }
             catch (Exception ex)
-            { 
+            {
                 return new ActionResult<SafetyStandardModel>(ex);
             }
-           
+
         }
 
         /// <summary>
         /// 获取安全标准
         /// </summary>
         /// <returns></returns>
-        public ActionResult<IEnumerable<SafetyStandardView>> GetSafetyStandards()
+        public ActionResult<SafetyStandards> GetSafetyStandards(bool toExcel = false)
         {
             try
             {
                 var SafetyStandards = _rpssafetystandard.Queryable();
-                var re = from s in SafetyStandards.ToList()
-                         select new SafetyStandardView
-                         {
-                             ID = s.ID,
-                             Code = s.Code,
-                             Controls = s.Controls,
-                             DangerSort = _rpsdangersort.GetModel(s.DangerSortID).SortName,
-                             DangerSortID = s.DangerSortID,
-                             Name = s.Name
-                         };
+                var ress = from s in SafetyStandards.ToList()
+                           select new SafetyStandardView
+                           {
+                               ID = s.ID,
+                               Code = s.Code,
+                               Controls = s.Controls,
+                               DangerSort = _rpsdangersort.GetModel(s.DangerSortID).SortName,
+                               DangerSortID = s.DangerSortID,
+                               Name = s.Name
+                           };
+                var re = new SafetyStandards
+                {
+                    Standards = ress,
 
-                return new ActionResult<IEnumerable<SafetyStandardView>>(re);
+
+                };
+                var excel = "";
+                if (toExcel)
+                {
+                    var res = from s in SafetyStandards.ToList()
+                              select new
+                              {
+
+                                  编号 = s.Code,
+                                  名称 = s.Name,
+                                  风控项类别 = _rpsdangersort.GetModel(s.DangerSortID).SortName,
+                                  管控措施 = s.Controls,
+
+                              };
+                    excel = Command.CreateExcel(res, AppUser.OutPutPaht);
+                }
+                re.ExcelPath = excel;
+                return new ActionResult<SafetyStandards>(re);
             }
             catch (Exception ex)
             {
 
-                return new ActionResult<IEnumerable<SafetyStandardView>>(ex);
+                return new ActionResult<SafetyStandards>(ex);
             }
-            
+
         }
 
 
-        
+
         /// <summary>
         /// 根据风险类别ID获取所有安全准则
         /// </summary>
@@ -186,11 +207,11 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var SafetyStandardIds = _rpsdssd.Queryable(p => p.DangerID == dangerid).Select(s=>s.SafetyStandardID);
+                var SafetyStandardIds = _rpsdssd.Queryable(p => p.DangerID == dangerid).Select(s => s.SafetyStandardID);
                 var ss = _rpssafetystandard.Queryable(p => SafetyStandardIds.Contains(p.ID));
                 var danger = _work.Repository<Basic_Danger>().GetModel(dangerid);
                 var ds = _rpsdangersort.GetModel(p => p.ID == danger.DangerSortID);
-          
+
                 var re = from o in ss
                          select new SafetyStandardView
                          {
@@ -200,7 +221,7 @@ namespace ESafety.Account.Service
                              DangerSort = ds.SortName,
                              DangerSortID = o.DangerSortID,
                              Name = o.Name,
-                             DangerName=danger.Name
+                             DangerName = danger.Name
 
                          };
                 return new ActionResult<IEnumerable<SafetyStandardView>>(re);
@@ -210,7 +231,7 @@ namespace ESafety.Account.Service
 
                 return new ActionResult<IEnumerable<SafetyStandardView>>(ex);
             }
-           
+
         }
         /// <summary>
         /// 根据风控项类别获取执行标准
@@ -221,7 +242,7 @@ namespace ESafety.Account.Service
         {
             try
             {
-                var SafetyStandards = _rpssafetystandard.Queryable(p=>p.DangerSortID==dangersortid);
+                var SafetyStandards = _rpssafetystandard.Queryable(p => p.DangerSortID == dangersortid);
                 var sort = _rpsdangersort.GetModel(dangersortid);
                 var re = from s in SafetyStandards
                          select new SafetyStandardView
@@ -229,7 +250,7 @@ namespace ESafety.Account.Service
                              ID = s.ID,
                              Code = s.Code,
                              Controls = s.Controls,
-                             DangerSort =sort.SortName,
+                             DangerSort = sort.SortName,
                              DangerSortID = sort.ID,
                              Name = s.Name
                          };

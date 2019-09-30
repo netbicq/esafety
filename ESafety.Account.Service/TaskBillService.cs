@@ -205,7 +205,37 @@ namespace ESafety.Account.Service
                               TaskResult = tlv == null ? "" : tlv.DictName,
                               //TaskResultValue = tbs == null ? 0 : tbs.TroubleLevel == -1 ? 0 : tbs.TroubleLevel
                           };
+
+                var excel = "";
+                if (para.ToExcel)
+                {
+                    var res= from s in dbtb
+                             let emp = emps.FirstOrDefault(p => p.ID == s.EmployeeID)
+                             let ts = dbts.FirstOrDefault(p => p.ID == s.TaskID)
+                             let tbs = dbtbs.OrderByDescending(o => o.TroubleLevel).FirstOrDefault(p => p.BillID == s.ID)
+                             let post = posts.FirstOrDefault(p => p.ID == s.PostID)
+                             let dp = dps.FirstOrDefault(p => p.ID == s.DangerPointID)
+                             let tlv = tbs == null ? null : dict.FirstOrDefault(p => p.ID == tbs.TroubleLevel)
+                             where s.BillCode.Contains(para.Query.Key) || ts.Name.Contains(para.Query.Key) || para.Query.Key == string.Empty
+                             orderby s.StartTime descending
+                             select new 
+                             {
+                               
+                                 任务号 = s.BillCode,
+                                 任务名称 = ts.Name,
+                                 开始时间 = s.StartTime,
+                                 结束时间 = s.EndTime,
+                                 执行岗位 = post.Name,
+                                 执行人= emp.CNName,
+                                 任务结果= tlv == null ? "" : tlv.DictName,
+                                 状态 = s.State==(int)PublicEnum.BillFlowState.wait?"待检查完成":
+                                             s.State == (int)PublicEnum.BillFlowState.normal?"已检查":"未知",
+                              
+                             };
+                    excel = Command.CreateExcel(res.AsEnumerable(), AppUser.OutPutPaht);
+                }
                 var re = new Pager<TaskBillView>().GetCurrentPage(rev, para.PageSize, para.PageIndex);
+                re.ExcelResult = excel;
                 return new ActionResult<Pager<TaskBillView>>(re);
             }
             catch (Exception ex)
@@ -752,10 +782,10 @@ namespace ESafety.Account.Service
                         sendData.Add("remark", new MessageDataBase { value = "ESF微服为安全护航。" });
                         var Msg = new TemplateMessagePara
                         {
-                            template_id = "46LiWSOZ1MGVh2j8_pvyMkmzfw4ItkVVrV0DQUg24cU",
+                            template_id = "	U2BQhgckeL4PMAzfIUkdpNZ-pAHMqyLTQOGwo8JDshU",
                             touser =msgToUser.openID,
                             data=sendData,
-                            url= "http://esfwx.quickcq.com/HiddenTrouble"
+                            url= "http://weixin.bjjtza.com/HiddenTrouble"
                         };
                         WxService.SendTemplateMessage(Msg);
                         /************************************************************************/

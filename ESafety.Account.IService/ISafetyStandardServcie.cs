@@ -33,7 +33,7 @@ namespace ESafety.Account.IService
         /// 获取执行标准列表
         /// </summary>
         /// <returns></returns>
-        ActionResult<IEnumerable<SafetyStandardView>> GetSafetyStandards();
+        ActionResult<SafetyStandards> GetSafetyStandards(bool toExcel = false);
         /// <summary>
         /// 根据风控项ID获取执行标准
         /// </summary>

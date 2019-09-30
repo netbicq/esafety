@@ -505,7 +505,7 @@ namespace Quick.WXHelper
             {
                 "startRecord","stopRecord","onVoiceRecordEnd",
                 "playVoice","pauseVoice","stopVoice","onVoicePlayEnd",
-                "uploadVoice","downloadVoice"
+                "uploadVoice","downloadVoice","scanQRCode"
             };
 
 
